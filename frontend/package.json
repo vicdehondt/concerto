@@ -6,11 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "cypress": "cypress open"
+    "lint": "next lint"
   },
   "dependencies": {
-    "cypress": "^13.3.0",
     "next": "13.5.4",
     "react": "^18",
     "react-dom": "^18"
@@ -19,12 +17,9 @@
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
-    "autoprefixer": "^10",
+    "cypress": "^13.3.0",
     "eslint": "^8",
     "eslint-config-next": "13.5.4",
-    "postcss": "^8",
-    "tailwindcss": "^3",
-    "ts-node": "^10.9.1",
     "typescript": "^5"
   }
 }
