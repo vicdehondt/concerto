@@ -10,7 +10,7 @@ a {
 
 .grid-container {
   display: grid;
-  grid-template-columns: 20% auto;
+  grid-template-columns: 350px auto;
   grid-template-rows: [header] 58.5px [cards] auto;
   grid-template-areas:
     "header header"
