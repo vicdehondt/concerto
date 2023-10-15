@@ -11,7 +11,7 @@ a {
 .grid-container {
   display: grid;
   grid-template-columns: 350px auto;
-  grid-template-rows: [header] 58.5px [cards] auto;
+  grid-template-rows: [header] 60px [cards] auto;
   grid-template-areas:
     "header header"
     "sidebar main";
@@ -35,22 +35,53 @@ a {
   display: flex;
 }
 
-.left-topics > *,
-.right-topics > * {
+.left-topics a,
+.right-topics a {
   padding: 20px;
+  text-align: center;
 }
 
-.left-topics a {
-  text-align: center;
+.search-container {
+  border: 5px solid #7180B9;
+  border-radius: 20px;
 }
 
 .search-bar {
-  width: 51px;
-  text-align: center;
+  color: black;
+  background-color: #E8F7EE;
+  border: 3px solid #E8F7EE;
+  border-radius: 20px;
+  padding-left: 5px;
 }
 
-.right-topics a {
-  text-align: center;
+.navbar .search {
+  padding: 14px;
+}
+
+.navbar .search-container {
+  min-width: 300px;
+}
+
+.add-event {
+  padding: 20px;
+}
+
+.add-event a {
+  font-size: larger ;
+  font-weight: bold;
+  color: black;
+  background-color: #E8F7EE;
+  padding: 0 5px;
+  border: 5px solid #E8F7EE;
+  border-radius: 50%;
+}
+
+.add-event a:hover {
+  color: white;
+  background-color: #7180B9;
+  padding: 0 5px;
+  border: 5px solid #7180B9;
+  border-radius: 50%;
 }
 
 .right-topics a:hover {
@@ -58,15 +89,61 @@ a {
 }
 
 .sidebar {
+  overflow: hidden;
   grid-area: sidebar;
   border-right: 8px solid;
 }
 
-.sidebar h2 {
+.sidebar .search {
+  padding: 20px;
+}
+
+.sidebar .search-container {
+  width: 292px;
+  border-radius: 30px;
+}
+
+.sidebar .search-bar {
+  border: 8px solid #E8F7EE;
+}
+
+.sidebar .filter-title {
+  font-size: x-large;
+  padding: 20px;
+}
+
+.sidebar .filters {
+  padding: 0 35px;
+}
+
+.sidebar .filters > * {
+  padding: 10px 0;
+}
+
+.sidebar .location-filter {
+  display: flex;
+  flex-direction: row;
+}
+
+.location-filter .location {
+  padding-top: 2px;
+}
+
+.sidebar .filters .search {
   padding: 0 20px;
 }
 
+.sidebar .filters .search-container {
+  width: 150px;
+  border: 2px solid #7180B9;
+}
+
+.sidebar .filters .search-bar {
+  border: 1px solid #E8F7EE;
+}
+
 .main {
+  overflow: scroll;
   grid-area: main;
   background-color: #E8F7EE;
 }
@@ -206,6 +283,8 @@ h1 {
   align-self: flex-end;
   background-color: #F5F5F5;
   padding: 2px 6px;
-  border-radius: 10px;
+  border: 1px solid;
+  border-radius: 20px;
+  box-shadow: 0 1px 1px;
 }
 
