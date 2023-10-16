@@ -3,6 +3,7 @@ import Image from 'next/image'
 import { Inter } from 'next/font/google'
 import styles from '@/styles/Home.module.css'
 import Link from 'next/link'
+import Navbar from '../components/navbar'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -10,34 +11,14 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>Login</title>
-        <meta name="description" content="Login to your account!" />
+        <title>Concerto</title>
+        <meta name="description" content="Welcome to the Concerto home page!" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className={`${styles.main} ${inter.className}`}>
         <div className={styles.gridContainer}>
-          <div className={styles.navbar}>
-            <div className={styles.leftTopics}>
-              <Link href="/">Concerto</Link>
-              <div className={styles.search}>
-                <div className={styles.searchContainer}>
-                  <div className={styles.searchBar}>
-                    Search...
-                  </div>
-                </div>
-              </div>
-              <div className={styles.addEvent}>
-                <a>+</a>
-              </div>
-            </div>
-            <div className={styles.rightTopics}>
-              <a>Friends</a>
-              <a>Wishlist</a>
-              <a>Notifications</a>
-              <a>Account</a>
-            </div>
-          </div>
+          <Navbar />
           <div className={styles.sidebar}>
             <div className={styles.search}>
               <div className={styles.searchContainer}>
