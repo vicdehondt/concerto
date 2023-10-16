@@ -1,20 +1,15 @@
-import Image from 'next/image'
-import { Inter } from 'next/font/google'
-import styles from '../styles/Navbar.module.css'
-import Link from 'next/link'
+import Image from "next/image";
+import { Inter } from "next/font/google";
+import styles from "../styles/Navbar.module.css";
+import Link from "next/link";
+import Searchbar from "../components/Searchbar";
 
 function Navbar() {
   return (
     <div className={styles.navbar}>
       <div className={styles.leftTopics}>
         <Link href="/">Concerto</Link>
-        <div className={styles.search}>
-          <div className={styles.searchContainer}>
-            <div className={styles.searchBar}>
-              Search...
-            </div>
-          </div>
-        </div>
+        <Searchbar type="long" />
         <div className={styles.addEvent}>
           <Link href="/add-event">+</Link>
         </div>
@@ -26,7 +21,7 @@ function Navbar() {
         <Link href="/account">Account</Link>
       </div>
     </div>
-  )
+  );
 }
 
-export default Navbar
+export default Navbar;

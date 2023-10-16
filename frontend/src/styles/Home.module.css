@@ -9,35 +9,23 @@
 }
 
 .searchContainer {
-  border: 5px solid #7180B9;
+  border: 5px solid #7180b9;
   border-radius: 20px;
 }
 
 .searchBar {
   color: black;
-  background-color: #E8F7EE;
-  border: 3px solid #E8F7EE;
+  background-color: #e8f7ee;
+  border: 3px solid #e8f7ee;
   border-radius: 20px;
   padding-left: 5px;
 }
 
 .sidebar {
+  color: black;
   overflow: hidden;
   grid-area: sidebar;
   border-right: 8px solid;
-}
-
-.sidebar .search {
-  padding: 20px;
-}
-
-.sidebar .searchContainer {
-  width: 292px;
-  border-radius: 30px;
-}
-
-.sidebar .searchBar {
-  border: 8px solid #E8F7EE;
 }
 
 .sidebar .filterTitle {
@@ -62,23 +50,11 @@
   padding-top: 2px;
 }
 
-.sidebar .filters .search {
-  padding: 0 20px;
-}
-
-.sidebar .filters .searchContainer {
-  width: 150px;
-  border: 2px solid #7180B9;
-}
-
-.sidebar .filters .searchBar {
-  border: 1px solid #E8F7EE;
-}
-
 .pageContent {
+  color: black;
   overflow: scroll;
   grid-area: page-content;
-  background-color: #E8F7EE;
+  background-color: #e8f7ee;
 }
 
 .title {
@@ -109,7 +85,6 @@
 
 .eventCard .photo {
   grid-area: photo;
-  /* padding-left: 10px; */
 }
 
 .eventCard .photo img {
@@ -151,7 +126,6 @@
   padding: 2px;
 }
 
-
 .eventCard .tickets .photo img {
   border-radius: 0;
   width: 18px;
@@ -192,7 +166,6 @@
   padding: 2px;
 }
 
-
 .eventCard .price .photo img {
   border-radius: 0;
   width: 20px;
@@ -220,11 +193,9 @@
 
 .eventCard .tag {
   align-self: flex-end;
-  background-color: #F5F5F5;
+  background-color: #f5f5f5;
   padding: 2px 6px;
   border: 1px solid;
   border-radius: 20px;
   box-shadow: 0 1px 1px;
 }
-
-
