@@ -1,0 +1,46 @@
+.searchContainer {
+  border: 5px solid #7180B9;
+  border-radius: 20px;
+}
+
+.searchBar {
+  color: black;
+  background-color: #E8F7EE;
+  border: 3px solid #E8F7EE;
+  border-radius: 20px;
+  padding-left: 5px;
+}
+
+.longSearch {
+  padding: 14px;
+}
+
+.longSearchContainer {
+  min-width: 300px;
+}
+
+.thickBorderSearch {
+  padding: 20px;
+}
+
+.thickBorderSearchContainer {
+  width: 292px;
+  border-radius: 30px;
+}
+
+.thickBorderSearchBar {
+  border: 8px solid #E8F7EE;
+}
+
+.thinBorderSearch {
+  padding: 0 20px;
+}
+
+.thinBorderSearchContainer {
+  width: 150px;
+  border: 2px solid #7180b9;
+}
+
+.thinBorderSearchBar {
+  border: 1px solid #e8f7ee;
+}

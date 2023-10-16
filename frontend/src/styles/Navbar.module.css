@@ -1,0 +1,49 @@
+.navbar {
+  grid-area: header;
+  overflow: hidden;
+  background-color: #0B2027;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.navbar a {
+  color: white;
+}
+
+.leftTopics {
+  display: flex;
+  align-items: center;
+}
+
+.leftTopics a,
+.rightTopics a {
+  padding: 20px;
+  text-align: center;
+}
+
+.addEvent {
+  padding: 20px;
+}
+
+.addEvent a {
+  font-size: larger ;
+  font-weight: bold;
+  color: black;
+  background-color: #E8F7EE;
+  padding: 0 5px;
+  border: 5px solid #E8F7EE;
+  border-radius: 50%;
+}
+
+.addEvent a:hover {
+  color: white;
+  background-color: #7180B9;
+  padding: 0 5px;
+  border: 5px solid #7180B9;
+  border-radius: 50%;
+}
+
+.rightTopics a:hover {
+  background-color: #7180B9;
+}
