@@ -14,7 +14,7 @@ a {
   grid-template-rows: [header] 60px [cards] auto;
   grid-template-areas:
     "header header"
-    "sidebar main";
+    "sidebar page-content";
   height: 100vh;
 }
 
@@ -142,13 +142,13 @@ a {
   border: 1px solid #E8F7EE;
 }
 
-.main {
+.pageContent {
   overflow: scroll;
-  grid-area: main;
+  grid-area: page-content;
   background-color: #E8F7EE;
 }
 
-h1 {
+.title {
   padding: 0 20px;
 }
 
@@ -175,6 +175,7 @@ h1 {
 
 .event-card .photo {
   grid-area: photo;
+  /* padding-left: 10px; */
 }
 
 .event-card .photo img {
