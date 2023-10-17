@@ -12,13 +12,15 @@ type SideBarProps = {
 function SideBarContent({ type }: SideBarProps) {
   return type == "event" ? (
     <>
-      <div className={styles.filterTitle}>Filter</div>
+      <div className={styles.title}>Filter</div>
       <div className={styles.filters}>
         <div className={styles.locationFilter}>
           <div className={styles.location}>Location</div>
           <Searchbar type="thin" />
         </div>
-        <div className={styles.date}>Date</div>
+        <div className={styles.date}>
+          Date
+        </div>
         <div className={styles.genre}>Genre</div>
       </div>
     </>
