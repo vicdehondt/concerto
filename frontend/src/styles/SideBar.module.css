@@ -1,0 +1,37 @@
+.sidebar {
+  color: black;
+  overflow: hidden;
+  grid-area: sidebar;
+  border-right: 8px solid;
+}
+
+.filterTitle {
+  font-size: x-large;
+  padding: 20px;
+}
+
+.filters {
+  padding: 20px 35px;
+}
+
+.filters > * {
+  padding: 10px 0;
+}
+
+.locationFilter {
+  display: flex;
+  flex-direction: row;
+}
+
+.location {
+  padding-top: 2px;
+}
+
+.title {
+  font-size: x-large;
+  padding: 20px 0 0 20px;
+}
+
+.dateInput {
+  margin-left: 55px;
+}

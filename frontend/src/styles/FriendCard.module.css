@@ -1,0 +1,18 @@
+.friendCardContainer {
+  width: fit-content;
+  min-width: 170px;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  padding: 20px;
+}
+
+.friendCardContainer img {
+  border: 3px solid black;
+  border-radius: 50%;
+}
+
+.name {
+  font-size: x-large;
+  padding-top: 15px;
+}

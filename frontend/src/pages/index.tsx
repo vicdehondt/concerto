@@ -1,11 +1,11 @@
 import Head from "next/head";
-import Image from "next/image";
 import { Inter } from "next/font/google";
 import styles from "@/styles/Home.module.css";
 import Link from "next/link";
 import Navbar from "../components/Navbar";
 import Searchbar from "../components/Searchbar";
 import EventCard from "../components/EventCard";
+import SideBar from "../components/SideBar"
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -21,18 +21,7 @@ export default function Home() {
       <main className={`${styles.main} ${inter.className}`}>
         <div className={styles.gridContainer}>
           <Navbar />
-          <div className={styles.sidebar}>
-            <Searchbar type="thick" />
-            <div className={styles.filterTitle}>Filter</div>
-            <div className={styles.filters}>
-              <div className={styles.locationFilter}>
-                <div className={styles.location}>Location</div>
-                <Searchbar type="thin" />
-              </div>
-              <div className={styles.date}>Date</div>
-              <div className={styles.genre}>Genre</div>
-            </div>
-          </div>
+          <SideBar type="event"/>
           <div className={styles.pageContent}>
             <div className={styles.title}>
               <h1>Events this week you may like</h1>
