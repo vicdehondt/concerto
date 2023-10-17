@@ -9,6 +9,16 @@ type SideBarProps = {
   type: "event" | "friends";
 };
 
+const currentDate = getFormattedDate(new Date());
+
+function getFormattedDate(date: Date) {
+  return (
+    [date.getFullYear(),
+    date.getMonth() + 1, // getMonth starts at 0, so January is 00
+    date.getDate()].join("-")
+  );
+}
+
 function SideBarContent({ type }: SideBarProps) {
   return type == "event" ? (
     <>
@@ -19,7 +29,10 @@ function SideBarContent({ type }: SideBarProps) {
           <Searchbar type="thin" />
         </div>
         <div className={styles.date}>
-          Date
+          <form>
+            Date
+            <input className={styles.dateInput} type="date" name="date" id="date" defaultValue={currentDate}></input>
+          </form>
         </div>
         <div className={styles.genre}>Genre</div>
       </div>

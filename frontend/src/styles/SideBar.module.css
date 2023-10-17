@@ -32,6 +32,6 @@
   padding: 20px 0 0 20px;
 }
 
-.input [type="date"] {
-  padding-left: 10px;
+.dateInput {
+  margin-left: 55px;
 }
