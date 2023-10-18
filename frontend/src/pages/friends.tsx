@@ -9,7 +9,7 @@ import FriendCard from "../components/FriendCard";
 
 const inter = Inter({ subsets: ["latin"] });
 
-export default function AddEvent() {
+export default function Friends() {
   return (
     <>
       <Head>
