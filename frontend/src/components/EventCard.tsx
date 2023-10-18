@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { Inter } from "next/font/google";
 import styles from "../styles/EventCard.module.css";
+import Tag from "../components/Tag"
 import Link from "next/link";
 
 function EventCard() {
@@ -44,8 +45,8 @@ function EventCard() {
       </div>
       <div className={styles.tags}>
         <div className={styles.divider}></div>
-        <div className={styles.tag}>Pop</div>
-        <div className={styles.tag}>Alternative</div>
+        <Tag text="Pop"/>
+        <Tag text="Alternative" />
       </div>
     </div>
   );
