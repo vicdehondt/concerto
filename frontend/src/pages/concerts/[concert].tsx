@@ -4,6 +4,9 @@ import styles from "@/styles/Home.module.css";
 import Navbar from "../../components/Navbar";
 import { useRouter } from "next/router";
 
+// Testing
+import InviteCard from "@/Components/InviteCard";
+
 const inter = Inter({ subsets: ["latin"] });
 
 export default function Event() {
@@ -19,10 +22,22 @@ export default function Event() {
       </Head>
       <main className={`${styles.main} ${inter.className}`}>
         <div className={styles.gridContainer}>
-          <Navbar />
-          <div className={styles.pageContent}>
-          </div>
+            <Navbar />
+            <InviteCard name="Reinout Cloosen" pictureSource="/photos/Rombout.jpeg"/>
+            
         </div>
+        {/* <div className={styles.gridContainer}>
+          <Navbar />
+          <SideBar type="event"/>
+          <div className={styles.pageContent}>
+            <div className={styles.title}>
+              <h1>Events this week you may like</h1>
+            </div>
+            <div className={styles.eventCardContainer}>
+              <EventCard />
+            </div>
+          </div>
+        </div> */}
       </main>
     </>
   );
