@@ -70,18 +70,24 @@ body {
     grid-row: 3;
 }
 
-.rating {
+.rating-section {
     grid-column: 2;
     grid-row: 2;
     text-align: center;
     font-size: larger;
 }
 
-.location-rating {
-    display: flex;
+.ratings {
+    width: 100%;
+    height: 100%;
 }
-.artist-rating {
-    display: flex;
+
+.ratings .rating {
+    margin: auto;
+}
+
+.ratings h3 {
+    margin-bottom: 2%;
 }
 
 .invite-friends {
