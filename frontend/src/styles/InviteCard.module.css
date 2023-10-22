@@ -1,0 +1,47 @@
+.inviteCardContainer {
+    display: grid;
+    grid-template-columns: [picture] 150px [name] auto [button] auto;
+    grid-template-areas: 
+    "picture name button";
+    column-gap: 20px;
+    border: 5px solid black;
+    margin: 7px;
+    border-radius: 20px;
+}
+
+.inviteCardContainer .pictureContainer {
+    grid-area: picture;
+    margin: 10px;
+    justify-content: center;
+}
+
+.inviteCardContainer .profileNameContainer img {
+    border-radius: 50%;
+    width: 100%;
+    max-width: 80%;
+}
+
+.inviteCardContainer .profileNameContainer {
+    grid-area: name;
+    display: flex;
+    justify-content: left;
+    align-items: center;
+}
+
+.inviteCardContainer .profileNameContainer .profileName {
+    font-size: large;
+    font-weight: bold;
+}
+
+.inviteCardContainer .inviteButtonContainer {
+    grid-area: button;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.inviteCardContainer .inviteButtonContainer .inviteButton {
+    background-color: black;
+    border-radius: 20px;
+}
+
