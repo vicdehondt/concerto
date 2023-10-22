@@ -1,9 +1,7 @@
 import Head from "next/head";
 import { Inter } from "next/font/google";
 import styles from "@/styles/Home.module.css";
-import Link from "next/link";
 import Navbar from "../components/Navbar";
-import Searchbar from "../components/Searchbar";
 import EventCard from "../components/EventCard";
 import SideBar from "../components/SideBar"
 

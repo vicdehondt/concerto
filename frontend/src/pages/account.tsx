@@ -14,7 +14,7 @@ const inter = Inter({ subsets: ["latin"] });
 
 export default function Account() {
   return (
-    <> 
+    <>
       <Head>
         <title>Concerto | Account</title>
         <meta name="description" content="Your Account." />
@@ -24,9 +24,9 @@ export default function Account() {
       <main className={`${styles.main} ${inter.className}`}>
         <div className={styles.gridContainer}>
           <Navbar />
-            {/* <div className={styles.biographyContainer}> */}
-            <Biography source="/photos/ariana.jpeg" username="Ariana"/>
-            {/* </div> */}
+          {/* <div className={styles.biographyContainer}> */}
+          <Biography source="/photos/ariana.jpeg" username="Ariana" />
+          {/* </div> */}
         </div>
       </main>
     </>

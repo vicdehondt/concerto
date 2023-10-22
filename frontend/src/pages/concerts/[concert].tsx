@@ -3,12 +3,14 @@ import { Inter } from "next/font/google";
 import styles from "@/styles/Home.module.css";
 import Navbar from "../../components/Navbar";
 import { useRouter } from "next/router";
+import { useEffect } from "react";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export default function Event() {
   const router = useRouter();
-  const title = "Concerto | " + router.query.event;
+  const title = "Concerto | " + router.query.concert;
+
   return (
     <>
       <Head>

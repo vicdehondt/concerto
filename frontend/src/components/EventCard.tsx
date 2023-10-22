@@ -5,6 +5,7 @@ import Tag from "../components/Tag";
 import Link from "next/link";
 
 function EventCard({ title }: { title: string }) {
+
   return (
     <Link href={`/concerts/${title}`} className={styles.eventCard}>
       <div className={styles.photo}>
