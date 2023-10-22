@@ -6,7 +6,7 @@ import { useRouter } from "next/router";
 
 // Testing
 import FriendInvites from "@/Components/FriendInvite";
-import InviteCard from "@/Components/InviteCard";
+import Banner from "@/Components/Banner"
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -24,7 +24,13 @@ export default function Event() {
       <main className={`${styles.main} ${inter.className}`}>
         <div className={styles.gridContainer}>
           <Navbar />
+          <div className={styles.bannerContainer}>
+            <Banner imageSource="/photos/banner.jpg" concertName="Ariana Grande"/>
+          </div>
           <div className={styles.descriptionContainer}>
+            <div className={styles.descriptionTitle}>
+              Description
+            </div>
           </div>
           <div className={styles.timetableContainer}>
           </div>

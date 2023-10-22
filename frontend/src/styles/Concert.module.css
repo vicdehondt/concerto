@@ -9,6 +9,11 @@
       "timetable invites";
     height: 100vh;
   }
+
+  .bannerContainer {
+    grid-area: banner;
+    position: relative;
+  }
   
   .friendInviteContainer {
     grid-area: invites;
@@ -16,6 +21,11 @@
 
   .descriptionContainer {
     grid-area: description;
+  }
+
+  .descriptionContainer .descriptionTitle {
+    font-size: large;
+    font-weight: bold;
   }
 
   .timetableContainer {
