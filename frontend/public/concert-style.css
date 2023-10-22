@@ -57,6 +57,10 @@ body {
     font-weight: bold;
 }
 
+.description-text {
+    font-size: medium;
+}
+
 .bar {
     background-color: black;
     border-radius: 30px;
@@ -70,11 +74,22 @@ body {
     grid-row: 3;
 }
 
+.timetable .concert-times-title {
+    margin-top: 15px;
+    font-size: x-large;
+    font-weight: bold;
+}
+
 .rating-section {
     grid-column: 2;
     grid-row: 2;
     text-align: center;
     font-size: larger;
+}
+
+.rating-section .ratings .rating .rating-description {
+    font-size: large;
+    font-weight: bold;
 }
 
 .ratings {
@@ -98,11 +113,12 @@ body {
     border: 5px solid black;
     border-radius: 30px;
     margin-right: 10px;
+    width: 500px;
 }
 
 .friend-invitation {
     display: grid;
-    grid-template-columns: [picture] 120px [name] 100px [button] auto;
+    grid-template-columns: [picture] 150px [name] auto [button] auto;
     grid-template-areas: 
     "picture name button";
     column-gap: 20px;
@@ -113,15 +129,25 @@ body {
 
 .friend-invitation .picture {
     grid-area: picture;
-}
-
-.friend-invitation .picture img {
-    width: 100%;
     margin: 10px;
 }
 
-.friend-invitation .profile-name {
+.friend-invitation .picture img {
+    border-radius: 50%;
+    width: 100%;
+    max-width: 80%;
+}
+
+.friend-invitation .profile-name-section {
     grid-area: name;
+    display: flex;
+    justify-content: left;
+    align-items: center;
+}
+
+.friend-invitation .profile-name-section .profile-name {
+    font-size: large;
+    font-weight: bold;
 }
 
 .friend-invitation .profile-name h3 {
@@ -129,19 +155,28 @@ body {
     margin-top: 80%;
 }
 
-.friend-invitation .invite-button {
+.friend-invitation .invite-button-container {
     grid-area: button;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.friend-invitation .invite-button-container .invite-button {
     background-color: black;
-    margin: 10px 10px 10px 10px;
     border-radius: 20px;
-    max-height: 35%;
-    min-width: fit-content;
+}
+
+.friend-invitation .invite-button-container .invite-button .invite-text {
+    font-size: larger;
+    padding: 5px 25px 5px 25px;
+    color: white    ;
 }
 
 .friend-invitation .invite-button h3 {
     color: white;
     text-align: center;
     font-size: larger;
+    padding: 3px 25px 3px 25px;
 }
 
 .rating-star {
