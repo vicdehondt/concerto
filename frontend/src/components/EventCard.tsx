@@ -1,17 +1,17 @@
 import Image from "next/image";
 import { Inter } from "next/font/google";
 import styles from "../styles/EventCard.module.css";
-import Tag from "../components/Tag"
+import Tag from "../components/Tag";
 import Link from "next/link";
 
-function EventCard() {
+function EventCard({ title }: { title: string }) {
   return (
-    <div className={styles.eventCard}>
+    <Link href={`/concerts/${title}`} className={styles.eventCard}>
       <div className={styles.photo}>
         <Image src="/photos/ariana.jpeg" width={120} height={120} alt="Performer" />
       </div>
       <div className={styles.event}>
-        <div className={styles.performance}>Ariana Grande</div>
+        <div className={styles.performance}>{title}</div>
         <div className={styles.location}>
           <Image src="/icons/location.png" width={18} height={21} alt="" />
           <div>Lotto Arena</div>
@@ -45,10 +45,10 @@ function EventCard() {
       </div>
       <div className={styles.tags}>
         <div className={styles.divider}></div>
-        <Tag text="Pop"/>
+        <Tag text="Pop" />
         <Tag text="Alternative" />
       </div>
-    </div>
+    </Link>
   );
 }
 

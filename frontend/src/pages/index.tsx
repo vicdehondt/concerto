@@ -27,7 +27,7 @@ export default function Home() {
               <h1>Events this week you may like</h1>
             </div>
             <div className={styles.eventCardContainer}>
-              <EventCard />
+              <EventCard title="Ariana Grande"/>
             </div>
           </div>
         </div>
