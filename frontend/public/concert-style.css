@@ -93,6 +93,8 @@ body {
 .invite-friends {
     grid-column: 2;
     grid-row: 3/5;
+    display: flex;
+    flex-direction: column;
     border: 5px solid black;
     border-radius: 30px;
     margin-right: 10px;
@@ -100,38 +102,46 @@ body {
 
 .friend-invitation {
     display: grid;
-    grid-template-columns: auto auto auto;
-    grid-template-rows: 80px;
-    margin: 10px;
-    border-radius: 10px;
-    border: 3px solid black;
-}
-
-.profile-picture {
-    grid-row: 1;
-    grid-column: 1;
-    width: 90;
-    height: 90%;
-    margin-left: 40%;
-    border: 2px solid black;
-    border-radius: 90%;
-}
-.profile-name {
-    grid-row: 1;
-    grid-column: 2;
-}
-
-.invite-button {
-    background-color: black;
-    margin: 10px;
+    grid-template-columns: [picture] 120px [name] 100px [button] auto;
+    grid-template-areas: 
+    "picture name button";
+    column-gap: 20px;
+    border: 5px solid black;
+    margin: 7px;
     border-radius: 20px;
 }
 
-.invite-button .invite-text {
+.friend-invitation .picture {
+    grid-area: picture;
+}
+
+.friend-invitation .picture img {
+    width: 100%;
+    margin: 10px;
+}
+
+.friend-invitation .profile-name {
+    grid-area: name;
+}
+
+.friend-invitation .profile-name h3 {
+    text-align: center;
+    margin-top: 80%;
+}
+
+.friend-invitation .invite-button {
+    grid-area: button;
+    background-color: black;
+    margin: 10px 10px 10px 10px;
+    border-radius: 20px;
+    max-height: 35%;
+    min-width: fit-content;
+}
+
+.friend-invitation .invite-button h3 {
     color: white;
     text-align: center;
     font-size: larger;
-    line-height: 50px;
 }
 
 .rating-star {
