@@ -1,8 +1,12 @@
+import styles from "../styles/FriendInvite.module.css"
+
+import InviteCard from "./InviteCard"
+
 function FriendInvites() {
     return (
-        <div className={}>
-            <InviteCard />
-            <InviteCard />
+        <div className={styles.gridContainer}>
+            <InviteCard name="Reinout Cloosen" pictureSource="/photos/Rombout.jpeg"/>
+            <InviteCard name="Dante Tibollo" pictureSource="/photos/Rombout.jpeg"/>
         </div>
     )
 }

@@ -1,8 +1,6 @@
 import Image from "next/image";
 import styles from "../styles/InviteCard.module.css"
 
-
-
 function InviteCard({name, pictureSource}: {name: string, pictureSource: string}){
     return (
         <div className={styles.inviteCardContainer}>
@@ -13,9 +11,11 @@ function InviteCard({name, pictureSource}: {name: string, pictureSource: string}
                 {name}
             </div>
             <div className={styles.inviteButtonContainer}>
-                <div className={styles.inviteButton}>
-                    Invite
-                </div>
+                    <button className={styles.inviteButton}> 
+                        <div className={styles.inviteButtonText}>
+                            invite
+                        </div> 
+                    </button>
             </div>
         </div>
     )

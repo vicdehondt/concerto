@@ -5,6 +5,7 @@ import Navbar from "../../components/Navbar";
 import { useRouter } from "next/router";
 
 // Testing
+import FriendInvites from "@/Components/FriendInvite";
 import InviteCard from "@/Components/InviteCard";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -23,7 +24,7 @@ export default function Event() {
       <main className={`${styles.main} ${inter.className}`}>
         <div className={styles.gridContainer}>
             <Navbar />
-            <InviteCard name="Reinout Cloosen" pictureSource="/photos/Rombout.jpeg"/>
+            <FriendInvites />
             
         </div>
         {/* <div className={styles.gridContainer}>

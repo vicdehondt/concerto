@@ -15,10 +15,11 @@
     justify-content: center;
 }
 
-.inviteCardContainer .profileNameContainer img {
+.inviteCardContainer .pictureContainer img {
     border-radius: 50%;
     width: 100%;
-    max-width: 80%;
+    height: auto;
+    border-radius: 50%;
 }
 
 .inviteCardContainer .profileNameContainer {
@@ -26,9 +27,6 @@
     display: flex;
     justify-content: left;
     align-items: center;
-}
-
-.inviteCardContainer .profileNameContainer .profileName {
     font-size: large;
     font-weight: bold;
 }
@@ -41,7 +39,12 @@
 }
 
 .inviteCardContainer .inviteButtonContainer .inviteButton {
-    background-color: black;
     border-radius: 20px;
+    background-color: black;
+    padding: 5px 25px 5px 25px;
+}
+
+.inviteCardContainer .inviteButtonContainer .inviteButton .inviteButtonText {
+    color: white;
 }
 
