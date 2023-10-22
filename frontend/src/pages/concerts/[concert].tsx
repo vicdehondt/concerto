@@ -1,6 +1,6 @@
 import Head from "next/head";
 import { Inter } from "next/font/google";
-import styles from "@/styles/Home.module.css";
+import styles from "@/styles/Concert.module.css";
 import Navbar from "../../components/Navbar";
 import { useRouter } from "next/router";
 
@@ -23,9 +23,16 @@ export default function Event() {
       </Head>
       <main className={`${styles.main} ${inter.className}`}>
         <div className={styles.gridContainer}>
-            <Navbar />
+          <Navbar />
+          <div className={styles.descriptionContainer}>
+          </div>
+          <div className={styles.timetableContainer}>
+          </div>
+          <div className={styles.ratingContainer}>
+          </div>
+          <div className={styles.friendInviteContainer}>
             <FriendInvites />
-            
+          </div>
         </div>
         {/* <div className={styles.gridContainer}>
           <Navbar />
