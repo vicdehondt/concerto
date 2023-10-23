@@ -1,55 +1,42 @@
 .gridContainer {
-    display: grid;
-    grid-template-columns: 45% auto;
-    grid-template-rows: [header] 60px [banner] 200px auto auto;
-    grid-template-areas:
-      "header header"
-      "banner banner"
-      "description ratings"
-      "timetable invites";
-    height: 100vh;
-  }
+  color: black;
+  display: grid;
+  grid-template-columns: 45% auto;
+  grid-template-rows: [header] 60px [banner] 200px auto auto;
+  grid-template-areas:
+    "header header"
+    "banner banner"
+    "description ratings"
+    "timetable invites";
+  height: 100vh;
+}
 
-  .bannerContainer {
-    grid-area: banner;
-    position: relative;
-  }
-  
-  .friendInviteContainer {
-    grid-area: invites;
-  }
+.bannerContainer {
+  grid-area: banner;
+  position: relative;
+}
 
-  .descriptionContainer {
-    grid-area: description;
-  }
+.friendInviteContainer {
+  grid-area: invites;
+}
 
-  .descriptionContainer .descriptionTitle {
-    font-size: large;
-    font-weight: bold;
-  }
+.descriptionContainer {
+  grid-area: description;
+}
 
-  .timetableContainer {
-    grid-area: timetable;
-  }
-  
-  .ratingContainer {
-    grid-area: timetable;
-  }
+.descriptionContainer .descriptionTitle {
+  font-size: large;
+  font-weight: bold;
+}
 
-  .pageContent {
-    color: black;
-    overflow: scroll;
-    grid-area: page-content;
-    background-color: #e8f7ee;
-  }
-  
-  .title {
-    padding: 20px;
-  }
-  
-  .eventCardContainer {
-    display: flex;
-    flex-direction: column;
-    row-gap: 20px;
-  }
-  
+.timetableContainer {
+  grid-area: timetable;
+}
+
+.ratingContainer {
+  grid-area: timetable;
+}
+
+.title {
+  padding: 20px;
+}
