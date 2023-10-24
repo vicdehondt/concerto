@@ -18,15 +18,23 @@
 
 .friendInviteContainer {
   grid-area: invites;
+  position: relative;
+  left: 20%;
 }
 
 .descriptionContainer {
+  margin-top: 15px;
   grid-area: description;
 }
 
 .descriptionContainer .descriptionTitle {
-  font-size: large;
+  font-size: x-large;
   font-weight: bold;
+}
+
+.descriptionContainer .descriptionText {
+  font-size: large;
+  font-weight: 400;
 }
 
 .timetableContainer {
@@ -34,7 +42,7 @@
 }
 
 .ratingContainer {
-  grid-area: timetable;
+  grid-area: ratings;
 }
 
 .title {

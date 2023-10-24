@@ -31,27 +31,25 @@ export default function Event() {
             <div className={styles.descriptionTitle}>
               Description
             </div>
+            <div className={styles.descriptionText}>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
+            Praesent vel luctus mauris. Quisque finibus egestas elit eget laoreet. 
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
+            Mauris dictum tristique nisi, viverra congue ligula dapibus et. 
+            Vestibulum lacinia felis in libero efficitur convallis. 
+            Fusce mauris augue, pharetra fermentum vestibulum vel, gravida id nulla. 
+            Proin orci nulla, luctus quis pretium elementum, molestie convallis eros.
+            </div>
           </div>
           <div className={styles.timetableContainer}>
           </div>
           <div className={styles.ratingContainer}>
+            Testing
           </div>
           <div className={styles.friendInviteContainer}>
             <FriendInvites />
           </div>
         </div>
-        {/* <div className={styles.gridContainer}>
-          <Navbar />
-          <SideBar type="event"/>
-          <div className={styles.pageContent}>
-            <div className={styles.title}>
-              <h1>Events this week you may like</h1>
-            </div>
-            <div className={styles.eventCardContainer}>
-              <EventCard />
-            </div>
-          </div>
-        </div> */}
       </main>
     </>
   );
