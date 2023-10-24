@@ -4,6 +4,10 @@ import styles from "../styles/Navbar.module.css";
 import Link from "next/link";
 import Searchbar from "../components/Searchbar";
 
+function handleClick() {
+  console.log("Test");
+}
+
 function Navbar() {
   return (
     <div className={styles.navbar}>
@@ -18,7 +22,11 @@ function Navbar() {
         <Link href="/friends">Friends</Link>
         <Link href="/wishlist">Wishlist</Link>
         <a>Notifications</a>
-        <Link href="/account">Account</Link>
+        <div className={styles.profilePicture}>
+          <Link href="/account">
+            <Image src="/photos/Rombout.jpeg" width={56} height={56} alt="Profile picture"/>
+          </Link>
+        </div>
       </div>
     </div>
   );
