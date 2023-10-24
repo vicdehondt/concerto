@@ -3,13 +3,20 @@
 }
 
 .container Image {
-    width: 100%;
-    height: 100%;
-    position: relative;
+  width: 100%;
+  height: 100%;
+  position: relative;
 }
 
-.container .concertTitle{
+.container .titleContainer {
     position: absolute;
-    font-size: xx-large;
-    color: white;
+    background-color: black;
+    opacity: 70%;
+}
+
+.container .titleContainer .concertTitle {
+  font-size: xx-large;
+  font-weight: 900;
+  margin: 10px 30px 10px 30px;
+  color: white;
 }

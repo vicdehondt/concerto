@@ -7,8 +7,10 @@ function Banner({imageSource, concertName}: {imageSource: string, concertName: s
             <div>
                 <Image src={imageSource} objectFit="cover"  fill={true} alt="Banner of the concert"/>
             </div>
-            <div className={styles.concertTitle}>
-                test
+            <div className={styles.titleContainer}>
+                <div className={styles.concertTitle}>
+                    {concertName}
+                </div>
             </div>
         </div>
     );
