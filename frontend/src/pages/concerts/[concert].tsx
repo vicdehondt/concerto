@@ -5,8 +5,8 @@ import Navbar from "../../components/Navbar";
 import { useRouter } from "next/router";
 
 // Testing
-import FriendInvites from "@/Components/FriendInvite";
-import Banner from "@/Components/Banner"
+import FriendInvites from "@/components/FriendInvite";
+import Banner from "@/components/Banner"
 
 const inter = Inter({ subsets: ["latin"] });
 
