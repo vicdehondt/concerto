@@ -8,9 +8,9 @@ function handleClick() {
   console.log("Test");
 }
 
-function Navbar() {
+function Navbar({pictureSource}: {pictureSource: string}) {
   return (
-    <div className={styles.navbar}>
+    <nav className={styles.navbar}>
       <div className={styles.leftTopics}>
         <Link href="/">Concerto</Link>
         <Searchbar type="long" />
@@ -24,11 +24,11 @@ function Navbar() {
         <a>Notifications</a>
         <div className={styles.profilePicture}>
           <Link href="/account">
-            <Image src="/photos/Rombout.jpeg" width={56} height={56} alt="Profile picture"/>
+            <Image src={pictureSource} width={56} height={56} alt="Profile picture"/>
           </Link>
         </div>
       </div>
-    </div>
+    </nav>
   );
 }
 

@@ -20,7 +20,6 @@ export default function Friends() {
       </Head>
       <main className={`${styles.main} ${inter.className}`}>
         <div className={styles.gridContainer}>
-          <Navbar />
           <SideBar type="friends" />
           <div className={styles.pageContent}>
             <div className={styles.title}>

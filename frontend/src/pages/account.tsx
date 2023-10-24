@@ -23,7 +23,6 @@ export default function Account() {
       </Head>
       <main className={`${styles.main} ${inter.className}`}>
         <div className={styles.gridContainer}>
-          <Navbar />
           {/* <div className={styles.biographyContainer}> */}
           <Biography source="/photos/ariana.jpeg" username="Ariana" />
           {/* </div> */}

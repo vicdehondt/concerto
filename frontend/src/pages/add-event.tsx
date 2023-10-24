@@ -18,7 +18,6 @@ export default function AddEvent() {
       </Head>
       <main className={`${styles.main} ${inter.className}`}>
         <div className={styles.gridContainer}>
-          <Navbar />
         </div>
       </main>
     </>
