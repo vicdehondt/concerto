@@ -7,6 +7,7 @@ import { useRouter } from "next/router";
 // Testing
 import FriendInvites from "@/components/FriendInvite";
 import Banner from "@/components/Banner"
+import Timetable from "@/components/Timetable";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -42,6 +43,7 @@ export default function Event() {
             </div>
           </div>
           <div className={styles.timetableContainer}>
+            <Timetable />
           </div>
           <div className={styles.ratingContainer}>
             Testing
