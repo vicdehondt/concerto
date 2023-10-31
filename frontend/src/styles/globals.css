@@ -107,6 +107,7 @@ body {
   font: "Inter";
   margin: 0px;
   background-color: white;
+  --navHeight: 60px;
 }
 
 nav {
@@ -115,5 +116,5 @@ nav {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  height: 60px;
+  height: var(--navHeight);
 }
