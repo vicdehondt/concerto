@@ -108,3 +108,12 @@ body {
   margin: 0px;
   background-color: white;
 }
+
+nav {
+  overflow: hidden;
+  background-color: #0B2027;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 60px;
+}

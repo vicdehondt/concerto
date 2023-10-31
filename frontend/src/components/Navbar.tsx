@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { Inter } from "next/font/google";
-import styles from "../styles/Navbar.module.css";
+import styles from "@/styles/Navbar.module.css";
 import Link from "next/link";
 import Searchbar from "../components/Searchbar";
 
@@ -14,7 +14,7 @@ function Navbar({pictureSource}: {pictureSource: string}) {
       <div className={styles.leftTopics}>
         <Link href="/">Concerto</Link>
         <Searchbar type="long" />
-        <div className={styles.addEvent}>
+        <div className={styles.addEventButton}>
           <Link href="/add-event">+</Link>
         </div>
       </div>

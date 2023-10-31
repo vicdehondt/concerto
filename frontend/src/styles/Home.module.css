@@ -1,11 +1,24 @@
-.gridContainer {
-  display: grid;
-  grid-template-columns: 350px auto;
-  grid-template-rows: [header] 60px [cards] auto;
-  grid-template-areas:
-    "header header"
-    "sidebar page-content";
+.page {
   height: 100vh;
+  display: grid;
+}
+
+.homePage {
+  grid-template-columns: 350px auto;
+  grid-template-areas:
+    "sidebar page-content";
+}
+
+.friendsPage {
+  grid-template-columns: 350px auto;
+  grid-template-areas:
+    "sidebar page-content";
+}
+
+.concertPage {
+  grid-template-columns: auto auto;
+  grid-template-areas:
+    "page-content page-content";
 }
 
 .pageContent {

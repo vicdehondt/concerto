@@ -1,9 +1,6 @@
 import Head from "next/head";
-import Image from "next/image";
 import { Inter } from "next/font/google";
 import styles from "@/styles/Home.module.css";
-import Link from "next/link";
-import Navbar from "../components/Navbar";
 import SideBar from "../components/SideBar";
 import FriendCard from "../components/FriendCard";
 
@@ -19,7 +16,7 @@ export default function Friends() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className={`${styles.main} ${inter.className}`}>
-        <div className={styles.gridContainer}>
+        <div className={[styles.page, styles.friendsPage].join(" ")}>
           <SideBar type="friends" />
           <div className={styles.pageContent}>
             <div className={styles.title}>
