@@ -1,49 +1,61 @@
-.navbar {
-  grid-area: header;
-  overflow: hidden;
-  background-color: #0B2027;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
 .navbar a {
   color: white;
 }
 
-.leftTopics {
+.leftTopics,
+.rightTopics {
+  height: 60px;
   display: flex;
   align-items: center;
 }
 
 .leftTopics a,
 .rightTopics a {
+  height: 60px;
   padding: 20px;
   text-align: center;
 }
 
-.addEvent {
+.rightTopics a:hover {
+  background-color: #7180B9;
+}
+
+.profilePicture  img{
+  border-radius: 50%;
+}
+
+.profilePicture a {
+  display: flex;
+  padding: 0 20px;
+  align-items: center;
+}
+
+.profilePicture a:hover {
+  background-color: #0B2027;
+}
+
+.addEventButton {
   padding: 20px;
 }
 
-.addEvent a {
-  font-size: larger ;
+.addEventButton a {
+  /* display:inline-flex; */
+  width: 40px;
+  height: 40px;
+  top: 10px;
+  position: absolute;
+  font-size: x-large;
   font-weight: bold;
   color: black;
   background-color: #E8F7EE;
-  padding: 0 5px;
+  /* padding: 0 5px; */
+  padding: 0;
   border: 5px solid #E8F7EE;
   border-radius: 50%;
 }
 
-.addEvent a:hover {
+.addEventButton a:hover {
   color: white;
   background-color: #7180B9;
-  padding: 0 5px;
   border: 5px solid #7180B9;
-  border-radius: 50%;
-}
-
-.rightTopics a:hover {
-  background-color: #7180B9;
 }

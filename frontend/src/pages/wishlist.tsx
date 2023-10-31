@@ -17,8 +17,7 @@ export default function Wishlist() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className={`${styles.main} ${inter.className}`}>
-        <div className={styles.gridContainer}>
-          <Navbar />
+        <div className={[styles.page, styles.wishlistPage].join(" ")}>
         </div>
       </main>
     </>

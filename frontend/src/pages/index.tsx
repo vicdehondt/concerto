@@ -17,8 +17,7 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className={`${styles.main} ${inter.className}`}>
-        <div className={styles.gridContainer}>
-          <Navbar />
+        <div className={[styles.page, styles.homePage].join(" ")}>
           <SideBar type="event"/>
           <div className={styles.pageContent}>
             <div className={styles.title}>
