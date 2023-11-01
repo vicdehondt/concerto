@@ -2,9 +2,8 @@
   color: black;
   display: grid;
   grid-template-columns: 45% auto;
-  grid-template-rows: [header] 60px [banner] 200px auto auto;
+  grid-template-rows: [banner] 200px auto auto;
   grid-template-areas:
-    "header header"
     "banner banner"
     "description ratings"
     "timetable invites";
