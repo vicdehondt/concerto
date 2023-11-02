@@ -12,25 +12,42 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
     }
 });
 
-
-db.all('SELECT * FROM Customers', [], (selectErr, rows) => {
-    if (selectErr) {
-        throw selectErr;
-    }
-
-    // Handle the retrieved data here, 'rows' contains the results
-    console.log(rows);
-});
+function Disconnect() {
+    db.close((err) => {
+        if (err) {
+            console.error(err.message);
+        } else {
+            console.log("The connection with the database has been closed!")
+        }
+    })
+}
 
 function AddCustomer(User, EMail) {
     db.run('INSERT INTO Customers (Username, Mail) VALUES (?, ?)', 
     [User, EMail], (err) =>{
         if (err) {
-            console.log("There was an error adding a customer")
+            console.log("Thereå was an error adding a customer")
         } else {
             console.log("The user was succesfully added to the database")
         }
     })
 }
 
-AddCustomer("Vic", "vic@gmail.com")
+function FindMail(Customerid) {
+    return new Promise((resolve, reject) => {
+        db.get('SELECT Mail FROM Customers WHERE CustomerID = ?', [Customerid], (err, row) => {
+            if (err) {
+                console.log("There was an error retrieving the mail of a customer!");
+                reject(err);
+            } else {
+                resolve(row);
+            }
+        });
+    });
+}
+
+module.exports = {
+    FindMail,
+    AddCustomer,
+    Disconnect
+}
