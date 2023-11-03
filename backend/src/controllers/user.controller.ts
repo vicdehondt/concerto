@@ -1,5 +1,6 @@
 import * as express from 'express';
 import { BaseController } from './base.controller';
+import * as database from '../database';
 
 export class UserController extends BaseController {
 
@@ -12,10 +13,12 @@ export class UserController extends BaseController {
     }
 
 	registerPost(req: express.Request, res: express.Response): void {
-        console.log("GET request received for /add");
+        console.log("POST request received for /register");
 
-        const sessionData: any = req.session;
-
+		const username: string = req.body.userName;
+		const mail: string = req.bod.mail;
+		
+		database.AddCustomer(username, mail);
     }
 
     /**
