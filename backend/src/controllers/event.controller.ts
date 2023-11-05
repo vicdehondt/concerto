@@ -2,24 +2,15 @@ import * as express from 'express';
 import { BaseController } from './base.controller';
 import * as database from '../database';
 
-export class UserController extends BaseController {
+export class EventController extends BaseController {
 
     constructor() {
-        super("/user");
+        super("/event");
     }
 
     initializeRoutes(): void {
-		this.router.post("/register", this.registerPost.bind(this));
     }
 
-	registerPost(req: express.Request, res: express.Response): void {
-        console.log("POST request received for /register");
-
-		const username: string = req.body.userName;
-		const mail: string = req.bod.mail;
-		
-		database.AddCustomer(username, mail);
-    }
 
     /**
 	 * Check if a string is actually provided
