@@ -1,6 +1,10 @@
 var sqlite3 = require('sqlite3').verbose()
 
-const DBSOURCE = "src/SQLite/CustomerDB.db"
+// relative path - DOES NOT WORK because of compiling this file
+// const DBSOURCE = "SQLite/CustomerDB.db"
+
+// absolute path - FILL IN YOURSELF ex. "users/john/documents/webtech-project/backend/src/SQLite/CustomerDB.db"
+const DBSOURCE = ""
 
 let db = new sqlite3.Database(DBSOURCE, (err) => {
     if (err) {
