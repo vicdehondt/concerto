@@ -1,6 +1,6 @@
 import * as express from 'express';
 import { BaseController } from './base.controller';
-import * as database from '../database';
+import * as database from '../Eventmodel';
 
 export class EventController extends BaseController {
 
@@ -9,7 +9,16 @@ export class EventController extends BaseController {
     }
 
     initializeRoutes(): void {
+		this.router.get("/retrieve", (req: express.Request, res: express.Response) => {
+			this.retrieveGet(req, res);
+		});
     }
+
+	retrieveGet(req: express.Request, res: express.Response): void {
+		const id = req.body.id;
+		const event = database.RetrieveEvent(id);
+		res.json(event);
+	}
 
 
     /**
