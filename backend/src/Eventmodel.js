@@ -45,7 +45,7 @@ const sequelize = new Sequelize({
   }
 
   // Temporary way to deal with images
-  const imageFilePath = '../src/eventimages/ariana.jpeg'; // Fil in path to image
+  const imageFilePath = './src/eventimages/ariana.jpeg'; // Fil in path to image
   const imageBuffer = fs.readFileSync(imageFilePath);
 
   async function CreateEvent(id, title, description, people, date, price, image) {

@@ -1,6 +1,7 @@
 import * as express from 'express';
 import { BaseController } from './base.controller';
 import * as database from '../Eventmodel';
+const fs = require('fs');
 
 export class EventController extends BaseController {
 
@@ -11,6 +12,9 @@ export class EventController extends BaseController {
     initializeRoutes(): void {
 		this.router.get("/retrieve", (req: express.Request, res: express.Response) => {
 			this.retrieveGet(req, res);
+		});
+		this.router.post("/add", (req: express.Request, res: express.Response) => {
+			this.addPost(req, res);
 		});
     }
 
@@ -23,6 +27,25 @@ export class EventController extends BaseController {
 			res.json(event);
 		} else {
 			res.status(404).json({ error: 'Event not found' });
+		}
+	} 
+
+	// Temporary way to deal with images
+	imageFilePath = './src/eventimages/ariana.jpeg'; // Fil in path to image
+	imageBuffer = fs.readFileSync(this.imageFilePath);
+
+	async addPost(req: express.Request, res: express.Response): Promise<void> {
+		console.log("Received post request to create event");
+		const id = req.query.id;
+		const title = req.query.title;
+		const description = req.query.description;
+		const maxPeople = req.query.maxpeople;
+		const datetime = req.query.datetime;
+		const price = req.query.price;
+		if (id && title && description && maxPeople && datetime && price) {
+			database.CreateEvent(id, title, description, maxPeople, datetime, price, this.imageBuffer);
+		} else {
+			res.status(404).json({ error: 'Unable to add event to database!' });
 		}
 	}
 
