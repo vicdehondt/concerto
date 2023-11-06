@@ -15,9 +15,15 @@ export class EventController extends BaseController {
     }
 
 	retrieveGet(req: express.Request, res: express.Response): void {
-		const id = req.body.id;
-		const event = database.RetrieveEvent(id);
-		res.json(event);
+		console.log("Accepted the incoming retrieve request")
+		const id = req.query.id;
+		if (id) {
+			console.log("An ID has been found: ", id);
+			const event = database.RetrieveEvent(id);
+			res.json(event);
+		} else {
+			res.status(404).json({ error: 'Event not found' });
+		}
 	}
 
 
