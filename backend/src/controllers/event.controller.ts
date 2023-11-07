@@ -31,7 +31,7 @@ export class EventController extends BaseController {
 	} 
 
 	// Temporary way to deal with images
-	imageFilePath = './src/eventimages/ariana.jpeg'; // Fil in path to image
+	imageFilePath = './src/eventimages/ariana.jpeg';
 	imageBuffer = fs.readFileSync(this.imageFilePath);
 
 	async addPost(req: express.Request, res: express.Response): Promise<void> {
@@ -48,7 +48,6 @@ export class EventController extends BaseController {
 			res.status(404).json({ error: 'Unable to add event to database!' });
 		}
 	}
-
 
     /**
 	 * Check if a string is actually provided

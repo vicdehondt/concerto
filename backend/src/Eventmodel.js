@@ -3,7 +3,7 @@ const fs = require('fs');
 
 const sequelize = new Sequelize({
     dialect: 'sqlite',
-    storage: '../src/SQLite/ConcertoDB.db'
+    storage: './src/SQLite/ConcertoDB.db'
   });
 
   const EventModel = sequelize.define('Event', {
@@ -45,7 +45,7 @@ const sequelize = new Sequelize({
   }
 
   // Temporary way to deal with images
-  const imageFilePath = './src/eventimages/ariana.jpeg'; // Fil in path to image
+  const imageFilePath = './src/eventimages/ariana.jpeg';
   const imageBuffer = fs.readFileSync(imageFilePath);
 
   async function CreateEvent(id, title, description, people, date, price, image) {
