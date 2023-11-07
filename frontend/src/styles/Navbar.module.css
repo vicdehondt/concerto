@@ -39,7 +39,6 @@
 }
 
 .addEventButton a {
-  /* display:inline-flex; */
   width: 40px;
   height: 40px;
   top: 10px;
@@ -48,7 +47,6 @@
   font-weight: bold;
   color: black;
   background-color: #E8F7EE;
-  /* padding: 0 5px; */
   padding: 0;
   border: 5px solid #E8F7EE;
   border-radius: 50%;

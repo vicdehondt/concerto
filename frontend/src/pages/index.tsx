@@ -24,7 +24,7 @@ export default function Home() {
               <h1>Events this week you may like</h1>
             </div>
             <div className={styles.eventCardContainer}>
-              <EventCard title="Ariana Grande"/>
+              {Array(25).fill(<EventCard title="Ariana Grande"/>)}
             </div>
           </div>
         </div>

@@ -4,15 +4,19 @@ import styles from "../styles/EventCard.module.css";
 import Tag from "../components/Tag";
 import Link from "next/link";
 
+function handleAddToWishlist() {
+  console.log("Need to access back-end for this one!");
+}
+
 function EventCard({ title }: { title: string }) {
 
   return (
-    <Link href={`/concerts/${title}`} className={styles.eventCard}>
+    <div className={styles.eventCard}>
       <div className={styles.photo}>
         <Image src="/photos/ariana.jpeg" width={120} height={120} alt="Performer" />
       </div>
       <div className={styles.event}>
-        <div className={styles.performance}>{title}</div>
+        <Link href={`/concerts/${title}`} className={styles.performance}>{title}</Link>
         <div className={styles.location}>
           <Image src="/icons/location.png" width={18} height={21} alt="" />
           <div>Lotto Arena</div>
@@ -41,7 +45,7 @@ function EventCard({ title }: { title: string }) {
           <div>100 &ndash; 200 EUR</div>
         </div>
       </div>
-      <div className={styles.wishlist}>
+      <div className={styles.addToWishlist} onClick={handleAddToWishlist}>
         <Image src="/icons/heart.png" width={28} height={28} alt="Add to wishlist" />
       </div>
       <div className={styles.tags}>
@@ -49,7 +53,7 @@ function EventCard({ title }: { title: string }) {
         <Tag text="Pop" />
         <Tag text="Alternative" />
       </div>
-    </Link>
+    </div>
   );
 }
 
