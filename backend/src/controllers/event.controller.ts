@@ -24,34 +24,41 @@ export class EventController extends BaseController {
 		if (id) {
 			console.log("An ID has been found: ", id);
 			const event = await database.RetrieveEvent(id);
-			res.json(event);
+			res.status(200).json(event);
 		} else {
 			res.status(404).json({ error: 'Event not found' });
 		}
-	} 
+	}
 
-	// Temporary way to deal with images
-	imageFilePath = './src/eventimages/ariana.jpeg';
-	imageBuffer = fs.readFileSync(this.imageFilePath);
+	IsValidEventAddPost(req: express.Request): boolean {
+		const b = req.body;
+		console.log(b);
+		if (b &&
+			b.title &&
+			b.eventid &&
+			b.description &&
+			b.maxpeople &&
+			b.datetime &&
+			b.price &&
+			b.image) {return true }
+			else {return false}
+	}
 
 	async addPost(req: express.Request, res: express.Response): Promise<void> {
 		console.log("Received post request to create event");
-		const id = req.query.id;
-		const title = req.query.title;
-		const description = req.query.description;
-		const maxPeople = req.query.maxpeople;
-		const datetime = req.query.datetime;
-		const price = req.query.price;
-		if (id && title && description && maxPeople && datetime && price) {
-			database.CreateEvent(id, title, description, maxPeople, datetime, price, this.imageBuffer);
+		if (this.IsValidEventAddPost(req)) {
+			const {title, eventid, description, maxpeople, datetime, image, price} = req.body;
+			const imageBuffer = fs.readFileSync(image);
+			database.CreateEvent(eventid, title, description, maxpeople, datetime, price, imageBuffer);
+			res.status(200).json({ success: true, message: 'Event created successfully' });
 		} else {
-			res.status(404).json({ error: 'Unable to add event to database!' });
+			console.log("Incorrect fields provided for addPost request!");
 		}
 	}
 
     /**
 	 * Check if a string is actually provided
-	 * 
+	 *
 	 * @param {string} param Provided string
 	 * @returns {boolean} Valid or not
 	 */

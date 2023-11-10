@@ -15,7 +15,7 @@ const sequelize = new Sequelize({
     title: {
       type: DataTypes.TEXT,
       allowNull: false
-    }, 
+    },
     description: {
       type: DataTypes.TEXT,
       allowNull: false
@@ -23,7 +23,7 @@ const sequelize = new Sequelize({
     maxPeople: {
       type: DataTypes.INTEGER,
       allowNull: false
-    }, 
+    },
     datetime: {
       type: DataTypes.DATE,
       allowNull: false
@@ -53,14 +53,14 @@ const sequelize = new Sequelize({
       const Event = await EventModel.create({
         eventID: id,
         title: title,
-        description: description, 
+        description: description,
         maxPeople: people,
         datetime: date,
         price: price,
         image: image
       });
     } catch (error) {
-      console.error("There was an error creating a user: ", error);
+      console.error("There was an error creating an event: ", error);
     }
   };
 
@@ -68,7 +68,7 @@ const sequelize = new Sequelize({
     try {
       const Event = await EventModel.findOne({
       where: {eventID: ID},
-      }); 
+      });
       console.log(Event);
       return Event;
     } catch (error) {

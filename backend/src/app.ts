@@ -3,6 +3,7 @@ import * as session from 'express-session';
 import { BaseController } from "./controllers/base.controller";
 import { EventController } from "./controllers/event.controller";
 import * as path from 'path';
+import exp = require('constants');
 
 export class App {
     app: express.Application;
@@ -12,7 +13,7 @@ export class App {
 
     constructor() {
         this.app = express();
-
+        this.app.use(express.json());
         this._initializeControllers();
         this.listen();
     }
