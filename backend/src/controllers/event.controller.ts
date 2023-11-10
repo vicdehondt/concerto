@@ -1,6 +1,8 @@
 import * as express from 'express';
 import { BaseController } from './base.controller';
 import * as database from '../Eventmodel';
+import {body, validationResult} from "express-validator"
+import { error } from 'console';
 const fs = require('fs');
 
 export class EventController extends BaseController {
@@ -13,7 +15,15 @@ export class EventController extends BaseController {
 		this.router.get("/retrieve", (req: express.Request, res: express.Response) => {
 			this.retrieveGet(req, res);
 		});
-		this.router.post("/add", (req: express.Request, res: express.Response) => {
+		this.router.post("/add", [
+			body("eventid").notEmpty(),
+			body("title").notEmpty().isString(),
+			body("description").notEmpty(),
+			body("maxpeople").notEmpty(),
+			body("price").notEmpty(),
+			body("image").notEmpty(),
+			body("datetime").notEmpty()
+		], (req: express.Request, res: express.Response) => {
 			this.addPost(req, res);
 		});
     }
@@ -46,13 +56,16 @@ export class EventController extends BaseController {
 
 	async addPost(req: express.Request, res: express.Response): Promise<void> {
 		console.log("Received post request to create event");
-		if (this.IsValidEventAddPost(req)) {
+		const result = validationResult(req)
+		if (result.isEmpty()) {
 			const {title, eventid, description, maxpeople, datetime, image, price} = req.body;
 			const imageBuffer = fs.readFileSync(image);
 			database.CreateEvent(eventid, title, description, maxpeople, datetime, price, imageBuffer);
 			res.status(200).json({ success: true, message: 'Event created successfully' });
 		} else {
-			console.log("Incorrect fields provided for addPost request!");
+			console.log("Validation failed:", result.array());
+			res.status(400).json({succes: false, errors: result.array()});
+
 		}
 	}
 
@@ -71,7 +84,7 @@ export class EventController extends BaseController {
 
     /**
 	 * Check if a string is a valid email
-	 * 
+	 *
 	 * @param {string} email Email string
 	 * @returns {boolean} Valid or not
 	 */
