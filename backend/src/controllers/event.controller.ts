@@ -36,7 +36,7 @@ export class EventController extends BaseController {
 				res.status(404).json({succes: false, error: "No event was found with this ID"})
 			}
 		} else {
-			res.status(404).json({succes: false, error: "No event ID was provided!" });
+			res.status(400).json({succes: false, error: "No event ID was provided!" });
 		}
 	}
 
@@ -58,30 +58,5 @@ export class EventController extends BaseController {
 			// console.log("Validation failed:", result.array());
 			res.status(400).json({succes: false, errors: result.array()});
 		}
-	}
-
-    /**
-	 * Check if a string is actually provided
-	 *
-	 * @param {string} param Provided string
-	 * @returns {boolean} Valid or not
-	 */
-	private _isGiven(param: string): boolean {
-		if (param == null)
-			return false;
-		else
-			return param.trim().length > 0;
-	}
-
-    /**
-	 * Check if a string is a valid email
-	 *
-	 * @param {string} email Email string
-	 * @returns {boolean} Valid or not
-	 */
-	private _isEmailValid(email: string): boolean {
-		const atIdx = email.indexOf("@");
-		const dotIdx = email.indexOf(".");
-		return atIdx != -1 && dotIdx != -1 && dotIdx > atIdx;
 	}
 }

@@ -6,8 +6,6 @@ const sequelize = new Sequelize({
     storage: config.databasePath
 })
 
-const salt  = 12
-
 const UserModel = sequelize.define('User', {
     userID: {
         type: DataTypes.INTEGER,
@@ -30,16 +28,33 @@ const UserModel = sequelize.define('User', {
         unique: true
     },
     salt: {
-        type: DataTypes.TEXT,
+        type: DataTypes.INTEGER,
         allowNull: false
+    },
+    image: { type: DataTypes.BLOB,
+            allowNull: false
     }}, {
-        tableName: 'Users'
+    tableName: 'Users'
     }
 )
 
 async function synchronize() {
     UserModel.sync()
   }
+
+export async function CreateUser(username, email, hashedpassword, saltingrounds, profilepicture): Promise<void> {
+    try {
+        const User = await UserModel.create({
+            username: username,
+            mail: email,
+            password: hashedpassword,
+            salt: saltingrounds,
+            image: profilepicture
+        });
+    } catch (error) {
+        console.error("There was an error creating a user:", error);
+    }
+}
 
 synchronize()
 
