@@ -6,6 +6,8 @@ const sequelize = new Sequelize({
     storage: config.databasePath
 })
 
+const salt  = 12
+
 const UserModel = sequelize.define('User', {
     userID: {
         type: DataTypes.INTEGER,
@@ -26,13 +28,18 @@ const UserModel = sequelize.define('User', {
         type: DataTypes.TEXT,
         allowNull: false,
         unique: true
+    },
+    salt: {
+        type: DataTypes.TEXT,
+        allowNull: false
     }}, {
         tableName: 'Users'
-    })
+    }
+)
 
 async function synchronize() {
     UserModel.sync()
   }
 
-  synchronize()
+synchronize()
 
