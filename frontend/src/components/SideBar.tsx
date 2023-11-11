@@ -2,7 +2,7 @@ import Image from "next/image";
 import { Inter } from "next/font/google";
 import styles from "../styles/SideBar.module.css";
 import Link from "next/link";
-import Searchbar from "../components/Searchbar";
+import Searchbar from "./Searchbar";
 import { FUNCTIONS_CONFIG_MANIFEST } from "next/dist/shared/lib/constants";
 
 type SideBarProps = {
