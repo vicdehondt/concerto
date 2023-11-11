@@ -15,12 +15,6 @@
     "sidebar page-content";
 }
 
-.concertPage {
-  grid-template-columns: auto auto;
-  grid-template-areas:
-    "page-content page-content";
-}
-
 .pageContent {
   color: black;
   overflow: scroll;
@@ -37,4 +31,51 @@
   flex-direction: column;
   row-gap: 20px;
   margin-bottom: 20px;
+}
+
+.concertPage {
+  grid-template-columns: 45% auto;
+  grid-template-rows: [banner] 200px auto auto;
+  grid-template-areas:
+    "banner banner"
+    "description ratings"
+    "timetable invites";
+}
+
+.concertPage .bannerContainer {
+  grid-area: banner;
+  position: relative;
+}
+
+.concertPage .friendInviteContainer {
+  grid-area: invites;
+  position: relative;
+  left: 20%;
+}
+
+.concertPage .descriptionContainer {
+  margin-top: 15px;
+  grid-area: description;
+}
+
+.concertPage .descriptionContainer .descriptionTitle {
+  font-size: x-large;
+  font-weight: bold;
+}
+
+.concertPage .descriptionContainer .descriptionText {
+  font-size: large;
+  font-weight: 400;
+}
+
+.concertPage .timetableContainer {
+  grid-area: timetable;
+}
+
+.concertPage .ratingContainer {
+  grid-area: ratings;
+}
+
+.concertPage .title {
+  padding: 20px;
 }

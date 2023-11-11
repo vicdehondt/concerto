@@ -11,10 +11,10 @@ function InviteCard({name, pictureSource}: {name: string, pictureSource: string}
                 {name}
             </div>
             <div className={styles.inviteButtonContainer}>
-                    <button className={styles.inviteButton}> 
+                    <button className={styles.inviteButton}>
                         <div className={styles.inviteButtonText}>
                             invite
-                        </div> 
+                        </div>
                     </button>
             </div>
         </div>

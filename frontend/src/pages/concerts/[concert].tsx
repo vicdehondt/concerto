@@ -1,14 +1,10 @@
 import Head from "next/head";
 import { Inter } from "next/font/google";
-import styles from "@/styles/Concert.module.css";
-import Navbar from "../../components/Navbar";
+import styles from "@/styles/Home.module.css";
 import { useRouter } from "next/router";
-import { useEffect } from "react";
-
-// Testing
 import FriendInvites from "@/components/FriendInvite";
 import Banner from "@/components/Banner"
-import Timetable from "@/components/Timetable";
+// import Timetable from "/components/Timetable";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -25,7 +21,7 @@ export default function Event() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className={`${styles.main} ${inter.className}`}>
-        <div className={styles.gridContainer}>
+        <div className={[styles.page, styles.concertPage].join(" ")}>
           <div className={styles.bannerContainer}>
             <Banner imageSource="/photos/banner.jpg" concertName="Ariana Grande"/>
           </div>
@@ -34,12 +30,12 @@ export default function Event() {
               Description
             </div>
             <div className={styles.descriptionText}>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
-            Praesent vel luctus mauris. Quisque finibus egestas elit eget laoreet. 
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
-            Mauris dictum tristique nisi, viverra congue ligula dapibus et. 
-            Vestibulum lacinia felis in libero efficitur convallis. 
-            Fusce mauris augue, pharetra fermentum vestibulum vel, gravida id nulla. 
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+            Praesent vel luctus mauris. Quisque finibus egestas elit eget laoreet.
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+            Mauris dictum tristique nisi, viverra congue ligula dapibus et.
+            Vestibulum lacinia felis in libero efficitur convallis.
+            Fusce mauris augue, pharetra fermentum vestibulum vel, gravida id nulla.
             Proin orci nulla, luctus quis pretium elementum, molestie convallis eros.
             </div>
           </div>

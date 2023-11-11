@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { Inter } from "next/font/google";
-import styles from "../styles/EventCard.module.css";
-import Tag from "../components/Tag";
+import styles from "@/styles/EventCard.module.css";
+import Tag from "@/components/Tag";
 import Link from "next/link";
 
 function handleAddToWishlist() {

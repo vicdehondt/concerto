@@ -1,6 +1,6 @@
 import styles from "../styles/FriendInvite.module.css"
 
-import InviteCard from "./InviteCard"
+import InviteCard from "@/components/InviteCard"
 
 function FriendInvites() {
     return (
