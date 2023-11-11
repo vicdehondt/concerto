@@ -45,14 +45,8 @@ export class EventController extends BaseController {
 		const result = validationResult(req)
 		if (result.isEmpty()) {
 			const {title, eventid, description, maxpeople, datetime, price} = req.body;
-			const imagepath = req.file.destination + req.file.filename;
-			const imageBuffer = fs.readFileSync(imagepath);
-			fs.unlink(imagepath, (error) => {
-				if (error) {
-					console.log("Errer deleting uploaded image", error);
-				}
-			});
-			database.CreateEvent(eventid, title, description, maxpeople, datetime, price, imageBuffer);
+			const imagepath = "http://localhost:8080/src/uploads" + req.file.filename;
+			database.CreateEvent(eventid, title, description, maxpeople, datetime, price, imagepath);
 			res.status(200).json({ success: true, message: 'Event created successfully' });
 		} else {
 			// console.log("Validation failed:", result.array());

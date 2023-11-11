@@ -1,4 +1,5 @@
 const { Sequelize, DataTypes, Op } = require('sequelize');
+import { STRING } from 'sequelize';
 import * as config from '../config'
 const fs = require('fs');
 
@@ -34,7 +35,7 @@ const sequelize = new Sequelize({
       allowNull: false
     },
     image: {
-      type: DataTypes.BLOB,
+      type: DataTypes.STRING,
       allowNull: false
     }
   }, {
