@@ -1,16 +1,17 @@
 const { Sequelize, DataTypes, Op } = require('sequelize');
+import * as config from '../config'
 const fs = require('fs');
 
 const sequelize = new Sequelize({
-    dialect: 'sqlite',
-    storage: './src/SQLite/ConcertoDB.db'
+    dialect: config.databaseDialect,
+    storage: config.databasePath
   });
 
   export const EventModel = sequelize.define('Event', {
     eventID: {
       type: DataTypes.INTEGER,
       primaryKey: true,
-      allowNull: false
+      allowNull: false,
     },
     title: {
       type: DataTypes.TEXT,
@@ -40,7 +41,7 @@ const sequelize = new Sequelize({
       tableName: 'Events'
   });
 
-  export async function synchronize() {
+  async function synchronize() {
     EventModel.sync()
   }
 

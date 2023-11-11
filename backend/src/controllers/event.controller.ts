@@ -1,6 +1,6 @@
 import * as express from 'express';
 import { BaseController } from './base.controller';
-import * as database from '../Eventmodel';
+import * as database from '../models/Eventmodel';
 import {body, validationResult} from "express-validator"
 import * as multer from "multer";
 const fs = require('fs');
