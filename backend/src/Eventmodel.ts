@@ -6,7 +6,7 @@ const sequelize = new Sequelize({
     storage: './src/SQLite/ConcertoDB.db'
   });
 
-  const EventModel = sequelize.define('Event', {
+  export const EventModel = sequelize.define('Event', {
     eventID: {
       type: DataTypes.INTEGER,
       primaryKey: true,
@@ -40,15 +40,11 @@ const sequelize = new Sequelize({
       tableName: 'Events'
   });
 
-  async function synchronize() {
+  export async function synchronize() {
     EventModel.sync()
   }
 
-  // Temporary way to deal with images
-  const imageFilePath = './src/eventimages/ariana.jpeg';
-  const imageBuffer = fs.readFileSync(imageFilePath);
-
-  async function CreateEvent(id, title, description, people, date, price, image) {
+  export async function CreateEvent(id, title, description, people, date, price, image) {
     try {
       const Event = await EventModel.create({
         eventID: id,
@@ -64,12 +60,11 @@ const sequelize = new Sequelize({
     }
   };
 
-  async function RetrieveEvent(ID) {
+  export async function RetrieveEvent(ID): Promise<typeof EventModel> {
     try {
       const Event = await EventModel.findOne({
       where: {eventID: ID},
       });
-      console.log(Event);
       return Event;
     } catch (error) {
       console.error("There was an error finding Event: ", error);
@@ -77,10 +72,4 @@ const sequelize = new Sequelize({
   }
 
   synchronize()
-
-
-  module.exports = {
-    RetrieveEvent,
-    CreateEvent
-  }
 

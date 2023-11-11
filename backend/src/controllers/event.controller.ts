@@ -2,7 +2,6 @@ import * as express from 'express';
 import { BaseController } from './base.controller';
 import * as database from '../Eventmodel';
 import {body, validationResult} from "express-validator"
-import { error } from 'console';
 import * as multer from "multer";
 const fs = require('fs');
 
@@ -44,12 +43,15 @@ export class EventController extends BaseController {
 	async addPost(req: express.Request, res: express.Response): Promise<void> {
 		console.log("Received post request to create event");
 		const result = validationResult(req)
-		console.log(req.body)
-		console.log(req.file)
 		if (result.isEmpty()) {
 			const {title, eventid, description, maxpeople, datetime, price} = req.body;
 			const imagepath = req.file.destination + req.file.filename;
 			const imageBuffer = fs.readFileSync(imagepath);
+			fs.unlink(imagepath, (error) => {
+				if (error) {
+					console.log("Errer deleting uploaded image", error);
+				}
+			});
 			database.CreateEvent(eventid, title, description, maxpeople, datetime, price, imageBuffer);
 			res.status(200).json({ success: true, message: 'Event created successfully' });
 		} else {
