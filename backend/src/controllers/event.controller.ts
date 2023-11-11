@@ -18,9 +18,7 @@ export class EventController extends BaseController {
 		this.router.get("/retrieve", (req: express.Request, res: express.Response) => {
 			this.retrieveGet(req, res);
 		});
-		this.router.post("/add",[
-			body("title").notEmpty()
-		],
+		this.router.post("/add",
 		upload.single("image"),
 		(req: express.Request, res: express.Response) => {
 			this.addPost(req, res);
@@ -82,7 +80,6 @@ export class EventController extends BaseController {
 	private _isEmailValid(email: string): boolean {
 		const atIdx = email.indexOf("@");
 		const dotIdx = email.indexOf(".");
-		
 		return atIdx != -1 && dotIdx != -1 && dotIdx > atIdx;
 	}
 }
