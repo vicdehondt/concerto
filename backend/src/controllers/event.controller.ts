@@ -33,9 +33,13 @@ export class EventController extends BaseController {
 		if (id) {
 			console.log("An ID has been found: ", id);
 			const event = await database.RetrieveEvent(id);
-			res.status(200).json(event);
+			if (event) {
+				res.status(200).json(event);
+			} else {
+				res.status(404).json({succes: false, error: "No event was found with this ID"})
+			}
 		} else {
-			res.status(404).json({ error: 'Event not found' });
+			res.status(404).json({succes: false, error: "No event ID was provided!" });
 		}
 	}
 
