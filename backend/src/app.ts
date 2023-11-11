@@ -13,6 +13,7 @@ export class App {
 
     constructor() {
         this.app = express();
+        this.app.use(express.urlencoded({ extended: true }));
         this.app.use(express.json());
         this._initializeControllers();
         this.listen();
