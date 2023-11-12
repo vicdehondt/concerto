@@ -39,6 +39,9 @@ export class EventController extends BaseController {
 		upload.single("image"), [
 			body("title").trim().trim().notEmpty(),
 			body("description").trim().notEmpty(),
+			body("maxpeople").trim().notEmpty(),
+			body("price").trim().notEmpty(),
+			body("datetime").trim().notEmpty(),
 			body("eventid").trim().notEmpty().custom(async value => {
 				const event = await database.RetrieveEvent(value);
 				if (event != null) {
