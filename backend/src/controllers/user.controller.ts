@@ -1,11 +1,31 @@
 import * as express from 'express';
 import { BaseController } from './base.controller';
 import * as database from '../models/Usermodel';
+import {body, validationResult} from "express-validator"
 import * as multer from "multer";
 import * as bcrypt from "bcrypt";
 const fs = require('fs');
 
-const upload = multer({ dest: "./src/uploads/"});
+const UserImagePath = './uploads/users';
+
+// Set up storage with a custom filename function
+const storage = multer.diskStorage({
+	destination: function (req, file, cb) {
+	  // Specify the destination folder where the file will be saved
+	  cb(null, UserImagePath);
+	},
+	filename: function (req, file, cb) {
+	  // Customize the filename here
+	  const originalname = file.originalname;
+	  const parts = originalname.split(".");
+	  const random = crypto.randomUUID(); // Create unique identifier for each image
+	  const newname = random + "." + parts[parts.length - 1];
+	  cb(null, newname);
+	}
+  });
+
+const upload = multer({ storage: storage});
+
 const saltingRounds = 12;
 
 export class UserController extends BaseController {
@@ -15,20 +35,39 @@ export class UserController extends BaseController {
     }
 
     initializeRoutes(): void {
-        this.router.post("/add",
+        this.router.post("/register",
         upload.single("image"),
         (req: express.Request, res: express.Response) => {
 			this.addUser(req, res);
 		});
+		this.router.post("/login",
+		upload.single("image"),
+		(req: express.Request, res: express.Response) => {
+			this.loginUser(req, res);
+		});
     }
-
-    async addUser(req: express.Request, res: express.Response): Promise<void> {
+	async addUser(req: express.Request, res: express.Response): Promise<void> {
         bcrypt.hash(req.body.password, saltingRounds, async (err, hash) => {
-            console.log(hash)
             await database.CreateUser(req.body.username, req.body.mail, hash, saltingRounds, req.file);
             res.status(200).json({succes: true, message: "User has been created!"});
         })
     }
+
+	async loginUser(req: express.Request, res: express.Response) {
+		const {username, password} = req.body;
+		const user: typeof database.UserModel = await database.RetrieveUser(username);
+		if (user != null) {
+			bcrypt.compare(password, user.password, function (err, result) {
+				if (result == true) {
+					res.status(200).json({success: true, message: "You are succesfully logged in!"})
+				} else {
+					res.status(400).json({success: false, message: "The provided password is incorrect"})
+				}
+			})
+		} else {
+			res.status(400).json({success: false, message: "There was no user found with this username"})
+		}
+	}
 
     /**
 	 * Check if a string is actually provided

@@ -6,7 +6,7 @@ const sequelize = new Sequelize({
     storage: config.databasePath
 })
 
-const UserModel = sequelize.define('User', {
+export const UserModel = sequelize.define('User', {
     userID: {
         type: DataTypes.INTEGER,
         primaryKey: true,
@@ -19,7 +19,7 @@ const UserModel = sequelize.define('User', {
         unique: true
     },
     password: {
-        type: DataTypes.TEXT,
+        type: DataTypes.STRING,
         allowNull: false
     },
     mail: {
@@ -54,6 +54,17 @@ export async function CreateUser(username, email, hashedpassword, saltingrounds,
     } catch (error) {
         console.error("There was an error creating a user:", error);
     }
+}
+
+export async function RetrieveUser(usernam): Promise<typeof UserModel> {
+    try {
+        const User = await UserModel.findOne({
+        where: {username: usernam},
+        });
+        return User;
+      } catch (error) {
+        console.error("There was an error finding a user: ", error);
+      }
 }
 
 synchronize()
