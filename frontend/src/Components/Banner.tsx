@@ -5,7 +5,7 @@ function Banner({imageSource, concertName}: {imageSource: string, concertName: s
     return (
         <div className={styles.container}>
             <div>
-                <Image src={imageSource} objectFit="cover"  fill={true} alt="Banner of the concert"/>
+                <Image src={imageSource} style={{objectFit:"cover"}}  fill={true} alt="Banner of the concert"/>
             </div>
             <div className={styles.titleContainer}>
                 <div className={styles.concertTitle}>
