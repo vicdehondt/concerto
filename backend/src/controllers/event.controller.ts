@@ -4,6 +4,7 @@ import * as database from '../models/Eventmodel';
 import {body, validationResult} from "express-validator"
 import * as multer from "multer";
 import * as crypto from "crypto"
+import { spliceStr } from 'sequelize/types/utils';
 const fs = require('fs');
 
 const EventImagePath = './uploads/events';
@@ -17,8 +18,9 @@ const storage = multer.diskStorage({
 	filename: function (req, file, cb) {
 	  // Customize the filename here
 	  const originalname = file.originalname;
-	  const random = Date.now() + crypto.randomBytes(20).toString('hex'); // Create unique identifier for each image
-	  const newname = random + originalname;
+	  const parts = originalname.split(".");
+	  const random = crypto.randomUUID(); // Create unique identifier for each image
+	  const newname = random + "." + parts[parts.length - 1];
 	  cb(null, newname);
 	}
   });
