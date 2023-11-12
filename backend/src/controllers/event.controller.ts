@@ -5,6 +5,8 @@ import {body, validationResult} from "express-validator"
 import * as multer from "multer";
 const fs = require('fs');
 
+const cors = require("cors");
+
 const upload = multer({ dest: "./src/uploads/"});
 
 export class EventController extends BaseController {
@@ -14,14 +16,22 @@ export class EventController extends BaseController {
     }
 
     initializeRoutes(): void {
-		this.router.get("/retrieve", (req: express.Request, res: express.Response) => {
-			this.retrieveGet(req, res);
-		});
-		this.router.post("/add",
-		upload.single("image"),
-		(req: express.Request, res: express.Response) => {
-			this.addPost(req, res);
-		});
+			const environment = {
+				frontendURL: "http://localhost:3000"
+			}
+			if (process.env.NODE_ENV == "production") {
+				environment.frontendURL = "http://concerto.dehondt.dev"
+			}
+			const corsOptions = {
+				// https://www.npmjs.com/package/cors
+				"origin": environment.frontendURL,
+				"methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
+				"preflightContinue": false,
+				"optionsSuccessStatus": 204
+			}
+			this.router.get("/retrieve", cors(corsOptions), (req: express.Request, res: express.Response) => {
+				this.retrieveGet(req, res);
+			});
     }
 
 	async retrieveGet(req: express.Request, res: express.Response): Promise<void> {

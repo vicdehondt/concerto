@@ -11,7 +11,7 @@ app.get("/", (req, res) => {
 });
 
 app.get("/customer", async (req, res) => {
-  try { 
+  try {
     id = req.query.customerid
     const mail = await DBFunctions.FindMail(id)
     res.send(mail);
