@@ -69,7 +69,7 @@ const sequelize = new Sequelize({
       });
       return Event;
     } catch (error) {
-      console.error("There was an error finding Event: ", error);
+      console.error("There was an error finding an event: ", error);
     }
   }
 

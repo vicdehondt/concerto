@@ -4,19 +4,23 @@ import * as database from '../models/Eventmodel';
 import {body, validationResult} from "express-validator"
 import * as multer from "multer";
 import * as crypto from "crypto"
+import { spliceStr } from 'sequelize/types/utils';
 const fs = require('fs');
+
+const EventImagePath = './uploads/events';
 
 // Set up storage with a custom filename function
 const storage = multer.diskStorage({
 	destination: function (req, file, cb) {
 	  // Specify the destination folder where the file will be saved
-	  cb(null, './uploads');
+	  cb(null, EventImagePath);
 	},
 	filename: function (req, file, cb) {
 	  // Customize the filename here
 	  const originalname = file.originalname;
-	  const random = crypto.randomBytes(20).toString('hex');
-	  const newname = random + originalname;
+	  const parts = originalname.split(".");
+	  const random = crypto.randomUUID(); // Create unique identifier for each image
+	  const newname = random + "." + parts[parts.length - 1];
 	  cb(null, newname);
 	}
   });
@@ -34,7 +38,19 @@ export class EventController extends BaseController {
 			this.retrieveGet(req, res);
 		});
 		this.router.post("/add",
-		upload.single("image"),
+		upload.single("image"), [
+			body("title").trim().trim().notEmpty(),
+			body("description").trim().notEmpty(),
+			body("maxpeople").trim().notEmpty(),
+			body("price").trim().notEmpty(),
+			body("datetime").trim().notEmpty(),
+			body("eventid").trim().notEmpty().custom(async value => {
+				const event = await database.RetrieveEvent(value);
+				if (event != null) {
+					throw Error("There already exists an event with that ID!");
+				}
+			}),
+		],
 		(req: express.Request, res: express.Response) => {
 			this.addPost(req, res);
 		});
@@ -68,11 +84,17 @@ export class EventController extends BaseController {
 		if (result.isEmpty()) {
 			const {title, eventid, description, maxpeople, datetime, price} = req.body;
 			console.log(req.file)
-			const imagepath = "http://localhost:8080/" + req.file.filename;
+			const imagepath = "http://localhost:8080/events/" + req.file.filename;
 			database.CreateEvent(eventid, title, description, maxpeople, datetime, price, imagepath);
 			res.status(200).json({ success: true, message: 'Event created successfully' });
 		} else {
-			// console.log("Validation failed:", result.array());
+			if (req.file) {
+				fs.unlink(EventImagePath + '/' + req.file.filename, (err) => {
+					if (err) {
+						throw err;
+					} console.log("File deleted succesfully.");
+				})
+			}
 			res.status(400).json({succes: false, errors: result.array()});
 		}
 	}
