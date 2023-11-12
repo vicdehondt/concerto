@@ -12,6 +12,7 @@ export class App {
 
     constructor() {
         this.app = express();
+        this.app.use(express.static('uploads'));
         this.app.use(express.urlencoded({ extended: true }));
         this.app.use(express.json());
         this._initializeControllers();

@@ -3,9 +3,25 @@ import { BaseController } from './base.controller';
 import * as database from '../models/Eventmodel';
 import {body, validationResult} from "express-validator"
 import * as multer from "multer";
+import * as crypto from "crypto"
 const fs = require('fs');
 
-const upload = multer({ dest: "./src/uploads/"});
+// Set up storage with a custom filename function
+const storage = multer.diskStorage({
+	destination: function (req, file, cb) {
+	  // Specify the destination folder where the file will be saved
+	  cb(null, './uploads');
+	},
+	filename: function (req, file, cb) {
+	  // Customize the filename here
+	  const originalname = file.originalname;
+	  const random = crypto.randomBytes(20).toString('hex');
+	  const newname = random + originalname;
+	  cb(null, newname);
+	}
+  });
+
+const upload = multer({ storage: storage});
 
 export class EventController extends BaseController {
 
@@ -45,7 +61,8 @@ export class EventController extends BaseController {
 		const result = validationResult(req)
 		if (result.isEmpty()) {
 			const {title, eventid, description, maxpeople, datetime, price} = req.body;
-			const imagepath = "http://localhost:8080/src/uploads" + req.file.filename;
+			console.log(req.file)
+			const imagepath = "http://localhost:8080/" + req.file.filename;
 			database.CreateEvent(eventid, title, description, maxpeople, datetime, price, imagepath);
 			res.status(200).json({ success: true, message: 'Event created successfully' });
 		} else {
