@@ -6,11 +6,13 @@ import * as multer from "multer";
 import * as crypto from "crypto"
 const fs = require('fs');
 
+const EventImagePath = './uploads/events';
+
 // Set up storage with a custom filename function
 const storage = multer.diskStorage({
 	destination: function (req, file, cb) {
 	  // Specify the destination folder where the file will be saved
-	  cb(null, './uploads/events');
+	  cb(null, EventImagePath);
 	},
 	filename: function (req, file, cb) {
 	  // Customize the filename here
@@ -34,7 +36,16 @@ export class EventController extends BaseController {
 			this.retrieveGet(req, res);
 		});
 		this.router.post("/add",
-		upload.single("image"),
+		upload.single("image"), [
+			body("title").trim().trim().notEmpty(),
+			body("description").trim().notEmpty(),
+			body("eventid").trim().notEmpty().custom(async value => {
+				const event = await database.RetrieveEvent(value);
+				if (event != null) {
+					throw Error("There already exists an event with that ID!");
+				}
+			}),
+		],
 		(req: express.Request, res: express.Response) => {
 			this.addPost(req, res);
 		});
@@ -66,7 +77,13 @@ export class EventController extends BaseController {
 			database.CreateEvent(eventid, title, description, maxpeople, datetime, price, imagepath);
 			res.status(200).json({ success: true, message: 'Event created successfully' });
 		} else {
-			// console.log("Validation failed:", result.array());
+			if (req.file) {
+				fs.unlink(EventImagePath + '/' + req.file.filename, (err) => {
+					if (err) {
+						throw err;
+					} console.log("File deleted succesfully.");
+				})
+			}
 			res.status(400).json({succes: false, errors: result.array()});
 		}
 	}
