@@ -10,7 +10,7 @@ const fs = require('fs');
 const storage = multer.diskStorage({
 	destination: function (req, file, cb) {
 	  // Specify the destination folder where the file will be saved
-	  cb(null, './uploads');
+	  cb(null, './uploads/events');
 	},
 	filename: function (req, file, cb) {
 	  // Customize the filename here
