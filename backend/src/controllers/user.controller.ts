@@ -36,7 +36,7 @@ export class UserController extends BaseController {
     }
 
     initializeRoutes(): void {
-		this.router.post('/profile/:username', this.requireAuth,
+		this.router.get('/profile/:username', this.requireAuth,
         upload.single("image"),
         (req: express.Request, res: express.Response) => {
 			this.getUserInformation(req, res);
@@ -58,6 +58,12 @@ export class UserController extends BaseController {
 		upload.single("image"),
 		(req: express.Request, res: express.Response) => {
 			this.logoutUser(req, res);
+		});
+		// Route to handle friend requests
+		this.router.post("/friendinvite", this.requireAuth,
+		upload.single("image"),
+		(req: express.Request, res: express.Response) => {
+			this.sentFriendRequest(req, res);
 		});
     }
 	async addUser(req: express.Request, res: express.Response): Promise<void> {
@@ -81,7 +87,7 @@ export class UserController extends BaseController {
 			res.status(200).json({success: true, message: "You are already loggin in."})
 		} else {
 			const {username, password} = req.body;
-			const user: typeof database.UserModel = await database.RetrieveUser(username);
+			const user: typeof database.UserModel = await database.RetrieveUser("username",username);
 			if (user != null) {
 				bcrypt.compare(password, user.password, function (err, result) {
 					if (result == true) {
@@ -108,7 +114,7 @@ export class UserController extends BaseController {
 	async getUserInformation(req: express.Request, res: express.Response) {
 		const sessiondata = req.session;
 		const username = req.params.username;
-		const user = await database.RetrieveUser(username);
+		const user = await database.RetrieveUser("username", username);
 		if (user != null) {
 			const result = user.get({ plain: true});
 			delete result.password;
@@ -129,6 +135,17 @@ export class UserController extends BaseController {
 			next()
 		} else {
 			res.status(401).json({ error: "Unauthorized access" });
+		}
+	}
+
+	async sentFriendRequest(req: express.Request, res: express.Response) {
+		const sessiondata = req.session;
+		const id = sessiondata.userID;
+		try {
+			await database.SendFriendRequest(id, req.body.friendID);
+			res.status(200).json({ success: true, message: "Friend request has been sent."});
+		} catch (err) {
+			res.status(500).json({ success: false, error: "Internal server error"});
 		}
 	}
 

@@ -3,7 +3,8 @@ import * as config from '../config'
 
 const sequelize = new Sequelize({
     dialect: config.databaseDialect,
-    storage: config.databasePath
+    storage: config.databasePath,
+    logging: false,
 })
 
 export const UserModel = sequelize.define('User', {
@@ -80,10 +81,10 @@ export async function CreateUser(username, email, hashedpassword, saltingrounds,
     }
 }
 
-export async function RetrieveUser(usernam): Promise<typeof UserModel> {
+export async function RetrieveUser(field: string, value): Promise<typeof UserModel> {
     try {
         const User = await UserModel.findOne({
-        where: {username: usernam},
+        where: { [field]: value},
         });
         return User;
       } catch (error) {
@@ -101,7 +102,7 @@ function FindFriends(userID) {
   }
 
   export async function SendFriendRequest(senderID, receiverID){
-    const receiver = await RetrieveUser(receiverID);
+    const receiver = await RetrieveUser("userID", receiverID);
     if (receiver != null) {
         const friendship = await Friend.create({
             inviterID: senderID,
