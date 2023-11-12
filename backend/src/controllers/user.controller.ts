@@ -46,7 +46,7 @@ export class UserController extends BaseController {
 		(req: express.Request, res: express.Response) => {
 			this.loginUser(req, res);
 		});
-		this.router.post("/logout",
+		this.router.post("/logout", this.requireAuth,
 		upload.single("image"),
 		(req: express.Request, res: express.Response) => {
 			this.logoutUser(req, res);
@@ -82,7 +82,7 @@ export class UserController extends BaseController {
 		}
 	}
 
-	async logoutUser(req: express.Request, res: express.Response) {
+	logoutUser(req: express.Request, res: express.Response) {
 		const sessiondata = req.session;
 		if (sessiondata.isLoggedIn == true) {
 			sessiondata.isLoggedIn = false;
@@ -92,6 +92,15 @@ export class UserController extends BaseController {
 			res.status(400).json({success: false, message: "You are not logged in."})
 		}
 	}
+
+	requireAuth(req, res, next) {
+		if (req.session && req.session.isLoggedIn){
+			next()
+		} else {
+			res.status(401).json({ error: "Unauthorized access" });
+		}
+	}
+
 
     /**
 	 * Check if a string is actually provided
