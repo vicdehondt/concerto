@@ -75,11 +75,11 @@ export class EventController extends BaseController {
 	async addPost(req: express.Request, res: express.Response): Promise<void> {
 		console.log("Received post request to create event");
 		const result = validationResult(req)
-		if (result.isEmpty()) {
+		if (result.isEmpty() && req.file) {
 			const {title, eventid, description, maxpeople, datetime, price} = req.body;
-			console.log(req.file)
 			const imagepath = "http://localhost:8080/events/" + req.file.filename;
 			database.CreateEvent(eventid, title, description, maxpeople, datetime, price, imagepath);
+			console.log("Event created succesfully");
 			res.status(200).json({ success: true, message: 'Event created successfully' });
 		} else {
 			if (req.file) {

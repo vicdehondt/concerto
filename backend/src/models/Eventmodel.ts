@@ -5,7 +5,8 @@ const fs = require('fs');
 
 const sequelize = new Sequelize({
     dialect: config.databaseDialect,
-    storage: config.databasePath
+    storage: config.databasePath,
+    logging: false
   });
 
   export const EventModel = sequelize.define('Event', {
