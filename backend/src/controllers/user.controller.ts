@@ -36,7 +36,7 @@ export class UserController extends BaseController {
     }
 
     initializeRoutes(): void {
-		this.router.post("/profile/:username", this.requireAuth,
+		this.router.post('/profile/:username', this.requireAuth,
         upload.single("image"),
         (req: express.Request, res: express.Response) => {
 			this.getUserInformation(req, res);
@@ -106,12 +106,13 @@ export class UserController extends BaseController {
 		const username = req.params.username;
 		const user = await database.RetrieveUser(username);
 		if (user != null) {
-			delete user.password;
+			const result = user.get({ plain: true});
+			delete result.password;
 			if (sessiondata.userID == user.userID) {
-				res.status(200).json(user);
+				res.status(200).json(result);
 			} else {
-				delete user.mail;
-				res.status(200).json(user);
+				delete result.mail;
+				res.status(200).json(result);
 			}
 		} else {
 			res.status(400).json({ success: false, error: "User not found!"});
