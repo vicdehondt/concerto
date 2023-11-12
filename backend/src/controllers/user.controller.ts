@@ -4,6 +4,7 @@ import * as database from '../models/Usermodel';
 import {body, validationResult} from "express-validator"
 import * as multer from "multer";
 import * as bcrypt from "bcrypt";
+import { setEngine } from 'crypto';
 const fs = require('fs');
 
 const UserImagePath = './uploads/users';
@@ -45,6 +46,11 @@ export class UserController extends BaseController {
 		(req: express.Request, res: express.Response) => {
 			this.loginUser(req, res);
 		});
+		this.router.post("/logout",
+		upload.single("image"),
+		(req: express.Request, res: express.Response) => {
+			this.logoutUser(req, res);
+		});
     }
 	async addUser(req: express.Request, res: express.Response): Promise<void> {
         bcrypt.hash(req.body.password, saltingRounds, async (err, hash) => {
@@ -54,18 +60,36 @@ export class UserController extends BaseController {
     }
 
 	async loginUser(req: express.Request, res: express.Response) {
-		const {username, password} = req.body;
-		const user: typeof database.UserModel = await database.RetrieveUser(username);
-		if (user != null) {
-			bcrypt.compare(password, user.password, function (err, result) {
-				if (result == true) {
-					res.status(200).json({success: true, message: "You are succesfully logged in!"})
-				} else {
-					res.status(400).json({success: false, message: "The provided password is incorrect"})
-				}
-			})
+		const sessiondata = req.session;
+		if (sessiondata.isLoggedIn == true) {
+			res.status(200).json({success: true, message: "You are already loggin in."})
 		} else {
-			res.status(400).json({success: false, message: "There was no user found with this username"})
+			const {username, password} = req.body;
+			const user: typeof database.UserModel = await database.RetrieveUser(username);
+			if (user != null) {
+				bcrypt.compare(password, user.password, function (err, result) {
+					if (result == true) {
+						sessiondata.isLoggedIn = true;
+						sessiondata.userID = user.userID;
+						res.status(200).json({success: true, message: "You are succesfully logged in!"})
+					} else {
+						res.status(400).json({success: false, message: "The provided password is incorrect"})
+					}
+				})
+			} else {
+				res.status(400).json({success: false, message: "There was no user found with this username"})
+			}
+		}
+	}
+
+	async logoutUser(req: express.Request, res: express.Response) {
+		const sessiondata = req.session;
+		if (sessiondata.isLoggedIn == true) {
+			sessiondata.isLoggedIn = false;
+			sessiondata.userID = null;
+			res.status(200).json({success: true, message: "You are succesfully logged out."})
+		} else {
+			res.status(400).json({success: false, message: "You are not logged in."})
 		}
 	}
 
