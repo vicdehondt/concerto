@@ -15,7 +15,7 @@ const storage = multer.diskStorage({
 	filename: function (req, file, cb) {
 	  // Customize the filename here
 	  const originalname = file.originalname;
-	  const random = crypto.randomBytes(20).toString('hex');
+	  const random = Date.now() + crypto.randomBytes(20).toString('hex'); // Create unique identifier for each image
 	  const newname = random + originalname;
 	  cb(null, newname);
 	}
@@ -62,7 +62,7 @@ export class EventController extends BaseController {
 		if (result.isEmpty()) {
 			const {title, eventid, description, maxpeople, datetime, price} = req.body;
 			console.log(req.file)
-			const imagepath = "http://localhost:8080/" + req.file.filename;
+			const imagepath = "http://localhost:8080/events/" + req.file.filename;
 			database.CreateEvent(eventid, title, description, maxpeople, datetime, price, imagepath);
 			res.status(200).json({ success: true, message: 'Event created successfully' });
 		} else {
