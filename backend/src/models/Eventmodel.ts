@@ -73,5 +73,20 @@ const sequelize = new Sequelize({
     }
   }
 
+  export async function FilterEvents(maxPeople, datetime, price){
+    try {
+      const Event = await EventModel.findOne({
+      where: {
+        maxPeople: maxPeople,
+        datetime: datetime,
+        price: price,
+      },
+      });
+      return Event;
+    } catch (error) {
+      console.error("There was an error filtering Events: ", error);
+    }
+  }
+
   synchronize()
 
