@@ -61,10 +61,18 @@ export class UserController extends BaseController {
 		});
     }
 	async addUser(req: express.Request, res: express.Response): Promise<void> {
-        bcrypt.hash(req.body.password, saltingRounds, async (err, hash) => {
-            await database.CreateUser(req.body.username, req.body.mail, hash, saltingRounds, req.file);
-            res.status(200).json({succes: true, message: "User has been created!"});
-        })
+		const result = validationResult(req);
+		if (result.isEmpty() && req.file){
+			bcrypt.hash(req.body.password, saltingRounds, async (err, hash) => {
+			const imagepath = "http://localhost:8080/users/" + req.file.filename;
+			await database.CreateUser(req.body.username, req.body.mail, hash, saltingRounds, imagepath);
+			res.status(200).json({succes: true, message: "User has been created!"});
+			})
+		} else {
+			if (req.file) {
+				this.DeleteFile(UserImagePath, req.file);
+			} res.status(400).json({success: false, errors: result.array()});
+		}
     }
 
 	async loginUser(req: express.Request, res: express.Response) {
@@ -92,13 +100,9 @@ export class UserController extends BaseController {
 
 	logoutUser(req: express.Request, res: express.Response) {
 		const sessiondata = req.session;
-		if (sessiondata.isLoggedIn == true) {
-			sessiondata.isLoggedIn = false;
-			sessiondata.userID = null;
-			res.status(200).json({success: true, message: "You are succesfully logged out."})
-		} else {
-			res.status(400).json({success: false, message: "You are not logged in."})
-		}
+		sessiondata.isLoggedIn = false;
+		sessiondata.userID = null;
+		res.status(200).json({success: true, message: "You are succesfully logged out."})
 	}
 
 	async getUserInformation(req: express.Request, res: express.Response) {
@@ -108,6 +112,7 @@ export class UserController extends BaseController {
 		if (user != null) {
 			const result = user.get({ plain: true});
 			delete result.password;
+			delete result.salt;
 			if (sessiondata.userID == user.userID) {
 				res.status(200).json(result);
 			} else {

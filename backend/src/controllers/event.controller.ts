@@ -4,8 +4,6 @@ import * as database from '../models/Eventmodel';
 import {body, validationResult} from "express-validator"
 import * as multer from "multer";
 import * as crypto from "crypto"
-import { spliceStr } from 'sequelize/types/utils';
-const fs = require('fs');
 
 const EventImagePath = './uploads/events';
 
@@ -83,13 +81,9 @@ export class EventController extends BaseController {
 			res.status(200).json({ success: true, message: 'Event created successfully' });
 		} else {
 			if (req.file) {
-				fs.unlink(EventImagePath + '/' + req.file.filename, (err) => {
-					if (err) {
-						throw err;
-					} console.log("File deleted succesfully.");
-				})
+				this.DeleteFile(EventImagePath, req.file);
 			}
-			res.status(400).json({succes: false, errors: result.array()});
+			res.status(400).json({success: false, errors: result.array()});
 		}
 	}
 }
