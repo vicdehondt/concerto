@@ -38,8 +38,32 @@ export const UserModel = sequelize.define('User', {
     }
 )
 
+export const Friend = sequelize.define('Friend', {
+    friendshipID: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        allowNull: false,
+        autoIncrement: true
+    },
+    inviterID: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+    },
+    receiverID: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+    },
+    status: {
+        type: DataTypes.STRING,
+        allowNull: false
+    }}, {
+    tableName: 'Friends'
+    }
+)
+
 async function synchronize() {
-    UserModel.sync()
+    UserModel.sync();
+    Friend.sync();
   }
 
 export async function CreateUser(username, email, hashedpassword, saltingrounds, profilepicture): Promise<void> {
@@ -66,6 +90,28 @@ export async function RetrieveUser(usernam): Promise<typeof UserModel> {
         console.error("There was an error finding a user: ", error);
       }
 }
+
+function FindFriends(userID) {
+    Friend.findAll({
+      where: {
+        [Op.or]: [{InviterID: userID}, {receiverID: userID}],
+        status:'accepted'
+      }
+    })
+  }
+
+  export async function SendFriendRequest(senderID, receiverID){
+    const receiver = await RetrieveUser(receiverID);
+    if (receiver != null) {
+        const friendship = await Friend.create({
+            inviterID: senderID,
+            receiverID: receiverID,
+            status: 'requested'
+          });
+    } else {
+        throw new Error("The other user does not exist!");
+    }
+  }
 
 synchronize()
 

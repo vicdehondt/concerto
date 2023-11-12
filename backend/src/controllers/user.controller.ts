@@ -36,16 +36,24 @@ export class UserController extends BaseController {
     }
 
     initializeRoutes(): void {
+		this.router.post("/profile/:username", this.requireAuth,
+        upload.single("image"),
+        (req: express.Request, res: express.Response) => {
+			this.getUserInformation(req, res);
+		});
+		// Route to let users register
         this.router.post("/register",
         upload.single("image"),
         (req: express.Request, res: express.Response) => {
 			this.addUser(req, res);
 		});
+		// Route to handle login
 		this.router.post("/login",
 		upload.single("image"),
 		(req: express.Request, res: express.Response) => {
 			this.loginUser(req, res);
 		});
+		// Route to handle logout
 		this.router.post("/logout", this.requireAuth,
 		upload.single("image"),
 		(req: express.Request, res: express.Response) => {
@@ -90,6 +98,23 @@ export class UserController extends BaseController {
 			res.status(200).json({success: true, message: "You are succesfully logged out."})
 		} else {
 			res.status(400).json({success: false, message: "You are not logged in."})
+		}
+	}
+
+	async getUserInformation(req: express.Request, res: express.Response) {
+		const sessiondata = req.session;
+		const username = req.params.username;
+		const user = await database.RetrieveUser(username);
+		if (user != null) {
+			delete user.password;
+			if (sessiondata.userID == user.userID) {
+				res.status(200).json(user);
+			} else {
+				delete user.mail;
+				res.status(200).json(user);
+			}
+		} else {
+			res.status(400).json({ success: false, error: "User not found!"});
 		}
 	}
 
