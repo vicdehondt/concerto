@@ -106,7 +106,7 @@ export class EventController extends BaseController {
 		if (filters.length === 0){
 			res.status(404).json({succes: false, error: "No filters were activated"})
 		} else{
-			const events = await database.FilterEvents(filters.maxPeople, filters.datetime, filters.price);//gives the events that match the given filters
+			const events = await database.FilterEvents(filters.maxpeople, filters.datetime, filters.price);//gives the events that match the given filters
 			if(events){
 				res.status(200).json(events); //succes
 			}else{

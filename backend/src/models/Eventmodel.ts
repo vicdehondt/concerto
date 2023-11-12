@@ -74,11 +74,11 @@ const sequelize = new Sequelize({
     }
   }
 
-  export async function FilterEvents(maxPeople, datetime, price){
+  export async function FilterEvents(maxpeople, datetime, price){
     try {
-      const Event = await EventModel.findOne({
+      const Event = await EventModel.findAll({
       where: {
-        maxPeople: maxPeople,
+        maxpeople: maxpeople,
         datetime: datetime,
         price: price,
       },
