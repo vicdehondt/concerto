@@ -12,7 +12,7 @@ export default function AddEvent() {
     event.preventDefault()
 
     const formData = new FormData(event.currentTarget)
-    const response = await fetch('/api/event/retrieve?id=1', {
+    const response = await fetch('http://localhost:8080/event/retrieve?id=1', {
       method: 'GET',
       // body: formData,
     })
