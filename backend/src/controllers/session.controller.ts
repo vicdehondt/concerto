@@ -6,6 +6,8 @@ import * as multer from "multer";
 import * as bcrypt from "bcrypt";
 const fs = require('fs');
 
+const cors = require("cors");
+
 const UserImagePath = './public/users';
 
 // Set up storage with a custom filename function
@@ -28,6 +30,14 @@ const upload = multer({ storage: storage});
 
 const saltingRounds = 12;
 
+const corsOptions = {
+	// https://www.npmjs.com/package/cors
+	"origin": "http://localhost:3000",
+	"methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
+	"preflightContinue": false,
+	"optionsSuccessStatus": 204
+}
+
 export class SessionController extends BaseController {
 
     constructor() {
@@ -37,6 +47,7 @@ export class SessionController extends BaseController {
     initializeRoutes(): void {
 		// Route to let users register
         this.router.post("/register",
+				cors(corsOptions),
         upload.single("image"),
         (req: express.Request, res: express.Response) => {
 			this.addUser(req, res);
