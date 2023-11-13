@@ -32,10 +32,10 @@ export class EventController extends BaseController {
     }
 
     initializeRoutes(): void {
-		this.router.get("/retrieve", (req: express.Request, res: express.Response) => {
-			this.retrieveGet(req, res);
+		this.router.get('/:id', (req: express.Request, res: express.Response) => {
+			this.getEvent(req, res);
 		});
-		this.router.post("/add",
+		this.router.post("/",
 		upload.single("image"), [
 			body("title").trim().trim().notEmpty(),
 			body("description").trim().notEmpty(),
@@ -53,26 +53,22 @@ export class EventController extends BaseController {
 			this.addPost(req, res);
 		});
 
-		this.router.get("/filter", 
+		this.router.get("/filter",
 		upload.single("image"),
 		(req: express.Request, res: express.Response) => {
 			this.filterEvents(req, res);
 		})
     }
 
-	async retrieveGet(req: express.Request, res: express.Response): Promise<void> {
+	async getEvent(req: express.Request, res: express.Response): Promise<void> {
 		console.log("Accepted the incoming retrieve request");
-		const id = req.query.id;
-		if (id) {
-			console.log("An ID has been found: ", id);
-			const event = await database.RetrieveEvent(id);
-			if (event) {
-				res.status(200).json(event);
-			} else {
-				res.status(404).json({succes: false, error: "No event was found with this ID"})
-			}
+		const id = req.params.id;
+		console.log("An ID has been found: ", id);
+		const event = await database.RetrieveEvent(id);
+		if (event) {
+			res.status(200).json(event);
 		} else {
-			res.status(400).json({succes: false, error: "No event ID was provided!" });
+			res.status(404).json({succes: false, error: "No event was found with this ID"})
 		}
 	}
 
