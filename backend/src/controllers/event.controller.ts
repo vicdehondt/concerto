@@ -7,7 +7,7 @@ import * as crypto from "crypto"
 
 const cors = require("cors");
 
-const EventImagePath = './uploads/events';
+const EventImagePath = './public/events';
 
 // Set up storage with a custom filename function
 const storage = multer.diskStorage({
@@ -68,7 +68,7 @@ export class EventController extends BaseController {
 			this.addPost(req, res);
 		});
 
-		this.router.get("/filter", 
+		this.router.get("/filter",
 		upload.single("image"),
 		(req: express.Request, res: express.Response) => {
 			this.filterEvents(req, res);
