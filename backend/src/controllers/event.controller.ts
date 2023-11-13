@@ -57,6 +57,8 @@ export class EventController extends BaseController {
 
 		this.router.get("/filter", 
 		upload.single("image"),
+		//[body("maxpeople").
+		//],
 		(req: express.Request, res: express.Response) => {
 			this.filterEvents(req, res);
 		})
@@ -103,10 +105,28 @@ export class EventController extends BaseController {
 	async filterEvents(req: express.Request, res: express.Response): Promise<void>{
 		console.log("Received post request to filter events");
 		const filters = req.body;
+		//let filterlist: any[] = [];
+		let filterfields: any[] = [];
+		let filtervalues: any[] = [];
 		if (filters.length === 0){
 			res.status(404).json({succes: false, error: "No filters were activated"})
 		} else{
-			const events = await database.FilterEvents(filters.maxpeople, filters.datetime, filters.price);//gives the events that match the given filters
+			if(req.body.maxpeople){
+				filterfields.push("maxpeople");
+				filtervalues.push(req.body.maxpeople);
+				//filterlist.push({maxpeople: req.body.maxpeople});
+			}
+			if(req.body.datetime){
+				filterfields.push("datetime");
+				filtervalues.push(req.body.datetime);
+				//filterlist.push({datetime: req.body.datetime});
+			}
+			if(req.body.price){
+				filterfields.push("price");
+				filtervalues.push(req.body.price);
+				//filterlist.push({price: req.body.price});
+			}
+			const events = await database.FilterEvents(filterfields, filtervalues);//gives the events that match the given filters
 			if(events){
 				res.status(200).json(events); //succes
 			}else{

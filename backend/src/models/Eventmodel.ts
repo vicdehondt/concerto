@@ -74,14 +74,18 @@ const sequelize = new Sequelize({
     }
   }
 
-  export async function FilterEvents(maxpeople, datetime, price){
+  //to limit the return if no filters are selected use the limit function from sqlite
+  export async function FilterEvents(filterfields,filtervalues){
     try {
+      const whereClause = {};
+      for (let i = 0; i < filterfields.length; i++) {
+        const field = filterfields[i];
+        const value = filtervalues[i];
+      // Add the condition to the where clause
+        whereClause[field] = value;
+      }
       const Event = await EventModel.findAll({
-      where: {
-        maxpeople: maxpeople,
-        datetime: datetime,
-        price: price,
-      },
+        where: whereClause,
       });
       return Event;
     } catch (error) {
