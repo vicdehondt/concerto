@@ -63,6 +63,11 @@ const sequelize = new Sequelize({
     }
   };
 
+  export async function RetrieveAllEvents(): Promise<typeof EventModel>  {
+    const events = await EventModel.findAll();
+    return events;
+  }
+
   export async function RetrieveEvent(ID): Promise<typeof EventModel> {
     try {
       const Event = await EventModel.findOne({

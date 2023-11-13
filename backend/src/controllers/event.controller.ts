@@ -47,6 +47,9 @@ export class EventController extends BaseController {
 			"preflightContinue": false,
 			"optionsSuccessStatus": 204
 		}
+		this.router.get('/all', cors(corsOptions), (req: express.Request, res: express.Response) => {
+			this.getAllEvents(req, res);
+		});
 		this.router.get('/:id', cors(corsOptions), (req: express.Request, res: express.Response) => {
 			this.getEvent(req, res);
 		});
@@ -74,6 +77,12 @@ export class EventController extends BaseController {
 			this.filterEvents(req, res);
 		})
     }
+
+	async getAllEvents(req: express.Request, res: express.Response) {
+		console.log("Accepted request for all events")
+		const events = await database.RetrieveAllEvents();
+		res.status(200).json(events);
+	}
 
 	async getEvent(req: express.Request, res: express.Response): Promise<void> {
 		console.log("Accepted the incoming retrieve request");
