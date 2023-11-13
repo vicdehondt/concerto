@@ -12,6 +12,14 @@ export abstract class BaseController {
 
     abstract initializeRoutes();
 
+    requireAuth(req, res, next) {
+		if (req.session && req.session.isLoggedIn){
+			next()
+		} else {
+			res.status(401).json({ error: "Unauthorized access" });
+		}
+	}
+
     // It is important for this function that BaseController is in the same directory as the other controllers.
     DeleteFile(path: String, file) {
         fs.unlink(path + '/' + file.filename, (err) => {

@@ -3,7 +3,8 @@ import * as config from '../config'
 
 const sequelize = new Sequelize({
     dialect: config.databaseDialect,
-    storage: config.databasePath
+    storage: config.databasePath,
+    logging: false,
 })
 
 export const UserModel = sequelize.define('User', {
@@ -31,39 +32,15 @@ export const UserModel = sequelize.define('User', {
         type: DataTypes.INTEGER,
         allowNull: false
     },
-    image: { type: DataTypes.BLOB,
+    image: { type: DataTypes.STRING,
             allowNull: false
     }}, {
     tableName: 'Users'
     }
 )
 
-export const Friend = sequelize.define('Friend', {
-    friendshipID: {
-        type: DataTypes.INTEGER,
-        primaryKey: true,
-        allowNull: false,
-        autoIncrement: true
-    },
-    inviterID: {
-        type: DataTypes.INTEGER,
-        allowNull: false
-    },
-    receiverID: {
-        type: DataTypes.INTEGER,
-        allowNull: false
-    },
-    status: {
-        type: DataTypes.STRING,
-        allowNull: false
-    }}, {
-    tableName: 'Friends'
-    }
-)
-
 async function synchronize() {
     UserModel.sync();
-    Friend.sync();
   }
 
 export async function CreateUser(username, email, hashedpassword, saltingrounds, profilepicture): Promise<void> {
@@ -80,38 +57,16 @@ export async function CreateUser(username, email, hashedpassword, saltingrounds,
     }
 }
 
-export async function RetrieveUser(usernam): Promise<typeof UserModel> {
+export async function RetrieveUser(field: string, value): Promise<typeof UserModel> {
     try {
         const User = await UserModel.findOne({
-        where: {username: usernam},
+        where: { [field]: value},
         });
         return User;
       } catch (error) {
         console.error("There was an error finding a user: ", error);
       }
 }
-
-function FindFriends(userID) {
-    Friend.findAll({
-      where: {
-        [Op.or]: [{InviterID: userID}, {receiverID: userID}],
-        status:'accepted'
-      }
-    })
-  }
-
-  export async function SendFriendRequest(senderID, receiverID){
-    const receiver = await RetrieveUser(receiverID);
-    if (receiver != null) {
-        const friendship = await Friend.create({
-            inviterID: senderID,
-            receiverID: receiverID,
-            status: 'requested'
-          });
-    } else {
-        throw new Error("The other user does not exist!");
-    }
-  }
 
 synchronize()
 

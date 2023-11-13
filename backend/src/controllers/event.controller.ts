@@ -30,7 +30,7 @@ const upload = multer({ storage: storage});
 export class EventController extends BaseController {
 
 	constructor() {
-			super("/event");
+		super("/events");
 	}
 
 	initializeRoutes(): void {
@@ -47,47 +47,47 @@ export class EventController extends BaseController {
 			"preflightContinue": false,
 			"optionsSuccessStatus": 204
 		}
-		this.router.get("/retrieve", cors(corsOptions), (req: express.Request, res: express.Response) => {
-			this.retrieveGet(req, res);
+		this.router.get('/', cors(corsOptions), (req: express.Request, res: express.Response) => {
+			this.getAllEvents(req, res);
 		});
-		this.router.post("/add",
-		upload.single("image"), [
+		this.router.get('/:id', cors(corsOptions), (req: express.Request, res: express.Response) => {
+			this.getEvent(req, res);
+		});
+		this.router.post("/", cors(corsOptions),
+		upload.single("image"),
+		[
 			body("title").trim().trim().notEmpty(),
 			body("description").trim().notEmpty(),
 			body("maxpeople").trim().notEmpty(),
 			body("price").trim().notEmpty(),
 			body("datetime").trim().notEmpty(),
-			body("eventid").trim().notEmpty().custom(async value => {
-				const event = await database.RetrieveEvent(value);
-				if (event != null) {
-					throw Error("There already exists an event with that ID!");
-				}
-			}),
 		],
 		(req: express.Request, res: express.Response) => {
 			this.addPost(req, res);
 		});
 
-		this.router.get("/filter",
+		this.router.get("/filter", cors(corsOptions),
 		upload.single("image"),
 		(req: express.Request, res: express.Response) => {
 			this.filterEvents(req, res);
 		})
     }
 
-	async retrieveGet(req: express.Request, res: express.Response): Promise<void> {
+	async getAllEvents(req: express.Request, res: express.Response) {
+		console.log("Accepted request for all events")
+		const events = await database.RetrieveAllEvents();
+		res.status(200).json(events);
+	}
+
+	async getEvent(req: express.Request, res: express.Response): Promise<void> {
 		console.log("Accepted the incoming retrieve request");
-		const id = req.query.id;
-		if (id) {
-			console.log("An ID has been found: ", id);
-			const event = await database.RetrieveEvent(id);
-			if (event) {
-				res.status(200).json(event);
-			} else {
-				res.status(404).json({succes: false, error: "No event was found with this ID"})
-			}
+		const id = req.params.id;
+		console.log("An ID has been found: ", id);
+		const event = await database.RetrieveEvent(id);
+		if (event) {
+			res.status(200).json(event);
 		} else {
-			res.status(400).json({succes: false, error: "No event ID was provided!" });
+			res.status(404).json({succes: false, error: "No event was found with this ID"})
 		}
 	}
 
@@ -97,7 +97,7 @@ export class EventController extends BaseController {
 		if (result.isEmpty() && req.file) {
 			const {title, eventid, description, maxpeople, datetime, price} = req.body;
 			const imagepath = "http://localhost:8080/events/" + req.file.filename;
-			database.CreateEvent(eventid, title, description, maxpeople, datetime, price, imagepath);
+			database.CreateEvent(title, description, maxpeople, datetime, price, imagepath);
 			console.log("Event created succesfully");
 			res.status(200).json({ success: true, message: 'Event created successfully' });
 		} else {

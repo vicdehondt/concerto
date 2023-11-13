@@ -14,6 +14,7 @@ const sequelize = new Sequelize({
       type: DataTypes.INTEGER,
       primaryKey: true,
       allowNull: false,
+      autoIncrement: true
     },
     title: {
       type: DataTypes.TEXT,
@@ -47,10 +48,9 @@ const sequelize = new Sequelize({
     EventModel.sync()
   }
 
-  export async function CreateEvent(id, title, description, people, date, price, image) {
+  export async function CreateEvent(title, description, people, date, price, image) {
     try {
       const Event = await EventModel.create({
-        eventID: id,
         title: title,
         description: description,
         maxPeople: people,
@@ -63,9 +63,21 @@ const sequelize = new Sequelize({
     }
   };
 
+  export async function RetrieveAllEvents(): Promise<typeof EventModel>  {
+    const events = await EventModel.findAll({
+      attributes: {
+        exclude: ['createdAt', 'updatedAt'],
+      }
+    });
+    return events;
+  }
+
   export async function RetrieveEvent(ID): Promise<typeof EventModel> {
     try {
       const Event = await EventModel.findOne({
+      attributes: {
+        exclude: ['createdAt', 'updatedAt'],
+      },
       where: {eventID: ID},
       });
       return Event;
