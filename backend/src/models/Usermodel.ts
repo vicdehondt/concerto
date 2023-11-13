@@ -33,7 +33,7 @@ export const UserModel = sequelize.define('User', {
         allowNull: false
     },
     image: { type: DataTypes.STRING,
-            allowNull: false
+            allowNull: true
     }}, {
     tableName: 'Users'
     }
@@ -43,14 +43,13 @@ async function synchronize() {
     UserModel.sync();
   }
 
-export async function CreateUser(username, email, hashedpassword, saltingrounds, profilepicture): Promise<void> {
+export async function CreateUser(username, email, hashedpassword, saltingrounds): Promise<void> {
     try {
         const User = await UserModel.create({
             username: username,
             mail: email,
             password: hashedpassword,
             salt: saltingrounds,
-            image: profilepicture
         });
     } catch (error) {
         console.error("There was an error creating a user:", error);
