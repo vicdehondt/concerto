@@ -54,18 +54,13 @@ export class EventController extends BaseController {
 			this.getEvent(req, res);
 		});
 		this.router.post("/", cors(corsOptions),
-		upload.single("image"), [
+		upload.single("image"),
+		[
 			body("title").trim().trim().notEmpty(),
 			body("description").trim().notEmpty(),
 			body("maxpeople").trim().notEmpty(),
 			body("price").trim().notEmpty(),
 			body("datetime").trim().notEmpty(),
-			body("eventid").trim().notEmpty().custom(async value => {
-				const event = await database.RetrieveEvent(value);
-				if (event != null) {
-					throw Error("There already exists an event with that ID!");
-				}
-			}),
 		],
 		(req: express.Request, res: express.Response) => {
 			this.addPost(req, res);
@@ -102,7 +97,7 @@ export class EventController extends BaseController {
 		if (result.isEmpty() && req.file) {
 			const {title, eventid, description, maxpeople, datetime, price} = req.body;
 			const imagepath = "http://localhost:8080/events/" + req.file.filename;
-			database.CreateEvent(eventid, title, description, maxpeople, datetime, price, imagepath);
+			database.CreateEvent(title, description, maxpeople, datetime, price, imagepath);
 			console.log("Event created succesfully");
 			res.status(200).json({ success: true, message: 'Event created successfully' });
 		} else {

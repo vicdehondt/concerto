@@ -56,6 +56,7 @@ export class SessionController extends BaseController {
     }
 
 	async loginUser(req: express.Request, res: express.Response) {
+        console.log("Received request to login");
 		const sessiondata = req.session;
 		if (sessiondata.isLoggedIn == true) {
 			res.status(200).json({success: true, message: "You are already loggin in."})
@@ -79,12 +80,20 @@ export class SessionController extends BaseController {
 	}
 
     async addUser(req: express.Request, res: express.Response): Promise<void> {
+        console.log("Received request to register user");
 		const result = validationResult(req);
 		if (result.isEmpty() && req.file){
 			bcrypt.hash(req.body.password, saltingRounds, async (err, hash) => {
-			const imagepath = "http://localhost:8080/users/" + req.file.filename;
-			await database.CreateUser(req.body.username, req.body.mail, hash, saltingRounds, imagepath);
-			res.status(200).json({succes: true, message: "User has been created!"});
+            const samename = await database.RetrieveUser("username", req.body.username);
+            const samemail = await database.RetrieveUser("mail", req.body.mail);
+            if (samename == null && samemail == null){
+                const imagepath = "http://localhost:8080/users/" + req.file.filename;
+			    await database.CreateUser(req.body.username, req.body.mail, hash, saltingRounds, imagepath);
+			    res.status(200).json({success: true, message: "User has been created!"});
+            } else {
+                this.DeleteFile(UserImagePath, req.file);
+                res.status(400).json({success: false, errors: "The fields are already used by other user!"});
+            }
 			})
 		} else {
 			if (req.file) {
