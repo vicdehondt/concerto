@@ -2,6 +2,7 @@ import * as express from 'express';
 import { BaseController } from "./controllers/base.controller";
 import { EventController } from "./controllers/event.controller";
 import { UserController } from './controllers/user.controller';
+import { SessionController } from './controllers/session.controller';
 const session = require("express-session");
 import exp = require('constants');
 
@@ -30,6 +31,7 @@ export class App {
         // Add new controllers here
         this.addController(new EventController());
         this.addController(new UserController());
+        this.addController(new SessionController());
         // We link the router of each controller to our server
         this.controllers.forEach(controller => {
             this.app.use(`${this.path}${controller.path}`, controller.router);
