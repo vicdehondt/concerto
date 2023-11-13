@@ -1,21 +1,23 @@
 const { Sequelize, DataTypes, Op } = require('sequelize');
+import { STRING } from 'sequelize';
+import * as config from '../config'
 const fs = require('fs');
 
 const sequelize = new Sequelize({
-    dialect: 'sqlite',
-    storage: './src/SQLite/ConcertoDB.db'
+    dialect: config.databaseDialect,
+    storage: config.databasePath
   });
 
-  const EventModel = sequelize.define('Event', {
+  export const EventModel = sequelize.define('Event', {
     eventID: {
       type: DataTypes.INTEGER,
       primaryKey: true,
-      allowNull: false
+      allowNull: false,
     },
     title: {
       type: DataTypes.TEXT,
       allowNull: false
-    }, 
+    },
     description: {
       type: DataTypes.TEXT,
       allowNull: false
@@ -23,7 +25,7 @@ const sequelize = new Sequelize({
     maxPeople: {
       type: DataTypes.INTEGER,
       allowNull: false
-    }, 
+    },
     datetime: {
       type: DataTypes.DATE,
       allowNull: false
@@ -33,7 +35,7 @@ const sequelize = new Sequelize({
       allowNull: false
     },
     image: {
-      type: DataTypes.BLOB,
+      type: DataTypes.STRING,
       allowNull: false
     }
   }, {
@@ -44,32 +46,27 @@ const sequelize = new Sequelize({
     EventModel.sync()
   }
 
-  // Temporary way to deal with images
-  const imageFilePath = './src/eventimages/ariana.jpeg';
-  const imageBuffer = fs.readFileSync(imageFilePath);
-
-  async function CreateEvent(id, title, description, people, date, price, image) {
+  export async function CreateEvent(id, title, description, people, date, price, image) {
     try {
       const Event = await EventModel.create({
         eventID: id,
         title: title,
-        description: description, 
+        description: description,
         maxPeople: people,
         datetime: date,
         price: price,
         image: image
       });
     } catch (error) {
-      console.error("There was an error creating a user: ", error);
+      console.error("There was an error creating an event: ", error);
     }
   };
 
-  async function RetrieveEvent(ID) {
+  export async function RetrieveEvent(ID): Promise<typeof EventModel> {
     try {
       const Event = await EventModel.findOne({
       where: {eventID: ID},
-      }); 
-      console.log(Event);
+      });
       return Event;
     } catch (error) {
       console.error("There was an error finding Event: ", error);
@@ -77,10 +74,4 @@ const sequelize = new Sequelize({
   }
 
   synchronize()
-
-
-  module.exports = {
-    RetrieveEvent,
-    CreateEvent
-  }
 
