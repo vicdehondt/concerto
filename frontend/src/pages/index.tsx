@@ -4,6 +4,7 @@ import styles from "@/styles/Home.module.css";
 import Navbar from "../components/Navbar";
 import EventCard from "../components/EventCard";
 import SideBar from "../components/SideBar"
+import { Nav } from "react-bootstrap";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -24,7 +25,7 @@ export default function Home() {
               <h1>Events this week you may like</h1>
             </div>
             <div className={styles.eventCardContainer}>
-              <EventCard title="Ariana Grande"/>
+              <EventCard title="Ariana Grande" />
             </div>
           </div>
         </div>

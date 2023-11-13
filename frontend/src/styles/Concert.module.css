@@ -1,0 +1,49 @@
+.gridContainer {
+  color: black;
+  display: grid;
+  grid-template-columns: 45% auto;
+  grid-template-rows: [banner] 200px auto auto;
+  grid-template-areas:
+    "banner banner"
+    "description ratings"
+    "timetable invites";
+  height: 100vh;
+}
+
+.bannerContainer {
+  grid-area: banner;
+  position: relative;
+}
+
+.friendInviteContainer {
+  grid-area: invites;
+  position: relative;
+  left: 20%;
+}
+
+.descriptionContainer {
+  margin-top: 15px;
+  grid-area: description;
+}
+
+.descriptionContainer .descriptionTitle {
+  font-size: x-large;
+  font-weight: bold;
+}
+
+.descriptionContainer .descriptionText {
+  font-size: large;
+  font-weight: 400;
+}
+
+.timetableContainer {
+  grid-area: timetable;
+}
+
+.ratingContainer {
+  grid-area: ratings;
+}
+
+.title {
+  padding: 20px;
+}

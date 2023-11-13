@@ -5,6 +5,8 @@ import {body, validationResult} from "express-validator"
 import * as multer from "multer";
 import * as crypto from "crypto"
 
+const cors = require("cors");
+
 const EventImagePath = './uploads/events';
 
 // Set up storage with a custom filename function
@@ -27,15 +29,28 @@ const upload = multer({ storage: storage});
 
 export class EventController extends BaseController {
 
-    constructor() {
-        super("/event");
-    }
+	constructor() {
+		super("/event");
+	}
 
-    initializeRoutes(): void {
-		this.router.get('/:id', (req: express.Request, res: express.Response) => {
+	initializeRoutes(): void {
+		const environment = {
+			frontendURL: "http://localhost:3000"
+		}
+		if (process.env.NODE_ENV == "production") {
+			environment.frontendURL = "http://concerto.dehondt.dev"
+		}
+		const corsOptions = {
+			// https://www.npmjs.com/package/cors
+			"origin": environment.frontendURL,
+			"methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
+			"preflightContinue": false,
+			"optionsSuccessStatus": 204
+		}
+		this.router.get('/:id', cors(corsOptions), (req: express.Request, res: express.Response) => {
 			this.getEvent(req, res);
 		});
-		this.router.post("/",
+		this.router.post("/", cors(corsOptions),
 		upload.single("image"), [
 			body("title").trim().trim().notEmpty(),
 			body("description").trim().notEmpty(),
@@ -53,7 +68,7 @@ export class EventController extends BaseController {
 			this.addPost(req, res);
 		});
 
-		this.router.get("/filter",
+		this.router.get("/filter", cors(corsOptions),
 		upload.single("image"),
 		(req: express.Request, res: express.Response) => {
 			this.filterEvents(req, res);
