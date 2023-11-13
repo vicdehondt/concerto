@@ -8,12 +8,11 @@ import { useRouter } from "next/router";
 const inter = Inter({ subsets: ['latin'] })
 
 
-
-export default function Register() {
+export default function Login() {
   const router = useRouter();
 
-  function goToLogin() {
-    router.replace("/login")
+  function goToHome() {
+    router.replace("/")
   }
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
@@ -21,7 +20,7 @@ export default function Register() {
     event.preventDefault();
     var formData = new FormData(event.currentTarget);
     const form_values = Object.fromEntries(formData);
-    const response = await fetch("http://localhost:8080/register", {
+    const response = await fetch("http://localhost:8080/login", {
       method: 'POST',
       body: formData,
     })
@@ -29,7 +28,7 @@ export default function Register() {
     // Handle response if necessary
     const data = await response.json()
     if (response.status == 200) {
-      goToLogin();
+      goToHome();
     }
     // ...
   }
@@ -43,12 +42,12 @@ export default function Register() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className={`${styles.main} ${inter.className}`}>
-        <div className={[styles.page, styles.registerPage].join(" ")}>
-          <form onSubmit={onSubmit} className={styles.registerForm}>
-            <h1>Register</h1>
-            <input className={[styles.registerInput, styles.usernameInput].join(" ")} type="text" name='username' id='username' required placeholder="Username" />
-            <input className={[styles.registerInput, styles.emailInput].join(" ")} type="email" name='mail' id='mail' required placeholder="E-mail address" />
-            <input className={[styles.registerInput, styles.passwordInput].join(" ")} type="password" name='password' id='password' required placeholder="Password" />
+        <div className={[styles.page, styles.loginPage].join(" ")}>
+        {/* <form action="http://localhost:8080/event/add" method="POST" enctype='multipart/form-data'> */}
+        <form onSubmit={onSubmit} className={styles.loginForm}>
+            <h1>Login</h1>
+            <input className={[styles.loginInput, styles.usernameInput].join(" ")} type="text" name='username' id='username' required placeholder="Username" />
+            <input className={[styles.loginInput, styles.passwordInput].join(" ")} type="password" name='password' id='password' required placeholder="Password" />
             <button className={styles.submitButton} type='submit'>Submit</button>
           </form>
         </div>
