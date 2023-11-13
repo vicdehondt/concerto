@@ -2,6 +2,7 @@ import * as express from 'express';
 import { BaseController } from "./controllers/base.controller";
 import { EventController } from "./controllers/event.controller";
 import { UserController } from './controllers/user.controller';
+const session = require("express-session");
 import exp = require('constants');
 
 export class App {
@@ -12,6 +13,13 @@ export class App {
 
     constructor() {
         this.app = express();
+        this.app.use(session({
+            secret: 'secret-field',
+            resave: false,
+            saveUninitialized: true,
+            cookie: { maxAge: 600000 },
+        }));
+        this.app.use(express.static('uploads'));
         this.app.use(express.urlencoded({ extended: true }));
         this.app.use(express.json());
         this._initializeControllers();
