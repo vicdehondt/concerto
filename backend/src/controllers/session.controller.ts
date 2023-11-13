@@ -54,12 +54,14 @@ export class SessionController extends BaseController {
 		});
 		// Route to handle login
 		this.router.post("/login",
+		cors(corsOptions),
 		upload.single("image"),
 		(req: express.Request, res: express.Response) => {
 			this.loginUser(req, res);
 		});
 		// Route to handle logout
 		this.router.post("/logout", this.requireAuth,
+		cors(corsOptions),
 		upload.single("image"),
 		(req: express.Request, res: express.Response) => {
 			this.logoutUser(req, res);
