@@ -5,7 +5,8 @@ const fs = require('fs');
 
 const sequelize = new Sequelize({
     dialect: config.databaseDialect,
-    storage: config.databasePath
+    storage: config.databasePath,
+    logging: false
   });
 
   export const EventModel = sequelize.define('Event', {
@@ -69,7 +70,22 @@ const sequelize = new Sequelize({
       });
       return Event;
     } catch (error) {
-      console.error("There was an error finding Event: ", error);
+      console.error("There was an error finding an event: ", error);
+    }
+  }
+
+  export async function FilterEvents(maxpeople, datetime, price){
+    try {
+      const Event = await EventModel.findAll({
+      where: {
+        maxpeople: maxpeople,
+        datetime: datetime,
+        price: price,
+      },
+      });
+      return Event;
+    } catch (error) {
+      console.error("There was an error filtering Events: ", error);
     }
   }
 
