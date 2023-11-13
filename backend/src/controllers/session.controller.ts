@@ -6,7 +6,7 @@ import * as multer from "multer";
 import * as bcrypt from "bcrypt";
 const fs = require('fs');
 
-const UserImagePath = './uploads/users';
+const UserImagePath = './public/users';
 
 // Set up storage with a custom filename function
 const storage = multer.diskStorage({

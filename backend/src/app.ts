@@ -20,7 +20,7 @@ export class App {
             saveUninitialized: true,
             cookie: { maxAge: 600000 },
         }));
-        this.app.use(express.static('uploads'));
+        this.app.use(express.static('public'));
         this.app.use(express.urlencoded({ extended: true }));
         this.app.use(express.json());
         this._initializeControllers();

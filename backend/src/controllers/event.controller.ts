@@ -7,7 +7,7 @@ import * as crypto from "crypto"
 
 const cors = require("cors");
 
-const EventImagePath = './uploads/events';
+const EventImagePath = './public/events';
 
 // Set up storage with a custom filename function
 const storage = multer.diskStorage({
