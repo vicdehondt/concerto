@@ -30,7 +30,7 @@ const upload = multer({ storage: storage});
 export class EventController extends BaseController {
 
 	constructor() {
-		super("/event");
+		super("/events");
 	}
 
 	initializeRoutes(): void {
@@ -47,7 +47,7 @@ export class EventController extends BaseController {
 			"preflightContinue": false,
 			"optionsSuccessStatus": 204
 		}
-		this.router.get('/all', cors(corsOptions), (req: express.Request, res: express.Response) => {
+		this.router.get('/', cors(corsOptions), (req: express.Request, res: express.Response) => {
 			this.getAllEvents(req, res);
 		});
 		this.router.get('/:id', cors(corsOptions), (req: express.Request, res: express.Response) => {
