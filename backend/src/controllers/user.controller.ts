@@ -4,6 +4,23 @@ import * as database from '../models/Usermodel';
 import * as multer from "multer";
 const fs = require('fs');
 
+const cors = require("cors");
+
+const environment = {
+	frontendURL: "http://localhost:3000"
+}
+if (process.env.NODE_ENV == "production") {
+	environment.frontendURL = "https://concerto.dehondt.dev"
+}
+
+const corsOptions = {
+	// https://www.npmjs.com/package/cors
+	"origin": environment.frontendURL,
+	"methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
+	"preflightContinue": false,
+	"optionsSuccessStatus": 204
+}
+
 export class UserController extends BaseController {
 
     constructor() {
@@ -11,7 +28,7 @@ export class UserController extends BaseController {
     }
 
     initializeRoutes(): void {
-		this.router.get('/:username', this.requireAuth,
+		this.router.get('/:username', cors(corsOptions), this.requireAuth,
         //upload.single("image"),
         (req: express.Request, res: express.Response) => {
 			this.getUserInformation(req, res);

@@ -38,7 +38,7 @@ export class EventController extends BaseController {
 			frontendURL: "http://localhost:3000"
 		}
 		if (process.env.NODE_ENV == "production") {
-			environment.frontendURL = "http://concerto.dehondt.dev"
+			environment.frontendURL = "https://concerto.dehondt.dev"
 		}
 		const corsOptions = {
 			// https://www.npmjs.com/package/cors

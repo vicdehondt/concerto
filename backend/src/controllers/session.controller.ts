@@ -10,6 +10,13 @@ const cors = require("cors");
 
 const UserImagePath = './public/users';
 
+const environment = {
+	frontendURL: "http://localhost:3000"
+}
+if (process.env.NODE_ENV == "production") {
+	environment.frontendURL = "https://concerto.dehondt.dev"
+}
+
 // Set up storage with a custom filename function
 const storage = multer.diskStorage({
 	destination: function (req, file, cb) {
@@ -32,7 +39,7 @@ const saltingRounds = 12;
 
 const corsOptions = {
 	// https://www.npmjs.com/package/cors
-	"origin": "http://localhost:3000",
+	"origin": environment.frontendURL,
 	"methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
 	"preflightContinue": false,
 	"optionsSuccessStatus": 204

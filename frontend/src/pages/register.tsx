@@ -7,6 +7,13 @@ import { useRouter } from "next/router";
 
 const inter = Inter({ subsets: ['latin'] })
 
+const environment = {
+  backendURL: "http://localhost:8080"
+}
+if (process.env.NODE_ENV == "production") {
+  environment.backendURL = "https://api.concerto.dehondt.dev"
+}
+
 
 
 export default function Register() {
@@ -22,9 +29,14 @@ export default function Register() {
     event.preventDefault();
     var formData = new FormData(event.currentTarget);
     const form_values = Object.fromEntries(formData);
-    const response = await fetch("http://localhost:8080/register", {
+    const response = await fetch(environment.backendURL + "/register", {
       method: 'POST',
       body: formData,
+      credentials: 'include',
+    //   headers: {
+    //     'Access-Control-Allow-Credentials': true,
+    //     // Cookie: context.req.headers.cookie
+    //  },
     })
 
     // Handle response if necessary
