@@ -1,7 +1,7 @@
 .eventCard {
   min-width: 1090px;
   display: grid;
-  grid-template-columns: [photo] 120px [event] 1fr [tickets] 100px [info] 200px [wishlist] 30px;
+  grid-template-columns: [photo] 120px [event] 1fr [tickets] 100px [info] 220px [wishlist] 30px;
   grid-template-rows: [card] 70px [tags] auto;
   grid-template-areas:
     "photo event tickets info wishlist"

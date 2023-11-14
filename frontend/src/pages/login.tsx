@@ -46,9 +46,9 @@ export default function Login() {
         {/* <form action="http://localhost:8080/event/add" method="POST" enctype='multipart/form-data'> */}
         <form onSubmit={onSubmit} className={styles.loginForm}>
             <h1>Login</h1>
-            <input className={[styles.loginInput, styles.usernameInput].join(" ")} type="text" name='username' id='username' required placeholder="Username" />
-            <input className={[styles.loginInput, styles.passwordInput].join(" ")} type="password" name='password' id='password' required placeholder="Password" />
-            <button className={styles.submitButton} type='submit'>Submit</button>
+            <input className={[styles.registerInput, styles.usernameInput].join(" ")} type="text" name='username' id='username' required placeholder="Username" />
+            <input className={[styles.registerInput, styles.passwordInput].join(" ")} type="password" name='password' id='password' required placeholder="Password" />
+            <button className={[styles.registerInput, styles.submitButton].join(" ")} type='submit'>Submit</button>
           </form>
         </div>
       </main>
