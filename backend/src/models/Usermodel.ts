@@ -39,6 +39,30 @@ export const UserModel = sequelize.define('User', {
     }
 )
 
+export const Friend = sequelize.define('Friend',{
+    status: {
+        type: DataTypes.ENUM('accepted', 'pending'),
+        allowNull: false,
+    }
+})
+
+UserModel.belongsToMany(UserModel,{
+    through: Friend,
+    as: "sender",
+    foreignKey: {
+        allowNull: false,
+        name: "senderID"
+    }
+})
+UserModel.belongsToMany(UserModel,{
+    through: Friend,
+    as: "receiver",
+    foreignKey: {
+        allowNull: false,
+        name: "receiverID"
+    }
+})
+
 async function synchronize() {
     UserModel.sync();
   }
