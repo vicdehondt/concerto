@@ -49,7 +49,7 @@ export default function Register() {
             <input className={[styles.registerInput, styles.usernameInput].join(" ")} type="text" name='username' id='username' required placeholder="Username" />
             <input className={[styles.registerInput, styles.emailInput].join(" ")} type="email" name='mail' id='mail' required placeholder="E-mail address" />
             <input className={[styles.registerInput, styles.passwordInput].join(" ")} type="password" name='password' id='password' required placeholder="Password" />
-            <button className={styles.submitButton} type='submit'>Submit</button>
+            <button className={[styles.registerInput, styles.submitButton].join(" ")} type='submit'>Submit</button>
           </form>
         </div>
       </main>
