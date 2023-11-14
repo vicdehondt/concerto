@@ -6,6 +6,8 @@ import { SessionController } from './controllers/session.controller';
 const session = require("express-session");
 import exp = require('constants');
 
+// const cookieParser = require("cookie-parser"); // Uit video van cookies: https://www.youtube.com/watch?v=34wC1C61lg0&t=1214s&ab_channel=SteveGriffith-Prof3ssorSt3v3
+
 export class App {
     app: express.Application;
     port: number = 8080;
@@ -14,11 +16,14 @@ export class App {
 
     constructor() {
         this.app = express();
+        // this.app.use(cookieParser()); // Ook uit video van cookies.
         this.app.use(session({
             secret: 'secret-field',
             resave: false,
             saveUninitialized: true,
-            cookie: { maxAge: 600000 },
+            cookie: {
+                maxAge: 600000,
+            },
         }));
         this.app.use(express.static('public'));
         this.app.use(express.urlencoded({ extended: true }));

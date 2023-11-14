@@ -29,9 +29,10 @@ export class UserController extends BaseController {
 
     initializeRoutes(): void {
 		this.router.get('/:username', cors(corsOptions), this.requireAuth,
-        //upload.single("image"),
+        // upload.single("image"),
         (req: express.Request, res: express.Response) => {
-			this.getUserInformation(req, res);
+					res.set('Access-Control-Allow-Credentials', 'true');
+					this.getUserInformation(req, res);
 		});
     }
 

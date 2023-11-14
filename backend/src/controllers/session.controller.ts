@@ -53,17 +53,19 @@ export class SessionController extends BaseController {
 
     initializeRoutes(): void {
 		// Route to let users register
-        this.router.post("/register",
+		this.router.post("/register",
 				cors(corsOptions),
         upload.single("image"),
         (req: express.Request, res: express.Response) => {
-			this.addUser(req, res);
+					res.set('Access-Control-Allow-Credentials', 'true');
+					this.addUser(req, res);
 		});
 		// Route to handle login
 		this.router.post("/login",
 		cors(corsOptions),
 		upload.single("image"),
 		(req: express.Request, res: express.Response) => {
+			res.set('Access-Control-Allow-Credentials', 'true');
 			this.loginUser(req, res);
 		});
 		// Route to handle logout
@@ -71,6 +73,7 @@ export class SessionController extends BaseController {
 		cors(corsOptions),
 		upload.single("image"),
 		(req: express.Request, res: express.Response) => {
+			res.set('Access-Control-Allow-Credentials', 'true');
 			this.logoutUser(req, res);
 		});
     }

@@ -29,6 +29,8 @@ export default function Login() {
     const response = await fetch(environment.backendURL + "/login", {
       method: 'POST',
       body: formData,
+      mode: 'cors',
+      credentials: 'include',
     })
 
     // Handle response if necessary
@@ -49,7 +51,6 @@ export default function Login() {
       </Head>
       <main className={`${styles.main} ${inter.className}`}>
         <div className={[styles.page, styles.loginPage].join(" ")}>
-        {/* <form action="http://localhost:8080/event/add" method="POST" enctype='multipart/form-data'> */}
         <form onSubmit={onSubmit} className={styles.loginForm}>
             <h1>Login</h1>
             <input className={[styles.registerInput, styles.usernameInput].join(" ")} type="text" name='username' id='username' required placeholder="Username" />
