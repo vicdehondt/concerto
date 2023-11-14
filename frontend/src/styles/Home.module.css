@@ -150,3 +150,8 @@
 .submitButton:hover {
   background-color: #7180B9;
 }
+
+.inputError {
+  color: red;
+  padding: 10px 0 0 0;
+}

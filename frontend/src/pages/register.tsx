@@ -2,7 +2,7 @@ import Head from 'next/head'
 import { Inter } from 'next/font/google'
 import styles from '@/styles/Home.module.css'
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { FormEvent } from 'react'
+import { FormEvent, useState } from 'react'
 import { useRouter } from "next/router";
 
 const inter = Inter({ subsets: ['latin'] })
@@ -11,6 +11,7 @@ const inter = Inter({ subsets: ['latin'] })
 
 export default function Register() {
   const router = useRouter();
+  const[error, setError] = useState("");
 
   function goToLogin() {
     router.replace("/login")
@@ -30,6 +31,8 @@ export default function Register() {
     const data = await response.json()
     if (response.status == 200) {
       goToLogin();
+    } else if (response.status == 400) {
+      setError(data.errors)
     }
     // ...
   }
@@ -46,6 +49,7 @@ export default function Register() {
         <div className={[styles.page, styles.registerPage].join(" ")}>
           <form onSubmit={onSubmit} className={styles.registerForm}>
             <h1>Register</h1>
+            { error ? <h4 className={styles.inputError}>{error}</h4> : null }
             <input className={[styles.registerInput, styles.usernameInput].join(" ")} type="text" name='username' id='username' required placeholder="Username" />
             <input className={[styles.registerInput, styles.emailInput].join(" ")} type="email" name='mail' id='mail' required placeholder="E-mail address" />
             <input className={[styles.registerInput, styles.passwordInput].join(" ")} type="password" name='password' id='password' required placeholder="Password" />
