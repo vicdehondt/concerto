@@ -48,9 +48,11 @@ export class EventController extends BaseController {
 			"optionsSuccessStatus": 204
 		}
 		this.router.get('/', cors(corsOptions), (req: express.Request, res: express.Response) => {
+			res.set('Access-Control-Allow-Credentials', 'true');
 			this.getAllEvents(req, res);
 		});
 		this.router.get('/:id', cors(corsOptions), (req: express.Request, res: express.Response) => {
+			res.set('Access-Control-Allow-Credentials', 'true');
 			this.getEvent(req, res);
 		});
 		this.router.post("/", cors(corsOptions),
@@ -69,6 +71,7 @@ export class EventController extends BaseController {
 		this.router.get("/filter", cors(corsOptions),
 		upload.single("image"),
 		(req: express.Request, res: express.Response) => {
+			res.set('Access-Control-Allow-Credentials', 'true');
 			this.filterEvents(req, res);
 		})
     }

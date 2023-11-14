@@ -32,11 +32,8 @@ export default function Register() {
     const response = await fetch(environment.backendURL + "/register", {
       method: 'POST',
       body: formData,
+      mode: 'cors',
       credentials: 'include',
-    //   headers: {
-    //     'Access-Control-Allow-Credentials': true,
-    //     // Cookie: context.req.headers.cookie
-    //  },
     })
 
     // Handle response if necessary
