@@ -81,8 +81,14 @@ const sequelize = new Sequelize({
       for (let i = 0; i < filterfields.length; i++) {
         const field = filterfields[i];
         const value = filtervalues[i];
-      // Add the condition to the where clause
-        whereClause[field] = value;
+        // need to add the condition to the where clause
+        if(field == "maxpeople" || field == "price"){
+          whereClause[field] = {
+            [Op.between]: value.split('/'),
+          };
+        } else {
+          whereClause[field] = value;
+        }
       }
       const Event = await EventModel.findAll({
         where: whereClause,

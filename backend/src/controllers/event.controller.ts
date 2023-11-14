@@ -58,16 +58,20 @@ export class EventController extends BaseController {
 		this.router.get("/filter",
 		upload.single("image"), [
 			body("maxpeople").trim().custom(async value => {
-				const rangeValues = value.split('-');
-                if (rangeValues.length != 2 || !Number.isInteger(rangeValues[0]) || !Number.isInteger(rangeValues[1])) {
-                    throw Error('Invalid range format. Use two integers separated by a hyphen.');
-                }
+				if(value){
+					const rangeValues = value.split('/');
+                	if (rangeValues.length != 2 || Number.isInteger(rangeValues[0]) || Number.isInteger(rangeValues[1])) {
+                    	throw Error('Invalid range format. Use two integers separated by a hyphen.');
+                	}
+				}
 			}),
 			body("price").trim().custom(async value => {
-				const rangeValues = value.split('-');
-                if (rangeValues.length != 2 || !Number.isInteger(rangeValues[0]) || !Number.isInteger(rangeValues[1])) {
-                    throw Error('Invalid range format. Use two integers separated by a hyphen.');
-                }
+				if(value){
+					const rangeValues = value.split('/');
+                	if (rangeValues.length != 2 || Number.isInteger(rangeValues[0]) || Number.isInteger(rangeValues[1])) {
+                    	throw Error('Invalid range format. Use two integers separated by a hyphen.');
+                	}
+				}
 			}),
 		],
 		(req: express.Request, res: express.Response) => {
@@ -124,17 +128,14 @@ export class EventController extends BaseController {
 			if(req.body.maxpeople){
 				filterfields.push("maxpeople");
 				filtervalues.push(req.body.maxpeople);
-				//filterlist.push({maxpeople: req.body.maxpeople});
 			}
 			if(req.body.datetime){
 				filterfields.push("datetime");
 				filtervalues.push(req.body.datetime);
-				//filterlist.push({datetime: req.body.datetime});
 			}
 			if(req.body.price){
 				filterfields.push("price");
 				filtervalues.push(req.body.price);
-				//filterlist.push({price: req.body.price});
 			}
 			const events = await database.FilterEvents(filterfields, filtervalues);//gives the events that match the given filters
 			if(events){
