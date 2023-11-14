@@ -4,6 +4,26 @@ import * as database from '../models/Usermodel';
 import * as multer from "multer";
 const fs = require('fs');
 
+const UserImagePath = './public/users';
+
+// Set up storage with a custom filename function
+const storage = multer.diskStorage({
+	destination: function (req, file, cb) {
+	  // Specify the destination folder where the file will be saved
+	  cb(null, UserImagePath);
+	},
+	filename: function (req, file, cb) {
+	  // Customize the filename here
+	  const originalname = file.originalname;
+	  const parts = originalname.split(".");
+	  const random = crypto.randomUUID(); // Create unique identifier for each image
+	  const newname = random + "." + parts[parts.length - 1];
+	  cb(null, newname);
+	}
+  });
+
+const upload = multer({ storage: storage});
+
 export class UserController extends BaseController {
 
     constructor() {
@@ -12,11 +32,29 @@ export class UserController extends BaseController {
 
     initializeRoutes(): void {
 		this.router.get('/:username', this.requireAuth,
-        //upload.single("image"),
+        upload.single("image"),
         (req: express.Request, res: express.Response) => {
 			this.getUserInformation(req, res);
 		});
+		this.router.post('/friends', this.requireAuth,
+        upload.single("image"),
+        (req: express.Request, res: express.Response) => {
+			this.sendFriendRequest(req, res);
+		});
     }
+
+	async sendFriendRequest(req: express.Request, res: express.Response) {
+		console.log("Received request to add a friend");
+		const sessiondata = req.session;
+		const result = await database.SendFriendRequest(sessiondata.userID, req.body.receiverusername);
+		if (result == database.FriendInviteResponses.SENT) {
+			res.status(200).json({succes: true, message: "A friend request has been sent."});
+		} else if (result == database.FriendInviteResponses.ALREADYFRIEND) {
+			res.status(400).json({ succes: false, message: "The other user already has a friend relationship"});
+		} else {
+			res.status(400).json({ succes: false, message: "The other user was not found"});
+		}
+	}
 
 	async getUserInformation(req: express.Request, res: express.Response) {
 		const sessiondata = req.session;

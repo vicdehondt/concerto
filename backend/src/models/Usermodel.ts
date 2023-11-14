@@ -40,26 +40,23 @@ export const UserModel = sequelize.define('User', {
 )
 
 export const Friend = sequelize.define('Friend',{
+    friendID: {
+        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        allowNull: false,
+        primaryKey: true,
+    },
     status: {
         type: DataTypes.ENUM('accepted', 'pending'),
         allowNull: false,
-    }
-})
-
-UserModel.belongsToMany(UserModel,{
-    through: Friend,
-    as: "sender",
-    foreignKey: {
+    },
+    senderID: {
         allowNull: false,
-        name: "senderID"
-    }
-})
-UserModel.belongsToMany(UserModel,{
-    through: Friend,
-    as: "receiver",
-    foreignKey: {
+        type: DataTypes.INTEGER,
+    },
+    receiverID: {
         allowNull: false,
-        name: "receiverID"
+        type: DataTypes.INTEGER,
     }
 })
 
@@ -80,6 +77,57 @@ export async function CreateUser(username, email, hashedpassword, saltingrounds)
     }
 }
 
+async function CreateFriend(senderID, receiverID) {
+    console.log("Creating a friend relationship");
+    const newfriend = await Friend.create({
+        status: 'pending',
+        senderID: senderID,
+        receiverID: receiverID,
+    });
+}
+
+async function FindFriend(senderID, receiverID) {
+    const existing = await Friend.findOne({
+        where: {
+            [Op.or]: [
+                {
+                    [Op.and]: [
+                        { receiverID: senderID },
+                        { senderID: receiverID },
+                    ], [Op.and]: [
+                        { receiverID: receiverID },
+                        { senderID: senderID },
+                    ]
+                }
+            ]
+        }
+    });
+    return existing;
+}
+
+export const FriendInviteResponses = {
+    SENT: 0,
+    ALREADYFRIEND: 1,
+    USERNOTFOUND: 2,
+}
+
+export async function SendFriendRequest(senderID, receivername): Promise<Number> {
+    const receiver = await RetrieveUser('username', receivername);
+    if (receiver != null) {
+        const receiverid = receiver.userID;
+        console.log("The user ID of the requested friend is: ", receiverid);
+        const existing = await FindFriend(senderID, receiverid);
+        if (existing == null) {
+            await CreateFriend(senderID, receiverid);
+            return FriendInviteResponses.SENT;
+        } else {
+            return FriendInviteResponses.ALREADYFRIEND;
+        }
+    } else {
+        return FriendInviteResponses.USERNOTFOUND;
+    }
+}
+
 export async function RetrieveUser(field: string, value): Promise<typeof UserModel> {
     try {
         const User = await UserModel.findOne({
@@ -91,5 +139,5 @@ export async function RetrieveUser(field: string, value): Promise<typeof UserMod
       }
 }
 
-synchronize()
+synchronize();
 
