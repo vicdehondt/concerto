@@ -55,10 +55,21 @@ export class EventController extends BaseController {
 			this.addPost(req, res);
 		});
 
-		this.router.get("/filter", 
-		upload.single("image"),
-		//[body("maxpeople").
-		//],
+		this.router.get("/filter",
+		upload.single("image"), [
+			body("maxpeople").trim().custom(async value => {
+				const rangeValues = value.split('-');
+                if (rangeValues.length != 2 || !Number.isInteger(rangeValues[0]) || !Number.isInteger(rangeValues[1])) {
+                    throw Error('Invalid range format. Use two integers separated by a hyphen.');
+                }
+			}),
+			body("price").trim().custom(async value => {
+				const rangeValues = value.split('-');
+                if (rangeValues.length != 2 || !Number.isInteger(rangeValues[0]) || !Number.isInteger(rangeValues[1])) {
+                    throw Error('Invalid range format. Use two integers separated by a hyphen.');
+                }
+			}),
+		],
 		(req: express.Request, res: express.Response) => {
 			this.filterEvents(req, res);
 		})
@@ -105,7 +116,6 @@ export class EventController extends BaseController {
 	async filterEvents(req: express.Request, res: express.Response): Promise<void>{
 		console.log("Received post request to filter events");
 		const filters = req.body;
-		//let filterlist: any[] = [];
 		let filterfields: any[] = [];
 		let filtervalues: any[] = [];
 		if (filters.length === 0){
