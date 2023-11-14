@@ -50,19 +50,33 @@ export const Friend = sequelize.define('Friend',{
         type: DataTypes.ENUM('accepted', 'pending'),
         allowNull: false,
     },
-    senderID: {
-        allowNull: false,
-        type: DataTypes.INTEGER,
-    },
-    receiverID: {
-        allowNull: false,
-        type: DataTypes.INTEGER,
-    }
 })
+
+UserModel.belongsToMany(UserModel, {
+    through: Friend,
+    as: 'SenderFriends',
+    foreignKey: 'senderID',
+    onDelete: 'CASCADE',
+});
+
+UserModel.belongsToMany(UserModel, {
+    through: Friend,
+    as: 'ReceiverFriends',
+    foreignKey: 'receiverID',
+    onDelete: 'CASCADE',
+});
 
 async function synchronize() {
     UserModel.sync();
   }
+
+export async function DeleteUser(userID) {
+    await UserModel.destroy({
+        where: {
+            userID: userID,
+        }
+    });
+}
 
 export async function CreateUser(username, email, hashedpassword, saltingrounds): Promise<void> {
     try {
@@ -77,8 +91,13 @@ export async function CreateUser(username, email, hashedpassword, saltingrounds)
     }
 }
 
+async function AcceptFriendRequest(friendID) {
+    const friendrequest = await Friend.findByPK(friendID);
+    friendrequest.status = 'accepted';
+    friendrequest.save();
+}
+
 async function CreateFriend(senderID, receiverID) {
-    console.log("Creating a friend relationship");
     const newfriend = await Friend.create({
         status: 'pending',
         senderID: senderID,
@@ -115,7 +134,6 @@ export async function SendFriendRequest(senderID, receivername): Promise<Number>
     const receiver = await RetrieveUser('username', receivername);
     if (receiver != null) {
         const receiverid = receiver.userID;
-        console.log("The user ID of the requested friend is: ", receiverid);
         const existing = await FindFriend(senderID, receiverid);
         if (existing == null) {
             await CreateFriend(senderID, receiverid);

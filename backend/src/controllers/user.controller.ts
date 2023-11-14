@@ -36,12 +36,25 @@ export class UserController extends BaseController {
         (req: express.Request, res: express.Response) => {
 			this.getUserInformation(req, res);
 		});
+		this.router.delete('/:username', this.requireAuth,
+        upload.single("image"), this.requireAuth,
+        (req: express.Request, res: express.Response) => {
+			this.deleteUser(req, res);
+		});
 		this.router.post('/friends', this.requireAuth,
         upload.single("image"),
         (req: express.Request, res: express.Response) => {
 			this.sendFriendRequest(req, res);
 		});
     }
+
+	async deleteUser(req: express.Request, res: express.Response) {
+		const sessiondata = req.session;
+		await database.DeleteUser(sessiondata.userID);
+		sessiondata.isLoggedIn = false;
+		sessiondata.userID = null;
+		res.status(200).json({ success: true, message: "User successfully deleted"});
+	}
 
 	async sendFriendRequest(req: express.Request, res: express.Response) {
 		console.log("Received request to add a friend");
