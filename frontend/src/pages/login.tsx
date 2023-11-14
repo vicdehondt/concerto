@@ -7,12 +7,18 @@ import { useRouter } from "next/router";
 
 const inter = Inter({ subsets: ['latin'] })
 
+const environment = {
+  backendURL: "http://localhost:8080"
+}
+if (process.env.NODE_ENV == "production") {
+  environment.backendURL = "https://api.concerto.dehondt.dev"
+}
 
 export default function Login() {
   const router = useRouter();
 
   function goToHome() {
-    router.replace("/")
+    // router.replace("/")
   }
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
@@ -20,7 +26,7 @@ export default function Login() {
     event.preventDefault();
     var formData = new FormData(event.currentTarget);
     const form_values = Object.fromEntries(formData);
-    const response = await fetch("http://localhost:8080/login", {
+    const response = await fetch(environment.backendURL + "/login", {
       method: 'POST',
       body: formData,
     })

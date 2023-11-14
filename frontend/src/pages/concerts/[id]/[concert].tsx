@@ -9,6 +9,13 @@ import type { InferGetServerSidePropsType, GetServerSideProps } from 'next'
 
 const inter = Inter({ subsets: ["latin"] });
 
+const environment = {
+  backendURL: "http://localhost:8080"
+}
+if (process.env.NODE_ENV == "production") {
+  environment.backendURL = "https://api.concerto.dehondt.dev"
+}
+
 type Event = {
   eventID: number
   title: string
@@ -21,7 +28,7 @@ type Event = {
 
 export const getServerSideProps = (async (context) => {
   const id = context.query.id
-  const res = await fetch(`http://localhost:8080/events/${id}`);
+  const res = await fetch(environment.backendURL + `/events/${id}`);
   const event = await res.json();
   return { props: { event } }
 }) satisfies GetServerSideProps<{

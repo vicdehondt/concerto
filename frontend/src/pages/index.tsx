@@ -10,6 +10,13 @@ import { useEffect } from "react";
 
 const inter = Inter({ subsets: ["latin"] });
 
+const environment = {
+  backendURL: "http://localhost:8080"
+}
+if (process.env.NODE_ENV == "production") {
+  environment.backendURL = "https://api.concerto.dehondt.dev"
+}
+
 type Event = {
   eventID: number
   title: string
@@ -21,7 +28,7 @@ type Event = {
 }
 
 export const getServerSideProps = (async (context) => {
-  const res = await fetch('http://localhost:8080/events')
+  const res = await fetch(environment.backendURL + "/events")
   const events = await res.json()
   return { props: { events } }
 }) satisfies GetServerSideProps<{
