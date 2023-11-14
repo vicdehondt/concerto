@@ -31,7 +31,7 @@ export const getServerSideProps = (async (context) => {
 export default function Home({events}: InferGetServerSidePropsType<typeof getServerSideProps>) {
 
   function showEvent(event: Event) {
-    return <EventCard title={event.title} location="Placeholder" amountAttending={event.maxPeople} dateAndTime={event.datetime} price={event.price} image={event.image} />
+    return <EventCard eventId={event.eventID} title={event.title} location="Placeholder" amountAttending={event.maxPeople} dateAndTime={event.datetime} price={event.price} image={event.image} />
   }
 
   function showEvents() {

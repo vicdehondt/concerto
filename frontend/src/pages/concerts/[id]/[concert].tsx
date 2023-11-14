@@ -4,18 +4,40 @@ import styles from "@/styles/Home.module.css";
 import { useRouter } from "next/router";
 import FriendInvites from "@/components/FriendInvite";
 import Banner from "@/components/Banner"
+import type { InferGetServerSidePropsType, GetServerSideProps } from 'next'
 // import Timetable from "/components/Timetable";
 
 const inter = Inter({ subsets: ["latin"] });
 
-export default function Event() {
+type Event = {
+  eventID: number
+  title: string
+  description: string
+  maxPeople: number
+  datetime: string
+  price: number
+  image: string
+}
+
+export const getServerSideProps = (async (context) => {
+  const id = context.query.id
+  const res = await fetch(`http://localhost:8080/events/${id}`);
+  const event = await res.json();
+  return { props: { event } }
+}) satisfies GetServerSideProps<{
+  event: Event
+}>
+
+
+export default function Concert({event}: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const router = useRouter();
   const title = "Concerto | " + router.query.concert;
 
   return (
     <>
       <Head>
-        <title>{title}</title>
+        {/* <title>{title}</title> */}
+        <title>yoooo</title>
         <meta name="description" content="Concert page." />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
@@ -30,13 +52,7 @@ export default function Event() {
               Description
             </div>
             <div className={styles.descriptionText}>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-            Praesent vel luctus mauris. Quisque finibus egestas elit eget laoreet.
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-            Mauris dictum tristique nisi, viverra congue ligula dapibus et.
-            Vestibulum lacinia felis in libero efficitur convallis.
-            Fusce mauris augue, pharetra fermentum vestibulum vel, gravida id nulla.
-            Proin orci nulla, luctus quis pretium elementum, molestie convallis eros.
+            {event.description}
             </div>
           </div>
           <div className={styles.timetableContainer}>
