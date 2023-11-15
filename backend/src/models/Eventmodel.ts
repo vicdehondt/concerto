@@ -1,6 +1,7 @@
 const { Sequelize, DataTypes, Op } = require('sequelize');
 import { STRING } from 'sequelize';
 import * as config from '../config'
+import { Friend } from './Usermodel';
 const fs = require('fs');
 
 const sequelize = new Sequelize({
@@ -45,7 +46,8 @@ const sequelize = new Sequelize({
   });
 
   async function synchronize() {
-    EventModel.sync()
+    EventModel.sync();
+    Friend.sync();
   }
 
   export async function CreateEvent(title, description, people, date, price, image) {

@@ -1,25 +1,15 @@
 import * as express from 'express';
 import { BaseController } from './base.controller';
 import * as database from '../models/Usermodel';
-import * as multer from "multer";
+import {createMulter} from "./multerConfig"
+import { getCorsConfiguration } from './corsConfig';
 const fs = require('fs');
 
-const cors = require("cors");
+const userImagePath = './public/users';
 
-const environment = {
-	frontendURL: "http://localhost:3000"
-}
-if (process.env.NODE_ENV == "production") {
-	environment.frontendURL = "https://concerto.dehondt.dev"
-}
+const cors = getCorsConfiguration();
 
-const corsOptions = {
-	// https://www.npmjs.com/package/cors
-	"origin": environment.frontendURL,
-	"methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
-	"preflightContinue": false,
-	"optionsSuccessStatus": 204
-}
+const upload = createMulter(userImagePath);
 
 export class UserController extends BaseController {
 
@@ -28,13 +18,27 @@ export class UserController extends BaseController {
     }
 
     initializeRoutes(): void {
-		this.router.get('/:username', cors(corsOptions), this.requireAuth,
-        // upload.single("image"),
-        (req: express.Request, res: express.Response) => {
-					res.set('Access-Control-Allow-Credentials', 'true');
-					this.getUserInformation(req, res);
-		});
+		this.router.get('/:username', cors, this.requireAuth,
+			upload.single("image"),
+			(req: express.Request, res: express.Response) => {
+				res.set('Access-Control-Allow-Credentials', 'true');
+				this.getUserInformation(req, res);
+			});
+		this.router.delete('/:username', cors, this.requireAuth,
+			upload.single("image"), this.requireAuth,
+			(req: express.Request, res: express.Response) => {
+				res.set('Access-Control-Allow-Credentials', 'true');
+				this.deleteUser(req, res);
+			});
     }
+
+	async deleteUser(req: express.Request, res: express.Response) {
+		const sessiondata = req.session;
+		await database.DeleteUser(sessiondata.userID);
+		sessiondata.isLoggedIn = false;
+		sessiondata.userID = null;
+		res.status(200).json({ success: true, message: "User successfully deleted"});
+	}
 
 	async getUserInformation(req: express.Request, res: express.Response) {
 		const sessiondata = req.session;
