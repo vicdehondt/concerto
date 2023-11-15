@@ -2,30 +2,15 @@ import * as express from 'express';
 import { BaseController } from './base.controller';
 import * as database from '../models/Eventmodel';
 import {body, validationResult} from "express-validator"
-import * as multer from "multer";
+import {createMulter} from "./multerConfig";
+import { getCorsConfiguration } from './corsConfig';
 import * as crypto from "crypto"
 
-const cors = require("cors");
+const eventImagePath = './public/events';
 
-const EventImagePath = './public/events';
+const cors = getCorsConfiguration();
 
-// Set up storage with a custom filename function
-const storage = multer.diskStorage({
-	destination: function (req, file, cb) {
-	  // Specify the destination folder where the file will be saved
-	  cb(null, EventImagePath);
-	},
-	filename: function (req, file, cb) {
-	  // Customize the filename here
-	  const originalname = file.originalname;
-	  const parts = originalname.split(".");
-	  const random = crypto.randomUUID(); // Create unique identifier for each image
-	  const newname = random + "." + parts[parts.length - 1];
-	  cb(null, newname);
-	}
-  });
-
-const upload = multer({ storage: storage});
+const upload = createMulter(eventImagePath);
 
 export class EventController extends BaseController {
 
@@ -34,46 +19,34 @@ export class EventController extends BaseController {
 	}
 
 	initializeRoutes(): void {
-		const environment = {
-			frontendURL: "http://localhost:3000"
-		}
-		if (process.env.NODE_ENV == "production") {
-			environment.frontendURL = "https://concerto.dehondt.dev"
-		}
-		const corsOptions = {
-			// https://www.npmjs.com/package/cors
-			"origin": environment.frontendURL,
-			"methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
-			"preflightContinue": false,
-			"optionsSuccessStatus": 204
-		}
-		this.router.get('/', cors(corsOptions), (req: express.Request, res: express.Response) => {
+		this.router.get('/', cors, (req: express.Request, res: express.Response) => {
 			res.set('Access-Control-Allow-Credentials', 'true');
 			this.getAllEvents(req, res);
 		});
-		this.router.get('/:id', cors(corsOptions), (req: express.Request, res: express.Response) => {
+		this.router.get('/:id', cors, (req: express.Request, res: express.Response) => {
 			res.set('Access-Control-Allow-Credentials', 'true');
 			this.getEvent(req, res);
 		});
-		this.router.post("/", cors(corsOptions),
-		upload.single("image"),
-		[
-			body("title").trim().trim().notEmpty(),
-			body("description").trim().notEmpty(),
-			body("maxpeople").trim().notEmpty(),
-			body("price").trim().notEmpty(),
-			body("datetime").trim().notEmpty(),
-		],
-		(req: express.Request, res: express.Response) => {
-			this.addPost(req, res);
-		});
+		this.router.post("/", cors,
+			upload.single("image"),
+			[
+				body("title").trim().trim().notEmpty(),
+				body("description").trim().notEmpty(),
+				body("maxpeople").trim().notEmpty(),
+				body("price").trim().notEmpty(),
+				body("datetime").trim().notEmpty(),
+			],
+			(req: express.Request, res: express.Response) => {
+				res.set('Access-Control-Allow-Credentials', 'true');
+				this.addPost(req, res);
+			});
 
-		this.router.get("/filter", cors(corsOptions),
-		upload.single("image"),
-		(req: express.Request, res: express.Response) => {
-			res.set('Access-Control-Allow-Credentials', 'true');
-			this.filterEvents(req, res);
-		})
+		this.router.get("/filter", cors,
+			upload.single("image"),
+			(req: express.Request, res: express.Response) => {
+				res.set('Access-Control-Allow-Credentials', 'true');
+				this.filterEvents(req, res);
+			});
     }
 
 	async getAllEvents(req: express.Request, res: express.Response) {
@@ -105,7 +78,7 @@ export class EventController extends BaseController {
 			res.status(200).json({ success: true, message: 'Event created successfully' });
 		} else {
 			if (req.file) {
-				this.DeleteFile(EventImagePath, req.file);
+				this.DeleteFile(eventImagePath, req.file);
 			}
 			res.status(400).json({success: false, errors: result.array()});
 		}

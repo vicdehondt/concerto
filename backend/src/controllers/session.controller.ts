@@ -2,48 +2,18 @@ import * as express from 'express';
 import { BaseController } from './base.controller';
 import * as database from '../models/Usermodel';
 import {body, validationResult} from "express-validator"
-import * as multer from "multer";
+import {createMulter} from "./multerConfig"
+import { getCorsConfiguration } from './corsConfig';
 import * as bcrypt from "bcrypt";
 const fs = require('fs');
 
-const cors = require("cors");
+const sessionFilePath = './public/sessions';
 
-const UserImagePath = './public/users';
+const upload = createMulter(sessionFilePath)
 
-const environment = {
-	frontendURL: "http://localhost:3000"
-}
-if (process.env.NODE_ENV == "production") {
-	environment.frontendURL = "https://concerto.dehondt.dev"
-}
-
-// Set up storage with a custom filename function
-const storage = multer.diskStorage({
-	destination: function (req, file, cb) {
-	  // Specify the destination folder where the file will be saved
-	  cb(null, UserImagePath);
-	},
-	filename: function (req, file, cb) {
-	  // Customize the filename here
-	  const originalname = file.originalname;
-	  const parts = originalname.split(".");
-	  const random = crypto.randomUUID(); // Create unique identifier for each image
-	  const newname = random + "." + parts[parts.length - 1];
-	  cb(null, newname);
-	}
-  });
-
-const upload = multer({ storage: storage});
+const cors = getCorsConfiguration();
 
 const saltingRounds = 12;
-
-const corsOptions = {
-	// https://www.npmjs.com/package/cors
-	"origin": environment.frontendURL,
-	"methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
-	"preflightContinue": false,
-	"optionsSuccessStatus": 204
-}
 
 export class SessionController extends BaseController {
 
@@ -53,29 +23,26 @@ export class SessionController extends BaseController {
 
     initializeRoutes(): void {
 		// Route to let users register
-		this.router.post("/register",
-				cors(corsOptions),
-        upload.single("image"),
-        (req: express.Request, res: express.Response) => {
-					res.set('Access-Control-Allow-Credentials', 'true');
-					this.addUser(req, res);
-		});
+        this.router.post("/register", cors,
+			upload.single("image"),
+			(req: express.Request, res: express.Response) => {
+				res.set('Access-Control-Allow-Credentials', 'true');
+				this.addUser(req, res);
+			});
 		// Route to handle login
-		this.router.post("/login",
-		cors(corsOptions),
-		upload.single("image"),
-		(req: express.Request, res: express.Response) => {
-			res.set('Access-Control-Allow-Credentials', 'true');
-			this.loginUser(req, res);
-		});
+		this.router.post("/login", cors,
+			upload.single("image"),
+			(req: express.Request, res: express.Response) => {
+				res.set('Access-Control-Allow-Credentials', 'true');
+				this.loginUser(req, res);
+			});
 		// Route to handle logout
-		this.router.post("/logout", this.requireAuth,
-		cors(corsOptions),
-		upload.single("image"),
-		(req: express.Request, res: express.Response) => {
-			res.set('Access-Control-Allow-Credentials', 'true');
-			this.logoutUser(req, res);
-		});
+		this.router.post("/logout", cors, this.requireAuth,
+			upload.single("image"),
+			(req: express.Request, res: express.Response) => {
+				res.set('Access-Control-Allow-Credentials', 'true');
+				this.logoutUser(req, res);
+			});
     }
 
 	async loginUser(req: express.Request, res: express.Response) {
