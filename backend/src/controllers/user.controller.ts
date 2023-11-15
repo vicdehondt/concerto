@@ -63,7 +63,7 @@ export class UserController extends BaseController {
 		if (result == database.FriendInviteResponses.SENT) {
 			res.status(200).json({succes: true, message: "A friend request has been sent."});
 		} else if (result == database.FriendInviteResponses.ALREADYFRIEND) {
-			res.status(400).json({ succes: false, message: "The other user already has a friend relationship"});
+			res.status(400).json({ succes: false, message: "There is already a friend relation with this user"});
 		} else {
 			res.status(400).json({ succes: false, message: "The other user was not found"});
 		}

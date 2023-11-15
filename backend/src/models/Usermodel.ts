@@ -97,9 +97,32 @@ async function AcceptFriendRequest(friendID) {
     friendrequest.save();
 }
 
+export async function GetAllFriends(userID) {
+    const friends = await Friend.findAll({
+        attributes: ['receiverID', 'senderID'],
+        where: {
+            status: 'accepted',
+            [Op.or]: [
+                { receiverID: userID },
+                { senderID: userID }
+            ]
+        }
+    });
+    const result = await friends.map( async friendrelationship => {
+        var friendID = null;
+        if (friendrelationship.receiverID == userID) {
+            friendID = friendrelationship.senderID;
+        } else {
+            friendID = friendrelationship.receiverID;
+        } const friend = await RetrieveUser('userID', friendID);
+        return friend;
+    });
+    return result;
+}
+
 async function CreateFriend(senderID, receiverID) {
     const newfriend = await Friend.create({
-        status: 'pending',
+        status: 'accepted',
         senderID: senderID,
         receiverID: receiverID,
     });
