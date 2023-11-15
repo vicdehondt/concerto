@@ -28,7 +28,7 @@ export class EventController extends BaseController {
 			this.getEvent(req, res);
 		});
 		this.router.post("/", cors,
-			upload.single("image"),
+			upload.fields([{ name: 'banner', maxCount: 1}, { name: 'eventpicture', maxCount: 1}]),
 			[
 				body("title").trim().trim().notEmpty(),
 				body("description").trim().notEmpty(),
@@ -42,7 +42,7 @@ export class EventController extends BaseController {
 			});
 
 		this.router.get("/filter", cors,
-			upload.single("image"),
+			upload.none(),
 			(req: express.Request, res: express.Response) => {
 				res.set('Access-Control-Allow-Credentials', 'true');
 				this.filterEvents(req, res);
@@ -70,15 +70,21 @@ export class EventController extends BaseController {
 	async addPost(req: express.Request, res: express.Response): Promise<void> {
 		console.log("Received post request to create event");
 		const result = validationResult(req)
-		if (result.isEmpty() && req.file) {
+		const bannerpictures = req.files['banner']
+		const eventpictures = req.files['eventpicture']
+		if (result.isEmpty() && bannerpictures && eventpictures) {
 			const {title, eventid, description, maxpeople, datetime, price} = req.body;
-			const imagepath = "http://localhost:8080/events/" + req.file.filename;
-			database.CreateEvent(title, description, maxpeople, datetime, price, imagepath);
+			const bannerpath = "http://localhost:8080/events/" + bannerpictures[0].filename;
+			const picturepath = "http://localhost:8080/events/" + eventpictures[0].filename;
+			database.CreateEvent(title, description, maxpeople, datetime, price, bannerpath, picturepath);
 			console.log("Event created succesfully");
 			res.status(200).json({ success: true, message: 'Event created successfully' });
 		} else {
-			if (req.file) {
-				this.DeleteFile(eventImagePath, req.file);
+			if (bannerpictures) {
+				this.DeleteFile(eventImagePath, bannerpictures[0]);
+			}
+			if (eventpictures) {
+				this.DeleteFile(eventImagePath, eventpictures[0]);
 			}
 			res.status(400).json({success: false, errors: result.array()});
 		}

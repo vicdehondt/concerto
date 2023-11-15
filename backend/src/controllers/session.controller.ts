@@ -24,21 +24,21 @@ export class SessionController extends BaseController {
     initializeRoutes(): void {
 		// Route to let users register
         this.router.post("/register", cors,
-			upload.single("image"),
+			upload.none(),
 			(req: express.Request, res: express.Response) => {
 				res.set('Access-Control-Allow-Credentials', 'true');
 				this.addUser(req, res);
 			});
 		// Route to handle login
 		this.router.post("/login", cors,
-			upload.single("image"),
+			upload.none(),
 			(req: express.Request, res: express.Response) => {
 				res.set('Access-Control-Allow-Credentials', 'true');
 				this.loginUser(req, res);
 			});
 		// Route to handle logout
 		this.router.post("/logout", cors, this.requireAuth,
-			upload.single("image"),
+			upload.none(),
 			(req: express.Request, res: express.Response) => {
 				res.set('Access-Control-Allow-Credentials', 'true');
 				this.logoutUser(req, res);
