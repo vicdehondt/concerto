@@ -99,5 +99,20 @@ const sequelize = new Sequelize({
     }
   }
 
+  export async function SearchEvents(searchvalue){
+    try {
+      const Events = await EventModel.findAll({
+      where: {
+        title: { //for now only searching on title, need to add location...
+            [Op.like]: '%' + searchvalue + '%',
+          }
+        }
+      });
+      return Events;
+    } catch (error) {
+      console.error("There was an error finding an event: ", error);
+    }
+  }
+
   synchronize()
 

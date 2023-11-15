@@ -77,6 +77,11 @@ export class EventController extends BaseController {
 		(req: express.Request, res: express.Response) => {
 			this.filterEvents(req, res);
 		})
+		this.router.get("/search", 
+		upload.single("image"),
+		(req: express.Request, res: express.Response) => {
+			this.searchEvents(req, res);
+		});
     }
 
 	async retrieveGet(req: express.Request, res: express.Response): Promise<void> {
@@ -145,4 +150,20 @@ export class EventController extends BaseController {
 			}
 		}
 	}
+
+	async searchEvents(req: express.Request, res: express.Response): Promise<void> {
+		console.log("Accepted the incoming search request");
+		const searchValue = req.query.searchvalue;
+		if (searchValue) {
+			const events = await database.SearchEvents(searchValue);
+			if (events) {
+				res.status(200).json(events);
+			} else {
+				res.status(404).json({succes: false, error: "No event was found with this search value"})
+			}
+		} else {
+			res.status(400).json({succes: false, error: "No search value was provided!" });
+		}
+	}
+
 }
