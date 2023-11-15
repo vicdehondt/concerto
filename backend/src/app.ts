@@ -5,9 +5,12 @@ import { UserController } from './controllers/user.controller';
 import { SessionController } from './controllers/session.controller';
 import { FriendController } from './controllers/friend.controller';
 const session = require("express-session");
+var FileStore = require('session-file-store')(session);
 import exp = require('constants');
 
 // const cookieParser = require("cookie-parser"); // Uit video van cookies: https://www.youtube.com/watch?v=34wC1C61lg0&t=1214s&ab_channel=SteveGriffith-Prof3ssorSt3v3
+
+var fileStoreOptions = {path: './src/sessions'};
 
 export class App {
     app: express.Application;
@@ -19,6 +22,7 @@ export class App {
         this.app = express();
         // this.app.use(cookieParser()); // Ook uit video van cookies.
         this.app.use(session({
+            store: new FileStore(fileStoreOptions),
             secret: 'secret-field',
             resave: false,
             saveUninitialized: true,
