@@ -1,30 +1,13 @@
 import * as express from 'express';
 import { BaseController } from './base.controller';
 import * as database from '../models/Usermodel';
-import {body, validationResult} from "express-validator"
-import * as multer from "multer";
-import * as bcrypt from "bcrypt";
+import {body, validationResult} from "express-validator";
+import {createMulter} from "./multiferConfig"
 const fs = require('fs');
 
-const UserImagePath = './public/users';
+const friendFilePath = './public/friends';
 
-// Set up storage with a custom filename function
-const storage = multer.diskStorage({
-	destination: function (req, file, cb) {
-	  // Specify the destination folder where the file will be saved
-	  cb(null, UserImagePath);
-	},
-	filename: function (req, file, cb) {
-	  // Customize the filename here
-	  const originalname = file.originalname;
-	  const parts = originalname.split(".");
-	  const random = crypto.randomUUID(); // Create unique identifier for each image
-	  const newname = random + "." + parts[parts.length - 1];
-	  cb(null, newname);
-	}
-  });
-
-const upload = multer({ storage: storage });
+const upload = createMulter(friendFilePath);
 
 export class FriendController extends BaseController {
 

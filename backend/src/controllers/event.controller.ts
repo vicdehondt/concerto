@@ -2,30 +2,14 @@ import * as express from 'express';
 import { BaseController } from './base.controller';
 import * as database from '../models/Eventmodel';
 import {body, validationResult} from "express-validator"
-import * as multer from "multer";
+import {createMulter} from "./multiferConfig"
 import * as crypto from "crypto"
 
 const cors = require("cors");
 
-const EventImagePath = './public/events';
+const eventImagePath = './public/events';
 
-// Set up storage with a custom filename function
-const storage = multer.diskStorage({
-	destination: function (req, file, cb) {
-	  // Specify the destination folder where the file will be saved
-	  cb(null, EventImagePath);
-	},
-	filename: function (req, file, cb) {
-	  // Customize the filename here
-	  const originalname = file.originalname;
-	  const parts = originalname.split(".");
-	  const random = crypto.randomUUID(); // Create unique identifier for each image
-	  const newname = random + "." + parts[parts.length - 1];
-	  cb(null, newname);
-	}
-  });
-
-const upload = multer({ storage: storage});
+const upload = createMulter(eventImagePath);
 
 export class EventController extends BaseController {
 
@@ -102,7 +86,7 @@ export class EventController extends BaseController {
 			res.status(200).json({ success: true, message: 'Event created successfully' });
 		} else {
 			if (req.file) {
-				this.DeleteFile(EventImagePath, req.file);
+				this.DeleteFile(eventImagePath, req.file);
 			}
 			res.status(400).json({success: false, errors: result.array()});
 		}
