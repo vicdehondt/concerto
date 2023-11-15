@@ -37,7 +37,11 @@ const sequelize = new Sequelize({
       type: DataTypes.REAL,
       allowNull: false
     },
-    image: {
+    banner: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    profilepicture: {
       type: DataTypes.STRING,
       allowNull: false
     }
@@ -50,7 +54,7 @@ const sequelize = new Sequelize({
     Friend.sync();
   }
 
-  export async function CreateEvent(title, description, people, date, price, image) {
+  export async function CreateEvent(title, description, people, date, price, bannerpath, picturepath) {
     try {
       const Event = await EventModel.create({
         title: title,
@@ -58,7 +62,8 @@ const sequelize = new Sequelize({
         maxPeople: people,
         datetime: date,
         price: price,
-        image: image
+        banner: bannerpath,
+        profilepicture: picturepath,
       });
     } catch (error) {
       console.error("There was an error creating an event: ", error);

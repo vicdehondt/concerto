@@ -20,13 +20,13 @@ export class FriendController extends BaseController {
 
     initializeRoutes(): void {
         this.router.get("/",
-            upload.single("image"), cors, this.requireAuth,
+            upload.none(), cors, this.requireAuth,
             (req: express.Request, res: express.Response) => {
                 res.set('Access-Control-Allow-Credentials', 'true');
                 this.getAllFriends(req, res);
             });
         this.router.post('/', cors, this.requireAuth,
-            upload.single("image"),
+            upload.none(),
             (req: express.Request, res: express.Response) => {
                 res.set('Access-Control-Allow-Credentials', 'true');
                 this.sendFriendRequest(req, res);
