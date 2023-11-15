@@ -1,5 +1,5 @@
 const { Sequelize, DataTypes, Op } = require('sequelize');
-import * as config from '../config'
+import * as config from '../configs/config'
 
 const sequelize = new Sequelize({
     dialect: config.databaseDialect,

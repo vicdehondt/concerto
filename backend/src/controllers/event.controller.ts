@@ -2,8 +2,8 @@ import * as express from 'express';
 import { BaseController } from './base.controller';
 import * as database from '../models/Eventmodel';
 import {body, validationResult} from "express-validator"
-import {createMulter} from "./multerConfig";
-import { getCorsConfiguration } from './corsConfig';
+import {createMulter} from "../configs/multerConfig";
+import { getCorsConfiguration } from '../configs/corsConfig';
 import * as crypto from "crypto"
 
 const eventImagePath = './public/events';

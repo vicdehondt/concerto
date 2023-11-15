@@ -1,8 +1,8 @@
 import * as express from 'express';
 import { BaseController } from './base.controller';
 import * as database from '../models/Usermodel';
-import {createMulter} from "./multerConfig"
-import { getCorsConfiguration } from './corsConfig';
+import {createMulter} from "../configs/multerConfig"
+import { getCorsConfiguration } from '../configs/corsConfig';
 const fs = require('fs');
 
 const userImagePath = './public/users';

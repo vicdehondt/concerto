@@ -2,8 +2,8 @@ import * as express from 'express';
 import { BaseController } from './base.controller';
 import * as database from '../models/Usermodel';
 import {body, validationResult} from "express-validator"
-import {createMulter} from "./multerConfig"
-import { getCorsConfiguration } from './corsConfig';
+import {createMulter} from "../configs/multerConfig"
+import { getCorsConfiguration } from '../configs/corsConfig';
 import * as bcrypt from "bcrypt";
 const fs = require('fs');
 
