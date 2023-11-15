@@ -21,13 +21,11 @@ export class UserController extends BaseController {
 		this.router.get('/:username', cors, this.requireAuth,
 			upload.single("image"),
 			(req: express.Request, res: express.Response) => {
-				res.set('Access-Control-Allow-Credentials', 'true');
 				this.getUserInformation(req, res);
 			});
 		this.router.delete('/:username', cors, this.requireAuth,
 			upload.single("image"), this.requireAuth,
 			(req: express.Request, res: express.Response) => {
-				res.set('Access-Control-Allow-Credentials', 'true');
 				this.deleteUser(req, res);
 			});
     }
