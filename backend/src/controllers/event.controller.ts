@@ -37,6 +37,7 @@ export class EventController extends BaseController {
 				body("datetime").trim().notEmpty(),
 			],
 			(req: express.Request, res: express.Response) => {
+				res.set('Access-Control-Allow-Credentials', 'true');
 				this.addPost(req, res);
 			});
 
