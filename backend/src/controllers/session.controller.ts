@@ -3,12 +3,15 @@ import { BaseController } from './base.controller';
 import * as database from '../models/Usermodel';
 import {body, validationResult} from "express-validator"
 import {createMulter} from "./multerConfig"
+import { getCorsConfiguration } from './corsConfig';
 import * as bcrypt from "bcrypt";
 const fs = require('fs');
 
 const sessionFilePath = './public/sessions';
 
 const upload = createMulter(sessionFilePath)
+
+const cors = getCorsConfiguration();
 
 const saltingRounds = 12;
 
@@ -20,23 +23,23 @@ export class SessionController extends BaseController {
 
     initializeRoutes(): void {
 		// Route to let users register
-        this.router.post("/register",
-        upload.single("image"),
-        (req: express.Request, res: express.Response) => {
-			this.addUser(req, res);
-		});
+        this.router.post("/register", cors,
+			upload.single("image"),
+			(req: express.Request, res: express.Response) => {
+				this.addUser(req, res);
+			});
 		// Route to handle login
-		this.router.post("/login",
-		upload.single("image"),
-		(req: express.Request, res: express.Response) => {
-			this.loginUser(req, res);
-		});
+		this.router.post("/login", cors,
+			upload.single("image"),
+			(req: express.Request, res: express.Response) => {
+				this.loginUser(req, res);
+			});
 		// Route to handle logout
-		this.router.post("/logout", this.requireAuth,
-		upload.single("image"),
-		(req: express.Request, res: express.Response) => {
-			this.logoutUser(req, res);
-		});
+		this.router.post("/logout", cors, this.requireAuth,
+			upload.single("image"),
+			(req: express.Request, res: express.Response) => {
+				this.logoutUser(req, res);
+			});
     }
 
 	async loginUser(req: express.Request, res: express.Response) {

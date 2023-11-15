@@ -2,12 +2,13 @@ import * as express from 'express';
 import { BaseController } from './base.controller';
 import * as database from '../models/Eventmodel';
 import {body, validationResult} from "express-validator"
-import {createMulter} from "./multerConfig"
+import {createMulter} from "./multerConfig";
+import { getCorsConfiguration } from './corsConfig';
 import * as crypto from "crypto"
 
-const cors = require("cors");
-
 const eventImagePath = './public/events';
+
+const cors = getCorsConfiguration();
 
 const upload = createMulter(eventImagePath);
 
@@ -18,26 +19,13 @@ export class EventController extends BaseController {
 	}
 
 	initializeRoutes(): void {
-		const environment = {
-			frontendURL: "http://localhost:3000"
-		}
-		if (process.env.NODE_ENV == "production") {
-			environment.frontendURL = "http://concerto.dehondt.dev"
-		}
-		const corsOptions = {
-			// https://www.npmjs.com/package/cors
-			"origin": environment.frontendURL,
-			"methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
-			"preflightContinue": false,
-			"optionsSuccessStatus": 204
-		}
-		this.router.get('/', cors(corsOptions), (req: express.Request, res: express.Response) => {
+		this.router.get('/', cors, (req: express.Request, res: express.Response) => {
 			this.getAllEvents(req, res);
 		});
-		this.router.get('/:id', cors(corsOptions), (req: express.Request, res: express.Response) => {
+		this.router.get('/:id', cors, (req: express.Request, res: express.Response) => {
 			this.getEvent(req, res);
 		});
-		this.router.post("/", cors(corsOptions),
+		this.router.post("/", cors,
 		upload.single("image"),
 		[
 			body("title").trim().trim().notEmpty(),
@@ -50,7 +38,7 @@ export class EventController extends BaseController {
 			this.addPost(req, res);
 		});
 
-		this.router.get("/filter", cors(corsOptions),
+		this.router.get("/filter", cors,
 		upload.single("image"),
 		(req: express.Request, res: express.Response) => {
 			this.filterEvents(req, res);

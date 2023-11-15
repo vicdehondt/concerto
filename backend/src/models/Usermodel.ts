@@ -52,22 +52,36 @@ export const Friend = sequelize.define('Friend',{
     },
 })
 
+// FriendModel.js
+Friend.belongsTo(UserModel, {
+    foreignKey: 'senderID',
+    as: 'sender',
+    onDelete: 'CASCADE',
+});
+
+Friend.belongsTo(UserModel, {
+    foreignKey: 'receiverID',
+    as: 'receiver',
+    onDelete: 'CASCADE',
+});
+
 UserModel.belongsToMany(UserModel, {
     through: Friend,
-    as: 'SenderFriends',
+    as: 'sender',
     foreignKey: 'senderID',
     onDelete: 'CASCADE',
 });
 
 UserModel.belongsToMany(UserModel, {
     through: Friend,
-    as: 'ReceiverFriends',
+    as: 'receiver',
     foreignKey: 'receiverID',
     onDelete: 'CASCADE',
 });
 
 async function synchronize() {
     UserModel.sync();
+    Friend.sync();
   }
 
 export async function DeleteUser(userID) {
@@ -100,6 +114,10 @@ async function AcceptFriendRequest(friendID) {
 export async function GetAllFriends(userID) {
     const friends = await Friend.findAll({
         attributes: ['receiverID', 'senderID'],
+        include: [
+            { model: UserModel, as: 'receiver', attributes: ['userID', 'username', 'image' ]},
+            { model: UserModel, as: 'sender', attributes: ['userID', 'username', 'image' ]},
+        ],
         where: {
             status: 'accepted',
             [Op.or]: [
@@ -108,13 +126,13 @@ export async function GetAllFriends(userID) {
             ]
         }
     });
-    const result = await friends.map( async friendrelationship => {
-        var friendID = null;
+    const result = friends.map(friendrelationship => {
+        var friend = null;
         if (friendrelationship.receiverID == userID) {
-            friendID = friendrelationship.senderID;
+            friend = friendrelationship.sender;
         } else {
-            friendID = friendrelationship.receiverID;
-        } const friend = await RetrieveUser('userID', friendID);
+            friend = friendrelationship.receiver;
+        };
         return friend;
     });
     return result;
@@ -128,7 +146,7 @@ async function CreateFriend(senderID, receiverID) {
     });
 }
 
-async function FindFriend(senderID, receiverID) {
+async function FindFriend(senderID, receiverID) { // Procedure does not work in 2 way;
     const existing = await Friend.findOne({
         where: {
             [Op.or]: [
@@ -136,7 +154,9 @@ async function FindFriend(senderID, receiverID) {
                     [Op.and]: [
                         { receiverID: senderID },
                         { senderID: receiverID },
-                    ], [Op.and]: [
+                    ]
+                }, {
+                    [Op.and]: [
                         { receiverID: receiverID },
                         { senderID: senderID },
                     ]
@@ -151,18 +171,23 @@ export const FriendInviteResponses = {
     SENT: 0,
     ALREADYFRIEND: 1,
     USERNOTFOUND: 2,
+    ILLEGALREQUEST: 3,
 }
 
 export async function SendFriendRequest(senderID, receivername): Promise<Number> {
     const receiver = await RetrieveUser('username', receivername);
     if (receiver != null) {
         const receiverid = receiver.userID;
-        const existing = await FindFriend(senderID, receiverid);
-        if (existing == null) {
-            await CreateFriend(senderID, receiverid);
-            return FriendInviteResponses.SENT;
+        if (receiverid != senderID) {
+            const existing = await FindFriend(senderID, receiverid);
+            if (existing == null) {
+                await CreateFriend(senderID, receiverid);
+                return FriendInviteResponses.SENT;
+            } else {
+                return FriendInviteResponses.ALREADYFRIEND;
+            }
         } else {
-            return FriendInviteResponses.ALREADYFRIEND;
+            return FriendInviteResponses.ILLEGALREQUEST;
         }
     } else {
         return FriendInviteResponses.USERNOTFOUND;
