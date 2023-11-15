@@ -21,6 +21,7 @@ export class App {
             secret: 'secret-field',
             resave: false,
             saveUninitialized: true,
+            rolling: true,
             cookie: {
                 maxAge: 600000,
             },
