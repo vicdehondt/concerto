@@ -32,7 +32,6 @@ export class EventController extends BaseController {
 			[
 				body("title").trim().trim().notEmpty(),
 				body("description").trim().notEmpty(),
-				body("maxpeople").trim().notEmpty(),
 				body("price").trim().notEmpty(),
 				body("datetime").trim().notEmpty(),
 			],
@@ -73,10 +72,10 @@ export class EventController extends BaseController {
 		const bannerpictures = req.files['banner']
 		const eventpictures = req.files['eventpicture']
 		if (result.isEmpty() && bannerpictures && eventpictures) {
-			const {title, eventid, description, maxpeople, datetime, price} = req.body;
+			const {title, eventid, description, datetime, price} = req.body;
 			const bannerpath = "http://localhost:8080/events/" + bannerpictures[0].filename;
 			const picturepath = "http://localhost:8080/events/" + eventpictures[0].filename;
-			database.CreateEvent(title, description, maxpeople, datetime, price, bannerpath, picturepath);
+			database.CreateEvent(title, description, datetime, price, bannerpath, picturepath);
 			console.log("Event created succesfully");
 			res.status(200).json({ success: true, message: 'Event created successfully' });
 		} else {
