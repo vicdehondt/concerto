@@ -2,7 +2,7 @@ import * as express from 'express';
 import { BaseController } from './base.controller';
 import * as database from '../models/Usermodel';
 import {body, validationResult} from "express-validator";
-import {createMulter} from "./multiferConfig"
+import {createMulter} from "./multerConfig"
 const fs = require('fs');
 
 const friendFilePath = './public/friends';

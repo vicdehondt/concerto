@@ -2,7 +2,7 @@ import * as express from 'express';
 import { BaseController } from './base.controller';
 import * as database from '../models/Usermodel';
 import {body, validationResult} from "express-validator"
-import {createMulter} from "./multiferConfig"
+import {createMulter} from "./multerConfig"
 import * as bcrypt from "bcrypt";
 const fs = require('fs');
 

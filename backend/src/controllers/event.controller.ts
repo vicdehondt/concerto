@@ -2,7 +2,7 @@ import * as express from 'express';
 import { BaseController } from './base.controller';
 import * as database from '../models/Eventmodel';
 import {body, validationResult} from "express-validator"
-import {createMulter} from "./multiferConfig"
+import {createMulter} from "./multerConfig"
 import * as crypto from "crypto"
 
 const cors = require("cors");
