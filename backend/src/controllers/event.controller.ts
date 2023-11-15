@@ -20,29 +20,32 @@ export class EventController extends BaseController {
 
 	initializeRoutes(): void {
 		this.router.get('/', cors, (req: express.Request, res: express.Response) => {
+			res.set('Access-Control-Allow-Credentials', 'true');
 			this.getAllEvents(req, res);
 		});
 		this.router.get('/:id', cors, (req: express.Request, res: express.Response) => {
+			res.set('Access-Control-Allow-Credentials', 'true');
 			this.getEvent(req, res);
 		});
 		this.router.post("/", cors,
-		upload.single("image"),
-		[
-			body("title").trim().trim().notEmpty(),
-			body("description").trim().notEmpty(),
-			body("maxpeople").trim().notEmpty(),
-			body("price").trim().notEmpty(),
-			body("datetime").trim().notEmpty(),
-		],
-		(req: express.Request, res: express.Response) => {
-			this.addPost(req, res);
-		});
+			upload.single("image"),
+			[
+				body("title").trim().trim().notEmpty(),
+				body("description").trim().notEmpty(),
+				body("maxpeople").trim().notEmpty(),
+				body("price").trim().notEmpty(),
+				body("datetime").trim().notEmpty(),
+			],
+			(req: express.Request, res: express.Response) => {
+				this.addPost(req, res);
+			});
 
 		this.router.get("/filter", cors,
-		upload.single("image"),
-		(req: express.Request, res: express.Response) => {
-			this.filterEvents(req, res);
-		})
+			upload.single("image"),
+			(req: express.Request, res: express.Response) => {
+				res.set('Access-Control-Allow-Credentials', 'true');
+				this.filterEvents(req, res);
+			});
     }
 
 	async getAllEvents(req: express.Request, res: express.Response) {

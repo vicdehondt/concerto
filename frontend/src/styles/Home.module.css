@@ -79,3 +79,79 @@
 .concertPage .title {
   padding: 20px;
 }
+
+.registerPage {
+  background-color: #e8f7ee;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100vh;
+  justify-content: center;
+}
+
+.registerPage h1{
+  color: black;
+}
+
+.registerPage .registerForm {
+  display: flex;
+  background-color: rgb(242, 240, 240);
+  flex-direction: column;
+  border: 2px solid rgba(44, 44, 44, 0.765);
+  border-radius: 5%;
+  padding: 50px 30px;
+  box-shadow: 0px 2px 3px black;
+  align-items: center;
+  justify-content: center;
+}
+
+.registerInput {
+  height: 70px;
+  color: white;
+  width: 400px;
+  margin: 20px;
+  border-radius: 40px;
+  font-size: x-large;
+  text-align: center;
+  background-color: #0B2027;
+}
+
+.loginPage {
+  height: 100vh;
+  background-color: #e8f7ee;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.loginPage h1{
+  color: black;
+}
+
+.loginPage .loginForm {
+  display: flex;
+  background-color: rgb(242, 240, 240);
+  flex-direction: column;
+  border: 2px solid rgba(44, 44, 44, 0.765);
+  border-radius: 5%;
+  padding: 50px 30px;
+  align-items: center;
+  box-shadow: 0px 2px 3px black;
+  justify-content: center;
+}
+
+.submitButton {
+  width: 200px;
+  border-width: 0;
+  cursor: pointer;
+}
+
+.submitButton:hover {
+  background-color: #7180B9;
+}
+
+.inputError {
+  color: red;
+  padding: 10px 0 0 0;
+}
