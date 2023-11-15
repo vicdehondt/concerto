@@ -10,7 +10,7 @@ import exp = require('constants');
 
 // const cookieParser = require("cookie-parser"); // Uit video van cookies: https://www.youtube.com/watch?v=34wC1C61lg0&t=1214s&ab_channel=SteveGriffith-Prof3ssorSt3v3
 
-var fileStoreOptions = {path: './src/sessions'};
+var fileStoreOptions = {path: './src/sessions', reapInterval: 900};
 
 export class App {
     app: express.Application;
