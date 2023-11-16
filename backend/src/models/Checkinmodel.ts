@@ -56,7 +56,8 @@ export async function userCheckIn(userID, eventID): Promise<boolean> {
                 { eventID: eventID }
             ]
         }
-    }); if (checkIn != null) {
+    }); console.log(checkIn);
+    if (checkIn == null) {
         await CheckedInUsers.create({
             userID: userID,
             eventID: eventID
@@ -66,6 +67,8 @@ export async function userCheckIn(userID, eventID): Promise<boolean> {
         return false;
     }
 }
+
+CheckedInUsers.sync();
 
 
 

@@ -29,7 +29,7 @@ export class EventController extends BaseController {
 			res.set('Access-Control-Allow-Credentials', 'true');
 			this.getEvent(req, res);
 		});
-		this.router.get('/checkin/:username', cors, (req: express.Request, res: express.Response) => {
+		this.router.post('/:id/checkin', cors, (req: express.Request, res: express.Response) => {
 			res.set('Access-Control-Allow-Credentials', 'true');
 			this.checkIn(req, res);
 		});
@@ -98,9 +98,10 @@ export class EventController extends BaseController {
 	async checkIn(req: express.Request, res: express.Response) {
 		console.log("Received request to check in for event");
 		const sessiondata = req.session;
-		const event = await database.RetrieveEvent(sessiondata.eventID);
+		const eventid = req.params.id;
+		const event = await database.RetrieveEvent(eventid);
 		if (event != null) {
-			const result = await userCheckIn(sessiondata.userID, sessiondata.eventID);
+			const result = await userCheckIn(sessiondata.userID, eventid);
 			if (result) {
 				res.status(200).json({ success: true, message: "Succesfully registered for event"});
 			} else {
