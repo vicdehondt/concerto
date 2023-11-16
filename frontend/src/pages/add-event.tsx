@@ -5,6 +5,9 @@ import { useRouter } from "next/router";
 import FriendInvites from "@/components/FriendInvite";
 import Banner from "@/components/Banner"
 import type { InferGetServerSidePropsType, GetServerSideProps } from 'next'
+import { useState } from "react";
+import { FormEvent } from 'react'
+import { title } from "process";
 // import Timetable from "/components/Timetable";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -26,6 +29,13 @@ type Event = {
   image: string
 }
 
+// title
+// description
+// price
+// banner
+// eventpicture
+// datetime
+
 export const getServerSideProps = (async (context) => {
   const id = context.query.id
   const res = await fetch(environment.backendURL + `/events/${id}`);
@@ -40,6 +50,26 @@ export default function AddEvent({event}: InferGetServerSidePropsType<typeof get
   const router = useRouter();
   const title = "Concerto | Add a concert" + router.query.concert;
 
+  async function onSubmit(event: FormEvent<HTMLFormElement>) {
+
+    event.preventDefault();
+    var formData = new FormData(event.currentTarget);
+    const form_values = Object.fromEntries(formData);
+    console.log(form_values);
+    const response = await fetch(environment.backendURL + "/events", {
+      method: 'POST',
+      body: formData,
+      mode: 'cors',
+      credentials: 'include',
+    })
+
+    // Handle response if necessary
+    const data = await response.json()
+    if (response.status == 200) {
+      console.log(response);
+    }
+  }
+
   return (
     <>
       <Head>
@@ -49,9 +79,14 @@ export default function AddEvent({event}: InferGetServerSidePropsType<typeof get
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className={`${styles.main} ${inter.className}`}>
-        <form className={[styles.page, styles.concertPage].join(" ")}>
+        <form className={[styles.page, styles.concertPage].join(" ")} onSubmit={onSubmit}>
           <div className={styles.bannerContainer}>
-            <input id='banner' name='banner' type="file" required />
+            <input id='image' name='image' type="file" required />
+            {/* <input id='eventpicture' name='eventpicture' type="file" required /> */}
+            <input type="text" name='title' id='title' required placeholder="Title" />
+            <input type="text" name='maxpeople' id='maxpeople' required placeholder="Max people" />
+            <input type="text" name='price' id='price' required placeholder="Price" />
+            <input className={styles.dateInput} type="datetime-local" name="datetime" id="datetime" />
           </div>
           <div className={styles.descriptionContainer}>
             <div className={styles.descriptionTitle}>
@@ -67,6 +102,7 @@ export default function AddEvent({event}: InferGetServerSidePropsType<typeof get
           <div className={styles.ratingContainer}>
             Testing
           </div>
+          <button type='submit'>Submit</button>
           <div className={styles.friendInviteContainer}>
             <FriendInvites />
           </div>
