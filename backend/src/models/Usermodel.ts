@@ -199,5 +199,3 @@ export async function RetrieveUser(field: string, value): Promise<typeof UserMod
       }
 }
 
-synchronize();
-

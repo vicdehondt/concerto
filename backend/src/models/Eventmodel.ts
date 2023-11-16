@@ -43,11 +43,6 @@ export const EventModel = sequelize.define('Event', {
     tableName: 'Events'
 });
 
-async function synchronize() {
-  EventModel.sync();
-  Friend.sync();
-}
-
 export async function CreateEvent(title, description, date, price, bannerpath, picturepath) {
   try {
     const Event = await EventModel.create({
@@ -100,6 +95,4 @@ export async function FilterEvents(maxpeople, datetime, price){
     console.error("There was an error filtering Events: ", error);
   }
 }
-
-synchronize()
 
