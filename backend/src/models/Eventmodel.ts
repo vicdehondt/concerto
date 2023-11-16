@@ -10,88 +10,88 @@ const sequelize = new Sequelize({
     logging: false
   });
 
-  export const EventModel = sequelize.define('Event', {
-    eventID: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
-      allowNull: false,
-      autoIncrement: true
-    },
-    title: {
-      type: DataTypes.TEXT,
-      allowNull: false
-    },
-    description: {
-      type: DataTypes.TEXT,
-      allowNull: false
-    },
-    checkedin: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      defaultValue: 0,
-    },
-    datetime: {
-      type: DataTypes.DATE,
-      allowNull: false
-    },
-    price: {
-      type: DataTypes.REAL,
-      allowNull: false
-    },
-    banner: {
-      type: DataTypes.STRING,
-      allowNull: false
-    },
-    profilepicture: {
-      type: DataTypes.STRING,
-      allowNull: false
-    }
+export const EventModel = sequelize.define('Event', {
+  eventID: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    allowNull: false,
+    autoIncrement: true
+  },
+  title: {
+    type: DataTypes.TEXT,
+    allowNull: false
+  },
+  description: {
+    type: DataTypes.TEXT,
+    allowNull: false
+  },
+  checkedIn: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    defaultValue: 0,
+  },
+  dateAndTime: {
+    type: DataTypes.DATE,
+    allowNull: false
+  },
+  price: {
+    type: DataTypes.REAL,
+    allowNull: false
+  },
+  banner: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  eventPicture: {
+    type: DataTypes.STRING,
+    allowNull: false
+  }
   }, {
-      tableName: 'Events'
-  });
+    tableName: 'Events'
+});
 
-  async function synchronize() {
-    EventModel.sync();
-    Friend.sync();
-  }
+async function synchronize() {
+  EventModel.sync();
+  Friend.sync();
+}
 
-  export async function CreateEvent(title, description, date, price, bannerpath, picturepath) {
-    try {
-      const Event = await EventModel.create({
-        title: title,
-        description: description,
-        datetime: date,
-        price: price,
-        banner: bannerpath,
-        profilepicture: picturepath,
-      });
-    } catch (error) {
-      console.error("There was an error creating an event: ", error);
-    }
-  };
-
-  export async function RetrieveAllEvents(): Promise<typeof EventModel>  {
-    const events = await EventModel.findAll({
-      attributes: {
-        exclude: ['createdAt', 'updatedAt'],
-      }
+export async function CreateEvent(title, description, date, price, bannerpath, picturepath) {
+  try {
+    const Event = await EventModel.create({
+      title: title,
+      description: description,
+      dateAndTime: date,
+      price: price,
+      banner: bannerpath,
+      eventPicture: picturepath,
     });
-    return events;
+  } catch (error) {
+    console.error("There was an error creating an event: ", error);
   }
+};
 
-  export async function RetrieveEvent(ID): Promise<typeof EventModel> {
-    try {
-      const Event = await EventModel.findOne({
-      attributes: {
-        exclude: ['createdAt', 'updatedAt'],
-      },
-      where: {eventID: ID},
-      });
-      return Event;
-    } catch (error) {
-      console.error("There was an error finding an event: ", error);
+export async function RetrieveAllEvents(): Promise<typeof EventModel>  {
+  const events = await EventModel.findAll({
+    attributes: {
+      exclude: ['createdAt', 'updatedAt'],
     }
+  });
+  return events;
+}
+
+export async function RetrieveEvent(ID): Promise<typeof EventModel> {
+  try {
+    const Event = await EventModel.findOne({
+    attributes: {
+      exclude: ['createdAt', 'updatedAt'],
+    },
+    where: {eventID: ID},
+    });
+    return Event;
+  } catch (error) {
+    console.error("There was an error finding an event: ", error);
   }
+}
 
   //to limit the return if no filters are selected use the limit function from sqlite
   export async function FilterEvents(filterfields,filtervalues){
@@ -133,5 +133,5 @@ const sequelize = new Sequelize({
     }
   }
 
-  synchronize()
+synchronize()
 

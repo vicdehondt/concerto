@@ -205,5 +205,11 @@ export async function RetrieveUser(field: string, value): Promise<typeof UserMod
       }
 }
 
+export const checkinResponses = {
+    SUCCES: 0,
+    LOSTEVENT: 1,
+    ALREADYDONE: 2
+  }
+
 synchronize();
 

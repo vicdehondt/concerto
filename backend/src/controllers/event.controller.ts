@@ -1,6 +1,7 @@
 import * as express from 'express';
 import { BaseController } from './base.controller';
 import * as database from '../models/Eventmodel';
+import * as userdatabase from '../models/Usermodel';
 import {body, validationResult} from "express-validator"
 import {createMulter} from "./multerConfig";
 import { getCorsConfiguration } from './corsConfig';
@@ -23,17 +24,21 @@ export class EventController extends BaseController {
 			res.set('Access-Control-Allow-Credentials', 'true');
 			this.getAllEvents(req, res);
 		});
-		this.router.get('/:id', cors, (req: express.Request, res: express.Response) => {
+		this.router.get('/:id', cors, this.requireAuth, (req: express.Request, res: express.Response) => {
 			res.set('Access-Control-Allow-Credentials', 'true');
 			this.getEvent(req, res);
 		});
+		this.router.get('/checkin/:username', cors, (req: express.Request, res: express.Response) => {
+			res.set('Access-Control-Allow-Credentials', 'true');
+			this.checkIn(req, res);
+		});
 		this.router.post("/", cors,
-			upload.fields([{ name: 'banner', maxCount: 1}, { name: 'eventpicture', maxCount: 1}]),
+			upload.fields([{ name: 'banner', maxCount: 1}, { name: 'eventPicture', maxCount: 1}]),
 			[
 				body("title").trim().trim().notEmpty(),
 				body("description").trim().notEmpty(),
 				body("price").trim().notEmpty(),
-				body("datetime").trim().notEmpty(),
+				body("dateAndTime").trim().notEmpty(),
 			],
 			(req: express.Request, res: express.Response) => {
 				res.set('Access-Control-Allow-Credentials', 'true');
@@ -91,12 +96,12 @@ export class EventController extends BaseController {
 		console.log("Received post request to create event");
 		const result = validationResult(req)
 		const bannerpictures = req.files['banner']
-		const eventpictures = req.files['eventpicture']
+		const eventpictures = req.files['eventPicture']
 		if (result.isEmpty() && bannerpictures && eventpictures) {
-			const {title, eventid, description, datetime, price} = req.body;
+			const {title, eventid, description, dateAndTime, price} = req.body;
 			const bannerpath = "http://localhost:8080/events/" + bannerpictures[0].filename;
 			const picturepath = "http://localhost:8080/events/" + eventpictures[0].filename;
-			database.CreateEvent(title, description, datetime, price, bannerpath, picturepath);
+			database.CreateEvent(title, description, dateAndTime, price, bannerpath, picturepath);
 			console.log("Event created succesfully");
 			res.status(200).json({ success: true, message: 'Event created successfully' });
 		} else {
@@ -107,6 +112,19 @@ export class EventController extends BaseController {
 				this.DeleteFile(eventImagePath, eventpictures[0]);
 			}
 			res.status(400).json({success: false, errors: result.array()});
+		}
+	}
+
+	async checkIn(req: express.Request, res: express.Response) {
+		console.log("Received request to check in for event");
+		const sessiondata = req.session;
+		const result = userdatabase.checkinResponses.LOSTEVENT;
+		if (result == userdatabase.checkinResponses.SUCCES) {
+			res.status(200).json({ succes: true, message: "Succesfully registered for event"});
+		} else if (result == userdatabase.checkinResponses.ALREADYDONE) {
+			res.status(400).json({ succes: false, error: "Already registered for this event"});
+		} else {
+			res.status(400).json({ succes: false, error: "The event was not found"});
 		}
 	}
 
