@@ -1,24 +1,29 @@
 import styles from "../styles/Timetable.module.css";
 
-function Timetable({descriptions, hours}: {descriptions: string[], hours: string[]}) {
-    return (
-        <div className={styles.container}>
-            <TimeElement description="Opening of door:" hour="10:00" />
-        </div>
-    )
+function Timetable({
+  doorTime,
+  supportTime,
+  concertTime,
+}: {
+  doorTime: string;
+  supportTime: string;
+  concertTime: string;
+}) {
+  return (
+    <div className={styles.container}>
+      <div className={styles.box}>
+        <div className={styles.text}>Doors open:</div>
+        <div className={styles.time}>{doorTime}</div>
+      </div>
+      <div className={styles.box}>
+        <div className={styles.text}>Support act:</div>
+        <div className={styles.time}>{supportTime}</div>
+      </div>
+      <div className={styles.box}>
+        <div className={styles.text}>Concert:</div>
+        <div className={styles.time}>{concertTime}</div>
+      </div>
+    </div>
+  );
 }
-
-function TimeElement({description, hour}: {description: string, hour: string}) {
-    return (
-        <div className={styles.timetableElement}>
-            <div className={styles.description}>
-                {description}
-            </div>
-            <div className={styles.hour}>
-                {hour}
-            </div>
-        </div>
-    )
-}
-
-export default Timetable
+export default Timetable;
