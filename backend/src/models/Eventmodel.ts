@@ -1,6 +1,7 @@
 const { Sequelize, DataTypes, Op } = require('sequelize');
 import { STRING } from 'sequelize';
 import * as config from '../config'
+import { Friend } from './Usermodel';
 const fs = require('fs');
 
 const sequelize = new Sequelize({
@@ -14,6 +15,7 @@ const sequelize = new Sequelize({
       type: DataTypes.INTEGER,
       primaryKey: true,
       allowNull: false,
+      autoIncrement: true
     },
     title: {
       type: DataTypes.TEXT,
@@ -23,9 +25,10 @@ const sequelize = new Sequelize({
       type: DataTypes.TEXT,
       allowNull: false
     },
-    maxPeople: {
+    checkedin: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: false,
+      defaultValue: 0,
     },
     datetime: {
       type: DataTypes.DATE,
@@ -35,7 +38,11 @@ const sequelize = new Sequelize({
       type: DataTypes.REAL,
       allowNull: false
     },
-    image: {
+    banner: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    profilepicture: {
       type: DataTypes.STRING,
       allowNull: false
     }
@@ -44,28 +51,40 @@ const sequelize = new Sequelize({
   });
 
   async function synchronize() {
-    EventModel.sync()
+    EventModel.sync();
+    Friend.sync();
   }
 
-  export async function CreateEvent(id, title, description, people, date, price, image) {
+  export async function CreateEvent(title, description, date, price, bannerpath, picturepath) {
     try {
       const Event = await EventModel.create({
-        eventID: id,
         title: title,
         description: description,
-        maxPeople: people,
         datetime: date,
         price: price,
-        image: image
+        banner: bannerpath,
+        profilepicture: picturepath,
       });
     } catch (error) {
       console.error("There was an error creating an event: ", error);
     }
   };
 
+  export async function RetrieveAllEvents(): Promise<typeof EventModel>  {
+    const events = await EventModel.findAll({
+      attributes: {
+        exclude: ['createdAt', 'updatedAt'],
+      }
+    });
+    return events;
+  }
+
   export async function RetrieveEvent(ID): Promise<typeof EventModel> {
     try {
       const Event = await EventModel.findOne({
+      attributes: {
+        exclude: ['createdAt', 'updatedAt'],
+      },
       where: {eventID: ID},
       });
       return Event;

@@ -4,10 +4,47 @@ import styles from "@/styles/Home.module.css";
 import Navbar from "../components/Navbar";
 import EventCard from "../components/EventCard";
 import SideBar from "../components/SideBar"
+import { Nav } from "react-bootstrap";
+import type { InferGetServerSidePropsType, GetServerSideProps } from 'next'
+import { useEffect } from "react";
 
 const inter = Inter({ subsets: ["latin"] });
 
-export default function Home() {
+const environment = {
+  backendURL: "http://localhost:8080"
+}
+if (process.env.NODE_ENV == "production") {
+  environment.backendURL = "https://api.concerto.dehondt.dev"
+}
+
+type Event = {
+  eventID: number
+  title: string
+  description: string
+  maxPeople: number
+  datetime: string
+  price: number
+  image: string
+}
+
+export const getServerSideProps = (async (context) => {
+  const res = await fetch(environment.backendURL + "/events")
+  const events = await res.json()
+  return { props: { events } }
+}) satisfies GetServerSideProps<{
+  events: Array<Event>
+}>
+
+export default function Home({events}: InferGetServerSidePropsType<typeof getServerSideProps>) {
+
+  function showEvent(event: Event) {
+    return <EventCard eventId={event.eventID} title={event.title} location="Placeholder" amountAttending={event.maxPeople} dateAndTime={event.datetime} price={event.price} image={event.image} />
+  }
+
+  function showEvents() {
+    return events.map(showEvent);
+  }
+
   return (
     <>
       <Head>
@@ -24,7 +61,7 @@ export default function Home() {
               <h1>Events this week you may like</h1>
             </div>
             <div className={styles.eventCardContainer}>
-              <EventCard title="Ariana Grande"/>
+              {showEvents()}
             </div>
           </div>
         </div>

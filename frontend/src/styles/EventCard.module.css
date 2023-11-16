@@ -1,7 +1,7 @@
 .eventCard {
   min-width: 1090px;
   display: grid;
-  grid-template-columns: [photo] 120px [event] 1fr [tickets] 100px [info] 200px [wishlist] 30px;
+  grid-template-columns: [photo] 120px [event] 1fr [tickets] 100px [info] 220px [wishlist] 30px;
   grid-template-rows: [card] 70px [tags] auto;
   grid-template-areas:
     "photo event tickets info wishlist"
@@ -14,37 +14,37 @@
   padding: 10px;
 }
 
-.eventCard .photo {
+.photo {
   grid-area: photo;
 }
 
-.eventCard .photo img {
+.photo img {
   border-radius: 50%;
   width: 100%;
 }
 
-.eventCard .event {
+.event {
   grid-area: event;
 }
 
-.eventCard .performance {
+.performance {
   margin-top: 5px;
   font-weight: bold;
   font-size: xx-large;
 }
 
-.eventCard .location {
+.location {
   margin-top: 19px;
   display: flex;
   font-size: large;
   font-weight: bold;
 }
 
-.eventCard .location img {
+.location img {
   width: 18px;
 }
 
-.eventCard .tickets {
+.tickets {
   line-height: 20px;
   grid-area: tickets;
   font-weight: bold;
@@ -53,67 +53,67 @@
   margin-top: 5px;
 }
 
-.eventCard .tickets .photo {
+.tickets .photo {
   padding: 2px;
 }
 
-.eventCard .tickets .photo img {
+.tickets .photo img {
   border-radius: 0;
   width: 18px;
 }
 
-.eventCard .info {
+.info {
   grid-area: info;
   font-weight: bold;
   margin-top: 5px;
 }
 
-.eventCard .calendar {
+.calendar {
   display: flex;
   flex-direction: row;
 }
 
-.eventCard .calendar .photo {
+.calendar .photo {
   padding: 2px;
 }
 
-.eventCard .calendar .photo img {
+.calendar .photo img {
   border-radius: 0;
   width: 38px;
 }
 
-.eventCard .date {
+.date {
   font-size: 125%;
   line-height: 20px;
 }
 
-.eventCard .price {
+.price {
   margin-top: 10px;
   display: flex;
   flex-direction: row;
 }
 
-.eventCard .price .photo {
+.price .photo {
   padding: 2px;
 }
 
-.eventCard .price .photo img {
+.price .photo img {
   border-radius: 0;
   width: 20px;
 }
 
-.eventCard .wishlist img {
+.addToWishlist img {
   width: 28px;
 }
 
-.eventCard .tags {
+.tags {
   grid-area: tags;
   position: relative;
   display: flex;
   column-gap: 12px;
 }
 
-.eventCard .divider {
+.divider {
   height: 1px;
   background-color: black;
   position: absolute;

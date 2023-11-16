@@ -2,61 +2,46 @@ import * as express from 'express';
 import { BaseController } from './base.controller';
 import * as database from '../models/Eventmodel';
 import {body, validationResult} from "express-validator"
-import * as multer from "multer";
+import {createMulter} from "./multerConfig";
+import { getCorsConfiguration } from './corsConfig';
 import * as crypto from "crypto"
-import { spliceStr } from 'sequelize/types/utils';
-const fs = require('fs');
 
-const EventImagePath = './uploads/events';
+const eventImagePath = './public/events';
 
-// Set up storage with a custom filename function
-const storage = multer.diskStorage({
-	destination: function (req, file, cb) {
-	  // Specify the destination folder where the file will be saved
-	  cb(null, EventImagePath);
-	},
-	filename: function (req, file, cb) {
-	  // Customize the filename here
-	  const originalname = file.originalname;
-	  const parts = originalname.split(".");
-	  const random = crypto.randomUUID(); // Create unique identifier for each image
-	  const newname = random + "." + parts[parts.length - 1];
-	  cb(null, newname);
-	}
-  });
+const cors = getCorsConfiguration();
 
-const upload = multer({ storage: storage});
+const upload = createMulter(eventImagePath);
 
 export class EventController extends BaseController {
 
-    constructor() {
-        super("/event");
-    }
+	constructor() {
+		super("/events");
+	}
 
-    initializeRoutes(): void {
-		this.router.get("/retrieve", (req: express.Request, res: express.Response) => {
-			this.retrieveGet(req, res);
+	initializeRoutes(): void {
+		this.router.get('/', cors, (req: express.Request, res: express.Response) => {
+			res.set('Access-Control-Allow-Credentials', 'true');
+			this.getAllEvents(req, res);
 		});
-		this.router.post("/add",
-		upload.single("image"), [
-			body("title").trim().trim().notEmpty(),
-			body("description").trim().notEmpty(),
-			body("maxpeople").trim().notEmpty(),
-			body("price").trim().notEmpty(),
-			body("datetime").trim().notEmpty(),
-			body("eventid").trim().notEmpty().custom(async value => {
-				const event = await database.RetrieveEvent(value);
-				if (event != null) {
-					throw Error("There already exists an event with that ID!");
-				}
-			}),
-		],
-		(req: express.Request, res: express.Response) => {
-			this.addPost(req, res);
+		this.router.get('/:id', cors, (req: express.Request, res: express.Response) => {
+			res.set('Access-Control-Allow-Credentials', 'true');
+			this.getEvent(req, res);
 		});
+		this.router.post("/", cors,
+			upload.fields([{ name: 'banner', maxCount: 1}, { name: 'eventpicture', maxCount: 1}]),
+			[
+				body("title").trim().trim().notEmpty(),
+				body("description").trim().notEmpty(),
+				body("price").trim().notEmpty(),
+				body("datetime").trim().notEmpty(),
+			],
+			(req: express.Request, res: express.Response) => {
+				res.set('Access-Control-Allow-Credentials', 'true');
+				this.addPost(req, res);
+			});
 
 		this.router.get("/filter",
-		upload.single("image"), [
+		upload.none(), [
 			body("maxpeople").trim().custom(async value => {
 				if(value){
 					const rangeValues = value.split('/');
@@ -78,46 +63,50 @@ export class EventController extends BaseController {
 			this.filterEvents(req, res);
 		})
 		this.router.get("/search", 
-		upload.single("image"),
+		upload.none(),
 		(req: express.Request, res: express.Response) => {
 			this.searchEvents(req, res);
 		});
     }
 
-	async retrieveGet(req: express.Request, res: express.Response): Promise<void> {
+	async getAllEvents(req: express.Request, res: express.Response) {
+		console.log("Accepted request for all events")
+		const events = await database.RetrieveAllEvents();
+		res.status(200).json(events);
+	}
+
+	async getEvent(req: express.Request, res: express.Response): Promise<void> {
 		console.log("Accepted the incoming retrieve request");
-		const id = req.query.id;
-		if (id) {
-			console.log("An ID has been found: ", id);
-			const event = await database.RetrieveEvent(id);
-			if (event) {
-				res.status(200).json(event);
-			} else {
-				res.status(404).json({succes: false, error: "No event was found with this ID"})
-			}
+		const id = req.params.id;
+		console.log("An ID has been found: ", id);
+		const event = await database.RetrieveEvent(id);
+		if (event) {
+			res.status(200).json(event);
 		} else {
-			res.status(400).json({succes: false, error: "No event ID was provided!" });
+			res.status(404).json({succes: false, error: "No event was found with this ID"})
 		}
 	}
 
 	async addPost(req: express.Request, res: express.Response): Promise<void> {
 		console.log("Received post request to create event");
 		const result = validationResult(req)
-		if (result.isEmpty() && req.file) {
-			const {title, eventid, description, maxpeople, datetime, price} = req.body;
-			const imagepath = "http://localhost:8080/events/" + req.file.filename;
-			database.CreateEvent(eventid, title, description, maxpeople, datetime, price, imagepath);
+		const bannerpictures = req.files['banner']
+		const eventpictures = req.files['eventpicture']
+		if (result.isEmpty() && bannerpictures && eventpictures) {
+			const {title, eventid, description, datetime, price} = req.body;
+			const bannerpath = "http://localhost:8080/events/" + bannerpictures[0].filename;
+			const picturepath = "http://localhost:8080/events/" + eventpictures[0].filename;
+			database.CreateEvent(title, description, datetime, price, bannerpath, picturepath);
 			console.log("Event created succesfully");
 			res.status(200).json({ success: true, message: 'Event created successfully' });
 		} else {
-			if (req.file) {
-				fs.unlink(EventImagePath + '/' + req.file.filename, (err) => {
-					if (err) {
-						throw err;
-					} console.log("File deleted succesfully.");
-				})
+			if (bannerpictures) {
+				this.DeleteFile(eventImagePath, bannerpictures[0]);
 			}
-			res.status(400).json({succes: false, errors: result.array()});
+			if (eventpictures) {
+				this.DeleteFile(eventImagePath, eventpictures[0]);
+			}
+			res.status(400).json({success: false, errors: result.array()});
 		}
 	}
 
