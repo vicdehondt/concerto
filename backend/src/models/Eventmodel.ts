@@ -42,7 +42,7 @@ export const EventModel = sequelize.define('Event', {
     type: DataTypes.STRING,
     allowNull: false
   },
-  profilePicture: {
+  eventPicture: {
     type: DataTypes.STRING,
     allowNull: false
   }
@@ -63,7 +63,7 @@ export async function CreateEvent(title, description, date, price, bannerpath, p
       dateAndTime: date,
       price: price,
       banner: bannerpath,
-      profilePicture: picturepath,
+      eventPicture: picturepath,
     });
   } catch (error) {
     console.error("There was an error creating an event: ", error);
