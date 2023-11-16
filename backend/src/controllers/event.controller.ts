@@ -41,15 +41,15 @@ export class EventController extends BaseController {
 			res.set('Access-Control-Allow-Credentials', 'true');
 			this.getEvent(req, res);
 		});
-		this.router.get('/:id/checkin', cors, this.requireAuth, (req: express.Request, res: express.Response) => {
+		this.router.get('/:id/checkins', cors, this.requireAuth, (req: express.Request, res: express.Response) => {
 			res.set('Access-Control-Allow-Credentials', 'true');
 			this.allCheckedIn(req, res);
 		});
-		this.router.post('/:id/checkin', cors, this.requireAuth, (req: express.Request, res: express.Response) => {
+		this.router.post('/:id/checkins', cors, this.requireAuth, (req: express.Request, res: express.Response) => {
 			res.set('Access-Control-Allow-Credentials', 'true');
 			this.checkIn(req, res);
 		});
-		this.router.delete('/:id/checkin', cors, this.requireAuth, (req: express.Request, res: express.Response) => {
+		this.router.delete('/:id/checkins', cors, this.requireAuth, (req: express.Request, res: express.Response) => {
 			res.set('Access-Control-Allow-Credentials', 'true');
 			this.checkOut(req, res);
 		});
