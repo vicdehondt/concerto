@@ -18,7 +18,7 @@ export default function Login() {
   const router = useRouter();
 
   function goToHome() {
-    // router.replace("/")
+    router.replace("/")
   }
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {

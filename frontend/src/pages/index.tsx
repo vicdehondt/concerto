@@ -31,7 +31,6 @@ type Event = {
 }
 
 export const getServerSideProps = (async (context) => {
-  const req = context.req;
   const res = await fetch(environment.backendURL + "/events", {
     mode: 'cors',
     credentials: 'include',
@@ -50,7 +49,7 @@ export default function Home({events}: InferGetServerSidePropsType<typeof getSer
   console.log(events)
 
   function showEvent(event: Event) {
-    return <EventCard key={event.eventID} eventId={event.eventID} title={event.title} location="Placeholder" amountAttending={event.checkedIn} dateAndTime={event.datetime} price={event.price} image={event.eventpicture} />
+    return <EventCard key={event.eventID} eventId={event.eventID} title={event.title} location="Placeholder" amountAttending={event.checkedIn} dateAndTime={event.dateAndTime} price={event.price} image={event.eventPicture} />
   }
 
   function showEvents() {

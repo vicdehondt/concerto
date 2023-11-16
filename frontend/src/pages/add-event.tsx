@@ -82,11 +82,11 @@ export default function AddEvent({event}: InferGetServerSidePropsType<typeof get
         <form className={[styles.page, styles.concertPage].join(" ")} onSubmit={onSubmit}>
           <div className={styles.bannerContainer}>
             <input id='banner' name='banner' type="file" required />
-            <input id='eventpicture' name='eventpicture' type="file" required />
+            <input id='eventPicture' name='eventPicture' type="file" required />
             {/* <input id='eventpicture' name='eventpicture' type="file" required /> */}
             <input type="text" name='title' id='title' required placeholder="Title" />
             <input type="text" name='price' id='price' required placeholder="Price" />
-            <input className={styles.dateInput} type="datetime-local" name="datetime" id="datetime" />
+            <input className={styles.dateInput} type="datetime-local" name="dateAndTime" id="dateAndTime" />
           </div>
           <div className={styles.descriptionContainer}>
             <div className={styles.descriptionTitle}>
