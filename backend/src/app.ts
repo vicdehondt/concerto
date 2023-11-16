@@ -9,6 +9,7 @@ import { synchronize } from './configs/sequelizeConfig';
 const session = require("express-session");
 var FileStore = require('session-file-store')(session);
 import exp = require('constants');
+import { SearchController } from './controllers/search.controller';
 
 
 const cors = getCorsConfiguration();
@@ -65,6 +66,7 @@ export class App {
         this.addController(new UserController());
         this.addController(new SessionController());
         this.addController(new FriendController());
+        this.addController(new SearchController());
         // We link the router of each controller to our server
         this.controllers.forEach(controller => {
             this.app.use(`${this.path}${controller.path}`, controller.router);

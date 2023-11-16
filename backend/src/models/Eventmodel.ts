@@ -81,18 +81,46 @@ export async function RetrieveEvent(ID): Promise<typeof EventModel> {
   }
 }
 
-export async function FilterEvents(maxpeople, datetime, price){
-  try {
-    const Event = await EventModel.findAll({
-    where: {
-      maxpeople: maxpeople,
-      datetime: datetime,
-      price: price,
-    },
-    });
-    return Event;
-  } catch (error) {
-    console.error("There was an error filtering Events: ", error);
+  //to limit the return if no filters are selected use the limit function from sqlite
+  export async function FilterEvents(filterfields,filtervalues){
+    try {
+      const whereClause = {};
+      for (let i = 0; i < filterfields.length; i++) {
+        const field = filterfields[i];
+        const value = filtervalues[i];
+        // need to add the condition to the where clause
+        if(field == "maxpeople" || field == "price"){
+          whereClause[field] = {
+            [Op.between]: value.split('/'),
+          };
+        } else {
+          whereClause[field] = value;
+        }
+      }
+      const Event = await EventModel.findAll({
+        where: whereClause,
+      });
+      return Event;
+    } catch (error) {
+      console.error("There was an error filtering Events: ", error);
+    }
   }
-}
+
+  export async function SearchEvents(searchvalue){
+    try {
+      const Events = await EventModel.findAll({
+      attributes: {
+        exclude: ['createdAt', 'updatedAt'],
+      },
+      where: {
+        title: { //for now only searching on title, need to add location...
+            [Op.like]: '%' + searchvalue + '%',
+          }
+        }
+      });
+      return Events;
+    } catch (error) {
+      console.error("There was an error finding an event: ", error);
+    }
+  }
 

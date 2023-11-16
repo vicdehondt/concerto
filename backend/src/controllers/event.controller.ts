@@ -53,12 +53,6 @@ export class EventController extends BaseController {
 			res.set('Access-Control-Allow-Credentials', 'true');
 			this.checkOut(req, res);
 		});
-		this.router.get("/filter", cors,
-			upload.none(),
-			(req: express.Request, res: express.Response) => {
-				res.set('Access-Control-Allow-Credentials', 'true');
-				this.filterEvents(req, res);
-			});
     }
 
 	async getAllEvents(req: express.Request, res: express.Response) {
@@ -145,22 +139,6 @@ export class EventController extends BaseController {
 			res.status(200).json(result);
 		} else {
 			res.status(400).json({ success: false, error: "The event was not found"});
-		}
-	}
-
-	//expand with an optional limitator so if no filters are selected you only get for example the first 10 events
-	async filterEvents(req: express.Request, res: express.Response): Promise<void>{
-		console.log("Received post request to filter events");
-		const filters = req.body;
-		if (filters.length === 0){
-			res.status(404).json({succes: false, error: "No filters were activated"})
-		} else{
-			const events = await database.FilterEvents(filters.maxpeople, filters.datetime, filters.price);//gives the events that match the given filters
-			if(events){
-				res.status(200).json(events); //succes
-			}else{
-				res.status(400).json({succes: false, error: events});// something went wrong while retrieving the events
-			}
 		}
 	}
 }
