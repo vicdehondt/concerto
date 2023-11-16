@@ -1,5 +1,4 @@
 const { Sequelize, DataTypes, Op } = require('sequelize');
-import { STRING } from 'sequelize';
 import * as config from '../configs/config'
 import { Friend } from './Usermodel';
 const fs = require('fs');

@@ -2,6 +2,7 @@ import * as express from 'express';
 import { BaseController } from './base.controller';
 import * as database from '../models/Eventmodel';
 import * as userdatabase from '../models/Usermodel';
+import { userCheckIn } from  '../models/Checkinmodel'
 import {body, validationResult} from "express-validator"
 import {createMulter} from "../configs/multerConfig";
 import { getCorsConfiguration } from '../configs/corsConfig';
@@ -97,13 +98,16 @@ export class EventController extends BaseController {
 	async checkIn(req: express.Request, res: express.Response) {
 		console.log("Received request to check in for event");
 		const sessiondata = req.session;
-		const result = userdatabase.checkinResponses.LOSTEVENT;
-		if (result == userdatabase.checkinResponses.SUCCES) {
-			res.status(200).json({ succes: true, message: "Succesfully registered for event"});
-		} else if (result == userdatabase.checkinResponses.ALREADYDONE) {
-			res.status(400).json({ succes: false, error: "Already registered for this event"});
+		const event = await database.RetrieveEvent(sessiondata.eventID);
+		if (event != null) {
+			const result = await userCheckIn(sessiondata.userID, sessiondata.eventID);
+			if (result) {
+				res.status(200).json({ success: true, message: "Succesfully registered for event"});
+			} else {
+				res.status(400).json({ success: false, error: "Already registered for this event"});
+			}
 		} else {
-			res.status(400).json({ succes: false, error: "The event was not found"});
+			res.status(400).json({ success: false, error: "The event was not found"});
 		}
 	}
 
