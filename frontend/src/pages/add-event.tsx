@@ -81,10 +81,10 @@ export default function AddEvent({event}: InferGetServerSidePropsType<typeof get
       <main className={`${styles.main} ${inter.className}`}>
         <form className={[styles.page, styles.concertPage].join(" ")} onSubmit={onSubmit}>
           <div className={styles.bannerContainer}>
-            <input id='image' name='image' type="file" required />
+            <input id='banner' name='banner' type="file" required />
+            <input id='eventpicture' name='eventpicture' type="file" required />
             {/* <input id='eventpicture' name='eventpicture' type="file" required /> */}
             <input type="text" name='title' id='title' required placeholder="Title" />
-            <input type="text" name='maxpeople' id='maxpeople' required placeholder="Max people" />
             <input type="text" name='price' id='price' required placeholder="Price" />
             <input className={styles.dateInput} type="datetime-local" name="datetime" id="datetime" />
           </div>

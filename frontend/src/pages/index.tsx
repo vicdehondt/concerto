@@ -24,10 +24,10 @@ type Event = {
   eventID: number
   title: string
   description: string
-  maxPeople: number
-  datetime: string
+  checkedIn: number
+  dateAndTime: string
   price: number
-  image: string
+  eventPicture: string
 }
 
 export const getServerSideProps = (async (context) => {
@@ -47,8 +47,10 @@ export const getServerSideProps = (async (context) => {
 
 export default function Home({events}: InferGetServerSidePropsType<typeof getServerSideProps>) {
 
+  console.log(events)
+
   function showEvent(event: Event) {
-    return <EventCard key={event.eventID} eventId={event.eventID} title={event.title} location="Placeholder" amountAttending={event.maxPeople} dateAndTime={event.datetime} price={event.price} image={event.image} />
+    return <EventCard key={event.eventID} eventId={event.eventID} title={event.title} location="Placeholder" amountAttending={event.checkedIn} dateAndTime={event.datetime} price={event.price} image={event.eventpicture} />
   }
 
   function showEvents() {
