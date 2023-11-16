@@ -35,12 +35,15 @@ const CheckedInUsers = sequelize.define('CheckedInUser', {
 UserModel.belongsToMany(EventModel, {
     through: CheckedInUsers,
     onDelete: 'CASCADE',
-})
+});
 
 EventModel.belongsToMany(UserModel, {
     through: CheckedInUsers,
     onDelete: 'CASCADE',
-})
+});
+
+CheckedInUsers.belongsTo(UserModel, { foreignKey: 'userID' });
+CheckedInUsers.belongsTo(EventModel, { foreignKey: 'eventID' });
 
 async function retrieveCheckIn(user, event) {
     const result = CheckedInUsers.findOne({
@@ -76,10 +79,20 @@ export async function userCheckOut(userID, eventID): Promise<boolean> {
         return false;
     }
 }
-
-
-
-
-
-
-
+export async function allCheckedInUsers(eventid) {
+    const users = await CheckedInUsers.findAll({
+        attributes: ['userID'],
+        where: {
+            eventID: eventid,
+        },
+    }); console.log(users);
+    const result = await Promise.all(users.map(async checkin => {
+        const user = await UserModel.findOne({
+            attributes: ['userID', 'username', 'image'],
+            where: {
+                userID: checkin.userID,
+            }
+        }); return user;
+    }));
+    return result;
+}
