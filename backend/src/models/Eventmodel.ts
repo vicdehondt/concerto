@@ -114,6 +114,9 @@ export async function RetrieveEvent(ID): Promise<typeof EventModel> {
   export async function SearchEvents(searchvalue){
     try {
       const Events = await EventModel.findAll({
+      attributes: {
+        exclude: ['createdAt', 'updatedAt'],
+      },
       where: {
         title: { //for now only searching on title, need to add location...
             [Op.like]: '%' + searchvalue + '%',
