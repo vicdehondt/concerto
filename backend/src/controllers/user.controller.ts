@@ -19,12 +19,12 @@ export class UserController extends BaseController {
 
     initializeRoutes(): void {
 		this.router.get('/:username', cors, this.requireAuth,
-			upload.single("image"),
+			upload.none(),
 			(req: express.Request, res: express.Response) => {
 				this.getUserInformation(req, res);
 			});
 		this.router.delete('/:username', cors, this.requireAuth,
-			upload.single("image"), this.requireAuth,
+			upload.none(), this.requireAuth,
 			(req: express.Request, res: express.Response) => {
 				this.deleteUser(req, res);
 			});
