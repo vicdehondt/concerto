@@ -5,12 +5,15 @@ import { UserController } from './controllers/user.controller';
 import { SessionController } from './controllers/session.controller';
 import { FriendController } from './controllers/friend.controller';
 import { getCorsConfiguration, environment } from './configs/corsConfig';
+import { synchronize } from './configs/sequelizeConfig';
 const session = require("express-session");
 var FileStore = require('session-file-store')(session);
 import exp = require('constants');
 
 
 const cors = getCorsConfiguration();
+
+synchronize(); // Synchronize the database
 
 // const cookieParser = require("cookie-parser"); // Uit video van cookies: https://www.youtube.com/watch?v=34wC1C61lg0&t=1214s&ab_channel=SteveGriffith-Prof3ssorSt3v3
 

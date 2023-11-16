@@ -1,11 +1,5 @@
-const { Sequelize, DataTypes, Op } = require('sequelize');
-import * as config from '../configs/config'
-
-const sequelize = new Sequelize({
-    dialect: config.databaseDialect,
-    storage: config.databasePath,
-    logging: false,
-})
+import { DataTypes, Op } from 'sequelize';
+import {sequelize} from '../configs/sequelizeConfig'
 
 export const UserModel = sequelize.define('User', {
     userID: {
