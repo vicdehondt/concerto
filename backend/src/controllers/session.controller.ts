@@ -2,8 +2,8 @@ import * as express from 'express';
 import { BaseController } from './base.controller';
 import * as database from '../models/Usermodel';
 import {body, validationResult} from "express-validator"
-import {createMulter} from "./multerConfig"
-import { getCorsConfiguration } from './corsConfig';
+import {createMulter} from "../configs/multerConfig"
+import { getCorsConfiguration } from '../configs/corsConfig';
 import * as bcrypt from "bcrypt";
 const fs = require('fs');
 
@@ -26,21 +26,18 @@ export class SessionController extends BaseController {
         this.router.post("/register", cors,
 			upload.none(),
 			(req: express.Request, res: express.Response) => {
-				res.set('Access-Control-Allow-Credentials', 'true');
 				this.addUser(req, res);
 			});
 		// Route to handle login
-		this.router.post("/login", cors,
+		this.router.post("/login",
 			upload.none(),
 			(req: express.Request, res: express.Response) => {
-				res.set('Access-Control-Allow-Credentials', 'true');
 				this.loginUser(req, res);
 			});
 		// Route to handle logout
 		this.router.post("/logout", cors, this.requireAuth,
 			upload.none(),
 			(req: express.Request, res: express.Response) => {
-				res.set('Access-Control-Allow-Credentials', 'true');
 				this.logoutUser(req, res);
 			});
     }

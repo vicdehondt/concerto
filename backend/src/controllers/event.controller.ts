@@ -2,9 +2,10 @@ import * as express from 'express';
 import { BaseController } from './base.controller';
 import * as database from '../models/Eventmodel';
 import * as userdatabase from '../models/Usermodel';
+import { userCheckIn, userCheckOut } from  '../models/Checkinmodel'
 import {body, validationResult} from "express-validator"
-import {createMulter} from "./multerConfig";
-import { getCorsConfiguration } from './corsConfig';
+import {createMulter} from "../configs/multerConfig";
+import { getCorsConfiguration } from '../configs/corsConfig';
 import * as crypto from "crypto"
 
 const eventImagePath = './public/events';
@@ -28,9 +29,13 @@ export class EventController extends BaseController {
 			res.set('Access-Control-Allow-Credentials', 'true');
 			this.getEvent(req, res);
 		});
-		this.router.get('/checkin/:username', cors, (req: express.Request, res: express.Response) => {
+		this.router.post('/:id/checkin', cors, this.requireAuth, (req: express.Request, res: express.Response) => {
 			res.set('Access-Control-Allow-Credentials', 'true');
 			this.checkIn(req, res);
+		});
+		this.router.post('/:id/checkout', cors, this.requireAuth, (req: express.Request, res: express.Response) => {
+			res.set('Access-Control-Allow-Credentials', 'true');
+			this.checkOut(req, res);
 		});
 		this.router.post("/", cors,
 			upload.fields([{ name: 'banner', maxCount: 1}, { name: 'eventPicture', maxCount: 1}]),
@@ -118,13 +123,34 @@ export class EventController extends BaseController {
 	async checkIn(req: express.Request, res: express.Response) {
 		console.log("Received request to check in for event");
 		const sessiondata = req.session;
-		const result = userdatabase.checkinResponses.LOSTEVENT;
-		if (result == userdatabase.checkinResponses.SUCCES) {
-			res.status(200).json({ succes: true, message: "Succesfully registered for event"});
-		} else if (result == userdatabase.checkinResponses.ALREADYDONE) {
-			res.status(400).json({ succes: false, error: "Already registered for this event"});
+		const eventid = req.params.id;
+		const event = await database.RetrieveEvent(eventid);
+		if (event != null) {
+			const result = await userCheckIn(sessiondata.userID, eventid);
+			if (result) {
+				res.status(200).json({ success: true, message: "Succesfully registered for event"});
+			} else {
+				res.status(400).json({ success: false, error: "Already registered for this event"});
+			}
 		} else {
-			res.status(400).json({ succes: false, error: "The event was not found"});
+			res.status(400).json({ success: false, error: "The event was not found"});
+		}
+	}
+
+	async checkOut(req: express.Request, res: express.Response) {
+		console.log("Received request to check out for event");
+		const sessiondata = req.session;
+		const eventid = req.params.id;
+		const event = await database.RetrieveEvent(eventid);
+		if (event != null) {
+			const result = await userCheckOut(sessiondata.userID, eventid);
+			if (result) {
+				res.status(200).json({ success: true, message: "Succesfully checked out for event"});
+			} else {
+				res.status(400).json({ success: false, error: "Unable to check out: You were not checked in for this event"});
+			}
+		} else {
+			res.status(400).json({ success: false, error: "The event was not found"});
 		}
 	}
 

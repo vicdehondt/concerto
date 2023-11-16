@@ -20,10 +20,11 @@ type Event = {
   eventID: number
   title: string
   description: string
-  maxPeople: number
-  datetime: string
+  checkedIn: number
+  dateAndTime: string
   price: number
-  image: string
+  banner: string
+  eventPicture: string
 }
 
 export const getServerSideProps = (async (context) => {
@@ -43,8 +44,7 @@ export default function Concert({event}: InferGetServerSidePropsType<typeof getS
   return (
     <>
       <Head>
-        {/* <title>{title}</title> */}
-        <title>yoooo</title>
+        <title>{title}</title>
         <meta name="description" content="Concert page." />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
@@ -52,7 +52,7 @@ export default function Concert({event}: InferGetServerSidePropsType<typeof getS
       <main className={`${styles.main} ${inter.className}`}>
         <div className={[styles.page, styles.concertPage].join(" ")}>
           <div className={styles.bannerContainer}>
-            <Banner imageSource="/photos/banner.jpg" concertName="Ariana Grande"/>
+            <Banner imageSource={event.banner} concertName="Ariana Grande"/>
           </div>
           <div className={styles.descriptionContainer}>
             <div className={styles.descriptionTitle}>

@@ -1,14 +1,7 @@
-const { Sequelize, DataTypes, Op } = require('sequelize');
-import { STRING } from 'sequelize';
-import * as config from '../config'
+import { DataTypes, Op } from 'sequelize';
+import {sequelize} from '../configs/sequelizeConfig'
 import { Friend } from './Usermodel';
 const fs = require('fs');
-
-const sequelize = new Sequelize({
-    dialect: config.databaseDialect,
-    storage: config.databasePath,
-    logging: false
-  });
 
 export const EventModel = sequelize.define('Event', {
   eventID: {

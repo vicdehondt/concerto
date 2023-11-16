@@ -1,11 +1,5 @@
-const { Sequelize, DataTypes, Op } = require('sequelize');
-import * as config from '../config'
-
-const sequelize = new Sequelize({
-    dialect: config.databaseDialect,
-    storage: config.databasePath,
-    logging: false,
-})
+import { DataTypes, Op } from 'sequelize';
+import {sequelize} from '../configs/sequelizeConfig'
 
 export const UserModel = sequelize.define('User', {
     userID: {
@@ -204,12 +198,6 @@ export async function RetrieveUser(field: string, value): Promise<typeof UserMod
         console.error("There was an error finding a user: ", error);
       }
 }
-
-export const checkinResponses = {
-    SUCCES: 0,
-    LOSTEVENT: 1,
-    ALREADYDONE: 2
-  }
 
 synchronize();
 

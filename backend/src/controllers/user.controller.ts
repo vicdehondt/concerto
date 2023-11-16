@@ -1,8 +1,8 @@
 import * as express from 'express';
 import { BaseController } from './base.controller';
 import * as database from '../models/Usermodel';
-import {createMulter} from "./multerConfig"
-import { getCorsConfiguration } from './corsConfig';
+import {createMulter} from "../configs/multerConfig"
+import { getCorsConfiguration } from '../configs/corsConfig';
 const fs = require('fs');
 
 const userImagePath = './public/users';
@@ -21,13 +21,11 @@ export class UserController extends BaseController {
 		this.router.get('/:username', cors, this.requireAuth,
 			upload.none(),
 			(req: express.Request, res: express.Response) => {
-				res.set('Access-Control-Allow-Credentials', 'true');
 				this.getUserInformation(req, res);
 			});
 		this.router.delete('/:username', cors, this.requireAuth,
 			upload.none(), this.requireAuth,
 			(req: express.Request, res: express.Response) => {
-				res.set('Access-Control-Allow-Credentials', 'true');
 				this.deleteUser(req, res);
 			});
     }

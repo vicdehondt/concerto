@@ -8,6 +8,9 @@ import { Nav } from "react-bootstrap";
 import type { InferGetServerSidePropsType, GetServerSideProps } from 'next'
 import { useEffect } from "react";
 
+
+// var cookies = require('cookies')
+
 const inter = Inter({ subsets: ["latin"] });
 
 const environment = {
@@ -21,14 +24,20 @@ type Event = {
   eventID: number
   title: string
   description: string
-  maxPeople: number
-  datetime: string
+  checkedIn: number
+  dateAndTime: string
   price: number
-  image: string
+  eventPicture: string
 }
 
 export const getServerSideProps = (async (context) => {
-  const res = await fetch(environment.backendURL + "/events")
+  const res = await fetch(environment.backendURL + "/events", {
+    mode: 'cors',
+    credentials: 'include',
+  });
+  // console.log(res.cookies.get);
+  // console.log(res.headers.getSetCookie());
+  // console.log(cookies.get("connect.sid"));
   const events = await res.json()
   return { props: { events } }
 }) satisfies GetServerSideProps<{
@@ -37,8 +46,10 @@ export const getServerSideProps = (async (context) => {
 
 export default function Home({events}: InferGetServerSidePropsType<typeof getServerSideProps>) {
 
+  console.log(events)
+
   function showEvent(event: Event) {
-    return <EventCard eventId={event.eventID} title={event.title} location="Placeholder" amountAttending={event.maxPeople} dateAndTime={event.datetime} price={event.price} image={event.image} />
+    return <EventCard key={event.eventID} eventId={event.eventID} title={event.title} location="Placeholder" amountAttending={event.checkedIn} dateAndTime={event.dateAndTime} price={event.price} image={event.eventPicture} />
   }
 
   function showEvents() {
