@@ -42,15 +42,20 @@ EventModel.belongsToMany(UserModel, {
     onDelete: 'CASCADE',
 })
 
-export async function userCheckIn(userID, eventID): Promise<boolean> {
-    const checkIn = await CheckedInUsers.findOne({
+async function retrieveCheckIn(user, event) {
+    const result = CheckedInUsers.findOne({
         where: {
             [Op.and]: [
-                { userID: userID },
-                { eventID: eventID }
+                { userID: user },
+                { eventID: event }
             ]
         }
     });
+    return result;
+}
+
+export async function userCheckIn(userID, eventID): Promise<boolean> {
+    const checkIn = await retrieveCheckIn(userID, eventID);
     if (checkIn == null) {
         await CheckedInUsers.create({
             userID: userID,
@@ -63,14 +68,7 @@ export async function userCheckIn(userID, eventID): Promise<boolean> {
 }
 
 export async function userCheckOut(userID, eventID): Promise<boolean> {
-    const checkIn = await CheckedInUsers.findOne({
-        where: {
-            [Op.and]: [
-                { userID: userID },
-                { eventID: eventID }
-            ]
-        }
-    });
+    const checkIn = await retrieveCheckIn(userID, eventID);
     if (checkIn != null) {
         await checkIn.destroy();
         return true;
@@ -79,7 +77,7 @@ export async function userCheckOut(userID, eventID): Promise<boolean> {
     }
 }
 
-CheckedInUsers.sync();
+
 
 
 
