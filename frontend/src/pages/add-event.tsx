@@ -93,7 +93,7 @@ export default function AddEvent({event}: InferGetServerSidePropsType<typeof get
               Description
             </div>
             <div className={styles.descriptionText}>
-              <textarea id='description' name='description' required />
+              <textarea id='description' name='description' rows={10} required />
             </div>
           </div>
           <div className={styles.timetableContainer}>
