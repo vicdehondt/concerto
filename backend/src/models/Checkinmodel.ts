@@ -50,12 +50,29 @@ export async function userCheckIn(userID, eventID): Promise<boolean> {
                 { eventID: eventID }
             ]
         }
-    }); console.log(checkIn);
+    });
     if (checkIn == null) {
         await CheckedInUsers.create({
             userID: userID,
             eventID: eventID
         });
+        return true;
+    } else {
+        return false;
+    }
+}
+
+export async function userCheckOut(userID, eventID): Promise<boolean> {
+    const checkIn = await CheckedInUsers.findOne({
+        where: {
+            [Op.and]: [
+                { userID: userID },
+                { eventID: eventID }
+            ]
+        }
+    });
+    if (checkIn != null) {
+        await checkIn.destroy();
         return true;
     } else {
         return false;
