@@ -46,7 +46,6 @@ export const Friend = sequelize.define('Friend',{
     },
 })
 
-// FriendModel.js
 Friend.belongsTo(UserModel, {
     foreignKey: 'senderID',
     as: 'sender',
@@ -176,6 +175,11 @@ export async function SendFriendRequest(senderID, receivername): Promise<Number>
             const existing = await FindFriend(senderID, receiverid);
             if (existing == null) {
                 await CreateFriend(senderID, receiverid);
+                const object = await NotificationObject.create({
+                    notificationType: 'friendrequest',
+                    actor: senderID,
+                });
+                await createNewNotification(object.ID, receiverid);
                 return FriendInviteResponses.SENT;
             } else {
                 return FriendInviteResponses.ALREADYFRIEND;
@@ -199,3 +203,95 @@ export async function RetrieveUser(field: string, value): Promise<typeof UserMod
       }
 }
 
+export const NotificationObject = sequelize.define('NotificationObject', {
+    ID: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        primaryKey: true,
+        autoIncrement: true
+    },
+    notificationType: {
+        type: DataTypes.ENUM('friendrequest'),
+        allowNull: false,
+    },
+    actor: {
+        type: DataTypes.INTEGER,
+        references: {
+            model: UserModel,
+            key: 'userID'
+        }
+    }
+});
+
+UserModel.hasMany(NotificationObject, {
+    foreignKey: 'actor'
+});
+NotificationObject.belongsTo(UserModel, {
+    foreignKey: 'actor'
+});
+
+export const Notification = sequelize.define('Notification', {
+    notificationID: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+    },
+    receiver: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+            model: UserModel,
+            key: 'userID'
+        }
+    },
+    status: {
+        type: DataTypes.ENUM('unseen', 'seen'),
+        allowNul: false,
+        defaultValue: 'unseen'
+    }
+});
+
+NotificationObject.hasMany(Notification, {
+    foreignKey: {
+        name: 'objectID',
+        allowNull: false,
+    }
+});
+Notification.belongsTo(NotificationObject, {
+    foreignKey: {
+        name: 'objectID',
+    }
+});
+
+UserModel.hasMany(Notification, {
+    foreignKey: {
+        name: 'receiver',
+        allowNull: false,
+    }
+});
+Notification.belongsTo(UserModel, {
+    foreignKey: {
+        name: 'receiver',
+    }
+});
+
+export async function createNewNotification(objectID, receiverID) {
+    await Notification.create({
+        receiver: receiverID,
+        objectID: objectID
+    });
+}
+
+export async function userNotifications(userid) {
+    const result = await Notification.findAll({
+        attributes: ['notificationID', 'status'],
+        where: {
+            receiver: userid
+        },
+        include: {
+                model: NotificationObject,
+                attributes: ['notificationType', 'actor']
+        }
+    });
+    return result;
+}
