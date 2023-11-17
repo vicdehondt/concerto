@@ -32,9 +32,9 @@ function Rating() {
         <div className={styles.text}>
           Location
         </div>
-        <form className={styles.stars}>
+        <div className={styles.stars}> {/*Moet form worden */}
           {locationStars}
-        </form>
+        </div>
       </div>
       <div className={styles.box}>
         <div className={styles.text}>
