@@ -1,15 +1,18 @@
 import Image from "next/image";
 import styles from "../styles/BannerUpload.module.css";
-import { useState } from "react";
+import { useState, ChangeEvent } from "react";
 
 function BannerUpload() {
   const [bannerSource, setBannerSource] = useState("");
 
-  function bannerImageChosen(event) {
-    console.log(event.target.files[0]);
-    const file = event.target.files[0];
-    const source = URL.createObjectURL(file);
-    setBannerSource(source);
+  function bannerImageChosen(event: ChangeEvent<HTMLInputElement>) {
+    const fileInput = event.target as HTMLInputElement;
+    const file = fileInput.files && fileInput.files[0];
+
+    if (file) {
+      const source = URL.createObjectURL(file);
+      setBannerSource(source);
+    }
   }
 
   function showBanner() {
