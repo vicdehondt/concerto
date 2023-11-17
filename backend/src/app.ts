@@ -9,10 +9,7 @@ const session = require("express-session");
 var FileStore = require('session-file-store')(session);
 import exp = require('constants');
 
-
 const cors = getCorsConfiguration();
-
-// const cookieParser = require("cookie-parser"); // Uit video van cookies: https://www.youtube.com/watch?v=34wC1C61lg0&t=1214s&ab_channel=SteveGriffith-Prof3ssorSt3v3
 
 var fileStoreOptions = {path: './src/sessions', reapInterval: 900};
 
@@ -24,8 +21,6 @@ export class App {
 
     constructor() {
         this.app = express();
-        // this.app.use(cookieParser()); // Ook uit video van cookies.
-        // this.app.use(cors)
         this.app.use((req, res, next) => {
             res.header('Access-Control-Allow-Origin', environment.frontendURL);
             res.header('Access-Control-Allow-Credentials', true);
