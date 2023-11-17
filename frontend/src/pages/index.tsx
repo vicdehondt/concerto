@@ -3,58 +3,62 @@ import { Inter } from "next/font/google";
 import styles from "@/styles/Home.module.css";
 import Navbar from "../components/Navbar";
 import EventCard from "../components/EventCard";
-import SideBar from "../components/SideBar"
+import SideBar from "../components/SideBar";
 import { Nav } from "react-bootstrap";
-import type { InferGetServerSidePropsType, GetServerSideProps } from 'next'
-import { useEffect } from "react";
-
-
-// var cookies = require('cookies')
+import type { InferGetServerSidePropsType, GetServerSideProps } from "next";
+import { useEffect, useState } from "react";
 
 const inter = Inter({ subsets: ["latin"] });
 
 const environment = {
-  backendURL: "http://localhost:8080"
-}
+  backendURL: "http://localhost:8080",
+};
 if (process.env.NODE_ENV == "production") {
-  environment.backendURL = "https://api.concerto.dehondt.dev"
+  environment.backendURL = "https://api.concerto.dehondt.dev";
 }
 
 type Event = {
-  eventID: number
-  title: string
-  description: string
-  checkedIn: number
-  dateAndTime: string
-  price: number
-  eventPicture: string
-}
+  eventID: number;
+  title: string;
+  description: string;
+  checkedIn: number;
+  dateAndTime: string;
+  price: number;
+  eventPicture: string;
+};
 
-export const getServerSideProps = (async (context) => {
-  const res = await fetch(environment.backendURL + "/events", {
-    mode: 'cors',
-    credentials: 'include',
-  });
-  // console.log(res.cookies.get);
-  // console.log(res.headers.getSetCookie());
-  // console.log(cookies.get("connect.sid"));
-  const events = await res.json()
-  return { props: { events } }
-}) satisfies GetServerSideProps<{
-  events: Array<Event>
-}>
+export default function Home() {
+  const [events, setEvents] = useState([]);
 
-export default function Home({events}: InferGetServerSidePropsType<typeof getServerSideProps>) {
-
-  console.log(events)
-
-  function showEvent(event: Event) {
-    return <EventCard key={event.eventID} eventId={event.eventID} title={event.title} location="Placeholder" amountAttending={event.checkedIn} dateAndTime={event.dateAndTime} price={event.price} image={event.eventPicture} />
+  function showEvents(response: Array<Event>) {
+    return response.map((event: Event) => {
+      return (
+        <EventCard
+          key={event.eventID}
+          eventId={event.eventID}
+          title={event.title}
+          location="Placeholder"
+          amountAttending={event.checkedIn}
+          dateAndTime={event.dateAndTime}
+          price={event.price}
+          image={event.eventPicture}
+        />
+      );
+    });
   }
 
-  function showEvents() {
-    return events.map(showEvent);
-  }
+  useEffect(() => {
+    fetch(environment.backendURL + "/events", {
+      mode: "cors",
+      credentials: "include",
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((responseJSON) => {
+        setEvents(responseJSON);
+      });
+  }, []);
 
   return (
     <>
@@ -66,13 +70,13 @@ export default function Home({events}: InferGetServerSidePropsType<typeof getSer
       </Head>
       <main className={`${styles.main} ${inter.className}`}>
         <div className={[styles.page, styles.homePage].join(" ")}>
-          <SideBar type="event"/>
+          <SideBar type="event" />
           <div className={styles.pageContent}>
             <div className={styles.title}>
               <h1>Events this week you may like</h1>
             </div>
             <div className={styles.eventCardContainer}>
-              {showEvents()}
+              {showEvents(events)}
             </div>
           </div>
         </div>
