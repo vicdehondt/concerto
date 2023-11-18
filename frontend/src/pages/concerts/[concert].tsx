@@ -45,6 +45,11 @@ export default function Concert() {
     eventPicture: "string",
   });
 
+  function showBanner() {
+    if (concert.eventID > 0) {
+      return <Banner imageSource={concert.banner} concertName={concert.title} />;
+    }
+  }
 
   useEffect(() => {
     const id = router.query.concert;
@@ -70,6 +75,7 @@ export default function Concert() {
       <main className={`${styles.main} ${inter.className}`}>
         <div className={[styles.page, styles.concertPage].join(" ")}>
           <div className={styles.bannerContainer}>
+            {showBanner()}
           </div>
           <div className={styles.descriptionContainer}>
             <div className={styles.descriptionTitle}>Description</div>
