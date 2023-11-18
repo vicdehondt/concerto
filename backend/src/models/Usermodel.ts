@@ -176,7 +176,7 @@ export async function SendFriendRequest(senderID, receivername): Promise<Number>
             if (existing == null) {
                 await CreateFriend(senderID, receiverid);
                 const object = await NotificationObject.create({
-                    notificationType: 'friendrequest',
+                    notificationType: 'friendrequestreceived',
                     actor: senderID,
                 });
                 await createNewNotification(object.ID, receiverid);
@@ -211,7 +211,7 @@ export const NotificationObject = sequelize.define('NotificationObject', {
         autoIncrement: true
     },
     notificationType: {
-        type: DataTypes.ENUM('friendrequest'),
+        type: DataTypes.ENUM('friendrequestreceived', 'friendrequestaccepted'),
         allowNull: false,
     },
     actor: {

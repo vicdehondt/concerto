@@ -78,10 +78,20 @@ export class FriendController extends BaseController {
                 const status = friendrelation.status;
                 if (status == 'pending') {
                     if (answer) {
+                        const object = await database.NotificationObject.create({
+                            notificationType: 'friendrequestaccepted',
+                            actor: sessiondata.userID,
+                        });
+                        await database.createNewNotification(object.ID, sender.userID);
                         friendrelation.status = 'accepted';
                         friendrelation.save();
                         res.status(200).json({ success: true, message: 'Friend request accepted'});
                     } else {
+                        const object = await database.NotificationObject.create({
+                            notificationType: 'friendrequestdenied',
+                            actor: sessiondata.userID,
+                        });
+                        await database.createNewNotification(object.ID, sender.userID);
                         friendrelation.destroy();
                         res.status(200).json({ success: true, message: 'Friend request denied'});
                     }
