@@ -53,6 +53,7 @@ export default function Concert() {
 
   useEffect(() => {
     const id = router.query.concert;
+    if (id) {
       fetch(environment.backendURL + `/events/${id}`, {
         mode: "cors",
         credentials: "include",
@@ -62,6 +63,7 @@ export default function Concert() {
       }).then((responseJSON) => {
         setConcert(responseJSON);
       });
+    }
   }, [router.query.concert])
 
   return (
