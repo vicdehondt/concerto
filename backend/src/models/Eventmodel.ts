@@ -31,6 +31,18 @@ export const EventModel = sequelize.define('Event', {
     type: DataTypes.REAL,
     allowNull: false
   },
+  support: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  doors: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  main: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
   banner: {
     type: DataTypes.STRING,
     allowNull: false
@@ -38,12 +50,11 @@ export const EventModel = sequelize.define('Event', {
   eventPicture: {
     type: DataTypes.STRING,
     allowNull: false
-  }
-  }, {
+  }}, {
     tableName: 'Events'
 });
 
-export async function CreateEvent(title, description, date, price, bannerpath, picturepath) {
+export async function CreateEvent(title, description, date, price, doors, main, support, bannerpath, picturepath) {
   try {
     const Event = await EventModel.create({
       title: title,
@@ -52,6 +63,9 @@ export async function CreateEvent(title, description, date, price, bannerpath, p
       price: price,
       banner: bannerpath,
       eventPicture: picturepath,
+      doors: doors,
+      main: main,
+      support: support
     });
   } catch (error) {
     console.error("There was an error creating an event: ", error);
