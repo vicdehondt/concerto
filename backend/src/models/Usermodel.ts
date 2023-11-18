@@ -134,13 +134,13 @@ export async function GetAllFriends(userID) {
 
 async function CreateFriend(senderID, receiverID) {
     const newfriend = await Friend.create({
-        status: 'accepted',
+        status: 'pending',
         senderID: senderID,
         receiverID: receiverID,
     });
 }
 
-async function FindFriend(senderID, receiverID) { // Procedure does not work in 2 way;
+export async function FindFriend(senderID, receiverID) { // Procedure does not work in 2 way;
     const existing = await Friend.findOne({
         where: {
             [Op.or]: [
