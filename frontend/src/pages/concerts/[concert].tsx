@@ -45,18 +45,19 @@ export default function Concert() {
     eventPicture: "string",
   });
 
+
   useEffect(() => {
-    const id = router.query.id;
-    fetch(environment.backendURL + `/events/${id}`, {
-      mode: "cors",
-      credentials: "include",
-    })
-    .then((response) => {
-      return response.json();
-    }).then((responseJSON) => {
-      setConcert(responseJSON);
-    })
-  }, [])
+    const id = router.query.concert;
+      fetch(environment.backendURL + `/events/${id}`, {
+        mode: "cors",
+        credentials: "include",
+      })
+      .then((response) => {
+        return response.json();
+      }).then((responseJSON) => {
+        setConcert(responseJSON);
+      });
+  }, [router.query.concert])
 
   return (
     <>
@@ -69,7 +70,6 @@ export default function Concert() {
       <main className={`${styles.main} ${inter.className}`}>
         <div className={[styles.page, styles.concertPage].join(" ")}>
           <div className={styles.bannerContainer}>
-            <Banner imageSource={concert.banner} concertName={concert.title} />
           </div>
           <div className={styles.descriptionContainer}>
             <div className={styles.descriptionTitle}>Description</div>

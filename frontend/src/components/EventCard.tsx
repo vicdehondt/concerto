@@ -61,7 +61,7 @@ function EventCard({ eventId, title, location, amountAttending, dateAndTime, pri
         <Image src={image} style={{objectFit:"cover"}} width={120} height={120} alt="Performer" />
       </div>
       <div className={styles.event}>
-        <Link href={`/concerts/${eventId}/${title}`} className={styles.performance}>{title}</Link>
+        <Link href={`/concerts/${eventId}`} className={styles.performance}>{title}</Link>
         <div className={styles.location}>
           <Image src="/icons/location.png" width={18} height={21} alt="" />
           <div>{location}</div>
