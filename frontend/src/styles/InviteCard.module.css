@@ -1,12 +1,13 @@
 .inviteCardContainer {
     display: grid;
-    grid-template-columns: [picture] 150px [name] auto [button] auto;
+    grid-template-columns: [picture] 100px [name] auto [button] 120px;
+    grid-template-rows: 100px;
     grid-template-areas:
     "picture name button";
     column-gap: 20px;
-    border: 5px solid black;
+    border: 2px solid black;
     margin: 7px;
-    border-radius: 20px;
+    border-radius: 10px;
     background-color: white;
     box-shadow: 0px 3px 3px grey;
 }
@@ -14,15 +15,19 @@
 .inviteCardContainer .pictureContainer {
     grid-area: picture;
     margin: 10px;
-    justify-content: center;
+    /* justify-content: center; */
 }
 
 .inviteCardContainer .pictureContainer img {
-    border-radius: 50%;
+    /* border-radius: 50%; */
     width: 100%;
-    height: auto;
+    height: 100%;
+    
     border-radius: 50%;
 }
+
+/* width: 100%; */
+    /* height: auto; */
 
 .inviteCardContainer .profileNameContainer {
     grid-area: name;
