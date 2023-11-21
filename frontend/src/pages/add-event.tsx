@@ -50,20 +50,23 @@ export default function AddEvent() {
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     var formData = new FormData(event.currentTarget);
+    formData.append("dateAndTime", concatDateAndTime())
+    formData.append("price", "20")
     const form_values = Object.fromEntries(formData);
     console.log(form_values);
-    // const response = await fetch(environment.backendURL + "/events", {
-    //   method: "POST",
-    //   body: formData,
-    //   mode: "cors",
-    //   credentials: "include",
-    // });
+    const response = await fetch(environment.backendURL + "/events", {
+      method: "POST",
+      body: formData,
+      mode: "cors",
+      credentials: "include",
+    });
 
-    // // Handle response if necessary
-    // const data = await response.json();
-    // if (response.status == 200) {
-    //   console.log(response);
-    // }
+    // Handle response if necessary
+    const data = await response.json();
+    if (response.status == 200) {
+      console.log(response);
+      router.push("/")
+    }
   }
 
   return (
@@ -96,7 +99,7 @@ export default function AddEvent() {
               <div className={styles.dateContainer}>
                 <div className={styles.dateTitle}>Pick a date!</div>
                 <div className={styles.datePane}>
-                  <input type="date" name="date" id="date" defaultValue={date} onChange={(event) => setDate(getFormattedDate(new Date(event.target.value)))} required />
+                  <input type="date" defaultValue={date} onChange={(event) => setDate(getFormattedDate(new Date(event.target.value)))} required />
                 </div>
               </div>
             </div>
