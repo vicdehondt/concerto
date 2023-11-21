@@ -2,6 +2,7 @@ import * as express from 'express';
 import { BaseController } from './base.controller';
 import * as database from '../models/Eventmodel';
 import * as userdatabase from '../models/Usermodel';
+import { userCheckIn, userCheckOut, allCheckedInUsers } from  '../models/Checkinmodel'
 import {body, validationResult} from "express-validator"
 import {createMulter} from "../configs/multerConfig";
 import { getCorsConfiguration } from '../configs/corsConfig';
@@ -24,33 +25,37 @@ export class EventController extends BaseController {
 			res.set('Access-Control-Allow-Credentials', 'true');
 			this.getAllEvents(req, res);
 		});
-		this.router.get('/:id', cors, this.requireAuth, (req: express.Request, res: express.Response) => {
-			res.set('Access-Control-Allow-Credentials', 'true');
-			this.getEvent(req, res);
-		});
-		this.router.get('/checkin/:username', cors, (req: express.Request, res: express.Response) => {
-			res.set('Access-Control-Allow-Credentials', 'true');
-			this.checkIn(req, res);
-		});
 		this.router.post("/", cors,
 			upload.fields([{ name: 'banner', maxCount: 1}, { name: 'eventPicture', maxCount: 1}]),
 			[
 				body("title").trim().trim().notEmpty(),
 				body("description").trim().notEmpty(),
+				body("main").trim().notEmpty(),
+				body("doors").trim().notEmpty(),
+				body("price").trim().notEmpty(),
 				body("price").trim().notEmpty(),
 				body("dateAndTime").trim().notEmpty(),
 			],
 			(req: express.Request, res: express.Response) => {
 				res.set('Access-Control-Allow-Credentials', 'true');
 				this.addPost(req, res);
-			});
-
-		this.router.get("/filter", cors,
-			upload.none(),
-			(req: express.Request, res: express.Response) => {
-				res.set('Access-Control-Allow-Credentials', 'true');
-				this.filterEvents(req, res);
-			});
+		});
+		this.router.get('/:id', cors, this.requireAuth, (req: express.Request, res: express.Response) => {
+			res.set('Access-Control-Allow-Credentials', 'true');
+			this.getEvent(req, res);
+		});
+		this.router.get('/:id/checkins', cors, this.requireAuth, (req: express.Request, res: express.Response) => {
+			res.set('Access-Control-Allow-Credentials', 'true');
+			this.allCheckedIn(req, res);
+		});
+		this.router.post('/:id/checkins', cors, this.requireAuth, (req: express.Request, res: express.Response) => {
+			res.set('Access-Control-Allow-Credentials', 'true');
+			this.checkIn(req, res);
+		});
+		this.router.delete('/:id/checkins', cors, this.requireAuth, (req: express.Request, res: express.Response) => {
+			res.set('Access-Control-Allow-Credentials', 'true');
+			this.checkOut(req, res);
+		});
     }
 
 	async getAllEvents(req: express.Request, res: express.Response) {
@@ -77,10 +82,10 @@ export class EventController extends BaseController {
 		const bannerpictures = req.files['banner']
 		const eventpictures = req.files['eventPicture']
 		if (result.isEmpty() && bannerpictures && eventpictures) {
-			const {title, eventid, description, dateAndTime, price} = req.body;
+			const {title, eventid, description, dateAndTime, price, doors, main, support} = req.body;
 			const bannerpath = "http://localhost:8080/events/" + bannerpictures[0].filename;
 			const picturepath = "http://localhost:8080/events/" + eventpictures[0].filename;
-			database.CreateEvent(title, description, dateAndTime, price, bannerpath, picturepath);
+			database.CreateEvent(title, description, dateAndTime, price, doors, main, support, bannerpath, picturepath);
 			console.log("Event created succesfully");
 			res.status(200).json({ success: true, message: 'Event created successfully' });
 		} else {
@@ -97,29 +102,46 @@ export class EventController extends BaseController {
 	async checkIn(req: express.Request, res: express.Response) {
 		console.log("Received request to check in for event");
 		const sessiondata = req.session;
-		const result = userdatabase.checkinResponses.LOSTEVENT;
-		if (result == userdatabase.checkinResponses.SUCCES) {
-			res.status(200).json({ succes: true, message: "Succesfully registered for event"});
-		} else if (result == userdatabase.checkinResponses.ALREADYDONE) {
-			res.status(400).json({ succes: false, error: "Already registered for this event"});
+		const eventid = req.params.id;
+		const event = await database.RetrieveEvent(eventid);
+		if (event != null) {
+			const result = await userCheckIn(sessiondata.userID, eventid);
+			if (result) {
+				res.status(200).json({ success: true, message: "Succesfully registered for event"});
+			} else {
+				res.status(400).json({ success: false, error: "Already registered for this event"});
+			}
 		} else {
-			res.status(400).json({ succes: false, error: "The event was not found"});
+			res.status(400).json({ success: false, error: "The event was not found"});
 		}
 	}
 
-	//expand with an optional limitator so if no filters are selected you only get for example the first 10 events
-	async filterEvents(req: express.Request, res: express.Response): Promise<void>{
-		console.log("Received post request to filter events");
-		const filters = req.body;
-		if (filters.length === 0){
-			res.status(404).json({succes: false, error: "No filters were activated"})
-		} else{
-			const events = await database.FilterEvents(filters.maxpeople, filters.datetime, filters.price);//gives the events that match the given filters
-			if(events){
-				res.status(200).json(events); //succes
-			}else{
-				res.status(400).json({succes: false, error: events});// something went wrong while retrieving the events
+	async checkOut(req: express.Request, res: express.Response) {
+		console.log("Received request to check out for event");
+		const sessiondata = req.session;
+		const eventid = req.params.id;
+		const event = await database.RetrieveEvent(eventid);
+		if (event != null) {
+			const result = await userCheckOut(sessiondata.userID, eventid);
+			if (result) {
+				res.status(200).json({ success: true, message: "Succesfully checked out for event"});
+			} else {
+				res.status(400).json({ success: false, error: "Unable to check out: You were not checked in for this event"});
 			}
+		} else {
+			res.status(400).json({ success: false, error: "The event was not found"});
+		}
+	}
+
+	async allCheckedIn(req: express.Request, res: express.Response) {
+		console.log("Received request to get all checked in users");
+		const eventid = req.params.id;
+		const event = await database.RetrieveEvent(eventid);
+		if (event != null) {
+			const result = await allCheckedInUsers(eventid);
+			res.status(200).json(result);
+		} else {
+			res.status(400).json({ success: false, error: "The event was not found"});
 		}
 	}
 }

@@ -3,6 +3,7 @@ import { BaseController } from './base.controller';
 import * as database from '../models/Usermodel';
 import {createMulter} from "../configs/multerConfig"
 import { getCorsConfiguration } from '../configs/corsConfig';
+import { allCheckedInEvents } from "../models/Checkinmodel"
 const fs = require('fs');
 
 const userImagePath = './public/users';
@@ -27,6 +28,16 @@ export class UserController extends BaseController {
 			upload.none(), this.requireAuth,
 			(req: express.Request, res: express.Response) => {
 				this.deleteUser(req, res);
+			});
+		this.router.get('/:username/checkins', cors, this.requireAuth,
+			upload.none(),
+			(req: express.Request, res: express.Response) => {
+				this.getCheckIns(req, res);
+			});
+		this.router.get('/:username/notifications', cors, this.requireAuth,
+			upload.none(),
+			(req: express.Request, res: express.Response) => {
+				this.getNotifications(req, res);
 			});
     }
 
@@ -55,5 +66,15 @@ export class UserController extends BaseController {
 		} else {
 			res.status(400).json({ success: false, error: "User not found!"});
 		}
+	}
+	async getCheckIns(req: express.Request, res: express.Response) {
+		const sessiondata = req.session;
+		const result = await allCheckedInEvents(sessiondata.userID);
+		res.status(200).json(result);
+	}
+	async getNotifications(req: express.Request, res: express.Response) {
+		const sessiondata = req.session;
+		const result = await database.userNotifications(sessiondata.userID);
+		res.status(200).json(result);
 	}
 }
