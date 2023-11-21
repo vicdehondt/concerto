@@ -31,6 +31,18 @@ export class FriendController extends BaseController {
                 res.set('Access-Control-Allow-Credentials', 'true');
                 this.sendFriendRequest(req, res);
             });
+        this.router.post('/:senderusername/accept', cors, this.requireAuth,
+            upload.none(),
+            (req: express.Request, res: express.Response) => {
+                res.set('Access-Control-Allow-Credentials', 'true');
+                this.responseFriendRequest(req, res, true);
+            });
+        this.router.post('/:senderusername/deny', cors, this.requireAuth,
+            upload.none(),
+            (req: express.Request, res: express.Response) => {
+                res.set('Access-Control-Allow-Credentials', 'true');
+                this.responseFriendRequest(req, res, false);
+            });
     }
 
     async getAllFriends(req: express.Request, res: express.Response){
@@ -54,4 +66,43 @@ export class FriendController extends BaseController {
 			res.status(400).json({ succes: false, message: "The other user was not found"});
 		}
 	}
+
+    async responseFriendRequest(req: express.Request, res: express.Response, answer: boolean) {
+        console.log("Received request to respond to friend request");
+        const sendername = req.params.senderusername;
+        const sender = await database.RetrieveUser('username', sendername);
+        if (sender != null) {
+            const sessiondata = req.session;
+            const friendrelation = await database.FindFriend(sender.userID, sessiondata.userID);
+            if (friendrelation != null) {
+                const status = friendrelation.status;
+                if (status == 'pending') {
+                    if (answer) {
+                        const object = await database.NotificationObject.create({
+                            notificationType: 'friendrequestaccepted',
+                            actor: sessiondata.userID,
+                        });
+                        await database.createNewNotification(object.ID, sender.userID);
+                        friendrelation.status = 'accepted';
+                        friendrelation.save();
+                        res.status(200).json({ success: true, message: 'Friend request accepted'});
+                    } else {
+                        const object = await database.NotificationObject.create({
+                            notificationType: 'friendrequestdenied',
+                            actor: sessiondata.userID,
+                        });
+                        await database.createNewNotification(object.ID, sender.userID);
+                        friendrelation.destroy();
+                        res.status(200).json({ success: true, message: 'Friend request denied'});
+                    }
+                } else {
+                    res.status(400).json({ success: false, error: 'you are already friends'});
+                }
+            } else {
+                res.status(400).json({ success: false, error: 'there is no friend request'});
+            }
+        } else {
+            res.status(400).json({ success: false, error: 'the user does not exist'});
+        }
+    }
 }

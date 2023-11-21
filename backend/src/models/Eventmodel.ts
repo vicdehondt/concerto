@@ -1,14 +1,7 @@
-const { Sequelize, DataTypes, Op } = require('sequelize');
-import { STRING } from 'sequelize';
-import * as config from '../configs/config'
+import { DataTypes, Op } from 'sequelize';
+import {sequelize} from '../configs/sequelizeConfig'
 import { Friend } from './Usermodel';
 const fs = require('fs');
-
-const sequelize = new Sequelize({
-    dialect: config.databaseDialect,
-    storage: config.databasePath,
-    logging: false
-  });
 
 export const EventModel = sequelize.define('Event', {
   eventID: {
@@ -38,6 +31,18 @@ export const EventModel = sequelize.define('Event', {
     type: DataTypes.REAL,
     allowNull: false
   },
+  support: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  doors: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  main: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
   banner: {
     type: DataTypes.STRING,
     allowNull: false
@@ -45,17 +50,11 @@ export const EventModel = sequelize.define('Event', {
   eventPicture: {
     type: DataTypes.STRING,
     allowNull: false
-  }
-  }, {
+  }}, {
     tableName: 'Events'
 });
 
-async function synchronize() {
-  EventModel.sync();
-  Friend.sync();
-}
-
-export async function CreateEvent(title, description, date, price, bannerpath, picturepath) {
+export async function CreateEvent(title, description, date, price, doors, main, support, bannerpath, picturepath) {
   try {
     const Event = await EventModel.create({
       title: title,
@@ -64,6 +63,9 @@ export async function CreateEvent(title, description, date, price, bannerpath, p
       price: price,
       banner: bannerpath,
       eventPicture: picturepath,
+      doors: doors,
+      main: main,
+      support: support
     });
   } catch (error) {
     console.error("There was an error creating an event: ", error);
@@ -93,20 +95,46 @@ export async function RetrieveEvent(ID): Promise<typeof EventModel> {
   }
 }
 
-export async function FilterEvents(maxpeople, datetime, price){
-  try {
-    const Event = await EventModel.findAll({
-    where: {
-      maxpeople: maxpeople,
-      datetime: datetime,
-      price: price,
-    },
-    });
-    return Event;
-  } catch (error) {
-    console.error("There was an error filtering Events: ", error);
+  //to limit the return if no filters are selected use the limit function from sqlite
+  export async function FilterEvents(filterfields,filtervalues){
+    try {
+      const whereClause = {};
+      for (let i = 0; i < filterfields.length; i++) {
+        const field = filterfields[i];
+        const value = filtervalues[i];
+        // need to add the condition to the where clause
+        if(field == "maxpeople" || field == "price"){
+          whereClause[field] = {
+            [Op.between]: value.split('/'),
+          };
+        } else {
+          whereClause[field] = value;
+        }
+      }
+      const Event = await EventModel.findAll({
+        where: whereClause,
+      });
+      return Event;
+    } catch (error) {
+      console.error("There was an error filtering Events: ", error);
+    }
   }
-}
 
-synchronize()
+  export async function SearchEvents(searchvalue){
+    try {
+      const Events = await EventModel.findAll({
+      attributes: {
+        exclude: ['createdAt', 'updatedAt'],
+      },
+      where: {
+        title: { //for now only searching on title, need to add location...
+            [Op.like]: '%' + searchvalue + '%',
+          }
+        }
+      });
+      return Events;
+    } catch (error) {
+      console.error("There was an error finding an event: ", error);
+    }
+  }
 

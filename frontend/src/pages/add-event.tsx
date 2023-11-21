@@ -10,7 +10,9 @@ import { FormEvent } from "react";
 import { title } from "process";
 import Image from 'next/image';
 import Rating from '@/components/Rating'
-import Timetable from "@/components/Timetable";
+import TimetableUpload from "@/components/TimetableUpload";
+import ArtistAndLocationUpload from "@/components/ArtistAndLocationUpload";
+import EventCardUpload from "@/components/EventCardUpload";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -21,13 +23,35 @@ if (process.env.NODE_ENV == "production") {
   environment.backendURL = "https://api.concerto.dehondt.dev";
 }
 
+function getFormattedDate(date: Date) {
+  return (
+    [date.getFullYear(),
+    date.getMonth() + 1, // getMonth starts at 0, so January is 00
+    date.getDate()].join("-")
+  );
+}
+
+function test(date: string) {
+  console.log(new Date())
+}
+
 export default function AddEvent() {
   const router = useRouter();
-  const title = "Concerto | Add a concert" + router.query.concert;
+  const [title, setTitle] = useState("");
+  const [location, setLocation] = useState("");
+  const [time, setTime] = useState("")
+  const [date, setDate] = useState(getFormattedDate(new Date()))
+
+  function concatDateAndTime() {
+    const dateAndTime = date + "T" + time;
+    return dateAndTime;
+  }
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     var formData = new FormData(event.currentTarget);
+    formData.append("dateAndTime", concatDateAndTime())
+    formData.append("price", "20")
     const form_values = Object.fromEntries(formData);
     console.log(form_values);
     const response = await fetch(environment.backendURL + "/events", {
@@ -41,6 +65,7 @@ export default function AddEvent() {
     const data = await response.json();
     if (response.status == 200) {
       console.log(response);
+      router.push("/")
     }
   }
 
@@ -55,7 +80,7 @@ export default function AddEvent() {
       <main className={`${styles.main} ${inter.className}`}>
         <form className={[styles.page, styles.addEventPage].join(" ")} onSubmit={onSubmit}>
           <div className={styles.bannerContainer}>
-            <BannerUpload />
+            <BannerUpload titleCallback={(string: string) => setTitle(string)} />
           </div>
           <div className={styles.descriptionContainer}>
             <div className={styles.descriptionTitle}>Description</div>
@@ -63,23 +88,33 @@ export default function AddEvent() {
               <textarea id="description" name="description" rows={10} required />
             </div>
           </div>
-          <div className={styles.programContainer}>
-            <div className={styles.programTitle}>Program</div>
-            <div className={styles.programText}>
-              <Timetable doorTime="19:00" supportTime="20:00" concertTime="21:00" />
-            </div>
-            <div className={styles.ticketsAndWishlist}>
-              <button className={styles.ticketsButton}>Buy tickets</button>
-              <div className={styles.addToWishlist}>
-                <Image src="/icons/heart.png" width={50} height={50} alt="Add to wishlist" />
+          <div className={styles.inputContainer}>
+            <div className={styles.programAndDateContainer} >
+              <div className={styles.programContainer}>
+                <div className={styles.programTitle}>Program</div>
+                <div className={styles.programText}>
+                  <TimetableUpload setTime={(string: string) => setTime(string)} />
+                </div>
+              </div>
+              <div className={styles.dateContainer}>
+                <div className={styles.dateTitle}>Pick a date!</div>
+                <div className={styles.datePane}>
+                  <input type="date" defaultValue={date} onChange={(event) => setDate(getFormattedDate(new Date(event.target.value)))} required />
+                </div>
               </div>
             </div>
+            <div className={styles.cardPreview}>
+              <EventCardUpload title={title} location="Placeholder" date={date} time={time} price={20} image="/public/photos/Rombout.jpeg" />
+            </div>
           </div>
-          <div className={styles.ratingContainer}>
-            <Rating />
+          <div className={styles.artistAndLocationContainer}>
+            <ArtistAndLocationUpload locationCallback={(string: string) => setLocation(string)} />
           </div>
           <div className={styles.friendInviteContainer}>
             <FriendInvites />
+          </div>
+          <div className={styles.addEventButton}>
+            <button className={styles.submitButton} type="submit">Add event!</button>
           </div>
         </form>
       </main>
