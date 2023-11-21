@@ -1,20 +1,25 @@
 .container {
     border: 3px solid black;
-}
-
-.container .timestitle {
-    font-size: larger;
-    font-weight: 600;
-}
-
-.container .timetableElement {
+    border-radius: 5px;
+    background-color: white;
+    width: 240px;
     display: flex;
+    flex-direction: column;
+    padding: 20px 20px 20px 0;
+    box-shadow: 0px 3px 3px grey;
 }
 
-.container .timetableElement .description {
-    margin: auto;
+.box {
+    margin: 5px;
 }
 
-.container .timetableElement .hour {
-    margin: auto;
+.text {
+    float: left;
+    font-weight: bold;
+
+}
+
+.time {
+    float: right;
+
 }

@@ -34,6 +34,8 @@
 }
 
 .concertPage {
+  color: black;
+  background-color: #e8f7ee;
   grid-template-columns: 45% auto;
   grid-template-rows: [banner] 200px auto auto;
   grid-template-areas:
@@ -49,35 +51,189 @@
 
 .concertPage .friendInviteContainer {
   grid-area: invites;
-  position: relative;
-  left: 20%;
+  display: flex;
+  justify-content: right;
+  /* position: relative; */
+  /* left: 20%; */
 }
 
 .concertPage .descriptionContainer {
   margin-top: 15px;
+  margin-left: 15px;
   grid-area: description;
 }
 
 .concertPage .descriptionContainer .descriptionTitle {
-  font-size: x-large;
+  font-size: xx-large;
   font-weight: bold;
 }
 
 .concertPage .descriptionContainer .descriptionText {
+  white-space: pre;
+  margin-top: 5px;
   font-size: large;
   font-weight: 400;
 }
 
-.concertPage .timetableContainer {
+.concertPage .descriptionText textarea {
+  resize: none;
+  width: 100%;
+}
+
+.concertPage .programContainer {
+  margin-top: 15px;
+  margin-left: 15px;
   grid-area: timetable;
+}
+
+.concertPage .programTitle {
+  font-size: xx-large;
+  font-weight: bold;
+}
+
+.concertPage .programText {
+  white-space: pre;
+  margin-top: 5px;
+  font-size: large;
+  font-weight: 400;
 }
 
 .concertPage .ratingContainer {
   grid-area: ratings;
+  display: flex;
+  justify-content: right;
+  align-items: center;
 }
 
 .concertPage .title {
   padding: 20px;
+}
+
+.concertPage .ticketsAndWishlist {
+  display: flex;
+  align-items: center;
+  height: 74px;
+}
+
+.concertPage .ticketsButton {
+  color: white;
+  background-color: black;
+  font-size: x-large;
+  font-weight: bold;
+  padding: 15px;
+  margin-top: 15px;
+  border: 1px solid black;
+  border-radius: 15px;
+  cursor: pointer;
+  box-shadow: 0px 3px 3px grey;
+}
+
+.concertPage .addToWishlist {
+  margin: 15px;
+  padding-top: 15px;
+  cursor: pointer;
+}
+
+.addEventPage {
+  color: black;
+  background-color: #e8f7ee;
+  grid-template-columns: 45% auto;
+  grid-template-rows: [banner] 200px auto auto;
+  grid-template-areas:
+    "banner banner"
+    "description ratings"
+    "timetable invites";
+}
+
+.addEventPage .bannerContainer {
+  grid-area: banner;
+  position: relative;
+  background-color: rgb(194, 194, 194);
+}
+
+.addEventPage .friendInviteContainer {
+  grid-area: invites;
+  display: flex;
+  justify-content: right;
+  /* position: relative; */
+  /* left: 20%; */
+}
+
+.addEventPage .descriptionContainer {
+  margin-top: 15px;
+  margin-left: 15px;
+  grid-area: description;
+}
+
+.addEventPage .descriptionContainer .descriptionTitle {
+  font-size: xx-large;
+  font-weight: bold;
+}
+
+.addEventPage .descriptionContainer .descriptionText {
+  margin-top: 5px;
+}
+
+.addEventPage textarea {
+  font-size: large;
+  font-weight: 400;
+}
+
+.addEventPage .descriptionText textarea {
+  resize: none;
+  width: 100%;
+}
+
+.addEventPage .programContainer {
+  margin-top: 15px;
+  margin-left: 15px;
+  grid-area: timetable;
+}
+
+.addEventPage .programTitle {
+  font-size: xx-large;
+  font-weight: bold;
+}
+
+.addEventPage .programText {
+  white-space: pre;
+  margin-top: 5px;
+  font-size: large;
+  font-weight: 400;
+}
+
+.addEventPage .ratingContainer {
+  grid-area: ratings;
+  display: flex;
+  justify-content: right;
+  align-items: center;
+}
+
+.addEventPage .title {
+  padding: 20px;
+}
+
+.addEventPage .ticketsAndWishlist {
+  display: flex;
+  align-items: center;
+  height: 74px;
+}
+
+.addEventPage .ticketsButton {
+  color: white;
+  background-color: black;
+  font-size: x-large;
+  font-weight: bold;
+  padding: 15px;
+  margin-top: 15px;
+  border: 1px solid black;
+  border-radius: 15px;
+  box-shadow: 0px 3px 3px grey;
+}
+
+.addEventPage .addToWishlist {
+  margin: 15px;
+  padding-top: 15px;
 }
 
 .registerPage {

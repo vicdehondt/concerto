@@ -1,0 +1,22 @@
+.rateBox {
+  grid-area: ratings;
+  width: 480px;
+  margin: 15px;
+  padding: 0 15px;
+  display: flex;
+  flex-direction: column;
+}
+
+.box {
+  height: 35px;
+}
+
+.text {
+  font-size: x-large;
+  font-weight: bold;
+  float: left;
+}
+
+.stars {
+  float: right;
+}
