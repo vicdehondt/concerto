@@ -5,9 +5,9 @@ import { Star } from 'lucide-react';
 function ArtistAndLocationUpload({ locationCallback }: { locationCallback: (string: string) => void }) {
 
 
-  // De locationCallback moet later gebruikt worden voor 
+  // De locationCallback moet later gebruikt worden voor
   return (
-    <div className={styles.rateBox}>
+    <div className={styles.container}>
       <div className={styles.box}>
         <div className={styles.text}>
           Location
