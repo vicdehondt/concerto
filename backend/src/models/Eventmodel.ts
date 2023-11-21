@@ -1,7 +1,23 @@
-import { DataTypes, Op } from 'sequelize';
+import { ARRAY, DataTypes, Op } from 'sequelize';
 import {sequelize} from '../configs/sequelizeConfig'
-import { Friend } from './Usermodel';
 const fs = require('fs');
+
+export const Artist = sequelize.define('Artist', {
+  artistID: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    autoIncrement: true,
+    primaryKey: true
+  },
+  name: {
+    type: DataTypes.TEXT,
+    allowNull: false,
+  },
+  artistPicture: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  }
+});
 
 export const EventModel = sequelize.define('Event', {
   eventID: {
@@ -34,24 +50,37 @@ export const EventModel = sequelize.define('Event', {
   banner: {
     type: DataTypes.STRING,
     allowNull: false
-  },
-  eventPicture: {
-    type: DataTypes.STRING,
-    allowNull: false
-  }
-  }, {
+  }}, {
     tableName: 'Events'
 });
 
-export async function CreateEvent(title, description, date, price, bannerpath, picturepath) {
+Artist.hasMany(EventModel, {
+  foreignKey: {
+    name: 'artistID',
+    allowNull: false
+  }
+});
+
+EventModel.belongsTo(Artist, {
+  foreignKey: 'artistID'
+});
+
+export async function CreateArtist(name, picture) {
+  await Artist.create({
+    name: name,
+    artistPicture: picture
+  });
+}
+
+export async function CreateEvent(id, title, description, date, price, bannerpath) {
   try {
     const Event = await EventModel.create({
+      artistID: id,
       title: title,
       description: description,
       dateAndTime: date,
       price: price,
       banner: bannerpath,
-      eventPicture: picturepath,
     });
   } catch (error) {
     console.error("There was an error creating an event: ", error);
@@ -61,7 +90,13 @@ export async function CreateEvent(title, description, date, price, bannerpath, p
 export async function RetrieveAllEvents(): Promise<typeof EventModel>  {
   const events = await EventModel.findAll({
     attributes: {
-      exclude: ['createdAt', 'updatedAt'],
+      exclude: ['createdAt', 'updatedAt','artistID']
+    },
+    include: {
+      model: Artist,
+      attributes: {
+        exclude: ['createdAt', 'updatedAt']
+      }
     }
   });
   return events;
@@ -70,10 +105,16 @@ export async function RetrieveAllEvents(): Promise<typeof EventModel>  {
 export async function RetrieveEvent(ID): Promise<typeof EventModel> {
   try {
     const Event = await EventModel.findOne({
-    attributes: {
-      exclude: ['createdAt', 'updatedAt'],
-    },
-    where: {eventID: ID},
+      attributes: {
+        exclude: ['createdAt', 'updatedAt','artistID']
+      },
+      where: {eventID: ID},
+      include: {
+        model: Artist,
+        attributes: {
+          exclude: ['createdAt', 'updatedAt']
+        }
+      },
     });
     return Event;
   } catch (error) {
