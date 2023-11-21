@@ -1,6 +1,7 @@
 import * as express from 'express';
 import { BaseController } from './base.controller';
 import * as database from '../models/Usermodel';
+import { userNotifications } from '../models/Notificationmodel';
 import {createMulter} from "../configs/multerConfig"
 import { getCorsConfiguration } from '../configs/corsConfig';
 import { allCheckedInEvents } from "../models/Checkinmodel"
@@ -74,7 +75,7 @@ export class UserController extends BaseController {
 	}
 	async getNotifications(req: express.Request, res: express.Response) {
 		const sessiondata = req.session;
-		const result = await database.userNotifications(sessiondata.userID);
+		const result = await userNotifications(sessiondata.userID);
 		res.status(200).json(result);
 	}
 }
