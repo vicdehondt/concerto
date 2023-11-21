@@ -1,5 +1,6 @@
 .page {
-  height: calc(100vh - var(--navHeight));
+  padding-top: var(--navHeight);
+  height: 100vh;
   display: grid;
 }
 
