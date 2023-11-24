@@ -73,8 +73,8 @@ export class SessionController extends BaseController {
             const samename = await database.RetrieveUser("username", req.body.username);
             const samemail = await database.RetrieveUser("mail", req.body.mail);
             if (samename == null && samemail == null){
-			    await database.CreateUser(req.body.username, req.body.mail, hash, saltingRounds);
-			    res.status(200).json({success: true, message: "User has been created!"});
+			    const user = await database.CreateUser(req.body.username, req.body.mail, hash, saltingRounds);
+			    res.status(200).json({success: true, message: "User has been created!", userID: user.userID});
             } else {
                 res.status(400).json({success: false, errors: "The fields are already used by other user!"});
             }

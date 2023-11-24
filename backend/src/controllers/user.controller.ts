@@ -35,11 +35,6 @@ export class UserController extends BaseController {
 			(req: express.Request, res: express.Response) => {
 				this.getCheckIns(req, res);
 			});
-		this.router.get('/:username/notifications', cors, this.requireAuth,
-			upload.none(),
-			(req: express.Request, res: express.Response) => {
-				this.getNotifications(req, res);
-			});
     }
 
 	async deleteUser(req: express.Request, res: express.Response) {
@@ -75,11 +70,6 @@ export class UserController extends BaseController {
 	async getCheckIns(req: express.Request, res: express.Response) {
 		const sessiondata = req.session;
 		const result = await allCheckedInEvents(sessiondata.userID);
-		res.status(200).json(result);
-	}
-	async getNotifications(req: express.Request, res: express.Response) {
-		const sessiondata = req.session;
-		const result = await userNotifications(sessiondata.userID);
 		res.status(200).json(result);
 	}
 }

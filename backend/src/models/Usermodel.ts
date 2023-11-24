@@ -80,7 +80,7 @@ export async function DeleteUser(userID) {
     });
 }
 
-export async function CreateUser(username, email, hashedpassword, saltingrounds): Promise<void> {
+export async function CreateUser(username, email, hashedpassword, saltingrounds) {
     try {
         const User = await UserModel.create({
             username: username,
@@ -88,6 +88,7 @@ export async function CreateUser(username, email, hashedpassword, saltingrounds)
             password: hashedpassword,
             salt: saltingrounds,
         });
+        return User;
     } catch (error) {
         console.error("There was an error creating a user:", error);
     }
