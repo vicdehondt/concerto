@@ -10,7 +10,7 @@ export const NotificationObject = sequelize.define('NotificationObject', {
         autoIncrement: true
     },
     notificationType: {
-        type: DataTypes.ENUM('friendrequestreceived', 'friendrequestaccepted'),
+        type: DataTypes.ENUM('friendrequestreceived', 'friendrequestaccepted', 'eventInviteReceived'),
         allowNull: false,
     },
     actor: {
@@ -19,6 +19,10 @@ export const NotificationObject = sequelize.define('NotificationObject', {
             model: UserModel,
             key: 'userID'
         }
+    },
+    typeID: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
     }
 });
 
@@ -52,13 +56,15 @@ export async function createNewNotification(objectID, receiverID) {
 
 export async function userNotifications(userid) {
     const result = await Notification.findAll({
-        attributes: ['notificationID', 'status'],
+        attributes: {
+            exclude: ['createdAt', 'updatedAt']
+        },
         where: {
             receiver: userid
         },
         include: {
                 model: NotificationObject,
-                attributes: ['notificationType', 'actor']
+                attributes: ['notificationType', 'actor', 'typeID']
         }
     });
     return result;

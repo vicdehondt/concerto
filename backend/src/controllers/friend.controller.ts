@@ -62,7 +62,6 @@ export class FriendController extends BaseController {
                 notificationType: 'friendrequestreceived',
                 actor: sessiondata.userID,
             });
-            console.log("Created notificationobject");
             await createNewNotification(object.ID, req.body.receiverID);
 			res.status(200).json({succes: true, message: "A friend request has been sent."});
 		} else if (result == database.FriendInviteResponses.ILLEGALREQUEST) {
