@@ -41,9 +41,10 @@ async function synchronize() {
     EventModel.sync(); //creating an extra column locationID in the Event table 
   }
 
-export async function CreateVenue(locationName, longitude, lattitude): Promise<void> {
+export async function CreateVenue(locationID, locationName, longitude, lattitude): Promise<void> {
     try {
         const User = await VenueModel.create({
+            locationID: locationID,
             locationName: locationName,
             longitude: longitude,
             lattitude: lattitude,
@@ -53,4 +54,11 @@ export async function CreateVenue(locationName, longitude, lattitude): Promise<v
     }
 }
 
+export async function RetrieveAllVenues(): Promise<typeof EventModel> {
 
+}
+
+
+export async function RetrieveVenue(ID): Promise<typeof EventModel> {
+
+}
