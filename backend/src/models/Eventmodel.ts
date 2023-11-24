@@ -12,10 +12,6 @@ export const Artist = sequelize.define('Artist', {
   name: {
     type: DataTypes.TEXT,
     allowNull: false,
-  },
-  artistPicture: {
-    type: DataTypes.STRING,
-    allowNull: false,
   }
 });
 
@@ -62,20 +58,24 @@ export const EventModel = sequelize.define('Event', {
   banner: {
     type: DataTypes.STRING,
     allowNull: false
+  },
+  eventPicture: {
+    type: DataTypes.STRING,
+    allowNull: false
   }}, {
     tableName: 'Events'
 });
 
-Artist.hasMany(EventModel, {
-  foreignKey: {
-    name: 'artistID',
-    allowNull: false
-  }
-});
+// Artist.hasMany(EventModel, {
+//   foreignKey: {
+//     name: 'artistID',
+//     allowNull: false
+//   }
+// });
 
-EventModel.belongsTo(Artist, {
-  foreignKey: 'artistID'
-});
+// EventModel.belongsTo(Artist, {
+//   foreignKey: 'artistID'
+// });
 
 export async function CreateArtist(name, picture) {
   await Artist.create({
@@ -84,15 +84,15 @@ export async function CreateArtist(name, picture) {
   });
 }
 
-export async function CreateEvent(id, title, description, date, price, doors, main, support, bannerpath) {
+export async function CreateEvent(title, description, date, price, doors, main, support, bannerpath, eventPicturePath) {
   try {
     const Event = await EventModel.create({
-      artistID: id,
       title: title,
       description: description,
       dateAndTime: date,
       price: price,
       banner: bannerpath,
+      eventPicture: eventPicturePath,
       doors: doors,
       main: main,
       support: support
@@ -105,13 +105,7 @@ export async function CreateEvent(id, title, description, date, price, doors, ma
 export async function RetrieveAllEvents(): Promise<typeof EventModel>  {
   const events = await EventModel.findAll({
     attributes: {
-      exclude: ['createdAt', 'updatedAt','artistID']
-    },
-    include: {
-      model: Artist,
-      attributes: {
-        exclude: ['createdAt', 'updatedAt']
-      }
+      exclude: ['createdAt', 'updatedAt']
     }
   });
   return events;
@@ -121,15 +115,9 @@ export async function RetrieveEvent(ID): Promise<typeof EventModel> {
   try {
     const Event = await EventModel.findOne({
       attributes: {
-        exclude: ['createdAt', 'updatedAt','artistID']
+        exclude: ['createdAt', 'updatedAt']
       },
       where: {eventID: ID},
-      include: {
-        model: Artist,
-        attributes: {
-          exclude: ['createdAt', 'updatedAt']
-        }
-      },
     });
     return Event;
   } catch (error) {
