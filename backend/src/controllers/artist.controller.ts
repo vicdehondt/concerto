@@ -5,6 +5,8 @@ import {createMulter} from "../configs/multerConfig";
 import { getCorsConfiguration } from '../configs/corsConfig';
 import { CreateArtist, Artist } from '../models/Eventmodel';
 
+const axios = require('axios');
+
 const eventImagePath = './public/artists';
 
 const cors = getCorsConfiguration();
@@ -18,11 +20,10 @@ export class ArtistController extends BaseController {
 	}
 
 	initializeRoutes(): void {
-		this.router.post('/', cors, upload.single('artistPicture'),
-            [body("artistName").trim().notEmpty()],
+        this.router.get('/:artistID', cors, upload.none(),
             (req: express.Request, res: express.Response) => {
                 res.set('Access-Control-Allow-Credentials', 'true');
-                this.addArtist(req, res);
+                this.getArtist(req, res);
             });
         this.router.get('/', cors, upload.none(),
             (req: express.Request, res: express.Response) => {
@@ -39,19 +40,18 @@ export class ArtistController extends BaseController {
           }});
 		res.status(200).json(artists);
     }
-    async addArtist(req: express.Request, res: express.Response) {
-        console.log("Received post request to create an artist");
-        const result = validationResult(req);
-        const image = req.file;
-        if (result.isEmpty() && image) {
-            const imagepath = "http://localhost:8080/artists/" + image.filename;
-            CreateArtist(req.body.artistName, imagepath);
-            res.status(200).json({ success: true, message: 'Artist created successfully'});
+
+    async getArtist(req: express.Request, res: express.Response) {
+        console.log("Received request to lookup artist information");
+        const artist = await Artist.findByPk(req.params.artistID);
+        if (artist != null) {
+            res.status(200).json(artist);
         } else {
-			if (image) {
-				this.DeleteFile(eventImagePath, image);
-			}
-			res.status(400).json({success: false, errors: result.array()});
-		}
+            const musicBrainzApiUrl = `http://musicbrainz.org/ws/2/artist/${req.params.artistID}`;
+            const response = await axios.get(musicBrainzApiUrl);
+            const data = await response.data
+            const artist = await CreateArtist(data.name, data.id, data.type);
+            res.status(200).json(artist);
+        }
     }
 }

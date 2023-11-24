@@ -4,14 +4,18 @@ const fs = require('fs');
 
 export const Artist = sequelize.define('Artist', {
   artistID: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    autoIncrement: true,
-    primaryKey: true
-  },
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
+      allowNull: false,
+      primaryKey: true,
+    },
   name: {
-    type: DataTypes.TEXT,
-    allowNull: false,
+      type: DataTypes.STRING,
+      allowNull: false
+  },
+  type: {
+      type: DataTypes.STRING,
+      allowNull: false
   }
 });
 
@@ -77,11 +81,14 @@ export const EventModel = sequelize.define('Event', {
 //   foreignKey: 'artistID'
 // });
 
-export async function CreateArtist(name, picture) {
-  await Artist.create({
+export async function CreateArtist(name, id, type) {
+  console.log(name, id, type);
+  const result = await Artist.create({
     name: name,
-    artistPicture: picture
+    artistID: id,
+    type: type
   });
+  return result;
 }
 
 export async function CreateEvent(title, description, date, price, doors, main, support, bannerpath, eventPicturePath) {

@@ -22,6 +22,11 @@ export class SessionController extends BaseController {
     }
 
     initializeRoutes(): void {
+		this.router.get("/auth/status", cors,
+			upload.none(),
+			(req: express.Request, res: express.Response) => {
+				this.checkAuthentication(req, res);
+			});
 		// Route to let users register
         this.router.post("/register", cors,
 			upload.none(),
@@ -88,5 +93,14 @@ export class SessionController extends BaseController {
 		const sessiondata = req.session;
 		sessiondata.userID = null;
 		res.status(200).json({success: true, message: "You are succesfully logged out."})
+	}
+
+	checkAuthentication(req, res) {
+		const sessiondata = req.session;
+		if (sessiondata.userID != null) {
+			res.status(200).json();
+		} else {
+			res.status(400).json();
+		}
 	}
 }
