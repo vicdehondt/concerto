@@ -1,5 +1,6 @@
 import { ARRAY, DataTypes, Op } from 'sequelize';
 import {sequelize} from '../configs/sequelizeConfig'
+import { Rating } from './Ratingmodel';
 const fs = require('fs');
 
 export const Artist = sequelize.define('Artist', {
@@ -16,6 +17,18 @@ export const Artist = sequelize.define('Artist', {
   type: {
       type: DataTypes.STRING,
       allowNull: false
+  }
+});
+
+Artist.hasOne(Rating, {
+  foreignKey: {
+      name: 'entityID',
+      allowNull: false
+  }
+});
+Rating.hasOne(Artist, {
+  foreignKey: {
+      name: 'ratingID',
   }
 });
 
@@ -88,7 +101,25 @@ export async function CreateArtist(name, id, type) {
     artistID: id,
     type: type
   });
+  const rating = await Rating.create({
+    entityType: 'artist',
+    entityID: result.artistID,
+  });
+  result.ratingID = rating.ratingID;
+  result.save();
   return result;
+}
+
+export async function retrieveArtist(id) {
+  const result = await Artist.findByPk(id, {
+    attributes: {
+        exclude: ['createdAt', 'updatedAt']
+    },
+    include: {
+        model: Rating,
+        attributes: ['score', 'amountOfReviews']
+    }
+  }); return result;
 }
 
 export async function CreateEvent(title, description, date, price, doors, main, support, bannerpath, eventPicturePath) {
