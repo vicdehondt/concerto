@@ -16,8 +16,21 @@
     "sidebar page-content";
 }
 
+.friendsPage .friendsContainer {
+  grid-area: page-content;
+  /* height: 100%; */
+  display: grid;
+  grid-auto-rows: 255px;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+
+  /* margin: 50px 25px; */
+  /* padding: 5px 100px; */
+  /* grid-gap: 20px; */
+}
+
 .pageContent {
   color: black;
+  /* overflow: auto; */
   overflow: scroll;
   grid-area: page-content;
   background-color: #e8f7ee;

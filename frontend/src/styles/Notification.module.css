@@ -1,0 +1,33 @@
+.notificationContainer {
+  display: flex;
+  flex-direction: column;
+  width: 250px;
+  height: fit-content;
+  margin: 10px 5px;
+  border: 0.5px solid black;
+  border-radius: 5px;
+  box-shadow: 0px 1px 2px;
+  padding: 5px;
+}
+
+.buttonBox {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.buttonBox button {
+  background-color: #0B2027;
+	color: white;
+	border: 0px solid;
+  border-radius: 5px;
+	font: inherit;
+	cursor: pointer;
+  padding: 3px 6px;
+  margin: 5px 3px 0 3px;
+  text-align: center;
+}
+
+.buttonBox button:hover {
+  background-color: #7180B9;
+}

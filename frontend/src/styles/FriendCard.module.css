@@ -7,7 +7,8 @@
   padding: 20px;
 }
 
-.friendCardContainer img {
+.friendCardContainer img,
+.userPicture {
   border: 3px solid black;
   border-radius: 50%;
 }
