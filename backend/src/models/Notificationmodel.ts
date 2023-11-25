@@ -1,6 +1,7 @@
 import { DataTypes, Op } from 'sequelize';
 import {sequelize} from '../configs/sequelizeConfig'
 import { UserModel } from './Usermodel';
+import { newNotification, notificationEmitter } from '../configs/emitterConfig';
 
 export const NotificationObject = sequelize.define('NotificationObject', {
     ID: {
@@ -48,10 +49,20 @@ export const Notification = sequelize.define('Notification', {
 });
 
 export async function createNewNotification(objectID, receiverID) {
-    await Notification.create({
+    const result = await Notification.create({
         receiver: receiverID,
         objectID: objectID
     });
+    const improved_result = await Notification.findByPk(result.notificationID, {
+        attributes: {
+            exclude: ['createdAt', 'updatedAt']
+        },
+        include: {
+                model: NotificationObject,
+                attributes: ['notificationType', 'actor', 'typeID']
+        }
+    });
+    notificationEmitter.emit(newNotification, JSON.stringify(improved_result));
 }
 
 export async function userNotifications(userid) {

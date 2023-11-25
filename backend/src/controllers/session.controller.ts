@@ -63,7 +63,7 @@ export class SessionController extends BaseController {
 					} else {
 						res.status(400).json({success: false, message: "The provided password is incorrect"})
 					}
-				})
+				});
 			} else {
 				res.status(400).json({success: false, message: "There was no user found with this username"})
 			}
