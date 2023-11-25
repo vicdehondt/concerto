@@ -1,6 +1,7 @@
 import * as express from 'express';
 import { BaseController } from './base.controller';
 import * as database from '../models/Usermodel';
+import { userNotifications } from '../models/Notificationmodel';
 import {createMulter} from "../configs/multerConfig"
 import { getCorsConfiguration } from '../configs/corsConfig';
 import { allCheckedInEvents } from "../models/Checkinmodel"
@@ -19,12 +20,12 @@ export class UserController extends BaseController {
     }
 
     initializeRoutes(): void {
-		this.router.get('/:username', cors, this.requireAuth,
+		this.router.get('/:userid', cors, this.requireAuth,
 			upload.none(),
 			(req: express.Request, res: express.Response) => {
 				this.getUserInformation(req, res);
 			});
-		this.router.delete('/:username', cors, this.requireAuth,
+		this.router.delete('/:userid', cors, this.requireAuth,
 			upload.none(), this.requireAuth,
 			(req: express.Request, res: express.Response) => {
 				this.deleteUser(req, res);
@@ -34,25 +35,24 @@ export class UserController extends BaseController {
 			(req: express.Request, res: express.Response) => {
 				this.getCheckIns(req, res);
 			});
-		this.router.get('/:username/notifications', cors, this.requireAuth,
-			upload.none(),
-			(req: express.Request, res: express.Response) => {
-				this.getNotifications(req, res);
-			});
     }
 
 	async deleteUser(req: express.Request, res: express.Response) {
 		const sessiondata = req.session;
-		await database.DeleteUser(sessiondata.userID);
-		sessiondata.isLoggedIn = false;
-		sessiondata.userID = null;
-		res.status(200).json({ success: true, message: "User successfully deleted"});
+		const loggedInUser = sessiondata.userID;
+		if (loggedInUser == req.params.userid) {
+			await database.DeleteUser(sessiondata.userID);
+			sessiondata.userID = null;
+			res.status(200).json({ success: true, message: "User successfully deleted"});
+		} else {
+			res.status(400).json({ success: false, error: "You do not have permission to delete this user!"});
+		}
 	}
 
 	async getUserInformation(req: express.Request, res: express.Response) {
 		const sessiondata = req.session;
-		const username = req.params.username;
-		const user = await database.RetrieveUser("username", username);
+		const userID = req.params.userid;
+		const user = await database.RetrieveUser("userID", userID);
 		if (user != null) {
 			const result = user.get({ plain: true});
 			delete result.password;
@@ -70,11 +70,6 @@ export class UserController extends BaseController {
 	async getCheckIns(req: express.Request, res: express.Response) {
 		const sessiondata = req.session;
 		const result = await allCheckedInEvents(sessiondata.userID);
-		res.status(200).json(result);
-	}
-	async getNotifications(req: express.Request, res: express.Response) {
-		const sessiondata = req.session;
-		const result = await database.userNotifications(sessiondata.userID);
 		res.status(200).json(result);
 	}
 }

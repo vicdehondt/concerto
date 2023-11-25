@@ -13,7 +13,7 @@ export abstract class BaseController {
     abstract initializeRoutes();
 
     requireAuth(req, res, next) {
-		if (req.session && req.session.isLoggedIn){
+		if (req.session && (req.session.userID != null)){
 			next()
 		} else {
 			res.status(401).json({ error: "Unauthorized access" });

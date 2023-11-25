@@ -1,6 +1,7 @@
 import * as express from 'express';
 import { BaseController } from './base.controller';
 import * as database from '../models/Usermodel';
+import { NotificationObject, createNewNotification } from '../models/Notificationmodel';
 import {body, validationResult} from "express-validator";
 import {createMulter} from "../configs/multerConfig"
 import { getCorsConfiguration } from '../configs/corsConfig';
@@ -55,8 +56,13 @@ export class FriendController extends BaseController {
     async sendFriendRequest(req: express.Request, res: express.Response) {
 		console.log("Received request to send a friend request");
 		const sessiondata = req.session;
-		const result = await database.SendFriendRequest(sessiondata.userID, req.body.receiverusername);
+		const result = await database.SendFriendRequest(sessiondata.userID, req.body.receiverID);
 		if (result == database.FriendInviteResponses.SENT) {
+            const object = await NotificationObject.create({
+                notificationType: 'friendrequestreceived',
+                actor: sessiondata.userID,
+            });
+            await createNewNotification(object.ID, req.body.receiverID);
 			res.status(200).json({succes: true, message: "A friend request has been sent."});
 		} else if (result == database.FriendInviteResponses.ILLEGALREQUEST) {
             res.status(400).json({ succes: false, message: "Cannot send a friend request to yourself!"});
@@ -78,20 +84,20 @@ export class FriendController extends BaseController {
                 const status = friendrelation.status;
                 if (status == 'pending') {
                     if (answer) {
-                        const object = await database.NotificationObject.create({
+                        const object = await NotificationObject.create({
                             notificationType: 'friendrequestaccepted',
                             actor: sessiondata.userID,
                         });
-                        await database.createNewNotification(object.ID, sender.userID);
+                        await createNewNotification(object.ID, sender.userID);
                         friendrelation.status = 'accepted';
                         friendrelation.save();
                         res.status(200).json({ success: true, message: 'Friend request accepted'});
                     } else {
-                        const object = await database.NotificationObject.create({
+                        const object = await NotificationObject.create({
                             notificationType: 'friendrequestdenied',
                             actor: sessiondata.userID,
                         });
-                        await database.createNewNotification(object.ID, sender.userID);
+                        await createNewNotification(object.ID, sender.userID);
                         friendrelation.destroy();
                         res.status(200).json({ success: true, message: 'Friend request denied'});
                     }
