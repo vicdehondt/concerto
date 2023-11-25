@@ -6,13 +6,13 @@ import { EventModel } from './Eventmodel';
 //check if there exist a database for coordinates
 
 export const VenueModel = sequelize.define('Venue', {
-  locationID: {
-    type: DataTypes.INTEGER,
-    primaryKey: true,
+  venueID: {
+    type: DataTypes.UUID,
+    defaultValue: DataTypes.UUIDV4,
     allowNull: false,
-    autoIncrement: true
+    primaryKey: true,
   },
-  locationName: {
+  venueName: {
     type: DataTypes.TEXT,
     allowNull: false
   },
@@ -29,7 +29,7 @@ export const VenueModel = sequelize.define('Venue', {
 });
 
 VenueModel.hasMany(EventModel, { //multiple events can take place at one venue
-    foreignKey: 'locationID', //will be used as the definition of the extra column
+    foreignKey: 'venueID', //will be used as the definition of the extra column
     onDelete: 'CASCADE',
 });
 
@@ -38,27 +38,19 @@ EventModel.belongsTo(VenueModel, {//one event has one venue
 });
 
 async function synchronize() {
-    EventModel.sync(); //creating an extra column locationID in the Event table 
+    EventModel.sync(); //creating an extra column venueID in the Event table 
   }
 
-export async function CreateVenue(locationID, locationName, longitude, lattitude): Promise<void> {
+export async function CreateVenue(venueID, venueName, longitude, lattitude): Promise<void> {
     try {
-        const User = await VenueModel.create({
-            locationID: locationID,
-            locationName: locationName,
+        const result = await VenueModel.create({
+            venueID: venueID,
+            venueName: venueName,
             longitude: longitude,
             lattitude: lattitude,
         });
+        result
     } catch (error) {
         console.error("There was an error creating a Venue:", error);
     }
-}
-
-export async function RetrieveAllVenues(): Promise<typeof EventModel> {
-
-}
-
-
-export async function RetrieveVenue(ID): Promise<typeof EventModel> {
-
 }
