@@ -5,6 +5,7 @@ import Link from "next/link";
 import Searchbar from "./Searchbar";
 import Notification from "./Notification";
 import { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/router";
 import { X } from 'lucide-react';
 
 
@@ -17,9 +18,14 @@ if (process.env.NODE_ENV == "production") {
 
 
 function Navbar({pictureSource}: {pictureSource: string}) {
+
+  const router = useRouter();
+
   const [notificationsVisible, setNotificationsVisible] = useState(false);
 
   const [notifications, setNotifications] = useState([]);
+
+  const [loggedIn, setLoggedIn] = useState(false);
 
   const notificationButtonRef = useRef(null);
   const notificationsRef = useRef(null);
@@ -38,6 +44,18 @@ function Navbar({pictureSource}: {pictureSource: string}) {
       .then((responseJSON) => {
         setNotifications(responseJSON)
       });
+
+    fetch(environment.backendURL + "/auth/status", {
+      mode: "cors",
+      credentials: "include",
+    })
+      .then((response) => {
+        if (response.status == 200) {
+          setLoggedIn(true)
+        } else if (response.status == 400) {
+          setLoggedIn(false)
+        }
+      });
   }, []);
 
   useEffect(() => {
@@ -53,12 +71,16 @@ function Navbar({pictureSource}: {pictureSource: string}) {
   }, [notificationButtonRef, notificationsRef]);
 
   function toggleNotifications() {
-    setNotificationsVisible(val => !val)
-    const notificationBox = document.getElementsByClassName(styles.notificationsBox) as HTMLCollectionOf<HTMLElement>;
-    if (notificationsVisible) {
-      notificationBox[0].style.display = "none";
+    if (loggedIn) {
+      setNotificationsVisible(val => !val)
+      const notificationBox = document.getElementsByClassName(styles.notificationsBox) as HTMLCollectionOf<HTMLElement>;
+      if (notificationsVisible) {
+        notificationBox[0].style.display = "none";
+      } else {
+        notificationBox[0].style.display = "block";
+      }
     } else {
-      notificationBox[0].style.display = "block";
+      router.push("/login");
     }
   }
 
@@ -79,6 +101,13 @@ function Navbar({pictureSource}: {pictureSource: string}) {
     })
   }
 
+  function redirectURL(normalURL: string) {
+    if (loggedIn) {
+      return normalURL;
+    }
+    return "/login"
+  }
+
   return (
     <>
     <nav className={styles.navbar}>
@@ -86,12 +115,12 @@ function Navbar({pictureSource}: {pictureSource: string}) {
         <Link href="/">Concerto</Link>
         <Searchbar type="long" />
         <div className={styles.addEventButton}>
-          <Link href="/add-event">+</Link>
+          <Link href={redirectURL("/add-event")}>+</Link>
         </div>
       </div>
       <div className={styles.rightTopics}>
-        <Link href="/friends">Friends</Link>
-        <Link href="/wishlist">Wishlist</Link>
+        <Link href={redirectURL("/friends")}>Friends</Link>
+        <Link href={redirectURL("/wishlist")}>Wishlist</Link>
         <div className={styles.notifications} ref={notificationButtonRef}>
           <button id="notifications" className={styles.notificationButton} onClick={() => toggleNotifications()}>Notifications</button>
         </div>
@@ -102,7 +131,7 @@ function Navbar({pictureSource}: {pictureSource: string}) {
           {notificationsVisible && getNotifications(notifications)}
         </div>
         <div className={styles.profilePicture}>
-          <Link href="/account">
+          <Link href={redirectURL("/account")}>
             <Image src={pictureSource} width={56} height={56} alt="Profile picture"/>
           </Link>
         </div>

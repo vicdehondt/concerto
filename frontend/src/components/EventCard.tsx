@@ -37,8 +37,8 @@ function getMonth(month: number) {
   }
 }
 
-function EventCard({ eventId, title, location, amountAttending, dateAndTime, price, image }:
-  { eventId: number, title: string, location: string, amountAttending: number, dateAndTime: string, price: number, image: string }) {
+function EventCard({ loggedIn, eventId, title, location, amountAttending, dateAndTime, price, image }:
+  { loggedIn: boolean, eventId: number, title: string, location: string, amountAttending: number, dateAndTime: string, price: number, image: string }) {
 
   const convertedDateAndTime: Array<string> = convertDateAndTime(dateAndTime);
   const date = convertedDateAndTime[0]
@@ -55,13 +55,20 @@ function EventCard({ eventId, title, location, amountAttending, dateAndTime, pri
     return [date, time]
   }
 
+  function redirectURL(normalURL: string) {
+    if (loggedIn) {
+      return normalURL;
+    }
+    return "/login"
+  }
+
   return (
     <div key={eventId} className={styles.eventCard}>
       <div className={styles.photo}>
         <Image src={image} style={{objectFit:"cover"}} width={120} height={120} alt="Performer" />
       </div>
       <div className={styles.event}>
-        <Link href={`/concerts/${eventId}`} className={styles.performance}>{title}</Link>
+        <Link href={redirectURL(`/concerts/${eventId}`)} className={styles.performance}>{title}</Link>
         <div className={styles.location}>
           <Image src="/icons/location.png" width={18} height={21} alt="" />
           <div>{location}</div>

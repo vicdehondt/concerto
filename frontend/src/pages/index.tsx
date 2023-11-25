@@ -28,12 +28,14 @@ type Event = {
 };
 
 export default function Home() {
+  const [loggedIn, setLoggedIn] = useState(false);
   const [events, setEvents] = useState([]);
 
   function showEvents(response: Array<Event>) {
     return response.map((event: Event) => {
       return (
         <EventCard
+          loggedIn={loggedIn}
           key={event.eventID}
           eventId={event.eventID}
           title={event.title}
@@ -58,7 +60,18 @@ export default function Home() {
       .then((responseJSON) => {
         setEvents(responseJSON);
       });
-  }, []);
+    fetch(environment.backendURL + "/auth/status", {
+      mode: "cors",
+      credentials: "include",
+    })
+      .then((response) => {
+        if (response.status == 200) {
+          setLoggedIn(true)
+        } else if (response.status == 400) {
+          setLoggedIn(false)
+        }
+      });
+}, []);
 
   return (
     <>
