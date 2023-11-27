@@ -22,6 +22,11 @@ export class SessionController extends BaseController {
     }
 
     initializeRoutes(): void {
+		this.router.get("/auth/status", cors,
+			upload.none(),
+			(req: express.Request, res: express.Response) => {
+				this.checkAuthentication(req, res);
+			});
 		// Route to let users register
         this.router.post("/register", cors,
 			upload.none(),
@@ -45,7 +50,7 @@ export class SessionController extends BaseController {
 	async loginUser(req: express.Request, res: express.Response) {
         console.log("Received request to login");
 		const sessiondata = req.session;
-		if (sessiondata.isLoggedIn == true) {
+		if (sessiondata.userID != null) {
 			res.status(200).json({success: true, message: "You are already loggin in."})
 		} else {
 			const {username, password} = req.body;
@@ -53,7 +58,6 @@ export class SessionController extends BaseController {
 			if (user != null) {
 				bcrypt.compare(password, user.password, function (err, result) {
 					if (result == true) {
-						sessiondata.isLoggedIn = true;
 						sessiondata.userID = user.userID;
 						res.status(200).json({success: true, message: "You are succesfully logged in!"})
 					} else {
@@ -74,8 +78,8 @@ export class SessionController extends BaseController {
             const samename = await database.RetrieveUser("username", req.body.username);
             const samemail = await database.RetrieveUser("mail", req.body.mail);
             if (samename == null && samemail == null){
-			    await database.CreateUser(req.body.username, req.body.mail, hash, saltingRounds);
-			    res.status(200).json({success: true, message: "User has been created!"});
+			    const user = await database.CreateUser(req.body.username, req.body.mail, hash, saltingRounds);
+			    res.status(200).json({success: true, message: "User has been created!", userID: user.userID});
             } else {
                 res.status(400).json({success: false, errors: "The fields are already used by other user!"});
             }
@@ -87,8 +91,16 @@ export class SessionController extends BaseController {
 
 	logoutUser(req: express.Request, res: express.Response) {
 		const sessiondata = req.session;
-		sessiondata.isLoggedIn = false;
 		sessiondata.userID = null;
 		res.status(200).json({success: true, message: "You are succesfully logged out."})
+	}
+
+	checkAuthentication(req, res) {
+		const sessiondata = req.session;
+		if (sessiondata.userID != null) {
+			res.status(200).json();
+		} else {
+			res.status(400).json();
+		}
 	}
 }

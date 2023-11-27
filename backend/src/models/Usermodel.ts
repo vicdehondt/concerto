@@ -46,7 +46,6 @@ export const Friend = sequelize.define('Friend',{
     },
 })
 
-// FriendModel.js
 Friend.belongsTo(UserModel, {
     foreignKey: 'senderID',
     as: 'sender',
@@ -72,11 +71,6 @@ UserModel.belongsToMany(UserModel, {
     foreignKey: 'receiverID',
     onDelete: 'CASCADE',
 });
-
-async function synchronize() {
-    UserModel.sync();
-    Friend.sync();
-  }
 
 export async function DeleteUser(userID) {
     await UserModel.destroy({
@@ -86,7 +80,7 @@ export async function DeleteUser(userID) {
     });
 }
 
-export async function CreateUser(username, email, hashedpassword, saltingrounds): Promise<void> {
+export async function CreateUser(username, email, hashedpassword, saltingrounds) {
     try {
         const User = await UserModel.create({
             username: username,
@@ -94,15 +88,10 @@ export async function CreateUser(username, email, hashedpassword, saltingrounds)
             password: hashedpassword,
             salt: saltingrounds,
         });
+        return User;
     } catch (error) {
         console.error("There was an error creating a user:", error);
     }
-}
-
-async function AcceptFriendRequest(friendID) {
-    const friendrequest = await Friend.findByPK(friendID);
-    friendrequest.status = 'accepted';
-    friendrequest.save();
 }
 
 export async function GetAllFriends(userID) {
@@ -134,13 +123,13 @@ export async function GetAllFriends(userID) {
 
 async function CreateFriend(senderID, receiverID) {
     const newfriend = await Friend.create({
-        status: 'accepted',
+        status: 'pending',
         senderID: senderID,
         receiverID: receiverID,
     });
 }
 
-async function FindFriend(senderID, receiverID) { // Procedure does not work in 2 way;
+export async function FindFriend(senderID, receiverID) { // Procedure does not work in 2 way;
     const existing = await Friend.findOne({
         where: {
             [Op.or]: [
@@ -168,10 +157,9 @@ export const FriendInviteResponses = {
     ILLEGALREQUEST: 3,
 }
 
-export async function SendFriendRequest(senderID, receivername): Promise<Number> {
-    const receiver = await RetrieveUser('username', receivername);
+export async function SendFriendRequest(senderID, receiverid): Promise<Number> {
+    const receiver = await RetrieveUser('userID', receiverid);
     if (receiver != null) {
-        const receiverid = receiver.userID;
         if (receiverid != senderID) {
             const existing = await FindFriend(senderID, receiverid);
             if (existing == null) {
@@ -198,6 +186,3 @@ export async function RetrieveUser(field: string, value): Promise<typeof UserMod
         console.error("There was an error finding a user: ", error);
       }
 }
-
-synchronize();
-
