@@ -4,7 +4,7 @@ import * as database from '../models/Usermodel';
 import * as notif from "../models/Notificationmodel"
 import {createMulter} from "../configs/multerConfig"
 import { getCorsConfiguration } from '../configs/corsConfig';
-import { allCheckedInEvents } from "../models/Checkinmodel"
+import { notificationEmitter, newNotification } from "../configs/emitterConfig";
 const fs = require('fs');
 
 const userImagePath = './public/users';
@@ -20,6 +20,11 @@ export class NotificationController extends BaseController {
     }
 
     initializeRoutes(): void {
+        this.router.get('/subscribe', cors, this.requireAuth,
+			upload.none(),
+			(req: express.Request, res: express.Response) => {
+				this.createSSE(req, res);
+			});
 		this.router.get('/', cors, this.requireAuth,
 			upload.none(),
 			(req: express.Request, res: express.Response) => {
@@ -36,6 +41,26 @@ export class NotificationController extends BaseController {
 				this.deleteNotification(req, res);
 			});
     }
+
+    // based on: https://blog.q-bit.me/how-to-use-nodejs-for-server-sent-events-sse/#h3-3
+    createSSE(req: express.Request, res: express.Response) {
+        res.writeHead(200, {
+            'Content-Type': 'text/event-stream',
+            Connection: 'keep-alive',
+            'Cache-Control': 'no-cache',
+        });
+
+        res.write('event: connected\n');
+        res.write(`data: You are now subscribed!\n\n`);
+
+        notificationEmitter.on(newNotification, (notification) => {
+            res.write('event: notification\n');
+            res.write(`data: ${notification}\n\n`);
+        });
+
+        req.on('close', () => res.end('OK'))
+    }
+
 	async getNotifications(req: express.Request, res: express.Response) {
 		const sessiondata = req.session;
 		const result = await notif.userNotifications(sessiondata.userID);
