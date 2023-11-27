@@ -1,5 +1,6 @@
 import { DataTypes, Op } from 'sequelize';
 import {sequelize} from '../configs/sequelizeConfig'
+import { PrivacySetting } from './Privacymodel';
 import { mailAccount, mailPassword } from '../configs/mailConfig';
 
 const nodemailer = require('nodemailer');
