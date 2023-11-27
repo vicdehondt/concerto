@@ -1,6 +1,7 @@
 import { DataTypes, Op } from 'sequelize';
 import {sequelize} from '../configs/sequelizeConfig'
 import { EventModel } from './Eventmodel';
+import { Rating } from './Ratingmodel';
 
 //events belong to venue
 //check if there exist a database for coordinates
@@ -27,6 +28,18 @@ export const VenueModel = sequelize.define('Venue', {
   }, {
     tableName: 'Venues'
 });
+
+VenueModel.hasOne(Rating, {
+    foreignKey: {
+        name: 'entityID',
+        allowNull: false
+    }
+  });
+  Rating.hasOne(VenueModel, {
+    foreignKey: {
+        name: 'ratingID',
+    }
+  });
 
 VenueModel.hasMany(EventModel, { //multiple events can take place at one venue
     foreignKey: 'venueID', //will be used as the definition of the extra column
