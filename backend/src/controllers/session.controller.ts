@@ -3,15 +3,12 @@ import { BaseController } from './base.controller';
 import * as database from '../models/Usermodel';
 import {body, validationResult} from "express-validator"
 import {createMulter} from "../configs/multerConfig"
-import { getCorsConfiguration } from '../configs/corsConfig';
 import * as bcrypt from "bcrypt";
 const fs = require('fs');
 
 const sessionFilePath = './public/sessions';
 
 const upload = createMulter(sessionFilePath)
-
-const cors = getCorsConfiguration();
 
 const saltingRounds = 12;
 
@@ -22,16 +19,16 @@ export class SessionController extends BaseController {
     }
 
     initializeRoutes(): void {
-		this.router.get("/auth/status", cors,
+		this.router.get("/auth/status",
 			upload.none(),
 			(req: express.Request, res: express.Response) => {
 				this.checkAuthentication(req, res);
 			});
 		// Route to let users register
-        this.router.post("/register", cors,
+        this.router.post("/register",
 			upload.none(),
 			(req: express.Request, res: express.Response) => {
-				this.addUser(req, res);
+				this.registerUser(req, res);
 			});
 		// Route to handle login
 		this.router.post("/login",
@@ -40,7 +37,7 @@ export class SessionController extends BaseController {
 				this.loginUser(req, res);
 			});
 		// Route to handle logout
-		this.router.post("/logout", cors, this.requireAuth,
+		this.router.post("/logout", this.requireAuth,
 			upload.none(),
 			(req: express.Request, res: express.Response) => {
 				this.logoutUser(req, res);
@@ -70,7 +67,7 @@ export class SessionController extends BaseController {
 		}
 	}
 
-    async addUser(req: express.Request, res: express.Response): Promise<void> {
+    async registerUser(req: express.Request, res: express.Response): Promise<void> {
         console.log("Received request to register user");
 		const result = validationResult(req);
 		if (result.isEmpty()){
@@ -78,6 +75,7 @@ export class SessionController extends BaseController {
             const samename = await database.RetrieveUser("username", req.body.username);
             const samemail = await database.RetrieveUser("mail", req.body.mail);
             if (samename == null && samemail == null){
+				database.sendMailVerification(req.body.username, req.body.mail);
 			    const user = await database.CreateUser(req.body.username, req.body.mail, hash, saltingRounds);
 			    res.status(200).json({success: true, message: "User has been created!", userID: user.userID});
             } else {

@@ -9,8 +9,6 @@ const fs = require('fs');
 
 const userImagePath = './public/users';
 
-const cors = getCorsConfiguration();
-
 const upload = createMulter(userImagePath);
 
 export class UserController extends BaseController {
@@ -20,17 +18,17 @@ export class UserController extends BaseController {
     }
 
     initializeRoutes(): void {
-		this.router.get('/:userid', cors, this.requireAuth,
+		this.router.get('/:userid', this.requireAuth,
 			upload.none(),
 			(req: express.Request, res: express.Response) => {
 				this.getUserInformation(req, res);
 			});
-		this.router.delete('/:userid', cors, this.requireAuth,
+		this.router.delete('/:userid', this.requireAuth,
 			upload.none(), this.requireAuth,
 			(req: express.Request, res: express.Response) => {
 				this.deleteUser(req, res);
 			});
-		this.router.get('/:username/checkins', cors, this.requireAuth,
+		this.router.get('/:username/checkins', this.requireAuth,
 			upload.none(),
 			(req: express.Request, res: express.Response) => {
 				this.getCheckIns(req, res);

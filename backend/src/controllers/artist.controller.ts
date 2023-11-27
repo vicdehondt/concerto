@@ -2,43 +2,61 @@ import * as express from 'express';
 import { BaseController } from './base.controller';
 import {body, validationResult} from "express-validator"
 import {createMulter} from "../configs/multerConfig";
-import { getCorsConfiguration } from '../configs/corsConfig';
 import { CreateArtist, Artist, EventModel, retrieveArtist } from '../models/Eventmodel';
-import { Rating, createReview } from '../models/Ratingmodel';
+import { Rating, Review, createReview } from '../models/Ratingmodel';
 
 const axios = require('axios');
 
 const eventImagePath = './public/artists';
-
-const cors = getCorsConfiguration();
 
 const upload = createMulter(eventImagePath);
 
 export class ArtistController extends BaseController {
 
     lastRequest = new Date();
-    timeTreshold = 1000; // Musicbrainz API has limit of maximum 1 request per second. Take 0.5s margin
+    timeTreshold = 1000; // Musicbrainz API has limit of maximum 1 request per second.
 
 	constructor() {
 		super("/artists");
 	}
 
 	initializeRoutes(): void {
-        this.router.get('/:artistID', cors, upload.none(),
+        this.router.get('/:artistID', upload.none(),
             (req: express.Request, res: express.Response) => {
                 res.set('Access-Control-Allow-Credentials', 'true');
                 this.getArtist(req, res);
             });
-        this.router.post('/:artistID/review', cors, this.requireAuth, upload.none(),
+        this.router.get('/:artistID/reviews', upload.none(),
+            (req: express.Request, res: express.Response) => {
+                res.set('Access-Control-Allow-Credentials', 'true');
+                this.getReviews(req, res);
+            });
+        this.router.post('/:artistID/reviews', this.requireAuth, upload.none(),
             (req: express.Request, res: express.Response) => {
                 res.set('Access-Control-Allow-Credentials', 'true');
                 this.reviewArtist(req, res);
             });
-        this.router.get('/', cors, upload.none(),
+        this.router.get('/', upload.none(),
             (req: express.Request, res: express.Response) => {
                 res.set('Access-Control-Allow-Credentials', 'true');
                 this.getAllArtists(req, res);
             });
+    }
+
+    async getReviews(req: express.Request, res: express.Response) {
+        const artistID = req.params.artistID;
+        const artist = await Artist.findByPk(artistID);
+        if (artist != null) {
+            const ratingID = artist.ratingID;
+            const result = await Review.findAll({
+                where: {
+                    ratingID: ratingID
+                }
+            });
+            res.status(200).json(result);
+        } else {
+            res.status(400).json({ success: false, error: "Artist not found in database"});
+        }
     }
 
     async reviewArtist(req: express.Request, res: express.Response) {
