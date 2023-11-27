@@ -31,7 +31,7 @@ export class SessionController extends BaseController {
         this.router.post("/register", cors,
 			upload.none(),
 			(req: express.Request, res: express.Response) => {
-				this.addUser(req, res);
+				this.registerUser(req, res);
 			});
 		// Route to handle login
 		this.router.post("/login",
@@ -70,7 +70,7 @@ export class SessionController extends BaseController {
 		}
 	}
 
-    async addUser(req: express.Request, res: express.Response): Promise<void> {
+    async registerUser(req: express.Request, res: express.Response): Promise<void> {
         console.log("Received request to register user");
 		const result = validationResult(req);
 		if (result.isEmpty()){
@@ -78,6 +78,7 @@ export class SessionController extends BaseController {
             const samename = await database.RetrieveUser("username", req.body.username);
             const samemail = await database.RetrieveUser("mail", req.body.mail);
             if (samename == null && samemail == null){
+				database.sendMailVerification(req.body.username, req.body.mail);
 			    const user = await database.CreateUser(req.body.username, req.body.mail, hash, saltingRounds);
 			    res.status(200).json({success: true, message: "User has been created!", userID: user.userID});
             } else {
