@@ -5,12 +5,9 @@ import * as userdatabase from '../models/Usermodel';
 import { userCheckIn, userCheckOut } from  '../models/Checkinmodel'
 import {body, validationResult} from "express-validator"
 import {createMulter} from "../configs/multerConfig";
-import { getCorsConfiguration } from '../configs/corsConfig';
 import * as crypto from "crypto"
 
 const eventImagePath = './public/events';
-
-const cors = getCorsConfiguration();
 
 const upload = createMulter(eventImagePath);
 
@@ -43,7 +40,7 @@ export class SearchController extends BaseController {
 			(req: express.Request, res: express.Response) => {
 				this.filterEvents(req, res);
 			});
-		this.router.get('/events', 
+		this.router.get('/events',
 			upload.none(),
 			(req: express.Request, res: express.Response) => {
 				console.log("search request");

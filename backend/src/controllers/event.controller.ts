@@ -1,16 +1,12 @@
 import * as express from 'express';
 import { BaseController } from './base.controller';
 import * as database from '../models/Eventmodel';
-import * as userdatabase from '../models/Usermodel';
 import { userCheckIn, userCheckOut, allCheckedInUsers, retrieveCheckIn } from  '../models/Checkinmodel';
 import { NotificationObject, createNewNotification } from '../models/Notificationmodel';
 import {body, validationResult} from "express-validator"
 import {createMulter} from "../configs/multerConfig";
-import { getCorsConfiguration } from '../configs/corsConfig';
 
 const eventImagePath = './public/events';
-
-const cors = getCorsConfiguration();
 
 const upload = createMulter(eventImagePath);
 
@@ -21,11 +17,11 @@ export class EventController extends BaseController {
 	}
 
 	initializeRoutes(): void {
-		this.router.get('/', cors, (req: express.Request, res: express.Response) => {
+		this.router.get('/', (req: express.Request, res: express.Response) => {
 			res.set('Access-Control-Allow-Credentials', 'true');
 			this.getAllEvents(req, res);
 		});
-		this.router.post("/", cors,
+		this.router.post("/",
 			upload.fields([{ name: 'banner', maxCount: 1}, { name: 'eventPicture', maxCount: 1}]),
 			[
 				body("title").trim().notEmpty(),
@@ -40,23 +36,23 @@ export class EventController extends BaseController {
 				res.set('Access-Control-Allow-Credentials', 'true');
 				this.addPost(req, res);
 		});
-		this.router.get('/:id', cors, this.requireAuth, (req: express.Request, res: express.Response) => {
+		this.router.get('/:id', this.requireAuth, (req: express.Request, res: express.Response) => {
 			res.set('Access-Control-Allow-Credentials', 'true');
 			this.getEvent(req, res);
 		});
-		this.router.get('/:id/checkins', cors, this.requireAuth, (req: express.Request, res: express.Response) => {
+		this.router.get('/:id/checkins', this.requireAuth, (req: express.Request, res: express.Response) => {
 			res.set('Access-Control-Allow-Credentials', 'true');
 			this.allCheckedIn(req, res);
 		});
-		this.router.post('/:id/invite', cors, this.requireAuth, (req: express.Request, res: express.Response) => {
+		this.router.post('/:id/invite', this.requireAuth, (req: express.Request, res: express.Response) => {
 			res.set('Access-Control-Allow-Credentials', 'true');
 			this.inviteFriend(req, res);
 		});
-		this.router.post('/:id/checkins', cors, this.requireAuth, (req: express.Request, res: express.Response) => {
+		this.router.post('/:id/checkins', this.requireAuth, (req: express.Request, res: express.Response) => {
 			res.set('Access-Control-Allow-Credentials', 'true');
 			this.checkIn(req, res);
 		});
-		this.router.delete('/:id/checkins', cors, this.requireAuth, (req: express.Request, res: express.Response) => {
+		this.router.delete('/:id/checkins', this.requireAuth, (req: express.Request, res: express.Response) => {
 			res.set('Access-Control-Allow-Credentials', 'true');
 			this.checkOut(req, res);
 		});

@@ -26,6 +26,7 @@ export class App {
 
     constructor() {
         this.app = express();
+        this.app.use(cors);
         this.app.use((req, res, next) => {
             res.header('Access-Control-Allow-Origin', environment.frontendURL);
             res.header('Access-Control-Allow-Credentials', true);

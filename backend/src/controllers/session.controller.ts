@@ -3,15 +3,12 @@ import { BaseController } from './base.controller';
 import * as database from '../models/Usermodel';
 import {body, validationResult} from "express-validator"
 import {createMulter} from "../configs/multerConfig"
-import { getCorsConfiguration } from '../configs/corsConfig';
 import * as bcrypt from "bcrypt";
 const fs = require('fs');
 
 const sessionFilePath = './public/sessions';
 
 const upload = createMulter(sessionFilePath)
-
-const cors = getCorsConfiguration();
 
 const saltingRounds = 12;
 
@@ -22,13 +19,13 @@ export class SessionController extends BaseController {
     }
 
     initializeRoutes(): void {
-		this.router.get("/auth/status", cors,
+		this.router.get("/auth/status",
 			upload.none(),
 			(req: express.Request, res: express.Response) => {
 				this.checkAuthentication(req, res);
 			});
 		// Route to let users register
-        this.router.post("/register", cors,
+        this.router.post("/register",
 			upload.none(),
 			(req: express.Request, res: express.Response) => {
 				this.registerUser(req, res);
@@ -40,7 +37,7 @@ export class SessionController extends BaseController {
 				this.loginUser(req, res);
 			});
 		// Route to handle logout
-		this.router.post("/logout", cors, this.requireAuth,
+		this.router.post("/logout", this.requireAuth,
 			upload.none(),
 			(req: express.Request, res: express.Response) => {
 				this.logoutUser(req, res);

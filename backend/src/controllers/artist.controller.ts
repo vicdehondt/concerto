@@ -2,15 +2,12 @@ import * as express from 'express';
 import { BaseController } from './base.controller';
 import {body, validationResult} from "express-validator"
 import {createMulter} from "../configs/multerConfig";
-import { getCorsConfiguration } from '../configs/corsConfig';
 import { CreateArtist, Artist, EventModel, retrieveArtist } from '../models/Eventmodel';
 import { Rating, Review, createReview } from '../models/Ratingmodel';
 
 const axios = require('axios');
 
 const eventImagePath = './public/artists';
-
-const cors = getCorsConfiguration();
 
 const upload = createMulter(eventImagePath);
 
@@ -24,22 +21,22 @@ export class ArtistController extends BaseController {
 	}
 
 	initializeRoutes(): void {
-        this.router.get('/:artistID', cors, upload.none(),
+        this.router.get('/:artistID', upload.none(),
             (req: express.Request, res: express.Response) => {
                 res.set('Access-Control-Allow-Credentials', 'true');
                 this.getArtist(req, res);
             });
-        this.router.get('/:artistID/reviews', cors, upload.none(),
+        this.router.get('/:artistID/reviews', upload.none(),
             (req: express.Request, res: express.Response) => {
                 res.set('Access-Control-Allow-Credentials', 'true');
                 this.getReviews(req, res);
             });
-        this.router.post('/:artistID/reviews', cors, this.requireAuth, upload.none(),
+        this.router.post('/:artistID/reviews', this.requireAuth, upload.none(),
             (req: express.Request, res: express.Response) => {
                 res.set('Access-Control-Allow-Credentials', 'true');
                 this.reviewArtist(req, res);
             });
-        this.router.get('/', cors, upload.none(),
+        this.router.get('/', upload.none(),
             (req: express.Request, res: express.Response) => {
                 res.set('Access-Control-Allow-Credentials', 'true');
                 this.getAllArtists(req, res);
