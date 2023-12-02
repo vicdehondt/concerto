@@ -27,6 +27,28 @@ export class SessionController extends BaseController {
 		// Route to let users register
         this.router.post("/register",
 			upload.none(),
+			[
+				body("username").custom(async value => {
+					const user = await database.RetrieveUser('username', value);
+					if  (user != null) {
+						throw new Error('username already in use by other user');
+					}
+				}),
+				body("password").trim().isLength({ min: 6}).withMessage('Password must be at least 6 characters long').matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/).withMessage('Password must include at least one lowercase letter, one uppercase letter, and one number'),
+				body("verifyPassword").trim().custom((value, { req }) => {
+					if (value !== req.body.password) {
+						throw new Error('passwords do not match!');
+					} else {
+						return true;
+					}
+				}),
+				body("mail").isEmail().withMessage("Provide an email").custom(async value => {
+					const user = await database.RetrieveUser('mail', value);
+					if (user != null) {
+						throw new Error("Email already used by other user");
+					}
+				})
+			],
 			(req: express.Request, res: express.Response) => {
 				this.registerUser(req, res);
 			});
