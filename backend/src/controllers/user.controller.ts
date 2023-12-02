@@ -1,9 +1,7 @@
 import * as express from 'express';
 import { BaseController } from './base.controller';
 import * as database from '../models/Usermodel';
-import { userNotifications } from '../models/Notificationmodel';
 import {createMulter} from "../configs/multerConfig"
-import { getCorsConfiguration } from '../configs/corsConfig';
 import { allCheckedInEvents } from "../models/Checkinmodel"
 const fs = require('fs');
 
@@ -28,12 +26,23 @@ export class UserController extends BaseController {
 			(req: express.Request, res: express.Response) => {
 				this.deleteUser(req, res);
 			});
-		this.router.get('/:username/checkins', this.requireAuth,
+		this.router.get('/:username/checkins', this.requireAuth, this.checkUserExists,
 			upload.none(),
 			(req: express.Request, res: express.Response) => {
 				this.getCheckIns(req, res);
 			});
     }
+
+	async checkUserExists(req: express.Request, res: express.Response, next) {
+		const username = req.params.username;
+		const user = await database.RetrieveUser('username', username);
+		if (user != null) {
+			req.body.user = user;
+			next();
+		} else {
+			res.status(400).json({ error: `The user with username ${ username } is not found`});
+		}
+	}
 
 	async deleteUser(req: express.Request, res: express.Response) {
 		const sessiondata = req.session;
@@ -65,9 +74,29 @@ export class UserController extends BaseController {
 			res.status(400).json({ success: false, error: "User not found!"});
 		}
 	}
+
 	async getCheckIns(req: express.Request, res: express.Response) {
 		const sessiondata = req.session;
-		const result = await allCheckedInEvents(sessiondata.userID);
-		res.status(200).json(result);
+		const user = req.body.user;
+		console.log(user.privacyCheckedInEvents);
+		if (user.userID == sessiondata.userID) {
+			const events = await allCheckedInEvents(sessiondata.userID);
+			res.status(200).json(events);
+		}
+		else if (user.privacyCheckedInEvents == 'private') {
+			res.status(401).json({ error: database.privacyErrorMsg});
+		} else {
+			const events = await allCheckedInEvents(sessiondata.userID);
+			if (user.privacyCheckedInEvents == 'public') {
+				res.status(200).json(events);
+			} else {
+				const friendship = await database.FindFriend(user.userID, sessiondata.userID);
+				if ((friendship != null) && (friendship.status == 'accepted')) {
+					res.status(200).json(events);
+				} else {
+					res.status(401).json({ error: database.privacyErrorMsg});
+				}
+			}
+		}
 	}
 }
