@@ -40,8 +40,8 @@ export class ProfileController extends BaseController {
         const sessiondata = req.session;
         const userID = sessiondata.userID;
         const newMail = req.body.mail;
-        const user = database.UserModel.findByPk(userID);
-        const otherUser = database.UserModel.findOne({
+        const user = await database.UserModel.findByPk(userID);
+        const otherUser = await database.UserModel.findOne({
             where: {
                 mail: newMail
             }
