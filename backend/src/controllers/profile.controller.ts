@@ -14,6 +14,11 @@ export class ProfileController extends BaseController {
     }
 
     initializeRoutes(): void {
+        this.router.get('/settings/privacy', this.requireAuth,
+			upload.none(),
+			(req: express.Request, res: express.Response) => {
+                this.getPrivacySettings(req, res);
+			});
 		this.router.put('/settings/privacy/attendedevents', this.requireAuth,
 			upload.none(),
 			(req: express.Request, res: express.Response) => {
@@ -34,6 +39,14 @@ export class ProfileController extends BaseController {
 			(req: express.Request, res: express.Response) => {
                 this.changeMail(req, res);
 			});
+    }
+
+    async getPrivacySettings(req: express.Request, res: express.Response) {
+        const sessiondata = req.session;
+        const user = await database.UserModel.findByPk(sessiondata.userID, {
+            attributes: ['privacyAttendedEvents', 'privacyCheckedInEvents', 'privacyFriends']
+        });
+        res.status(200).json(user);
     }
 
     async changeMail(req: express.Request, res: express.Response) {
