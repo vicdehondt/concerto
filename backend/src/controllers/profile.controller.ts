@@ -24,7 +24,7 @@ export class ProfileController extends BaseController {
 			(req: express.Request, res: express.Response) => {
                 this.changePrivacySetting(req, res, 'privacyFriends');
 			});
-        this.router.post('/settings/privacy/checkedinnevents', this.requireAuth,
+        this.router.post('/settings/privacy/checkedinevents', this.requireAuth,
 			upload.none(),
 			(req: express.Request, res: express.Response) => {
                 this.changePrivacySetting(req, res, 'privacyCheckedInEvents');
