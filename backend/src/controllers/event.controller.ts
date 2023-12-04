@@ -112,11 +112,7 @@ export class EventController extends BaseController {
 			const bannerPath = "http://localhost:8080/events/" + bannerpictures[0].filename;
 			const eventPicturePath = "http://localhost:8080/events/" + eventPictures[0].filename;
 			const result = await database.CreateEvent(artistID, title, description, dateAndTime, price, doors, main, support, mainGenre, secondGenre, bannerPath, eventPicturePath);
-			if (result) {
-				res.status(200).json({ success: true, message: 'Event created successfully' });
-			} else {
-				res.status(200).json({ success: false, message: 'error creating artist for event!' });
-			}
+			res.status(200).json({ success: true, eventID: result.eventID, message: 'Event created successfully' });
 		} else {
 			if (bannerpictures) {
 				this.DeleteFile(eventImagePath, bannerpictures[0]);

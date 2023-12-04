@@ -170,7 +170,7 @@ export async function CreateEvent(artistID, title, description, date, price, doo
       baseGenre: genre1,
       secondGenre: genre2,
     });
-    return true;
+    return Event;
   } catch (error) {
     console.error("There was an error creating an event: ", error);
   }

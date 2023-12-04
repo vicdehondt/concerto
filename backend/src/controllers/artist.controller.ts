@@ -69,7 +69,7 @@ export class ArtistController extends BaseController {
                 if (result) {
                     res.status(200).json({ success: true, message: "Created a review for this artist"});
                 } else {
-                    res.status(400).json({ success: false, message: "Already reviewed this artist for this event"});
+                    res.status(400).json({ success: false, error: "Already reviewed this artist for this event"});
                 }
             }
         } else {

@@ -34,6 +34,11 @@ export class ProfileController extends BaseController {
 			(req: express.Request, res: express.Response) => {
                 this.changePrivacySetting(req, res, 'privacyCheckedInEvents');
 			});
+        this.router.put('/settings/privacy/attendedevents', this.requireAuth,
+			upload.none(),
+			(req: express.Request, res: express.Response) => {
+                this.changePrivacySetting(req, res, 'privacyAttendedeEvents');
+			});
         this.router.put('/settings/personal/mail', this.requireAuth,
 			upload.none(),
 			(req: express.Request, res: express.Response) => {
