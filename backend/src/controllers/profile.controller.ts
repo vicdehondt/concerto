@@ -14,17 +14,17 @@ export class ProfileController extends BaseController {
     }
 
     initializeRoutes(): void {
-		this.router.post('/settings/privacy/attendedevents', this.requireAuth,
+		this.router.put('/settings/privacy/attendedevents', this.requireAuth,
 			upload.none(),
 			(req: express.Request, res: express.Response) => {
                 this.changePrivacySetting(req, res, 'privacyAttendedEvents');
 			});
-        this.router.post('/settings/privacy/friends', this.requireAuth,
+        this.router.put('/settings/privacy/friends', this.requireAuth,
 			upload.none(),
 			(req: express.Request, res: express.Response) => {
                 this.changePrivacySetting(req, res, 'privacyFriends');
 			});
-        this.router.post('/settings/privacy/checkedinevents', this.requireAuth,
+        this.router.put('/settings/privacy/checkedinevents', this.requireAuth,
 			upload.none(),
 			(req: express.Request, res: express.Response) => {
                 this.changePrivacySetting(req, res, 'privacyCheckedInEvents');
