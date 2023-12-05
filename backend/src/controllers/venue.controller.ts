@@ -39,7 +39,8 @@ export class VenueController extends BaseController {
                 console.log("no places left")
                 break;
             }
-            const venuesInBrussels = places.filter(place => place.type === 'Venue');
+            const venuesInBrussels = places.filter(place => place.type === 'Venue' || place.type == 'Indoor arena' || place.type == 'Stadium');
+            //console.log(venuesInBrussels);
             for (let i = 0; i < venuesInBrussels.length; i++) {
                 if (venuesInBrussels[i].coordinates !== undefined){
                     //console.log(venuesInBrussels[i].name);
