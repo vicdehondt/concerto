@@ -20,15 +20,18 @@ export default function App({ Component, pageProps }: AppProps) {
       credentials: "include",
     })
       .then((response) => {
-        if ((response.status == 400) && (router.asPath != "/")) {
-          router.push("/login")
+        const notHomePage = router.asPath != "/";
+        const notRegisterPage = router.asPath != "/register"
+        if ((response.status == 400) && notHomePage && notRegisterPage) {
+          const from = router.query.from || '/';
+          router.push(`/login?from=${router.asPath}`);
         }
       });
   }, [])
 
   function NavbarIfNeeded() {
     const path = router.asPath;
-    if (path != "/login" && path != "/register") {
+    if (!path.includes("/login") && !path.includes("/register")) {
       return <Navbar pictureSource="/photos/Rombout.jpeg" />
     }
   }

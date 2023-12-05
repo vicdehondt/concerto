@@ -36,7 +36,8 @@ export default function Login() {
     // Handle response if necessary
     const data = await response.json()
     if (response.status == 200) {
-      goToHome();
+      const from = router.query.from || '/';
+      router.push(from);
     }
     // ...
   }

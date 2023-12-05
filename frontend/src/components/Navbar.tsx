@@ -80,7 +80,7 @@ function Navbar({pictureSource}: {pictureSource: string}) {
         notificationBox[0].style.display = "block";
       }
     } else {
-      router.push("/login");
+      router.push(`/login?from=${router.asPath}`);
     }
   }
 
@@ -105,7 +105,7 @@ function Navbar({pictureSource}: {pictureSource: string}) {
     if (loggedIn) {
       return normalURL;
     }
-    return "/login"
+    return `/login?from=${encodeURIComponent(normalURL)}`
   }
 
   return (
