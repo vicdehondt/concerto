@@ -31,6 +31,11 @@ export class UserController extends BaseController {
 			(req: express.Request, res: express.Response) => {
 				this.getCheckIns(req, res);
 			});
+		this.router.get('/:username/friends', this.requireAuth, this.checkUserExists,
+			upload.none(),
+			(req: express.Request, res: express.Response) => {
+				this.getFriends(req, res);
+			});
     }
 
 	async checkUserExists(req: express.Request, res: express.Response, next) {
@@ -75,28 +80,44 @@ export class UserController extends BaseController {
 		}
 	}
 
-	async getCheckIns(req: express.Request, res: express.Response) {
+	async getUserRelations(req: express.Request, res: express.Response, retrievePrivacySetting, retrieveDataFunction) {
 		const sessiondata = req.session;
 		const user = req.body.user;
-		console.log(user.privacyCheckedInEvents);
+		const privacy = retrievePrivacySetting(user)
+		console.log(privacy)
 		if (user.userID == sessiondata.userID) {
-			const events = await allCheckedInEvents(sessiondata.userID);
-			res.status(200).json(events);
+			const result = await retrieveDataFunction(user.userID);
+			console.log("Requesting your own information")
+			res.status(200).json(result);
 		}
-		else if (user.privacyCheckedInEvents == 'private') {
+		else if (privacy == 'private') {
 			res.status(401).json({ error: database.privacyErrorMsg});
 		} else {
-			const events = await allCheckedInEvents(sessiondata.userID);
-			if (user.privacyCheckedInEvents == 'public') {
-				res.status(200).json(events);
+			const result = await retrieveDataFunction(user.userID);
+			if (privacy == 'public') {
+				console.log("This information is public")
+				res.status(200).json(result);
 			} else {
 				const friendship = await database.FindFriend(user.userID, sessiondata.userID);
 				if ((friendship != null) && (friendship.status == 'accepted')) {
-					res.status(200).json(events);
+					console.log("You are friends so able to receive the information")
+					res.status(200).json(result);
 				} else {
 					res.status(401).json({ error: database.privacyErrorMsg});
 				}
 			}
 		}
+	}
+
+	async getFriends(req: express.Request, res: express.Response) {
+		this.getUserRelations(req, res, user => { return user.privacyFriends},async userid => {
+			return await database.GetAllFriends(userid)
+		});
+	}
+
+	async getCheckIns(req: express.Request, res: express.Response) {
+		this.getUserRelations(req, res, user => { return user.privacyCheckedInEvents}, async userid => {
+			return await allCheckedInEvents(userid)
+		});
 	}
 }
