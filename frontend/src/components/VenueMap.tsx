@@ -1,6 +1,5 @@
 import { MapContainer, Marker, TileLayer, Popup, Tooltip } from "react-leaflet"
 import "leaflet/dist/leaflet.css"
-import L from 'leaflet'
 import "leaflet-defaulticon-compatibility"
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css"
 
