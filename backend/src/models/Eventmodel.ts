@@ -150,14 +150,11 @@ export async function retrieveArtist(id) {
   }); return result;
 }
 
-export async function CreateEvent(artistID, title, description, date, price, doors, main, support, genre1, genre2, bannerpath, eventPicturePath) {
-  const artist = await Artist.findByPk(artistID);
-  if (artist == null && (await createArtist(artistID) == false)) {
-    return false;
-  }
+export async function CreateEvent(artistID, venueID, title, description, date, price, doors, main, support, genre1, genre2, bannerpath, eventPicturePath) {
   try {
     const Event = await EventModel.create({
       artistID: artistID,
+      venueID: venueID,
       title: title,
       description: description,
       dateAndTime: date,

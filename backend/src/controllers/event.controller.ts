@@ -3,6 +3,8 @@ import { BaseController } from './base.controller';
 import * as database from '../models/Eventmodel';
 import { userCheckIn, userCheckOut, allCheckedInUsers, retrieveCheckIn } from  '../models/Checkinmodel';
 import { NotificationObject, createNewNotification } from '../models/Notificationmodel';
+import { VenueModel } from '../models/Venuemodel';
+import { retrieveArtist, createArtist } from '../models/Eventmodel';
 import {body, validationResult} from "express-validator"
 import {createMulter} from "../configs/multerConfig";
 
@@ -23,7 +25,20 @@ export class EventController extends BaseController {
 		});
 		this.router.post("/",
 			upload.fields([{ name: 'banner', maxCount: 1}, { name: 'eventPicture', maxCount: 1}]),
-			[	body("artistID").trim().notEmpty(),
+			[	body("artistID").trim().notEmpty().custom(async value => {
+				const artist = await retrieveArtist(value);
+				if (artist == null) {
+					const result = await createArtist(value);
+					if (!result) {
+						throw new Error("No artist was found with this ID");
+					}
+			}}),
+				body("venueID").trim().notEmpty().custom(async value => {
+					const venue = await VenueModel.findByPk(value);
+					if (venue == null) {
+						throw new Error("No venue was found with this ID");
+					}
+				}),
 				body("title").trim().notEmpty(),
 				body("description").trim().notEmpty(),
 				body("main").trim().notEmpty(),
@@ -108,10 +123,10 @@ export class EventController extends BaseController {
 		const bannerpictures = req.files['banner']
 		const eventPictures = req.files['eventPicture']
 		if (result.isEmpty() && bannerpictures && eventPictures) {
-			const {artistID, title, description, dateAndTime, price, doors, main, support, mainGenre, secondGenre} = req.body;
+			const {artistID, venueID, title, description, dateAndTime, price, doors, main, support, mainGenre, secondGenre} = req.body;
 			const bannerPath = "http://localhost:8080/events/" + bannerpictures[0].filename;
 			const eventPicturePath = "http://localhost:8080/events/" + eventPictures[0].filename;
-			const result = await database.CreateEvent(artistID, title, description, dateAndTime, price, doors, main, support, mainGenre, secondGenre, bannerPath, eventPicturePath);
+			const result = await database.CreateEvent(artistID, venueID, title, description, dateAndTime, price, doors, main, support, mainGenre, secondGenre, bannerPath, eventPicturePath);
 			res.status(200).json({ success: true, eventID: result.eventID, message: 'Event created successfully' });
 		} else {
 			if (bannerpictures) {
