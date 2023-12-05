@@ -4,7 +4,7 @@ import * as database from '../models/Venuemodel';
 import {body, validationResult} from "express-validator"
 import {createMulter} from "../configs/multerConfig";
 import { getCorsConfiguration } from '../configs/corsConfig';
-import { CreateVenue, VenueModel } from '../models/Venuemodel';
+import { CreateVenue, retrieveVenue, VenueModel } from '../models/Venuemodel';
 
 const axios = require('axios');
 const eventImagePath = './public/venues';
@@ -22,7 +22,40 @@ export class VenueController extends BaseController {
 		super("/venues");
 	}
 
+    async delay(ms: number): Promise<void> {
+        return new Promise((resolve) => setTimeout(resolve, ms));
+    }
+
+    async initialize(){
+        console.log("Adding all venues of Brussels")
+        const limit = 100;
+        for(let offset = 0; true ;offset += limit){
+            const musicBrainzApiUrl = `http://musicbrainz.org/ws/2/place?query='Brussels'&offset=${offset}&limit=${limit}`;
+            this.lastRequest = new Date();
+            const response = await axios.get(musicBrainzApiUrl);
+            const data = await response.data
+            const places = data.places;
+            if (places.length == 0) {
+                console.log("no places left")
+                break;
+            }
+            const venuesInBrussels = places.filter(place => place.type === 'Venue');
+            for (let i = 0; i < venuesInBrussels.length; i++) {
+                if (venuesInBrussels[i].coordinates !== undefined){
+                    //console.log(venuesInBrussels[i].name);
+                    //console.log(venuesInBrussels[i].id);
+                    const venue = await retrieveVenue(venuesInBrussels[i].id);
+                    if(venue == null) {
+                        await CreateVenue(venuesInBrussels[i].id, venuesInBrussels[i].name, venuesInBrussels[i].coordinates.longitude, venuesInBrussels[i].coordinates.latitude);
+                    }
+                }
+            }
+            await this.delay(1000);
+        }
+    }
+
 	initializeRoutes(): void {
+        this.initialize();
         this.router.get('/:venueID', cors, upload.none(), this.requireAuth, (req: express.Request, res: express.Response) => {
 			res.set('Access-Control-Allow-Credentials', 'true');
 			this.getVenue(req, res);
@@ -45,24 +78,11 @@ export class VenueController extends BaseController {
 
     async getVenue(req: express.Request, res: express.Response) {
         console.log("Received request to lookup venue information");
-        const venue = await VenueModel.findByPk(req.params.artistID);
-        const currentTime = new Date();
-        if (venue != null) {
+        const venue = await retrieveVenue(req.params.venueID);
+        if (venue) {
            res.status(200).json(venue);
-        } else if ((currentTime.getTime() - this.lastRequest.getTime()) < this.timeTreshold) {
-            res.status(400).json({ success: false, error: "Too many requests!"});
-        }
-        else {
-            const musicBrainzApiUrl = `http://musicbrainz.org/ws/2/place/${req.params.venueID}`;
-            this.lastRequest = new Date();
-            const response = await axios.get(musicBrainzApiUrl);
-            const data = await response.data
-            console.log(data.id)
-            console.log(data.name)
-            console.log(data.coordinates.longitude)
-            console.log(data.coordinates.latitude)
-            const venue = await CreateVenue(data.id, data.name, data.coordinates.longitude, data.coordinates.latitude);
-            res.status(200).json(data);
+        } else {
+            res.status(404).json({succes: false, error: "No venue was found with this ID"})
         }
     }
 }

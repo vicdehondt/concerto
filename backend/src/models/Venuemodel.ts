@@ -4,8 +4,6 @@ import { EventModel } from './Eventmodel';
 import { Rating } from './Ratingmodel';
 
 //events belong to venue
-//check if there exist a database for coordinates
-
 export const VenueModel = sequelize.define('Venue', {
   venueID: {
     type: DataTypes.UUID,
@@ -52,18 +50,32 @@ EventModel.belongsTo(VenueModel, {//one event has one venue
 
 async function synchronize() {
     EventModel.sync(); //creating an extra column venueID in the Event table 
-  }
+}
 
-export async function CreateVenue(venueID, venueName, longitude, lattitude): Promise<void> {
+export async function CreateVenue(venueID, venueName, longitude, latitude): Promise<void> {
     try {
         const result = await VenueModel.create({
             venueID: venueID,
             venueName: venueName,
             longitude: longitude,
-            lattitude: lattitude,
+            lattitude: latitude,
         });
         result
     } catch (error) {
         console.error("There was an error creating a Venue:", error);
     }
+}
+
+export async function retrieveVenue(id) {
+  try {
+    const Venue = await VenueModel.findOne({
+      attributes: {
+        exclude: ['createdAt', 'updatedAt']
+      },
+      where: {venueID: id},
+    });
+    return Venue;
+  } catch (error) {
+    console.error("There was an error finding a venue: ", error);
+  }
 }
