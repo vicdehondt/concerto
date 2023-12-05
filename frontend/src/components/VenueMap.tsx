@@ -6,7 +6,7 @@ import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility
 type Venue = {
     venueID: string;
     venueName: string;
-    longitute: number;
+    longitude: number;
     lattitude: number;
     ratingID: number;
   }
