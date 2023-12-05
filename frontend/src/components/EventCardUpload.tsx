@@ -153,7 +153,7 @@ function EventCardUpload({ title, location, date, time, price, image }:
       <div className={styles.tags}>
         <div className={styles.divider}></div>
         <div className={styles.tag}>
-          <select name="baseGenre" id="baseGenre">
+          <select name="mainGenre" id="baseGenre">
             {options()}
           </select>
         </div>

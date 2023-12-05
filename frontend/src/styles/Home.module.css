@@ -365,6 +365,10 @@
   justify-content: center;
 }
 
+.loginPage .loginForm a {
+  text-decoration: underline;
+}
+
 .submitButton {
   width: 200px;
   border-width: 0;

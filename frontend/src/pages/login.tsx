@@ -4,6 +4,7 @@ import styles from '@/styles/Home.module.css'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { FormEvent } from 'react'
 import { useRouter } from "next/router";
+import Link from "next/link";
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -38,6 +39,11 @@ export default function Login() {
     // ...
   }
 
+  function redirectURL() {
+    const from = router.query.from || '/';
+    return `/register?from=${encodeURIComponent(from)}`
+  }
+
   return (
     <>
       <Head>
@@ -53,6 +59,7 @@ export default function Login() {
             <input className={[styles.registerInput, styles.usernameInput].join(" ")} type="text" name='username' id='username' required placeholder="Username" />
             <input className={[styles.registerInput, styles.passwordInput].join(" ")} type="password" name='password' id='password' required placeholder="Password" />
             <button className={[styles.registerInput, styles.submitButton].join(" ")} type='submit'>Submit</button>
+            <Link href={redirectURL()}>Don't have an account yet?</Link>
           </form>
         </div>
       </main>

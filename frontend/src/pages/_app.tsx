@@ -22,7 +22,8 @@ export default function App({ Component, pageProps }: AppProps) {
       .then((response) => {
         const notHomePage = router.asPath != "/";
         const notRegisterPage = router.asPath != "/register"
-        if ((response.status == 400) && notHomePage && notRegisterPage) {
+        const notLoginPage = router.asPath != "/login"
+        if ((response.status == 400) && notHomePage && notRegisterPage && notLoginPage) {
           const from = router.query.from || '/';
           router.push(`/login?from=${router.asPath}`);
         }
