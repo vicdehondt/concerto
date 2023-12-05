@@ -4,12 +4,9 @@ import * as database from '../models/Usermodel';
 import { NotificationObject, createNewNotification } from '../models/Notificationmodel';
 import {body, validationResult} from "express-validator";
 import {createMulter} from "../configs/multerConfig"
-import { getCorsConfiguration } from '../configs/corsConfig';
 const fs = require('fs');
 
 const friendFilePath = './public/friends';
-
-const cors = getCorsConfiguration();
 
 const upload = createMulter(friendFilePath);
 
@@ -21,24 +18,24 @@ export class FriendController extends BaseController {
 
     initializeRoutes(): void {
         this.router.get("/",
-            upload.none(), cors, this.requireAuth,
+            upload.none(), this.requireAuth,
             (req: express.Request, res: express.Response) => {
                 res.set('Access-Control-Allow-Credentials', 'true');
                 this.getAllFriends(req, res);
             });
-        this.router.post('/', cors, this.requireAuth,
+        this.router.post('/', this.requireAuth,
             upload.none(),
             (req: express.Request, res: express.Response) => {
                 res.set('Access-Control-Allow-Credentials', 'true');
                 this.sendFriendRequest(req, res);
             });
-        this.router.post('/:senderusername/accept', cors, this.requireAuth,
+        this.router.post('/:senderusername/accept', this.requireAuth,
             upload.none(),
             (req: express.Request, res: express.Response) => {
                 res.set('Access-Control-Allow-Credentials', 'true');
                 this.responseFriendRequest(req, res, true);
             });
-        this.router.post('/:senderusername/deny', cors, this.requireAuth,
+        this.router.post('/:senderusername/deny', this.requireAuth,
             upload.none(),
             (req: express.Request, res: express.Response) => {
                 res.set('Access-Control-Allow-Credentials', 'true');

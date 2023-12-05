@@ -1,15 +1,11 @@
 import * as express from 'express';
 import { BaseController } from './base.controller';
 import * as database from '../models/Usermodel';
-import { userNotifications } from '../models/Notificationmodel';
 import {createMulter} from "../configs/multerConfig"
-import { getCorsConfiguration } from '../configs/corsConfig';
 import { allCheckedInEvents } from "../models/Checkinmodel"
 const fs = require('fs');
 
 const userImagePath = './public/users';
-
-const cors = getCorsConfiguration();
 
 const upload = createMulter(userImagePath);
 
@@ -20,22 +16,38 @@ export class UserController extends BaseController {
     }
 
     initializeRoutes(): void {
-		this.router.get('/:userid', cors, this.requireAuth,
+		this.router.get('/:userid', this.requireAuth,
 			upload.none(),
 			(req: express.Request, res: express.Response) => {
 				this.getUserInformation(req, res);
 			});
-		this.router.delete('/:userid', cors, this.requireAuth,
+		this.router.delete('/:userid', this.requireAuth,
 			upload.none(), this.requireAuth,
 			(req: express.Request, res: express.Response) => {
 				this.deleteUser(req, res);
 			});
-		this.router.get('/:username/checkins', cors, this.requireAuth,
+		this.router.get('/:username/checkins', this.requireAuth, this.checkUserExists,
 			upload.none(),
 			(req: express.Request, res: express.Response) => {
 				this.getCheckIns(req, res);
 			});
+		this.router.get('/:username/friends', this.requireAuth, this.checkUserExists,
+			upload.none(),
+			(req: express.Request, res: express.Response) => {
+				this.getFriends(req, res);
+			});
     }
+
+	async checkUserExists(req: express.Request, res: express.Response, next) {
+		const username = req.params.username;
+		const user = await database.RetrieveUser('username', username);
+		if (user != null) {
+			req.body.user = user;
+			next();
+		} else {
+			res.status(400).json({ error: `The user with username ${ username } is not found`});
+		}
+	}
 
 	async deleteUser(req: express.Request, res: express.Response) {
 		const sessiondata = req.session;
@@ -67,9 +79,45 @@ export class UserController extends BaseController {
 			res.status(400).json({ success: false, error: "User not found!"});
 		}
 	}
-	async getCheckIns(req: express.Request, res: express.Response) {
+
+	async getUserRelations(req: express.Request, res: express.Response, retrievePrivacySetting, retrieveDataFunction) {
 		const sessiondata = req.session;
-		const result = await allCheckedInEvents(sessiondata.userID);
-		res.status(200).json(result);
+		const user = req.body.user;
+		const privacy = retrievePrivacySetting(user)
+		console.log(privacy)
+		if (user.userID == sessiondata.userID) {
+			const result = await retrieveDataFunction(user.userID);
+			console.log("Requesting your own information")
+			res.status(200).json(result);
+		}
+		else if (privacy == 'private') {
+			res.status(401).json({ error: database.privacyErrorMsg});
+		} else {
+			const result = await retrieveDataFunction(user.userID);
+			if (privacy == 'public') {
+				console.log("This information is public")
+				res.status(200).json(result);
+			} else {
+				const friendship = await database.FindFriend(user.userID, sessiondata.userID);
+				if ((friendship != null) && (friendship.status == 'accepted')) {
+					console.log("You are friends so able to receive the information")
+					res.status(200).json(result);
+				} else {
+					res.status(401).json({ error: database.privacyErrorMsg});
+				}
+			}
+		}
+	}
+
+	async getFriends(req: express.Request, res: express.Response) {
+		this.getUserRelations(req, res, user => { return user.privacyFriends},async userid => {
+			return await database.GetAllFriends(userid)
+		});
+	}
+
+	async getCheckIns(req: express.Request, res: express.Response) {
+		this.getUserRelations(req, res, user => { return user.privacyCheckedInEvents}, async userid => {
+			return await allCheckedInEvents(userid)
+		});
 	}
 }
