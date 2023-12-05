@@ -70,9 +70,9 @@ export class SearchController extends BaseController {
 				filterfields.push("price");
 				filtervalues.push(req.body.price);
 			}
-			if(req.body.venueID){
+			if(req.query.venueID){
 				filterfields.push("venueID");
-				filtervalues.push(req.body.venueID);
+				filtervalues.push(req.query.venueID);
 			}
 			const events = await database.FilterEvents(filterfields, filtervalues);//gives the events that match the given filters
 			if(events){

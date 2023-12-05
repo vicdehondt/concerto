@@ -22,6 +22,18 @@ type Venue = {
   ratingID: number;
 }
 
+type Event = {
+  eventID: number;
+  title: string;
+  description: string;
+  checkedIn: number;
+  dateAndTime: string;
+  price: number;
+  eventPicture: string;
+  venueID: string;
+  artistID: string;
+};
+
 export default function Map() {
   const [venues, setVenues] = useState([]);
   const [[longitude, latitude], setLocation] =  useState([50.845, 4.35])

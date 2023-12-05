@@ -25,6 +25,8 @@ type Event = {
   dateAndTime: string;
   price: number;
   eventPicture: string;
+  venueID: string;
+  artistID: string;
 };
 
 export default function Home() {
