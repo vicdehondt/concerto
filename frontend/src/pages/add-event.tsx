@@ -4,11 +4,8 @@ import styles from "@/styles/Home.module.css";
 import { useRouter } from "next/router";
 import FriendInvites from "@/components/FriendInvite";
 import BannerUpload from "@/components/BannerUpload";
-import type { InferGetServerSidePropsType, GetServerSideProps } from "next";
 import { useState } from "react";
 import { FormEvent } from "react";
-import { title } from "process";
-import Image from 'next/image';
 import Rating from '@/components/Rating'
 import TimetableUpload from "@/components/TimetableUpload";
 import ArtistAndLocationUpload from "@/components/ArtistAndLocationUpload";
@@ -22,6 +19,12 @@ const environment = {
 if (process.env.NODE_ENV == "production") {
   environment.backendURL = "https://api.concerto.dehondt.dev";
 }
+
+type Artist = {
+  id: string;
+  type: string;
+  name: string;
+};
 
 function getFormattedDate(date: Date) {
   return (
@@ -41,6 +44,7 @@ export default function AddEvent() {
   const [location, setLocation] = useState("");
   const [time, setTime] = useState("")
   const [date, setDate] = useState(getFormattedDate(new Date()))
+  const [selectedArtist, setSelectedArtist] = useState({name: ""})
 
   function concatDateAndTime() {
     const dateAndTime = date + "T" + time;
@@ -52,6 +56,7 @@ export default function AddEvent() {
     var formData = new FormData(event.currentTarget);
     formData.append("dateAndTime", concatDateAndTime())
     formData.append("price", "20")
+    formData.append("artistID", selectedArtist.id)
     const form_values = Object.fromEntries(formData);
     console.log(form_values);
     const response = await fetch(environment.backendURL + "/events", {
@@ -108,7 +113,7 @@ export default function AddEvent() {
             </div>
           </div>
           <div className={styles.artistAndLocationContainer}>
-            <ArtistAndLocationUpload locationCallback={(string: string) => setLocation(string)} />
+            <ArtistAndLocationUpload locationCallback={(string: string) => setLocation(string)} artistCallback={(artist: Artist) => setSelectedArtist(artist)} />
           </div>
           <div className={styles.friendInviteContainer}>
             <FriendInvites />

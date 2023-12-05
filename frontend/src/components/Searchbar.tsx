@@ -5,7 +5,7 @@ type SearchBarProps = {
   type: "long" | "thick" | "thin";
 };
 
-function Searchbar({ type }: SearchBarProps) {
+function Searchbar({ type, onChange }: {type: SearchBarProps, onChange: (query: string) => void }) {
   return (
     <div
       className={[
@@ -31,7 +31,7 @@ function Searchbar({ type }: SearchBarProps) {
             type == "thin" ? styles.thinBorderSearchBar : "",
           ].join(" ")}
         >
-          Search...
+          <input type="text" placeholder="Search..." onChange={(event) => onChange(event.target.value)} />
         </div>
       </div>
     </div>

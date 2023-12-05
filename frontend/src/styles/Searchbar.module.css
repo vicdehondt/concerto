@@ -11,6 +11,10 @@
   padding-left: 5px;
 }
 
+.searchBar  input{
+  all: unset;
+}
+
 .longSearch {
   padding: 14px;
 }
