@@ -4,6 +4,14 @@ import { mailAccount, mailPassword } from '../configs/mailConfig';
 
 const nodemailer = require('nodemailer');
 
+const privacySettings = DataTypes.ENUM('public', 'private', 'friends')
+
+export function isValidPrivacySetting(setting): boolean {
+    return privacySettings.values.includes(setting);
+}
+
+export const privacyErrorMsg = 'You are not allowed to see this information according to the privacy settings of this user!';
+
 export const UserModel = sequelize.define('User', {
     userID: {
         type: DataTypes.INTEGER,
@@ -25,6 +33,18 @@ export const UserModel = sequelize.define('User', {
         allowNull: false,
         unique: true
     },
+    privacyAttendedEvents: {
+        type: privacySettings,
+        defaultValue: 'public'
+    },
+    privacyCheckedInEvents: {
+        type: privacySettings,
+        defaultValue: 'public'
+    },
+    privacyFriends: {
+        type: privacySettings,
+        defaultValue: 'public'
+    },
     salt: {
         type: DataTypes.INTEGER,
         allowNull: false
@@ -34,7 +54,7 @@ export const UserModel = sequelize.define('User', {
     }}, {
     tableName: 'Users'
     }
-)
+);
 
 export const Friend = sequelize.define('Friend',{
     friendID: {

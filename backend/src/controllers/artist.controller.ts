@@ -2,19 +2,14 @@ import * as express from 'express';
 import { BaseController } from './base.controller';
 import {body, validationResult} from "express-validator"
 import {createMulter} from "../configs/multerConfig";
-import { CreateArtist, Artist, EventModel, retrieveArtist } from '../models/Eventmodel';
+import { Artist, EventModel, retrieveArtist, createArtist } from '../models/Eventmodel';
 import { Rating, Review, createReview } from '../models/Ratingmodel';
-
-const axios = require('axios');
 
 const eventImagePath = './public/artists';
 
 const upload = createMulter(eventImagePath);
 
 export class ArtistController extends BaseController {
-
-    lastRequest = new Date();
-    timeTreshold = 1000; // Musicbrainz API has limit of maximum 1 request per second.
 
 	constructor() {
 		super("/artists");
@@ -74,7 +69,7 @@ export class ArtistController extends BaseController {
                 if (result) {
                     res.status(200).json({ success: true, message: "Created a review for this artist"});
                 } else {
-                    res.status(400).json({ success: false, message: "Already reviewed this artist for this event"});
+                    res.status(400).json({ success: false, error: "Already reviewed this artist for this event"});
                 }
             }
         } else {
@@ -94,20 +89,15 @@ export class ArtistController extends BaseController {
     async getArtist(req: express.Request, res: express.Response) {
         console.log("Received request to lookup artist information");
         const artist = await retrieveArtist(req.params.artistID);
-        const currentTime = new Date();
         if (artist != null) {
            res.status(200).json(artist);
-        } else if ((currentTime.getTime() - this.lastRequest.getTime()) < this.timeTreshold) {
-            res.status(400).json({ success: false, error: "Too many requests!"});
-        }
-        else {
-            const musicBrainzApiUrl = `http://musicbrainz.org/ws/2/artist/${req.params.artistID}?fmt=json`;
-            this.lastRequest = new Date();
-            const response = await axios.get(musicBrainzApiUrl);
-            const data = await response.data
-            const artist = await CreateArtist(data.name, data.id, data.type);
-            const result = await retrieveArtist(artist.artistID);
-            res.status(200).json(result);
+        } else {
+            if (await createArtist(req.params.artistID)) {
+                const result = await retrieveArtist(req.params.artistID);
+                res.status(200).json(result);
+            } else {
+                res.status(400).json({ success: false, error: "There was an error adding an artist"});
+            }
         }
     }
 }

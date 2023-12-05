@@ -23,13 +23,15 @@ export class EventController extends BaseController {
 		});
 		this.router.post("/",
 			upload.fields([{ name: 'banner', maxCount: 1}, { name: 'eventPicture', maxCount: 1}]),
-			[
+			[	body("artistID").trim().notEmpty(),
 				body("title").trim().notEmpty(),
 				body("description").trim().notEmpty(),
 				body("main").trim().notEmpty(),
 				body("doors").trim().notEmpty(),
 				body("price").trim().notEmpty(),
 				body("price").trim().notEmpty(),
+				body("mainGenre").trim().notEmpty(),
+				body("secondGenre").trim().notEmpty(),
 				body("dateAndTime").trim().notEmpty(),
 			],
 			(req: express.Request, res: express.Response) => {
@@ -106,12 +108,11 @@ export class EventController extends BaseController {
 		const bannerpictures = req.files['banner']
 		const eventPictures = req.files['eventPicture']
 		if (result.isEmpty() && bannerpictures && eventPictures) {
-			const {title, description, dateAndTime, price, doors, main, support} = req.body;
+			const {artistID, title, description, dateAndTime, price, doors, main, support, mainGenre, secondGenre} = req.body;
 			const bannerPath = "http://localhost:8080/events/" + bannerpictures[0].filename;
 			const eventPicturePath = "http://localhost:8080/events/" + eventPictures[0].filename;
-			database.CreateEvent(title, description, dateAndTime, price, doors, main, support, bannerPath, eventPicturePath);
-			console.log("Event created succesfully");
-			res.status(200).json({ success: true, message: 'Event created successfully' });
+			const result = await database.CreateEvent(artistID, title, description, dateAndTime, price, doors, main, support, mainGenre, secondGenre, bannerPath, eventPicturePath);
+			res.status(200).json({ success: true, eventID: result.eventID, message: 'Event created successfully' });
 		} else {
 			if (bannerpictures) {
 				this.DeleteFile(eventImagePath, bannerpictures[0]);
