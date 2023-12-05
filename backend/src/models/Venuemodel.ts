@@ -40,17 +40,17 @@ VenueModel.hasOne(Rating, {
   });
 
 VenueModel.hasMany(EventModel, { //multiple events can take place at one venue
-    foreignKey: 'venueID', //will be used as the definition of the extra column
-    onDelete: 'CASCADE',
+    foreignKey: {
+      name: 'venueID',
+      allowNull: false
+    }
 });
 
 EventModel.belongsTo(VenueModel, {//one event has one venue
-    //on delete defaults to set null
+    foreignKey: {
+      name: 'venueID'
+    }
 });
-
-async function synchronize() {
-    EventModel.sync(); //creating an extra column venueID in the Event table 
-}
 
 export async function CreateVenue(venueID, venueName, longitude, latitude): Promise<void> {
     try {
