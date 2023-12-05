@@ -1,5 +1,6 @@
 .page {
-  height: calc(100vh - var(--navHeight));
+  padding-top: var(--navHeight);
+  height: 100vh;
   display: grid;
 }
 
@@ -15,8 +16,21 @@
     "sidebar page-content";
 }
 
+.friendsPage .friendsContainer {
+  grid-area: page-content;
+  /* height: 100%; */
+  display: grid;
+  grid-auto-rows: 255px;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+
+  /* margin: 50px 25px; */
+  /* padding: 5px 100px; */
+  /* grid-gap: 20px; */
+}
+
 .pageContent {
   color: black;
+  /* overflow: auto; */
   overflow: scroll;
   grid-area: page-content;
   background-color: #e8f7ee;
@@ -136,13 +150,15 @@
 
 .addEventPage {
   color: black;
+  /* width: 100%; */
   background-color: #e8f7ee;
-  grid-template-columns: 45% auto;
-  grid-template-rows: [banner] 200px auto auto;
+  grid-template-columns: auto auto;
+  grid-template-rows: [banner] 200px auto auto auto;
   grid-template-areas:
     "banner banner"
-    "description ratings"
-    "timetable invites";
+    "description location-artist"
+    "timetable invites"
+    "add-event add-event";
 }
 
 .addEventPage .bannerContainer {
@@ -155,8 +171,6 @@
   grid-area: invites;
   display: flex;
   justify-content: right;
-  /* position: relative; */
-  /* left: 20%; */
 }
 
 .addEventPage .descriptionContainer {
@@ -184,10 +198,16 @@
   width: 100%;
 }
 
-.addEventPage .programContainer {
-  margin-top: 15px;
-  margin-left: 15px;
+.addEventPage .inputContainer {
   grid-area: timetable;
+  display: flex;
+  flex-direction: column;
+  height: auto;
+}
+
+.addEventPage .programAndDateContainer {
+  display: flex;
+  flex-direction: row;
 }
 
 .addEventPage .programTitle {
@@ -196,14 +216,41 @@
 }
 
 .addEventPage .programText {
-  white-space: pre;
   margin-top: 5px;
   font-size: large;
   font-weight: 400;
 }
 
-.addEventPage .ratingContainer {
-  grid-area: ratings;
+.addEventPage .dateContainer,
+.programContainer {
+  width: fit-content;
+  margin: 15px;
+}
+
+.addEventPage .dateTitle {
+  font-size: xx-large;
+  font-weight: bold;
+}
+
+.addEventPage .datePane {
+  margin-top: 5px;
+  font-size: x-large;
+  font-weight: bold;
+  border: 3px solid black;
+	border-radius: 5px;
+	background-color: white;
+	padding: 20px;
+	box-shadow: 0px 3px 3px grey;
+}
+
+.addEventPage .datePane input {
+  font-size: x-large;
+  border: 1px solid black;
+	background-color: white;
+}
+
+.addEventPage .artistAndLocationContainer {
+  grid-area: location-artist;
   display: flex;
   justify-content: right;
   align-items: center;
@@ -213,27 +260,32 @@
   padding: 20px;
 }
 
-.addEventPage .ticketsAndWishlist {
+.addEventPage .cardPreview {
+  padding-bottom: 1%;
+  background-color: #e8f7ee;
+}
+
+.addEventPage .addEventButton {
+  grid-area: add-event;
   display: flex;
   align-items: center;
-  height: 74px;
+  justify-content: center;
+  background-color: #e8f7ee;
 }
 
-.addEventPage .ticketsButton {
+.addEventPage .submitButton {
   color: white;
-  background-color: black;
-  font-size: x-large;
+  font-size: large;
   font-weight: bold;
-  padding: 15px;
-  margin-top: 15px;
-  border: 1px solid black;
-  border-radius: 15px;
-  box-shadow: 0px 3px 3px grey;
+  padding: 10px;
+  background-color: #0B2027;
+  border: 1px solid #0B2027;
+  border-radius: 10px;
+  box-shadow: 0px 2px 2px;
 }
 
-.addEventPage .addToWishlist {
-  margin: 15px;
-  padding-top: 15px;
+.addEventPage .submitButton:hover {
+  border: 1px solid #7180B9;
 }
 
 .registerPage {
@@ -259,6 +311,22 @@
   box-shadow: 0px 2px 3px black;
   align-items: center;
   justify-content: center;
+}
+
+.registerPage .validationMessages {
+  text-align: center;
+}
+
+.registerPage .validationMessage {
+  padding: 2px;
+}
+
+.registerPage .valid {
+  color: rgb(0, 185, 0);
+}
+
+.registerPage .invalid {
+  color: red;
 }
 
 .registerInput {
@@ -295,6 +363,10 @@
   align-items: center;
   box-shadow: 0px 2px 3px black;
   justify-content: center;
+}
+
+.loginPage .loginForm a {
+  text-decoration: underline;
 }
 
 .submitButton {

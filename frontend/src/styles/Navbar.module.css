@@ -1,3 +1,10 @@
+.navbar {
+  position: fixed;
+  width: 100%;
+  z-index: 100;
+  overflow: visible;
+}
+
 .navbar a {
   color: white;
 }
@@ -7,6 +14,7 @@
   height: 60px;
   display: flex;
   align-items: center;
+  overflow: visible;
 }
 
 .leftTopics a,
@@ -16,8 +24,48 @@
   text-align: center;
 }
 
-.rightTopics a:hover {
+.notificationButton {
+  background: none;
+	color: white;
+	border: none;
+	font: inherit;
+	cursor: pointer;
+  height: 60px;
+  padding: 20px;
+  text-align: center;
+}
+
+.rightTopics a:hover,
+.notificationButton:hover {
   background-color: #7180B9;
+}
+
+.notifications {
+  position: relative;
+}
+
+.notificationsBox {
+  display: none;
+  position: absolute;
+  background-color: white;
+  z-index: 1000;
+  bottom: 0;
+  right: 10px;
+  transform: translateY(98%);
+  width: fit-content;
+  padding: 5px;
+  border: 0px;
+  border-radius: 6px;
+  box-shadow: 1px 1px 2px;
+}
+
+.closeNotifications {
+  background: none;
+	border: none;
+	font: inherit;
+	cursor: pointer;
+  width: 250px;
+  text-align: right;
 }
 
 .profilePicture  img{

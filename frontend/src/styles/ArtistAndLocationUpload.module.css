@@ -1,0 +1,47 @@
+.container {
+  width: 480px;
+  margin: 15px;
+  padding: 0 15px;
+  display: flex;
+  flex-direction: column;
+}
+
+.box {
+  height: 35px;
+  display: flex;
+  align-items: center;
+}
+
+.text {
+  font-size: x-large;
+  font-weight: bold;
+  float: left;
+  text-decoration: underline;
+}
+
+.stars {
+  margin-left: 20px;
+  float: right;
+  font-size: x-large;
+  font-weight: bold;
+}
+
+.searchArtists {
+  margin-top: 10px;
+}
+
+.artistCard:hover {
+  background-color: grey;
+  cursor: pointer;
+}
+
+.searchResults {
+  height: 93px;
+  min-width: 200px;
+  text-align: center;
+  border: solid;
+  overflow: scroll;
+  margin-top: 5px;
+  /* margin-left: 70px; */
+  width: fit-content;
+}

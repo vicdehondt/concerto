@@ -45,18 +45,26 @@ export default function Concert() {
     eventPicture: "string",
   });
 
+  function showBanner() {
+    if (concert.eventID > 0) {
+      return <Banner imageSource={concert.banner} concertName={concert.title} />;
+    }
+  }
+
   useEffect(() => {
-    const id = router.query.id;
-    fetch(environment.backendURL + `/events/${id}`, {
-      mode: "cors",
-      credentials: "include",
-    })
-    .then((response) => {
-      return response.json();
-    }).then((responseJSON) => {
-      setConcert(responseJSON);
-    })
-  }, [])
+    const id = router.query.concert;
+    if (id) {
+      fetch(environment.backendURL + `/events/${id}`, {
+        mode: "cors",
+        credentials: "include",
+      })
+      .then((response) => {
+        return response.json();
+      }).then((responseJSON) => {
+        setConcert(responseJSON);
+      });
+    }
+  }, [router.query.concert])
 
   return (
     <>
@@ -69,7 +77,7 @@ export default function Concert() {
       <main className={`${styles.main} ${inter.className}`}>
         <div className={[styles.page, styles.concertPage].join(" ")}>
           <div className={styles.bannerContainer}>
-            <Banner imageSource={concert.banner} concertName={concert.title} />
+            {showBanner()}
           </div>
           <div className={styles.descriptionContainer}>
             <div className={styles.descriptionTitle}>Description</div>

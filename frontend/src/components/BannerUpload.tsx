@@ -2,7 +2,7 @@ import Image from "next/image";
 import styles from "../styles/BannerUpload.module.css";
 import { useState, ChangeEvent } from "react";
 
-function BannerUpload() {
+function BannerUpload({ titleCallback }: { titleCallback: (string: string) => void }) {
   const [bannerSource, setBannerSource] = useState("");
 
   function bannerImageChosen(event: ChangeEvent<HTMLInputElement>) {
@@ -30,7 +30,7 @@ function BannerUpload() {
       <div className={styles.bannerContainer}>
         {showBanner()}
 				<div className={styles.titleContainer}>
-          <input type="text" name='title' id='title' maxLength={16} required placeholder="Title" />
+          <input type="text" name='title' id='title' maxLength={16} required placeholder="Title" onChange={(e) => titleCallback(e.target.value)} />
       	</div>
         <div className={styles.uploadBox}>
           <input id='banner' name='banner' type="file" required onChange={bannerImageChosen} />
