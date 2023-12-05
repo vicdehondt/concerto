@@ -17,10 +17,6 @@ if (process.env.NODE_ENV == "production") {
 export default function Login() {
   const router = useRouter();
 
-  function goToHome() {
-    router.replace("/")
-  }
-
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
 
     event.preventDefault();
