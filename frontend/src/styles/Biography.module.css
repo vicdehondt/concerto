@@ -1,64 +1,39 @@
 .biographyContainer {
-    display: flex;
-    flex-direction: row;
-    color: black;
+    display: grid;
+    grid-template-columns: 30% auto;
+    grid-template-rows: 20% auto;
+    grid-template-areas:
+    "picture title"
+    "picture description";
+    background-color: white;
+    width: 60%;
+    margin: auto;
+    padding: 10px;
+    border-top: 10px;
+    height: 80%;
+    border-radius: 10px;
 }
 
-.photoAndName {
-    display: flex;
-    flex-direction: column;
+.pictureAndName {
+    grid-area: picture;
+    text-align: center;
 }
 
-.titleAndBio {
-    display: flex;
-    flex-direction: column;
-}
-
-/* .Biography {
-    width: fit-content;
-    min-width: 170px;
-    display: flex;
-    align-items: center;
-    flex-direction: row;
-    padding: 20px;
-    color: black;
-  }
-  
-  .Biography .photoName{
-    width: fit-content;
-    min-width: 170px;
-    display: flex;
-    align-items: center;
-    flex-direction: column;
-    padding: 20px;
-  }
-
-  .Biography .photoName .img{
-    border: 3px solid black;
+.profilePicture {
+    color: white;
     border-radius: 50%;
-  }
+    background-color: black;
+}
 
-  .Biography .photoName .name{
-    font-size: large;
-    padding-top: 15px;
-  }
+.title {
+    font-weight: 800;
+    font-size:x-large;
+    grid-area: title;
+    margin-left: 5%;
+}
+
+.description {
+    margin-left: 5%;
+}
 
 
-  .Biography .titleBio{
-    width: fit-content;
-    min-width: 170px;
-    display: flex;
-    align-items: center;
-    flex-direction: column;
-    padding: 20px;
-  }
-
-  .Biography .titleBio .title{
-    font-size: xx-large;
-    padding-top: 15px;
-  }
-
-  .Biography .titleBio .bio{
-    font-size: medium;
-    padding-top: 15px;
-  } */

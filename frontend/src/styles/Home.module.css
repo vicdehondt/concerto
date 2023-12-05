@@ -383,3 +383,26 @@
   color: red;
   padding: 10px 0 0 0;
 }
+
+.accountPage {
+  color: black;
+  height: 100vh;
+  display: grid;
+  background-color: #e8f7ee;
+  grid-template-columns: 50% auto;
+  grid-template-rows: 50% auto;
+  grid-template-areas:
+  "biography biography"
+  "attendingevents pastevents";
+}
+
+.biographyContainer {
+  margin-top: 1%;
+  border-radius: 10px;
+  grid-area: biography;
+}
+
+.attendedEventsContainer {
+  grid-area: attendingevents;
+  border: 3px black;
+}
