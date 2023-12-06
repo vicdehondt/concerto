@@ -15,24 +15,37 @@
 }
 
 .pictureAndName {
+    margin-top: 45px;
+    display: flex;
+    flex-direction: column;
     grid-area: picture;
     text-align: center;
 }
 
 .profilePicture {
+    width: 180px;
+    height: 180px;
+    margin-left: auto;
+    margin-right: auto;
     color: white;
     border-radius: 50%;
     background-color: black;
+}
+
+.username {
+    margin-top: 12px;
 }
 
 .title {
     font-weight: 800;
     font-size:x-large;
     grid-area: title;
+    margin-top: 25px;
     margin-left: 5%;
 }
 
 .description {
+    margin-top: 25px;
     margin-left: 5%;
 }
 

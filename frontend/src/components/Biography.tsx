@@ -13,13 +13,15 @@ function Biography({ source, username }: { source: string; username: string }) {
   }
 
   return (
-    <div>
+    <>
       <div className={styles.biographyContainer}>
         <div className={styles.pictureAndName}>
           <div className={styles.profilePicture}>
             {showPicture(source)}
           </div>
-          Reinout
+          <div className={styles.username}>
+            {username}
+          </div>
         </div>
         <div className={styles.title}>
           Biography
@@ -28,7 +30,7 @@ function Biography({ source, username }: { source: string; username: string }) {
           Lorem ipsum of the description.
         </div>
       </div>
-    </div>
+    </>
   );
 }
 

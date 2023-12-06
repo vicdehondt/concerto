@@ -402,7 +402,36 @@
   grid-area: biography;
 }
 
+.attendedEventSection {
+
+}
+/* Still have to make parent container class */
 .attendedEventsContainer {
+  overflow: scroll;
+  display: flex;
+  flex-direction: column;
+  width: 70%;
+  height: 70%;
+  margin-left: 25%;
   grid-area: attendingevents;
-  border: 3px black;
+  border-top-right-radius: 10px;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+  border: 4px solid black;
+}
+
+.pastEventsContainer {
+  overflow: scroll;
+  display: flex;
+  flex-direction: column;
+  row-gap: 20px;
+  margin-bottom: 20px;
+  grid-area: pastevents;
+  border: 4px solid black;
+  width: 70%;
+  height: 70%;
+  margin-right: 25%;
+  border-top-right-radius: 10px;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
 }

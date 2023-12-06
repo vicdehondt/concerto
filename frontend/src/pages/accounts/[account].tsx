@@ -4,6 +4,7 @@ import { Inter } from "next/font/google";
 import styles from "@/styles/Home.module.css";
 import { useEffect, useState } from "react";
 import Biography from "@/components/Biography";
+import UserEvent from "@/components/UserEvent";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -31,29 +32,50 @@ type Event = {
 };
 
 export default function Account() {
-  const [user, setUser] = useState({});
+  const [user, setUser] = useState({
+    username: "",
+    userID: 0,
+    mail: "",
+    image: "",
+    privacyAttendedEvents: "",
+    privacyCheckedInEvents: "",
+    privacyFriends: "",
+  });
   const [events, setEvents] = useState([]);
+  const [checkedInPrivacy, setCheckedInPrivacy] = useState(true)
 
   const router = useRouter();
 
-  function requestCheckins() {
+  function requestCheckins(user: User) {
     fetch(environment.backendURL + "/users" + `/${user.username}/checkins`).then((response) => {
-      return response.json();
+      if (response.status == 200) {
+        return response.json();
+      } else {
+        setCheckedInPrivacy(false);
+        return null;
+      }
     }).then((responseJSON) => {
-      console.log(responseJSON)
-      setEvents(responseJSON)
+      if (responseJSON != null) {
+        setEvents(responseJSON)
+      }
     });
   }
 
   function showCheckins(response: Array<Event>) {
-    if (response && response.length > 0) {
+    if (!checkedInPrivacy) {
+      return (<div>
+        Not allowed to see this information.
+      </div>
+      )
+    }
+    else if (response.length > 0) {
       return response.map((event: Event) => (
         <div key={event.eventID}>
-          {event.title}
+          <UserEvent event={event}/>
         </div>
       ));
     } else {
-      return <>hello</>;
+      return <></>;
     }
   }
 
@@ -68,11 +90,11 @@ export default function Account() {
           return response.json();
         })
         .then((responseJSON) => {
-          setUser(responseJSON)
-          requestCheckins();
+          setUser(responseJSON);
+          requestCheckins(responseJSON);
         });
     }
-  }, []);
+  }, [router.query.account]);
   return (
     <>
       <Head>
@@ -88,6 +110,9 @@ export default function Account() {
           </div>
           <div className={styles.attendedEventsContainer}>
             {showCheckins(events)}
+          </div>
+          <div className={styles.pastEventsContainer}>
+
           </div>
         </div>
       </main>
