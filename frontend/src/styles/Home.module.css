@@ -16,8 +16,21 @@
     "sidebar page-content";
 }
 
+.friendsPage .friendsContainer {
+  grid-area: page-content;
+  /* height: 100%; */
+  display: grid;
+  grid-auto-rows: 255px;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+
+  /* margin: 50px 25px; */
+  /* padding: 5px 100px; */
+  /* grid-gap: 20px; */
+}
+
 .pageContent {
   color: black;
+  /* overflow: auto; */
   overflow: scroll;
   grid-area: page-content;
   background-color: #e8f7ee;
@@ -300,6 +313,22 @@
   justify-content: center;
 }
 
+.registerPage .validationMessages {
+  text-align: center;
+}
+
+.registerPage .validationMessage {
+  padding: 2px;
+}
+
+.registerPage .valid {
+  color: rgb(0, 185, 0);
+}
+
+.registerPage .invalid {
+  color: red;
+}
+
 .registerInput {
   height: 70px;
   color: white;
@@ -334,6 +363,10 @@
   align-items: center;
   box-shadow: 0px 2px 3px black;
   justify-content: center;
+}
+
+.loginPage .loginForm a {
+  text-decoration: underline;
 }
 
 .submitButton {

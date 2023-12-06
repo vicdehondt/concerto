@@ -1,5 +1,4 @@
 const { Sequelize, DataTypes, Op } = require('sequelize');
-import * as config from './sequelizeConfig'
 
 const databasePath = './src/SQLite/ConcertoDB.db';
 const databaseDialect = 'sqlite';

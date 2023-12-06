@@ -25,9 +25,27 @@ type Event = {
   description: string;
   checkedIn: number;
   dateAndTime: string;
+  support: string;
+  doors: string;
+  main: string;
+  baseGenre: string;
+  secondGenre: string;
   price: number;
   banner: string;
   eventPicture: string;
+  artistID: string;
+  venueID: string;
+};
+
+type Artist = {
+  artistID: string;
+  name: string;
+  type: string;
+  ratingID: number;
+  Rating: {
+    score: number;
+    amountOfReviews: number;
+  }
 };
 
 export default function Concert() {
@@ -43,7 +61,17 @@ export default function Concert() {
     price: 0,
     banner: "",
     eventPicture: "string",
+    support: "99:99",
+    doors: "99:99",
+    main: "99:99",
+    baseGenre: "ph",
+    secondGenre: "ph",
+    artistID: "123",
+    venueID: "123",
   });
+
+  const [artist, setArtist] = useState({Rating: {score: 0}})
+  const [artistScore, setArtistScore] = useState(0);
 
   function showBanner() {
     if (concert.eventID > 0) {
@@ -62,6 +90,18 @@ export default function Concert() {
         return response.json();
       }).then((responseJSON) => {
         setConcert(responseJSON);
+        if (responseJSON.artistID) {
+          fetch(environment.backendURL + `/artists/${responseJSON.artistID}`, {
+            mode: "cors",
+            credentials: "include",
+          })
+          .then((response) => {
+            return response.json();
+          }).then((responseJSON) => {
+            setArtist(responseJSON);
+            setArtistScore(responseJSON.Rating.score);
+          });
+        }
       });
     }
   }, [router.query.concert])
@@ -86,7 +126,7 @@ export default function Concert() {
           <div className={styles.programContainer}>
             <div className={styles.programTitle}>Program</div>
             <div className={styles.programText}>
-              <Timetable doorTime="19:00" supportTime="20:00" concertTime="21:00" />
+              <Timetable doorTime={concert.doors} supportTime={concert.support} concertTime={concert.main} />
             </div>
             <div className={styles.ticketsAndWishlist}>
               <button className={styles.ticketsButton}>Buy tickets</button>
@@ -96,7 +136,7 @@ export default function Concert() {
             </div>
           </div>
           <div className={styles.ratingContainer}>
-            <Rating />
+            <Rating score={artistScore} />
           </div>
           <div className={styles.friendInviteContainer}>
             <FriendInvites />

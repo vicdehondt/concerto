@@ -5,10 +5,6 @@ import Biography from "@/components/Biography";
 
 const inter = Inter({ subsets: ["latin"] });
 
-//few notes:
-//in jsx you van only use html or react components
-//<> = telling react to use a fragment so that we can let it return more than one item
-
 export default function Account() {
   return (
     <>

@@ -1,5 +1,16 @@
 import { DataTypes, Op } from 'sequelize';
 import {sequelize} from '../configs/sequelizeConfig'
+import { mailAccount, mailPassword } from '../configs/mailConfig';
+
+const nodemailer = require('nodemailer');
+
+const privacySettings = DataTypes.ENUM('public', 'private', 'friends')
+
+export function isValidPrivacySetting(setting): boolean {
+    return privacySettings.values.includes(setting);
+}
+
+export const privacyErrorMsg = 'You are not allowed to see this information according to the privacy settings of this user!';
 
 export const UserModel = sequelize.define('User', {
     userID: {
@@ -22,6 +33,18 @@ export const UserModel = sequelize.define('User', {
         allowNull: false,
         unique: true
     },
+    privacyAttendedEvents: {
+        type: privacySettings,
+        defaultValue: 'public'
+    },
+    privacyCheckedInEvents: {
+        type: privacySettings,
+        defaultValue: 'public'
+    },
+    privacyFriends: {
+        type: privacySettings,
+        defaultValue: 'public'
+    },
     salt: {
         type: DataTypes.INTEGER,
         allowNull: false
@@ -31,7 +54,7 @@ export const UserModel = sequelize.define('User', {
     }}, {
     tableName: 'Users'
     }
-)
+);
 
 export const Friend = sequelize.define('Friend',{
     friendID: {
@@ -72,11 +95,6 @@ UserModel.belongsToMany(UserModel, {
     onDelete: 'CASCADE',
 });
 
-async function synchronize() {
-    UserModel.sync();
-    Friend.sync();
-  }
-
 export async function DeleteUser(userID) {
     await UserModel.destroy({
         where: {
@@ -85,7 +103,7 @@ export async function DeleteUser(userID) {
     });
 }
 
-export async function CreateUser(username, email, hashedpassword, saltingrounds): Promise<void> {
+export async function CreateUser(username, email, hashedpassword, saltingrounds) {
     try {
         const User = await UserModel.create({
             username: username,
@@ -93,15 +111,10 @@ export async function CreateUser(username, email, hashedpassword, saltingrounds)
             password: hashedpassword,
             salt: saltingrounds,
         });
+        return User;
     } catch (error) {
         console.error("There was an error creating a user:", error);
     }
-}
-
-async function AcceptFriendRequest(friendID) {
-    const friendrequest = await Friend.findByPK(friendID);
-    friendrequest.status = 'accepted';
-    friendrequest.save();
 }
 
 export async function GetAllFriends(userID) {
@@ -167,19 +180,13 @@ export const FriendInviteResponses = {
     ILLEGALREQUEST: 3,
 }
 
-export async function SendFriendRequest(senderID, receivername): Promise<Number> {
-    const receiver = await RetrieveUser('username', receivername);
+export async function SendFriendRequest(senderID, receiverid): Promise<Number> {
+    const receiver = await RetrieveUser('userID', receiverid);
     if (receiver != null) {
-        const receiverid = receiver.userID;
         if (receiverid != senderID) {
             const existing = await FindFriend(senderID, receiverid);
             if (existing == null) {
                 await CreateFriend(senderID, receiverid);
-                const object = await NotificationObject.create({
-                    notificationType: 'friendrequestreceived',
-                    actor: senderID,
-                });
-                await createNewNotification(object.ID, receiverid);
                 return FriendInviteResponses.SENT;
             } else {
                 return FriendInviteResponses.ALREADYFRIEND;
@@ -203,125 +210,24 @@ export async function RetrieveUser(field: string, value): Promise<typeof UserMod
       }
 }
 
-export const NotificationObject = sequelize.define('NotificationObject', {
-    ID: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        primaryKey: true,
-        autoIncrement: true
-    },
-    notificationType: {
-        type: DataTypes.ENUM('friendrequestreceived', 'friendrequestaccepted'),
-        allowNull: false,
-    },
-    actor: {
-        type: DataTypes.INTEGER,
-        references: {
-            model: UserModel,
-            key: 'userID'
-        }
-    }
-});
-
-UserModel.hasMany(NotificationObject, {
-    foreignKey: 'actor'
-});
-NotificationObject.belongsTo(UserModel, {
-    foreignKey: 'actor'
-});
-
-export const Notification = sequelize.define('Notification', {
-    notificationID: {
-        type: DataTypes.INTEGER,
-        primaryKey: true,
-        autoIncrement: true,
-    },
-    receiver: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: {
-            model: UserModel,
-            key: 'userID'
-        }
-    },
-    status: {
-        type: DataTypes.ENUM('unseen', 'seen'),
-        allowNul: false,
-        defaultValue: 'unseen'
-    }
-});
-
-NotificationObject.hasMany(Notification, {
-    foreignKey: {
-        name: 'objectID',
-        allowNull: false,
-    }
-});
-Notification.belongsTo(NotificationObject, {
-    foreignKey: {
-        name: 'objectID',
-    }
-});
-
-UserModel.hasMany(Notification, {
-    foreignKey: {
-        name: 'receiver',
-        allowNull: false,
-    }
-});
-Notification.belongsTo(UserModel, {
-    foreignKey: {
-        name: 'receiver',
-    }
-});
-
-export async function createNewNotification(objectID, receiverID) {
-    await Notification.create({
-        receiver: receiverID,
-        objectID: objectID
+// Source: https://nodemailer.com
+const transporter = nodemailer.createTransport({
+    port: 465,               // true for 465, false for other ports
+    host: "smtp.gmail.com",
+       auth: {
+            user: mailAccount,
+            pass: mailPassword,
+         },
+    secure: true,
     });
-}
 
-export async function userNotifications(userid) {
-    const result = await Notification.findAll({
-        attributes: ['notificationID', 'status'],
-        where: {
-            receiver: userid
-        },
-        include: {
-                model: NotificationObject,
-                attributes: ['notificationType', 'actor']
-        }
-    });
-    return result;
-}
-
-export async function notificationSeen(id) {
-    const result = await Notification.findByPk(id);
-    if (result != null) {
-        result.status = 'seen';
-        result.save();
-        return true;
-    } else {
-        return false
-    }
-}
-
-export const deleteNotificationReply = {
-    SUCCES: 0,
-    UNFOUND: 1,
-    ILLEGAL: 2,
-}
-export async function deleteNotification(userid, notificationid) {
-    const notification = await Notification.findByPk(notificationid);
-    if (notification != null) {
-        if (notification.receiver == userid) {
-            await notification.destroy();
-            return deleteNotificationReply.SUCCES;
-        } else {
-            return deleteNotificationReply.ILLEGAL;
-        }
-    } else {
-        return deleteNotificationReply.UNFOUND;
-    }
+export async function sendMailVerification(username, mail) {
+    const mailData = {
+        from: mailAccount,  // sender address
+        to: mail,   // list of receivers
+        subject: 'Verify your mail for concerto',
+        text: 'That was easy!',
+        html: '<b> Thank you for registering on Concerto! </b>'
+    };
+    await transporter.sendMail(mailData);
 }

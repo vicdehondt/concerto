@@ -8,6 +8,8 @@
 
 .box {
   height: 35px;
+  display: flex;
+  align-items: center;
 }
 
 .text {
@@ -17,8 +19,38 @@
   text-decoration: underline;
 }
 
-.stars {
+.name {
+  margin-left: 20px;
   float: right;
   font-size: x-large;
   font-weight: bold;
+}
+
+.name select {
+  all: unset;
+  border: solid;
+  text-align: center;
+  max-width: 300px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.searchArtists {
+  margin-top: 10px;
+}
+
+.artistCard:hover {
+  background-color: grey;
+  cursor: pointer;
+}
+
+.searchResults {
+  height: 93px;
+  min-width: 200px;
+  text-align: center;
+  border: solid;
+  overflow: scroll;
+  margin-top: 5px;
+  width: fit-content;
 }
