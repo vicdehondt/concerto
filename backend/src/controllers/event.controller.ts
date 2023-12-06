@@ -7,6 +7,7 @@ import { VenueModel } from '../models/Venuemodel';
 import { retrieveArtist, createArtist } from '../models/Eventmodel';
 import {body, validationResult} from "express-validator"
 import {createMulter} from "../configs/multerConfig";
+import { WishListedEvents } from '../models/Wishlistmodel';
 
 const eventImagePath = './public/events';
 
@@ -111,7 +112,18 @@ export class EventController extends BaseController {
 		console.log("An ID has been found: ", id);
 		const event = await database.RetrieveEvent(id);
 		if (event) {
-			res.status(200).json(event);
+			const sessiondata = req.session;
+			const wishlisted = await WishListedEvents.findOne({
+				where: {
+					eventID: id,
+					userID: sessiondata.userID,
+				}
+			});
+			const eventWithWishlist = {
+				...event.toJSON(),
+				wishlisted: wishlisted !== null,
+			};
+			res.status(200).json(eventWithWishlist);
 		} else {
 			res.status(404).json({succes: false, error: "No event was found with this ID"})
 		}
