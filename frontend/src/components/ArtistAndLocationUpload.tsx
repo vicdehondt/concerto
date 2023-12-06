@@ -113,7 +113,8 @@ function ArtistAndLocationUpload({
         <div className={styles.text}>Location:</div>
         <div className={styles.name}>
         <select name="venue" id="venue" onChange={(event) => {
-          const selectedVenue = JSON.parse(event.target.options[event.target.selectedIndex].getAttribute('data-venue'));
+          const selectedOption = event.target.options[event.target.selectedIndex].getAttribute("data-venue");
+          const selectedVenue = selectedOption != null ? JSON.parse(selectedOption) : {venueID: "123", venueName: "Not selected"};
           locationCallback(selectedVenue);
         }}>
             <option key="1" value="" hidden defaultValue="Choose venue" >Choose venue</option>

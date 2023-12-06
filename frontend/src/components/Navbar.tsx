@@ -27,8 +27,8 @@ function Navbar({pictureSource}: {pictureSource: string}) {
 
   const [loggedIn, setLoggedIn] = useState(false);
 
-  const notificationButtonRef = useRef(null);
-  const notificationsRef = useRef(null);
+  const notificationButtonRef = useRef<HTMLDivElement>(null);
+  const notificationsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     fetch(environment.backendURL + "/notifications", {
@@ -59,8 +59,8 @@ function Navbar({pictureSource}: {pictureSource: string}) {
   }, []);
 
   useEffect(() => {
-    const handleOutSideClick = (event) => {
-      if (!notificationButtonRef.current?.contains(event.target) && !notificationsRef.current?.contains(event.target)) {
+    const handleOutSideClick = (event: Event) => {
+      if (event.target != null && !notificationButtonRef.current?.contains(event.target as Node) && !notificationsRef.current?.contains(event.target as Node)) {
         closeNotifications()
       }
     };
@@ -113,7 +113,7 @@ function Navbar({pictureSource}: {pictureSource: string}) {
     <nav className={styles.navbar}>
       <div className={styles.leftTopics}>
         <Link href="/">Concerto</Link>
-        <Searchbar type="long" />
+        <Searchbar type="long" onChange={(event) => console.log("Not impmeneted yet")} />
         <div className={styles.addEventButton}>
           <Link href={redirectURL("/add-event")}>+</Link>
         </div>

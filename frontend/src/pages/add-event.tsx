@@ -48,7 +48,7 @@ export default function AddEvent() {
   const [location, setLocation] = useState({venueID: "123", venueName: "Not selected"});
   const [time, setTime] = useState("")
   const [date, setDate] = useState(getFormattedDate(new Date()))
-  const [selectedArtist, setSelectedArtist] = useState({name: ""})
+  const [selectedArtist, setSelectedArtist] = useState({name: "", id: ""})
 
   function concatDateAndTime() {
     const dateAndTime = date + "T" + time;
@@ -118,7 +118,7 @@ export default function AddEvent() {
             </div>
           </div>
           <div className={styles.artistAndLocationContainer}>
-            <ArtistAndLocationUpload locationCallback={(string: string) => setLocation(string)} artistCallback={(artist: Artist) => setSelectedArtist(artist)} />
+            <ArtistAndLocationUpload locationCallback={(venue: Venue) => setLocation(venue)} artistCallback={(artist: Artist) => setSelectedArtist(artist)} />
           </div>
           <div className={styles.friendInviteContainer}>
             <FriendInvites />

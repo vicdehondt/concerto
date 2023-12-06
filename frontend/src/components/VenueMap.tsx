@@ -25,7 +25,7 @@ type Event = {
   artistID: string;
 };
 
-type Venue = {
+export type Venue = {
     venueID: string;
     venueName: string;
     longitude: number;
