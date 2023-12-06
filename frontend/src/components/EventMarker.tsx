@@ -55,7 +55,7 @@ export default function EventMarker({event}: {event: Event}) {
             <Image src={event.eventPicture} width={50} height={50} alt="Picture of the event"/>
         </div>
         <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: '#0B2027', borderRadius: '5px', width: 90}}>
-            <Link style={{color: 'white'}} href={redirectURL(`/concerts/${event.eventID}/${event.title}`)}> Go to event </Link>
+            <Link style={{color: 'white'}} href={redirectURL(`/concerts/${event.eventID}`)}> Go to event </Link>
         </div>
     </div>
     )

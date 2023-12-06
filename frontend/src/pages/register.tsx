@@ -57,9 +57,12 @@ export default function Register() {
   }
 
   function checkPasswordEquality(event: ChangeEvent<HTMLInputElement>) {
-    const password = event.target.form.password.value;
-    const verifyPassword = event.target.value;
-    setArePasswordsEqual(password === verifyPassword);
+    const form = event.target.form;
+    if (form != null) {
+      const password = form.password.value;
+      const verifyPassword = event.target.value;
+      setArePasswordsEqual(password === verifyPassword);
+    }
   }
 
   return (

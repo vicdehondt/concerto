@@ -57,7 +57,7 @@ export class VenueController extends BaseController {
 
 	initializeRoutes(): void {
         this.initialize();
-        this.router.get('/:venueID', cors, upload.none(), this.requireAuth, (req: express.Request, res: express.Response) => {
+        this.router.get('/:venueID', cors, upload.none(), (req: express.Request, res: express.Response) => {
 			res.set('Access-Control-Allow-Credentials', 'true');
 			this.getVenue(req, res);
 		});

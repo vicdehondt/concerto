@@ -1,7 +1,14 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styles from "../styles/ArtistAndLocationUpload.module.css";
 import { Star } from "lucide-react";
 import Searchbar from "./Searchbar";
+
+const environment = {
+  backendURL: "http://localhost:8080",
+};
+if (process.env.NODE_ENV == "production") {
+  environment.backendURL = "https://api.concerto.dehondt.dev";
+}
 
 type Artist = {
   id: string;
@@ -14,11 +21,19 @@ type APIResponse = {
   artists: Array<Artist>;
 };
 
+type Venue = {
+  venueID: string;
+  venueName: string;
+  longitude: number;
+  latitude: number;
+  ratingID: number;
+}
+
 function ArtistAndLocationUpload({
   locationCallback,
   artistCallback
 }: {
-  locationCallback: (string: string) => void,
+  locationCallback: (venue: Venue) => void,
   artistCallback: (artist: Artist) => void;
 }) {
 
@@ -28,6 +43,7 @@ function ArtistAndLocationUpload({
     artists: []
   };
   const [apiResponse, setAPIResponse] = useState(dummyResponse);
+  const [venueOptions, setVenueOptions] = useState([]);
 
 
   const apiURL = "https://musicbrainz.org/ws/2/artist?query="
@@ -36,6 +52,18 @@ function ArtistAndLocationUpload({
 
   var lastRequest = new Date();
   const timeTreshold = 1001;
+
+  useEffect(() => {
+    fetch(environment.backendURL + "/venues", {
+      mode: "cors",
+      credentials: "include",
+    })
+    .then((response) => {
+      return response.json();
+    }).then((responseJSON) => {
+      setVenueOptions(responseJSON);
+    });
+  }, [])
 
   function handlechange(value: string) {
     const currentTime = new Date();
@@ -70,25 +98,33 @@ function ArtistAndLocationUpload({
     }
   }
 
+  function showVenueOptions() {
+    return venueOptions.map((venue: Venue) => {
+      return (
+        <option id={venue.venueID} value={venue.venueName} data-venue={JSON.stringify(venue)}>{venue.venueName}</option>
+      )
+    });
+  }
+
   // De locationCallback moet later gebruikt worden voor
   return (
     <div className={styles.container}>
       <div className={styles.box}>
         <div className={styles.text}>Location:</div>
-        <div className={styles.stars}>
-          {" "}
-          {/*Moet form worden */}
-          <select name="cars" id="cars">
-            <option value="volvo">Volvo</option>
-            <option value="saab">Saab</option>
-            <option value="mercedes">Mercedes</option>
-            <option value="audi">Audi</option>
+        <div className={styles.name}>
+        <select name="venue" id="venue" onChange={(event) => {
+          const selectedOption = event.target.options[event.target.selectedIndex].getAttribute("data-venue");
+          const selectedVenue = selectedOption != null ? JSON.parse(selectedOption) : {venueID: "123", venueName: "Not selected"};
+          locationCallback(selectedVenue);
+        }}>
+            <option key="1" value="" hidden defaultValue="Choose venue" >Choose venue</option>
+            {showVenueOptions()}
           </select>
         </div>
       </div>
       <div className={styles.box}>
         <div className={styles.text}>Artist:</div>
-        <div className={styles.stars}>
+        <div className={styles.name}>
           {selectedArtist.name}
         </div>
       </div>

@@ -33,14 +33,14 @@ export default function Login() {
     // Handle response if necessary
     const data = await response.json()
     if (response.status == 200) {
-      const from = router.query.from || '/';
+      const from = Array.isArray(router.query.from) ? router.query.from[0] : router.query.from || '/';
       router.push(from);
     }
     // ...
   }
 
   function redirectURL() {
-    const from = router.query.from || '/';
+    const from = Array.isArray(router.query.from) ? router.query.from[0] : router.query.from || '/';
     return `/register?from=${encodeURIComponent(from)}`
   }
 

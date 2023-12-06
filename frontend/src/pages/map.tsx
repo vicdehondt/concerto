@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import styles from "@/styles/Home.module.css";
 import SideBar from "../components/SideBar";
 import dynamic from 'next/dynamic';
+import type { Venue } from '@/components/VenueMap'
 import { useEffect, useState } from "react";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -12,14 +13,6 @@ const environment = {
 };
 if (process.env.NODE_ENV == "production") {
   environment.backendURL = "https://api.concerto.dehondt.dev";
-}
-
-type Venue = {
-  venueID: string;
-  venueName: string;
-  longitute: number;
-  lattitude: number;
-  ratingID: number;
 }
 
 type Event = {
@@ -49,7 +42,7 @@ export default function Map() {
     console.log("Unable to retrieve your location.");
   }
 
-  function successFunction(position) {
+  function successFunction(position: GeolocationPosition) {
     setLocation([position.coords.latitude, position.coords.longitude]);
   }
 

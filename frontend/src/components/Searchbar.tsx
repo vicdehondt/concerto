@@ -3,9 +3,10 @@ import styles from "../styles/Searchbar.module.css";
 
 type SearchBarProps = {
   type: "long" | "thick" | "thin";
+  onChange: (query: string) => void
 };
 
-function Searchbar({ type, onChange }: {type: SearchBarProps, onChange: (query: string) => void }) {
+function Searchbar({ type, onChange }: SearchBarProps) {
   return (
     <div
       className={[
