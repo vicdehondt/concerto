@@ -101,7 +101,7 @@ function ArtistAndLocationUpload({
   function showVenueOptions() {
     return venueOptions.map((venue: Venue) => {
       return (
-        <option id={venue.venueID} value={venue.venueName} data-venue={JSON.stringify(venue)}>{venue.venueName}</option>
+        <option key={venue.venueID} value={venue.venueName} data-venue={JSON.stringify(venue)}>{venue.venueName}</option>
       )
     });
   }

@@ -28,6 +28,7 @@ export default function App({ Component, pageProps }: AppProps) {
           router.push(`/login?from=${router.asPath}`);
         }
       });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   function NavbarIfNeeded() {

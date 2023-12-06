@@ -58,7 +58,7 @@ export default function MyMap({venues, longitude, latitude}: {venues: Array<Venu
     venues.map((venue) => {
       fetchVenueDetails(venue.venueID);
     })
-  }, []);
+  }, [venues]);
 
   const venuesWithEvents = venues.filter((venue) => venueDetails[venue.venueID]);
 
