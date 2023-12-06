@@ -114,7 +114,7 @@ export default function Account() {
             {showCheckins(events)}
           </div>
           <div className={styles.pastEventsContainer}>
-
+            Not implemented yet.
           </div>
         </div>
       </main>
