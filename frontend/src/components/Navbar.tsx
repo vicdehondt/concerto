@@ -6,8 +6,18 @@ import Searchbar from "./Searchbar";
 import Notification from "./Notification";
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/router";
-import { X } from 'lucide-react';
+import { X, User } from 'lucide-react';
 
+
+type Profile = {
+  image: string;
+  username: string;
+  userID: number;
+  mail: string;
+  privacyAttendedEvents: string;
+  privacyCheckedInEvents: string;
+  privacyFriends: string;
+}
 
 const environment = {
   backendURL: "http://localhost:8080",
@@ -25,7 +35,11 @@ function Navbar({pictureSource}: {pictureSource: string}) {
 
   const [notifications, setNotifications] = useState([]);
 
+  const [dropdownVisible, setDropdownVisible] = useState(false);
+
   const [loggedIn, setLoggedIn] = useState(false);
+
+  const [profile, setProfile] = useState({userID: 0, image: null});
 
   const notificationButtonRef = useRef<HTMLDivElement>(null);
   const notificationsRef = useRef<HTMLDivElement>(null);
@@ -55,6 +69,20 @@ function Navbar({pictureSource}: {pictureSource: string}) {
         } else if (response.status == 400) {
           setLoggedIn(false)
         }
+      });
+
+    fetch(environment.backendURL + "/profile", {
+      mode: "cors",
+      credentials: "include",
+    })
+      .then((response) => {
+        if (response.status == 200) {
+          return response.json();
+        } else {
+          return {userID: 0, image: null};
+        }})
+      .then((responseJSON) => {
+        setProfile(responseJSON)
       });
   }, []);
 
@@ -108,6 +136,40 @@ function Navbar({pictureSource}: {pictureSource: string}) {
     return `/login?from=${encodeURIComponent(normalURL)}`
   }
 
+  function logOut() {
+    fetch(environment.backendURL + "/logout", {
+      method: 'POST',
+      mode: 'cors',
+      credentials: 'include',
+    })
+    .then((response) => {
+      if (response.status == 200) {
+        router.reload();
+        console.log("Logged out");
+      }
+    });
+  }
+
+  function showAccountImage() {
+    if (profile.userID == 0) {
+      return (
+        <button className={styles.loginButton} onClick={(event) => router.push(redirectURL("/"))}>Log In</button>
+      );
+    } else if (profile.image == null) {
+      return (
+        <Link href={redirectURL("/account")}>
+          <User className={styles.userImage} width={40} height={40} />
+        </Link>
+      );
+    } else {
+      return (
+        <Link href={redirectURL("/account")}>
+          <Image src={pictureSource} width={56} height={56} alt="Profile picture"/>
+        </Link>
+      );
+    }
+  }
+
   return (
     <>
     <nav className={styles.navbar}>
@@ -130,10 +192,16 @@ function Navbar({pictureSource}: {pictureSource: string}) {
           </button>
           {notificationsVisible && getNotifications(notifications)}
         </div>
-        <div className={styles.profilePicture}>
-          <Link href={redirectURL("/account")}>
-            <Image src={pictureSource} width={56} height={56} alt="Profile picture"/>
-          </Link>
+        <div className={styles.accountDropdown}>
+          <div className={styles.profilePicture} onMouseEnter={() => setDropdownVisible(true)} onMouseLeave={() => setDropdownVisible(false)}>
+            {showAccountImage()}
+          </div>
+          {loggedIn && dropdownVisible && (
+            <div className={styles.dropdownContent} onMouseEnter={() => {setDropdownVisible(true);}} onMouseLeave={() => {setDropdownVisible(false);}}>
+              <Link href="/settings">Settings</Link>
+              <button onClick={(event) => logOut()}>Log out</button>
+            </div>
+          )}
         </div>
       </div>
     </nav>
