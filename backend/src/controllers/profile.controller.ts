@@ -3,6 +3,7 @@ import { BaseController } from './base.controller';
 import * as database from '../models/Usermodel';
 import {createMulter} from "../configs/multerConfig"
 import {body, validationResult} from "express-validator"
+const fs = require('fs');
 
 const userImagePath = './public/users';
 
@@ -19,6 +20,11 @@ export class ProfileController extends BaseController {
 			upload.none(),
 			(req: express.Request, res: express.Response) => {
                 this.getProfile(req, res);
+			});
+        this.router.put('/profilepicture', this.requireAuth,
+			upload.single("picture"),
+			(req: express.Request, res: express.Response) => {
+                this.changeProfilePicture(req, res);
 			});
         this.router.put('/description', this.requireAuth,
 			upload.none(),
@@ -60,6 +66,19 @@ export class ProfileController extends BaseController {
 			});
     }
 
+    async changeProfilePicture(req: express.Request, res: express.Response) {
+        const sessiondata = req.session;
+        const user = await database.UserModel.findByPk(sessiondata.userID);
+        const profilepicture = req.file;
+        const picturepath = "http://localhost:8080/users/" + profilepicture.filename;
+        if (user.image) {
+            console.log("Deleting an old profile picture is not implemented yet")
+        }
+        user.image = picturepath;
+        await user.save();
+        res.status(200).json({success: true, message: "profile picture has been changed"});
+    }
+
     async changeDescription(req: express.Request, res: express.Response) {
         const sessiondata = req.session;
         const user = await database.UserModel.findByPk(sessiondata.userID);
@@ -73,7 +92,6 @@ export class ProfileController extends BaseController {
         const user = await database.UserModel.findByPk(sessiondata.userID, {
             attributes: ['image', 'username', 'userID', 'mail', 'privacyAttendedEvents', 'privacyCheckedInEvents', 'privacyFriends', 'description']
         });
-        console.log(user);
         res.status(200).json(user);
     }
 
