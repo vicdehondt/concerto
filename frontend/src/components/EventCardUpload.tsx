@@ -5,10 +5,6 @@ import Tag from "@/components/Tag";
 import Link from "next/link";
 import { ChangeEvent, useState } from "react";
 
-function handleAddToWishlist() {
-  console.log("Need to access back-end for this one!");
-}
-
 function getMonth(month: number) {
   switch (month) {
     case 0:
@@ -146,9 +142,6 @@ function EventCardUpload({ title, location, date, time, price, image }:
           {/* <div>100 &ndash; 200 EUR</div> */}
           <div>{price} EUR</div>
         </div>
-      </div>
-      <div className={styles.addToWishlist} onClick={handleAddToWishlist}>
-        <Image src="/icons/heart.png" width={28} height={28} alt="Add to wishlist" />
       </div>
       <div className={styles.tags}>
         <div className={styles.divider}></div>
