@@ -4,6 +4,7 @@ import EventMarker from "@/components/EventMarker"
 import "leaflet/dist/leaflet.css"
 import "leaflet-defaulticon-compatibility"
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css"
+import { APIKEY}  from "@/secrets/secrets";
 
 const environment = {
     backendURL: "http://localhost:8080",
@@ -72,7 +73,7 @@ export default function MyMap({venues, longitude, latitude}: {venues: Array<Venu
           scrollWheelZoom={true}>
           <TileLayer
               attribution='&copy; <a href="https://stadiamaps.com/" target="_blank">Stadia Maps</a>, &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/about" target="_blank">OpenStreetMap</a> contributors'
-              url="https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png"
+              url={`https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png?api_key=${APIKEY}`}
           />
           {venuesWithEvents.map((venue) => {
             const even = venueDetails[venue.venueID]

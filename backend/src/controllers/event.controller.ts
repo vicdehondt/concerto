@@ -19,10 +19,12 @@ export class EventController extends BaseController {
 	}
 
 	initializeRoutes(): void {
-		this.router.get('/', (req: express.Request, res: express.Response) => {
-			res.set('Access-Control-Allow-Credentials', 'true');
-			this.getAllEvents(req, res);
-		});
+		this.router.get('/',
+			upload.none(),
+			(req: express.Request, res: express.Response) => {
+				res.set('Access-Control-Allow-Credentials', 'true');
+				this.getAllEvents(req, res);
+			});
 		this.router.post("/",
 			upload.fields([{ name: 'banner', maxCount: 1}, { name: 'eventPicture', maxCount: 1}]),
 			[	body("artistID").trim().notEmpty().custom(async value => {
