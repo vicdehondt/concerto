@@ -36,7 +36,24 @@
   background-color: #e8f7ee;
 }
 
-.title {
+.headerBox {
+  display: flex;
+  align-items: center;
+}
+
+.headerBox a {
+  background-color: #0B2027;
+  color: white;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  padding: 10px 15px;
+  border: solid;
+  border-radius: 15px;
+  height: fit-content;
+}
+
+.headerBox h1 {
   padding: 20px;
 }
 

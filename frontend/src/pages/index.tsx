@@ -7,6 +7,7 @@ import SideBar from "../components/SideBar";
 import { Nav } from "react-bootstrap";
 import type { InferGetServerSidePropsType, GetServerSideProps } from "next";
 import { ReactNode, useEffect, useState } from "react";
+import Link from "next/link";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -111,8 +112,9 @@ export default function Home() {
         <div className={[styles.page, styles.homePage].join(" ")}>
           <SideBar type="event" />
           <div className={styles.pageContent}>
-            <div className={styles.title}>
+            <div className={styles.headerBox}>
               <h1>Events this week you may like</h1>
+              <Link href="/map">Map View</Link>
             </div>
             <div className={styles.eventCardContainer}>
               {eventsHTML}
