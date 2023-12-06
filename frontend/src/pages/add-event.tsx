@@ -26,6 +26,14 @@ type Artist = {
   name: string;
 };
 
+type Venue = {
+  venueID: string;
+  venueName: string;
+  longitude: number;
+  latitude: number;
+  ratingID: number;
+};
+
 function getFormattedDate(date: Date) {
   return (
     [date.getFullYear(),
@@ -34,14 +42,10 @@ function getFormattedDate(date: Date) {
   );
 }
 
-function test(date: string) {
-  console.log(new Date())
-}
-
 export default function AddEvent() {
   const router = useRouter();
   const [title, setTitle] = useState("");
-  const [location, setLocation] = useState("");
+  const [location, setLocation] = useState({venueID: "123", venueName: "Not selected"});
   const [time, setTime] = useState("")
   const [date, setDate] = useState(getFormattedDate(new Date()))
   const [selectedArtist, setSelectedArtist] = useState({name: ""})
@@ -54,9 +58,10 @@ export default function AddEvent() {
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     var formData = new FormData(event.currentTarget);
-    formData.append("dateAndTime", concatDateAndTime())
-    formData.append("price", "20")
-    formData.append("artistID", selectedArtist.id)
+    formData.append("dateAndTime", concatDateAndTime());
+    formData.append("price", "20");
+    formData.append("artistID", selectedArtist.id);
+    formData.append("venueID", location.venueID);
     const form_values = Object.fromEntries(formData);
     console.log(form_values);
     const response = await fetch(environment.backendURL + "/events", {
@@ -109,7 +114,7 @@ export default function AddEvent() {
               </div>
             </div>
             <div className={styles.cardPreview}>
-              <EventCardUpload title={title} location="Placeholder" date={date} time={time} price={20} image="/public/photos/Rombout.jpeg" />
+              <EventCardUpload title={title} location={location.venueName} date={date} time={time} price={20} image="/public/photos/Rombout.jpeg" />
             </div>
           </div>
           <div className={styles.artistAndLocationContainer}>

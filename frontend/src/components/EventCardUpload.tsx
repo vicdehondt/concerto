@@ -80,7 +80,7 @@ function EventCardUpload({ title, location, date, time, price, image }:
   function options() {
     return (
       <>
-        <option value={"Afrobeat"}>Afrobeat</option>
+        <option value="Afrobeat">Afrobeat</option>
         <option value="Afropop">Afropop</option>
         <option value="Alternative">Alternative</option>
         <option value="Bigband">Bigband</option>

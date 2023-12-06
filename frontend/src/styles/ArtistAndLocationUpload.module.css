@@ -19,11 +19,21 @@
   text-decoration: underline;
 }
 
-.stars {
+.name {
   margin-left: 20px;
   float: right;
   font-size: x-large;
   font-weight: bold;
+}
+
+.name select {
+  all: unset;
+  border: solid;
+  text-align: center;
+  max-width: 300px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 .searchArtists {
@@ -42,6 +52,5 @@
   border: solid;
   overflow: scroll;
   margin-top: 5px;
-  /* margin-left: 70px; */
   width: fit-content;
 }

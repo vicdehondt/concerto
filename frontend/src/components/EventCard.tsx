@@ -37,8 +37,8 @@ function getMonth(month: number) {
   }
 }
 
-function EventCard({ loggedIn, eventId, title, location, amountAttending, dateAndTime, price, image }:
-  { loggedIn: boolean, eventId: number, title: string, location: string, amountAttending: number, dateAndTime: string, price: number, image: string }) {
+function EventCard({ loggedIn, eventId, title, location, amountAttending, dateAndTime, price, image, genre1, genre2 }:
+  { loggedIn: boolean, eventId: number, title: string, location: string, amountAttending: number, dateAndTime: string, price: number, image: string, genre1: string, genre2: string }) {
 
   const convertedDateAndTime: Array<string> = convertDateAndTime(dateAndTime);
   const date = convertedDateAndTime[0]
@@ -104,8 +104,8 @@ function EventCard({ loggedIn, eventId, title, location, amountAttending, dateAn
       </div>
       <div className={styles.tags}>
         <div className={styles.divider}></div>
-        <Tag text="Pop" />
-        <Tag text="Alternative" />
+        <Tag text={genre1} />
+        <Tag text={genre2} />
       </div>
     </div>
   );
