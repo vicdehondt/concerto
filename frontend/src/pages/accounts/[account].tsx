@@ -24,23 +24,54 @@ type User = {
   privacyFriends: string;
 }
 
+type Event = {
+  eventID: number;
+  title: string;
+  eventPicture: string;
+};
+
 export default function Account() {
   const [user, setUser] = useState({});
+  const [events, setEvents] = useState([]);
 
   const router = useRouter();
-  const id = router.query.account;
+
+  function requestCheckins() {
+    fetch(environment.backendURL + "/users" + `/${user.username}/checkins`).then((response) => {
+      return response.json();
+    }).then((responseJSON) => {
+      console.log(responseJSON)
+      setEvents(responseJSON)
+    });
+  }
+
+  function showCheckins(response: Array<Event>) {
+    if (response && response.length > 0) {
+      return response.map((event: Event) => (
+        <div key={event.eventID}>
+          {event.title}
+        </div>
+      ));
+    } else {
+      return <>hello</>;
+    }
+  }
 
   useEffect(() => {
-    fetch(environment.backendURL + "/users" + `/${id}`, {
-      mode: "cors",
-      credentials: "include",
-    })
-      .then((response) => {
-        return response.json();
+    const id = router.query.account
+    if (id) {
+      fetch(environment.backendURL + "/users" + `/${id}`, {
+        mode: "cors",
+        credentials: "include",
       })
-      .then((responseJSON) => {
-        setUser(responseJSON)
-      });
+        .then((response) => {
+          return response.json();
+        })
+        .then((responseJSON) => {
+          setUser(responseJSON)
+          requestCheckins();
+        });
+    }
   }, []);
   return (
     <>
@@ -56,7 +87,7 @@ export default function Account() {
             <Biography source={user.image} username={user.username} />
           </div>
           <div className={styles.attendedEventsContainer}>
-            test
+            {showCheckins(events)}
           </div>
         </div>
       </main>
