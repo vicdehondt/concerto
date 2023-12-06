@@ -1,4 +1,4 @@
-import { DataTypes, Op } from 'sequelize';
+import { DataTypes} from 'sequelize';
 import {sequelize} from '../configs/sequelizeConfig'
 import { EventModel } from './Eventmodel';
 import { UserModel } from './Usermodel';

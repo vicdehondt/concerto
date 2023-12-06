@@ -47,7 +47,7 @@ export default function Account() {
   const router = useRouter();
 
   function requestCheckins(user: User) {
-    fetch(environment.backendURL + "/users" + `/${user.username}/checkins`).then((response) => {
+    fetch(environment.backendURL + "/users" + `/${user.userID}/checkins`).then((response) => {
       if (response.status == 200) {
         return response.json();
       } else {
