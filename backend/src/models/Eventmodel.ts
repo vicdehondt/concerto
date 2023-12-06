@@ -1,7 +1,38 @@
-import { DataTypes, Op } from 'sequelize';
+import { ARRAY, DataTypes, Op } from 'sequelize';
 import {sequelize} from '../configs/sequelizeConfig'
-import { Friend } from './Usermodel';
-const fs = require('fs');
+import { Rating } from './Ratingmodel';
+const axios = require('axios');
+
+export const Artist = sequelize.define('Artist', {
+  artistID: {
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
+      allowNull: false,
+      primaryKey: true,
+    },
+  name: {
+      type: DataTypes.STRING,
+      allowNull: false
+  },
+  type: {
+      type: DataTypes.STRING,
+      allowNull: false
+  }
+});
+
+Artist.hasOne(Rating, {
+  foreignKey: {
+      name: 'entityID',
+      allowNull: false
+  }
+});
+Rating.hasOne(Artist, {
+  foreignKey: {
+      name: 'ratingID',
+  }
+});
+
+export const genres = DataTypes.ENUM('pop', 'rock', 'metal', 'country')
 
 export const EventModel = sequelize.define('Event', {
   eventID: {
@@ -43,6 +74,14 @@ export const EventModel = sequelize.define('Event', {
     type: DataTypes.STRING,
     allowNull: false,
   },
+  baseGenre: {
+    type: genres,
+    allowNull: false,
+  },
+  secondGenre: {
+    type: genres,
+    allowNull: false
+  },
   banner: {
     type: DataTypes.STRING,
     allowNull: false
@@ -54,19 +93,81 @@ export const EventModel = sequelize.define('Event', {
     tableName: 'Events'
 });
 
-export async function CreateEvent(title, description, date, price, doors, main, support, bannerpath, picturepath) {
+Artist.hasMany(EventModel, {
+  foreignKey: {
+    name: 'artistID',
+    allowNull: false
+  }
+});
+
+EventModel.belongsTo(Artist, {
+  foreignKey: 'artistID'
+});
+
+var lastRequest = new Date();
+const timeTreshold = 1000; // Musicbrainz API has limit of maximum 1 request per second.
+
+export async function createArtist(id) {
+  const currentTime = new Date();
+  if ((currentTime.getTime() - lastRequest.getTime()) < timeTreshold) {
+    console.log("Too many requests to musicbrainz!!!")
+    return false;
+  } else {
+    lastRequest = new Date();
+    const musicBrainzApiUrl = `http://musicbrainz.org/ws/2/artist/${id}?fmt=json`;
+    try {
+      const response = await axios.get(musicBrainzApiUrl);
+      const data = await response.data
+      const result = await Artist.create({
+        name: data.name,
+        artistID: data.id,
+        type: data.type
+      });
+      const rating = await Rating.create({
+        entityType: 'artist',
+        entityID: result.artistID,
+      });
+      result.ratingID = rating.ratingID;
+      result.save();
+      return true;
+    }
+    catch (err) {
+      console.log("Error thrown from musicbrainz API. Often because the artist ID is wrong!")
+      return false;
+    }
+  }
+}
+
+export async function retrieveArtist(id) {
+  const result = await Artist.findByPk(id, {
+    attributes: {
+        exclude: ['createdAt', 'updatedAt']
+    },
+    include: {
+        model: Rating,
+        attributes: ['score', 'amountOfReviews']
+    }
+  }); return result;
+}
+
+export async function CreateEvent(artistID, venueID, title, description, date, price, doors, main, support, genre1, genre2, bannerpath, eventPicturePath) {
   try {
     const Event = await EventModel.create({
+      artistID: artistID,
+      venueID: venueID,
       title: title,
       description: description,
       dateAndTime: date,
       price: price,
       banner: bannerpath,
-      eventPicture: picturepath,
+      eventPicture: eventPicturePath,
       doors: doors,
       main: main,
-      support: support
+      support: support,
+      baseGenre: genre1,
+      secondGenre: genre2,
     });
+    return Event;
   } catch (error) {
     console.error("There was an error creating an event: ", error);
   }
@@ -75,7 +176,7 @@ export async function CreateEvent(title, description, date, price, doors, main, 
 export async function RetrieveAllEvents(): Promise<typeof EventModel>  {
   const events = await EventModel.findAll({
     attributes: {
-      exclude: ['createdAt', 'updatedAt'],
+      exclude: ['createdAt', 'updatedAt']
     }
   });
   return events;
@@ -84,10 +185,10 @@ export async function RetrieveAllEvents(): Promise<typeof EventModel>  {
 export async function RetrieveEvent(ID): Promise<typeof EventModel> {
   try {
     const Event = await EventModel.findOne({
-    attributes: {
-      exclude: ['createdAt', 'updatedAt'],
-    },
-    where: {eventID: ID},
+      attributes: {
+        exclude: ['createdAt', 'updatedAt']
+      },
+      where: {eventID: ID},
     });
     return Event;
   } catch (error) {

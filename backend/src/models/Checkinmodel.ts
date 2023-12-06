@@ -1,7 +1,7 @@
 import { DataTypes, Op } from 'sequelize';
 import {sequelize} from '../configs/sequelizeConfig'
 import { RetrieveUser, UserModel } from './Usermodel';
-import { EventModel, RetrieveEvent} from './Eventmodel';
+import { EventModel } from './Eventmodel';
 
 const CheckedInUsers = sequelize.define('CheckedInUser', {
     checkinID: {
@@ -44,38 +44,42 @@ EventModel.belongsToMany(UserModel, {
     foreignKey: 'eventID'
 });
 
-// CheckedInUsers.belongsTo(UserModel, { foreignKey: 'userID' });
-// CheckedInUsers.belongsTo(EventModel, { foreignKey: 'eventID' });
+CheckedInUsers.belongsTo(UserModel, { foreignKey: 'userID' });
+CheckedInUsers.belongsTo(EventModel, { foreignKey: 'eventID' });
 
-async function retrieveCheckIn(user, event) {
-    const result = CheckedInUsers.findOne({
+export async function retrieveCheckIn(user, event) {
+    const result = await CheckedInUsers.findOne({
         where: {
             [Op.and]: [
                 { userID: user },
-                { eventID: event }
+                { eventID: event.eventID }
             ]
         }
     });
     return result;
 }
 
-export async function userCheckIn(userID, eventID): Promise<boolean> {
-    const checkIn = await retrieveCheckIn(userID, eventID);
+export async function userCheckIn(userID, event): Promise<boolean> {
+    const checkIn = await retrieveCheckIn(userID, event);
     if (checkIn == null) {
         await CheckedInUsers.create({
             userID: userID,
-            eventID: eventID
+            eventID: event.eventID
         });
+        event.checkedIn = event.checkedIn + 1;
+        await event.save();
         return true;
     } else {
         return false;
     }
 }
 
-export async function userCheckOut(userID, eventID): Promise<boolean> {
-    const checkIn = await retrieveCheckIn(userID, eventID);
+export async function userCheckOut(userID, event): Promise<boolean> {
+    const checkIn = await retrieveCheckIn(userID, event.eventID);
     if (checkIn != null) {
         await checkIn.destroy();
+        event.checkedIn = event.checkedIn - 1;
+        await event.save();
         return true;
     } else {
         return false;
@@ -87,7 +91,7 @@ export async function allCheckedInUsers(eventid) {
         where: {
             eventID: eventid,
         },
-    }); console.log(users);
+    });
     const result = await Promise.all(users.map(async checkin => {
         const user = await UserModel.findOne({
             attributes: ['userID', 'username', 'image'],
