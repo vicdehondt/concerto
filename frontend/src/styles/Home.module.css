@@ -36,6 +36,10 @@
   background-color: #e8f7ee;
 }
 
+.title {
+  padding: 20px;
+}
+
 .headerBox {
   display: flex;
   align-items: center;
