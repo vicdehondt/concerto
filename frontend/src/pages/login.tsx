@@ -59,7 +59,7 @@ export default function Login() {
             <input className={[styles.registerInput, styles.usernameInput].join(" ")} type="text" name='username' id='username' required placeholder="Username" />
             <input className={[styles.registerInput, styles.passwordInput].join(" ")} type="password" name='password' id='password' required placeholder="Password" />
             <button className={[styles.registerInput, styles.submitButton].join(" ")} type='submit'>Submit</button>
-            <Link href={redirectURL()}>Don't have an account yet?</Link>
+            <Link href={redirectURL()}>Don&apos;t have an account yet?</Link>
           </form>
         </div>
       </main>
