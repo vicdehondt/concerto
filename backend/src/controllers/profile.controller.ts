@@ -2,6 +2,7 @@ import * as express from 'express';
 import { BaseController } from './base.controller';
 import * as database from '../models/Usermodel';
 import {createMulter} from "../configs/multerConfig"
+import {body, validationResult} from "express-validator"
 
 const userImagePath = './public/users';
 
@@ -18,6 +19,14 @@ export class ProfileController extends BaseController {
 			upload.none(),
 			(req: express.Request, res: express.Response) => {
                 this.getProfile(req, res);
+			});
+        this.router.put('/description', this.requireAuth,
+			upload.none(),
+            [
+                body("description").trim().notEmpty(),
+            ],
+			(req: express.Request, res: express.Response) => {
+                this.changeDescription(req, res);
 			});
         this.router.get('/settings/privacy', this.requireAuth,
 			upload.none(),
@@ -51,11 +60,20 @@ export class ProfileController extends BaseController {
 			});
     }
 
+    async changeDescription(req: express.Request, res: express.Response) {
+        const sessiondata = req.session;
+        const user = await database.UserModel.findByPk(sessiondata.userID);
+        user.description = req.body.description;
+        await user.save();
+        res.status(200).json({success: true, message: "Description has been changed "});
+    }
+
     async getProfile(req: express.Request, res: express.Response) {
         const sessiondata = req.session;
         const user = await database.UserModel.findByPk(sessiondata.userID, {
-            attributes: ['image', 'username', 'userID', 'mail', 'privacyAttendedEvents', 'privacyCheckedInEvents', 'privacyFriends']
+            attributes: ['image', 'username', 'userID', 'mail', 'privacyAttendedEvents', 'privacyCheckedInEvents', 'privacyFriends', 'description']
         });
+        console.log(user);
         res.status(200).json(user);
     }
 
