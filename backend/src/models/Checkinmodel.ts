@@ -3,7 +3,7 @@ import {sequelize} from '../configs/sequelizeConfig'
 import { RetrieveUser, UserModel } from './Usermodel';
 import { EventModel } from './Eventmodel';
 
-const CheckedInUsers = sequelize.define('CheckedInUser', {
+export const CheckedInUsers = sequelize.define('CheckedInUser', {
     checkinID: {
         type: DataTypes.INTEGER,
         primaryKey: true,
@@ -34,13 +34,11 @@ const CheckedInUsers = sequelize.define('CheckedInUser', {
 
 UserModel.belongsToMany(EventModel, {
     through: CheckedInUsers,
-    onDelete: 'CASCADE',
     foreignKey: 'userID'
 });
 
 EventModel.belongsToMany(UserModel, {
     through: CheckedInUsers,
-    onDelete: 'CASCADE',
     foreignKey: 'eventID'
 });
 
