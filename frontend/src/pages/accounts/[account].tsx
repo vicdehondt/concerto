@@ -23,6 +23,7 @@ type User = {
   privacyAttendedEvents: string;
   privacyCheckedInEvents: string;
   privacyFriends: string;
+  description: string;
 }
 
 type Event = {
@@ -40,6 +41,7 @@ export default function Account() {
     privacyAttendedEvents: "",
     privacyCheckedInEvents: "",
     privacyFriends: "",
+    description: "",
   });
   const [events, setEvents] = useState([]);
   const [checkedInPrivacy, setCheckedInPrivacy] = useState(true)
@@ -106,13 +108,13 @@ export default function Account() {
       <main className={`${styles.main} ${inter.className}`}>
         <div className={[styles.page, styles.accountPage].join(" ")}>
           <div className={styles.biographyContainer}>
-            <Biography source={user.image} username={user.username} />
+            <Biography source={user.image} username={user.username} description={user.description} />
           </div>
           <div className={styles.attendedEventsContainer}>
             {showCheckins(events)}
           </div>
           <div className={styles.pastEventsContainer}>
-
+            Not implemented yet.
           </div>
         </div>
       </main>

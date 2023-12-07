@@ -32,6 +32,11 @@
     background-color: black;
 }
 
+.profilePicture img {
+    border-radius: 50%;
+    margin-top: 5px;
+}
+
 .username {
     margin-top: 12px;
 }
