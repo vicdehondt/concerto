@@ -34,10 +34,15 @@ export default function App({ Component, pageProps }: AppProps) {
       credentials: "include",
     })
       .then((response) => {
-        if ((response.status == 400) && (router.asPath != "/")) {
-          router.push("/login")
+        const notHomePage = router.asPath != "/";
+        const notRegisterPage = !router.asPath.includes("/register");
+        const notLoginPage = !router.asPath.includes("/login");
+        if ((response.status == 400) && notHomePage && notRegisterPage && notLoginPage) {
+          const from = router.query.from || '/';
+          router.push(`/login?from=${router.asPath}`);
         }
       });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   function NavbarOrHamburgerIfNeeded() {

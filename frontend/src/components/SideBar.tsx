@@ -26,7 +26,7 @@ function SideBarContent({ type }: SideBarProps) {
       <div className={styles.filters}>
         <div className={styles.locationFilter}>
           <div className={styles.location}>Location</div>
-          <Searchbar type="thin" />
+          <Searchbar type="thin" onChange={(event) => console.log("Not implemented yet")}/>
         </div>
         <div className={styles.date}>
           <form>
@@ -56,7 +56,7 @@ function SideBarContent({ type }: SideBarProps) {
 function SideBar({ type }: SideBarProps) {
   return (
     <div className={styles.sidebar}>
-      <Searchbar type="thick" />
+      <Searchbar type="thick" onChange={(event) => console.log("Not implemented yet.")} />
       <SideBarContent type={type} />
     </div>
   );

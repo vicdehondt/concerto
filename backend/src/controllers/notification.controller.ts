@@ -3,13 +3,10 @@ import { BaseController } from './base.controller';
 import * as database from '../models/Usermodel';
 import * as notif from "../models/Notificationmodel"
 import {createMulter} from "../configs/multerConfig"
-import { getCorsConfiguration } from '../configs/corsConfig';
 import { notificationEmitter, newNotification } from "../configs/emitterConfig";
 const fs = require('fs');
 
 const userImagePath = './public/users';
-
-const cors = getCorsConfiguration();
 
 const upload = createMulter(userImagePath);
 
@@ -20,22 +17,22 @@ export class NotificationController extends BaseController {
     }
 
     initializeRoutes(): void {
-        this.router.get('/subscribe', cors, this.requireAuth,
+        this.router.get('/subscribe', this.requireAuth,
 			upload.none(),
 			(req: express.Request, res: express.Response) => {
 				this.createSSE(req, res);
 			});
-		this.router.get('/', cors, this.requireAuth,
+		this.router.get('/', this.requireAuth,
 			upload.none(),
 			(req: express.Request, res: express.Response) => {
 				this.getNotifications(req, res);
 			});
-        this.router.post('/:notificationid/read', cors, this.requireAuth,
+        this.router.post('/:notificationid/read', this.requireAuth,
 			upload.none(),
 			(req: express.Request, res: express.Response) => {
 				this.markNotificationAsRead(req, res);
 			});
-        this.router.delete('/:notificationid', cors, this.requireAuth,
+        this.router.post('/:notificationid', this.requireAuth,
 			upload.none(),
 			(req: express.Request, res: express.Response) => {
 				this.deleteNotification(req, res);
@@ -50,10 +47,13 @@ export class NotificationController extends BaseController {
             'Cache-Control': 'no-cache',
         });
 
+        console.log("Subscribed to SSE");
+
         res.write('event: connected\n');
         res.write(`data: You are now subscribed!\n\n`);
 
         notificationEmitter.on(newNotification, (notification) => {
+            console.log("New SSE event sent");
             res.write('event: notification\n');
             res.write(`data: ${notification}\n\n`);
         });

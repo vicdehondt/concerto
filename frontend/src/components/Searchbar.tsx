@@ -3,9 +3,10 @@ import styles from "../styles/Searchbar.module.css";
 
 type SearchBarProps = {
   type: "long" | "thick" | "thin";
+  onChange: (query: string) => void
 };
 
-function Searchbar({ type }: SearchBarProps) {
+function Searchbar({ type, onChange }: SearchBarProps) {
   return (
     <div
       className={[
@@ -31,7 +32,7 @@ function Searchbar({ type }: SearchBarProps) {
             type == "thin" ? styles.thinBorderSearchBar : "",
           ].join(" ")}
         >
-          Search...
+          <input type="text" placeholder="Search..." onChange={(event) => onChange(event.target.value)} />
         </div>
       </div>
     </div>

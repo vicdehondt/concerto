@@ -2,7 +2,7 @@ import { useState } from "react";
 import styles from "../styles/Rating.module.css";
 import { Star } from 'lucide-react';
 
-function Rating() {
+function Rating({score}: {score: number}) {
 
   const [locationStars, setLocationStars] = useState(Array.from({ length: 5 }).map((_, index) => (
     <Star key={index} onClick={() => locationStarClicked(index)} size={35} />
@@ -26,6 +26,19 @@ function Rating() {
     setArtistStars(newArray);
   }
 
+  function showScore() {
+    if ((score != null) && (score > 0.5)) {
+      const roundedScore = Math.round(score);
+      return (Array.from({ length: 5 }).map((_, i) => (
+        <Star key={i} size={35} fill={i <= (roundedScore - 1) ? "yellow" : "none"} />
+      )));
+    } else {
+      return (Array.from({ length: 5 }).map((_, i) => (
+        <Star key={i} size={35} fill={"none"} />
+      )));
+    }
+  }
+
   return (
     <div className={styles.rateBox}>
       <div className={styles.box}>
@@ -41,7 +54,8 @@ function Rating() {
           Artist
         </div>
         <div className={styles.stars}>
-          {artistStars}
+          {showScore()}
+          {/* {artistStars} */}
         </div>
       </div>
     </div>

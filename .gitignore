@@ -3,6 +3,9 @@
 .AppleDouble
 .LSOverride
 
+# Ignore mailConfig.ts file, sensitive information
+mailConfig.ts
+
 # Icon must end with two \r
 Icon
 
@@ -24,3 +27,4 @@ Icon
 Network Trash Folder
 Temporary Items
 .apdisk
+frontend/src/secrets/secrets.tsx

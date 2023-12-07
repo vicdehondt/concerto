@@ -1,4 +1,5 @@
 import * as express from 'express';
+import { RetrieveUser } from '../models/Usermodel';
 const fs = require('fs');
 
 export abstract class BaseController {
@@ -17,6 +18,17 @@ export abstract class BaseController {
 			next()
 		} else {
 			res.status(401).json({ error: "Unauthorized access" });
+		}
+	}
+
+    async checkUserExists(req: express.Request, res: express.Response, next) {
+		const userid = req.params.userid;
+		const user = await RetrieveUser('userID', userid);
+		if (user != null) {
+			req.body.user = user;
+			next();
+		} else {
+			res.status(400).json({ error: `The user with userID ${ userid } is not found`});
 		}
 	}
 

@@ -6,7 +6,8 @@ import EventCard from "../components/EventCard";
 import SideBar from "../components/SideBar";
 import { Nav } from "react-bootstrap";
 import type { InferGetServerSidePropsType, GetServerSideProps } from "next";
-import { useEffect, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
+import Link from "next/link";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -23,31 +24,57 @@ type Event = {
   description: string;
   checkedIn: number;
   dateAndTime: string;
+  support: string;
+  doors: string;
+  main: string;
+  baseGenre: string;
+  secondGenre: string;
   price: number;
+  banner: string;
   eventPicture: string;
+  artistID: string;
+  venueID: string;
 };
 
 export default function Home() {
   const [loggedIn, setLoggedIn] = useState(false);
   const [events, setEvents] = useState([]);
+  const [eventsHTML, setEventsHTML] = useState<ReactNode[]>([]);
 
-  function showEvents(response: Array<Event>) {
-    return response.map((event: Event) => {
-      return (
-        <EventCard
-          loggedIn={loggedIn}
-          key={event.eventID}
-          eventId={event.eventID}
-          title={event.title}
-          location="Placeholder"
-          amountAttending={event.checkedIn}
-          dateAndTime={event.dateAndTime}
-          price={event.price}
-          image={event.eventPicture}
-        />
+  useEffect(() => {
+    const fetchData = async () => {
+      const eventsArray = await Promise.all(
+        events.map(async (event: Event) => {
+          const response = await fetch(
+            environment.backendURL + `/venues/${event.venueID}`,
+            {
+              mode: "cors",
+              credentials: "include",
+            }
+          );
+          const jsonResponse = await response.json();
+          return (
+            <EventCard
+              loggedIn={loggedIn}
+              key={event.eventID}
+              eventId={event.eventID}
+              title={event.title}
+              location={jsonResponse.venueName}
+              amountAttending={event.checkedIn}
+              dateAndTime={event.dateAndTime}
+              price={event.price}
+              image={event.eventPicture}
+              genre1={event.baseGenre}
+              genre2={event.secondGenre}
+            />
+          );
+        })
       );
-    });
-  }
+
+      setEventsHTML(eventsArray);
+    };
+    fetchData();
+  }, [events, loggedIn]);
 
   useEffect(() => {
     fetch(environment.backendURL + "/events", {
@@ -71,7 +98,7 @@ export default function Home() {
           setLoggedIn(false)
         }
       });
-}, []);
+  }, []);
 
   return (
     <>
@@ -85,11 +112,12 @@ export default function Home() {
         <div className={[styles.page, styles.homePage].join(" ")}>
           <SideBar type="event" />
           <div className={styles.pageContent}>
-            <div className={styles.title}>
+            <div className={styles.headerBox}>
               <h1>Events this week you may like</h1>
+              <Link href="/map">Map View</Link>
             </div>
             <div className={styles.eventCardContainer}>
-              {showEvents(events)}
+              {eventsHTML}
             </div>
           </div>
         </div>

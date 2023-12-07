@@ -4,11 +4,8 @@ import styles from "@/styles/Home.module.css";
 import { useRouter } from "next/router";
 import FriendInvites from "@/components/FriendInvite";
 import BannerUpload from "@/components/BannerUpload";
-import type { InferGetServerSidePropsType, GetServerSideProps } from "next";
 import { useState } from "react";
 import { FormEvent } from "react";
-import { title } from "process";
-import Image from 'next/image';
 import Rating from '@/components/Rating'
 import TimetableUpload from "@/components/TimetableUpload";
 import ArtistAndLocationUpload from "@/components/ArtistAndLocationUpload";
@@ -23,6 +20,20 @@ if (process.env.NODE_ENV == "production") {
   environment.backendURL = "https://api.concerto.dehondt.dev";
 }
 
+type Artist = {
+  id: string;
+  type: string;
+  name: string;
+};
+
+type Venue = {
+  venueID: string;
+  venueName: string;
+  longitude: number;
+  latitude: number;
+  ratingID: number;
+};
+
 function getFormattedDate(date: Date) {
   return (
     [date.getFullYear(),
@@ -31,16 +42,13 @@ function getFormattedDate(date: Date) {
   );
 }
 
-function test(date: string) {
-  console.log(new Date())
-}
-
 export default function AddEvent() {
   const router = useRouter();
   const [title, setTitle] = useState("");
-  const [location, setLocation] = useState("");
+  const [location, setLocation] = useState({venueID: "123", venueName: "Not selected"});
   const [time, setTime] = useState("")
   const [date, setDate] = useState(getFormattedDate(new Date()))
+  const [selectedArtist, setSelectedArtist] = useState({name: "", id: ""})
 
   function concatDateAndTime() {
     const dateAndTime = date + "T" + time;
@@ -50,10 +58,10 @@ export default function AddEvent() {
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     var formData = new FormData(event.currentTarget);
-    formData.append("dateAndTime", concatDateAndTime())
-    formData.append("price", "20")
-    const form_values = Object.fromEntries(formData);
-    console.log(form_values);
+    formData.append("dateAndTime", concatDateAndTime());
+    formData.append("price", "20");
+    formData.append("artistID", selectedArtist.id);
+    formData.append("venueID", location.venueID);
     const response = await fetch(environment.backendURL + "/events", {
       method: "POST",
       body: formData,
@@ -64,7 +72,6 @@ export default function AddEvent() {
     // Handle response if necessary
     const data = await response.json();
     if (response.status == 200) {
-      console.log(response);
       router.push("/")
     }
   }
@@ -104,11 +111,11 @@ export default function AddEvent() {
               </div>
             </div>
             <div className={styles.cardPreview}>
-              <EventCardUpload title={title} location="Placeholder" date={date} time={time} price={20} image="/public/photos/Rombout.jpeg" />
+              <EventCardUpload title={title} location={location.venueName} date={date} time={time} price={20} image="/public/photos/Rombout.jpeg" />
             </div>
           </div>
           <div className={styles.artistAndLocationContainer}>
-            <ArtistAndLocationUpload locationCallback={(string: string) => setLocation(string)} />
+            <ArtistAndLocationUpload locationCallback={(venue: Venue) => setLocation(venue)} artistCallback={(artist: Artist) => setSelectedArtist(artist)} />
           </div>
           <div className={styles.friendInviteContainer}>
             <FriendInvites />

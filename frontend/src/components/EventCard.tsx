@@ -4,10 +4,6 @@ import styles from "@/styles/EventCard.module.css";
 import Tag from "@/components/Tag";
 import Link from "next/link";
 
-function handleAddToWishlist() {
-  console.log("Need to access back-end for this one!");
-}
-
 function getMonth(month: number) {
   switch (month) {
     case 0:
@@ -37,8 +33,8 @@ function getMonth(month: number) {
   }
 }
 
-function EventCard({ loggedIn, eventId, title, location, amountAttending, dateAndTime, price, image }:
-  { loggedIn: boolean, eventId: number, title: string, location: string, amountAttending: number, dateAndTime: string, price: number, image: string }) {
+function EventCard({ loggedIn, eventId, title, location, amountAttending, dateAndTime, price, image, genre1, genre2 }:
+  { loggedIn: boolean, eventId: number, title: string, location: string, amountAttending: number, dateAndTime: string, price: number, image: string, genre1: string, genre2: string }) {
 
   const convertedDateAndTime: Array<string> = convertDateAndTime(dateAndTime);
   const date = convertedDateAndTime[0]
@@ -99,13 +95,10 @@ function EventCard({ loggedIn, eventId, title, location, amountAttending, dateAn
           <div>{price} EUR</div>
         </div>
       </div>
-      <div className={styles.addToWishlist} onClick={handleAddToWishlist}>
-        <Image src="/icons/heart.png" width={28} height={28} alt="Add to wishlist" />
-      </div>
       <div className={styles.tags}>
         <div className={styles.divider}></div>
-        <Tag text="Pop" />
-        <Tag text="Alternative" />
+        <Tag text={genre1} />
+        <Tag text={genre2} />
       </div>
     </div>
   );

@@ -5,7 +5,7 @@ export const environment = {
     domain: "localhost",
 }
 if (process.env.NODE_ENV == "production") {
-    environment.frontendURL = "http://concerto.dehondt.dev"
+    environment.frontendURL = "https://concerto.dehondt.dev"
     environment.domain = "concerto.dehondt.dev"
 }
 const corsOptions = {

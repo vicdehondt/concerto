@@ -1,7 +1,7 @@
 import { DataTypes, Op } from 'sequelize';
 import {sequelize} from '../configs/sequelizeConfig'
 import { RetrieveUser, UserModel } from './Usermodel';
-import { EventModel, RetrieveEvent} from './Eventmodel';
+import { EventModel } from './Eventmodel';
 
 const CheckedInUsers = sequelize.define('CheckedInUser', {
     checkinID: {
@@ -44,8 +44,8 @@ EventModel.belongsToMany(UserModel, {
     foreignKey: 'eventID'
 });
 
-// CheckedInUsers.belongsTo(UserModel, { foreignKey: 'userID' });
-// CheckedInUsers.belongsTo(EventModel, { foreignKey: 'eventID' });
+CheckedInUsers.belongsTo(UserModel, { foreignKey: 'userID' });
+CheckedInUsers.belongsTo(EventModel, { foreignKey: 'eventID' });
 
 export async function retrieveCheckIn(user, event) {
     const result = await CheckedInUsers.findOne({
@@ -91,7 +91,7 @@ export async function allCheckedInUsers(eventid) {
         where: {
             eventID: eventid,
         },
-    }); console.log(users);
+    });
     const result = await Promise.all(users.map(async checkin => {
         const user = await UserModel.findOne({
             attributes: ['userID', 'username', 'image'],

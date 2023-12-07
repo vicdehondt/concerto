@@ -4,8 +4,11 @@ import { EventController } from "./controllers/event.controller";
 import { UserController } from './controllers/user.controller';
 import { SessionController } from './controllers/session.controller';
 import { FriendController } from './controllers/friend.controller';
+import { VenueController } from './controllers/venue.controller';
 import { ArtistController } from './controllers/artist.controller';
 import { NotificationController } from './controllers/notification.controller';
+import { ProfileController } from './controllers/profile.controller';
+import { WishlistController } from './controllers/wishlist.controller';
 import { getCorsConfiguration, environment } from './configs/corsConfig';
 import { synchronize } from './configs/sequelizeConfig';
 const session = require("express-session");
@@ -26,6 +29,7 @@ export class App {
 
     constructor() {
         this.app = express();
+        this.app.use(cors);
         this.app.use((req, res, next) => {
             res.header('Access-Control-Allow-Origin', environment.frontendURL);
             res.header('Access-Control-Allow-Credentials', true);
@@ -63,8 +67,11 @@ export class App {
         this.addController(new SessionController());
         this.addController(new FriendController());
         this.addController(new SearchController());
+        this.addController(new VenueController());
         this.addController(new ArtistController());
         this.addController(new NotificationController());
+        this.addController(new ProfileController());
+        this.addController(new WishlistController());
         // We link the router of each controller to our server
         this.controllers.forEach(controller => {
             this.app.use(`${this.path}${controller.path}`, controller.router);

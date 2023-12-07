@@ -5,10 +5,6 @@ import Tag from "@/components/Tag";
 import Link from "next/link";
 import { ChangeEvent, useState } from "react";
 
-function handleAddToWishlist() {
-  console.log("Need to access back-end for this one!");
-}
-
 function getMonth(month: number) {
   switch (month) {
     case 0:
@@ -77,6 +73,37 @@ function EventCardUpload({ title, location, date, time, price, image }:
     }
   }
 
+  function options() {
+    return (
+      <>
+        <option value="Afrobeat">Afrobeat</option>
+        <option value="Afropop">Afropop</option>
+        <option value="Alternative">Alternative</option>
+        <option value="Bigband">Bigband</option>
+        <option value="Blues">Blues</option>
+        <option value="Classical">Classical</option>
+        <option value="Comedy">Comedy</option>
+        <option value="Country">Country</option>
+        <option value="Dance">Dance</option>
+        <option value="Electronic">Electronic</option>
+        <option value="Folk">Folk</option>
+        <option value="Hiphop/Rap">Hiphop/Rap</option>
+        <option value="J-Pop">J-Pop</option>
+        <option value="Jazz">Jazz</option>
+        <option value="K-Pop">K-Pop</option>
+        <option value="Latin">Latin</option>
+        <option value="Metal">Metal</option>
+        <option value="New Age">New Age</option>
+        <option value="Pop">Pop</option>
+        <option value="Punk">Punk</option>
+        <option value="Reggae">Reggae</option>
+        <option value="Rock">Rock</option>
+        <option value="Singer-songwriter">Singer-songwriter</option>
+        <option value="Soundtrack">Soundtrack</option>
+      </>
+    );
+  }
+
   return (
     <div className={styles.eventCard}>
       <div className={styles.eventPicture}>
@@ -116,13 +143,18 @@ function EventCardUpload({ title, location, date, time, price, image }:
           <div>{price} EUR</div>
         </div>
       </div>
-      <div className={styles.addToWishlist} onClick={handleAddToWishlist}>
-        <Image src="/icons/heart.png" width={28} height={28} alt="Add to wishlist" />
-      </div>
       <div className={styles.tags}>
         <div className={styles.divider}></div>
-        <Tag text="Pop" />
-        <Tag text="Alternative" />
+        <div className={styles.tag}>
+          <select name="mainGenre" id="baseGenre">
+            {options()}
+          </select>
+        </div>
+        <div className={styles.tag}>
+          <select name="secondGenre" id="secondGenre">
+            {options()}
+          </select>
+        </div>
       </div>
     </div>
   );
