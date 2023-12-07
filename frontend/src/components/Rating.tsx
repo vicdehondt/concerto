@@ -1,8 +1,9 @@
 import { useState } from "react";
 import styles from "../styles/Rating.module.css";
 import { Star } from 'lucide-react';
+import Link from "next/link";
 
-function Rating({artistScore, venueScore}: {artistScore: number, venueScore: number}) {
+function Rating({artistScore, venueScore, artist, venue}: {artistScore: number, venueScore: number, artist: string, venue: string}) {
 
   const [locationStars, setLocationStars] = useState(Array.from({ length: 5 }).map((_, index) => (
     <Star key={index} onClick={() => locationStarClicked(index)} size={35} />
@@ -41,22 +42,22 @@ function Rating({artistScore, venueScore}: {artistScore: number, venueScore: num
 
   return (
     <div className={styles.rateBox}>
-      <div className={styles.box}>
+      <Link href={`/ratings/venues/${venue}`} className={styles.box}>
         <div className={styles.text}>
           Location
         </div>
         <div className={styles.stars}>
           {showScore(venueScore)}
         </div>
-      </div>
-      <div className={styles.box}>
+      </Link>
+      <Link href={`/ratings/artists/${artist}`} className={styles.box}>
         <div className={styles.text}>
           Artist
         </div>
         <div className={styles.stars}>
           {showScore(artistScore)}
         </div>
-      </div>
+      </Link>
     </div>
   )
 }

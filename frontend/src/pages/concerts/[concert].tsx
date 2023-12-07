@@ -155,7 +155,7 @@ export default function Concert() {
             </div>
           </div>
           <div className={styles.ratingContainer}>
-            <Rating artistScore={artistScore} venueScore={venueScore} />
+            <Rating artistScore={artistScore} venueScore={venueScore} artist={concert.artistID} venue={concert.venueID} />
           </div>
           <div className={styles.friendInviteContainer}>
             <FriendInvites />
