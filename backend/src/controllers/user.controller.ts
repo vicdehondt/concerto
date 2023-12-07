@@ -26,28 +26,17 @@ export class UserController extends BaseController {
 			(req: express.Request, res: express.Response) => {
 				this.deleteUser(req, res);
 			});
-		this.router.get('/:username/checkins', this.requireAuth, this.checkUserExists,
+		this.router.get('/:userid/checkins', this.requireAuth, this.checkUserExists,
 			upload.none(),
 			(req: express.Request, res: express.Response) => {
 				this.getCheckIns(req, res);
 			});
-		this.router.get('/:username/friends', this.requireAuth, this.checkUserExists,
+		this.router.get('/:userid/friends', this.requireAuth, this.checkUserExists,
 			upload.none(),
 			(req: express.Request, res: express.Response) => {
 				this.getFriends(req, res);
 			});
     }
-
-	async checkUserExists(req: express.Request, res: express.Response, next) {
-		const username = req.params.username;
-		const user = await database.RetrieveUser('username', username);
-		if (user != null) {
-			req.body.user = user;
-			next();
-		} else {
-			res.status(400).json({ error: `The user with username ${ username } is not found`});
-		}
-	}
 
 	async deleteUser(req: express.Request, res: express.Response) {
 		const sessiondata = req.session;

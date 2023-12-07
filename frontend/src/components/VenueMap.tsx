@@ -48,10 +48,6 @@ export default function MyMap({venues, longitude, latitude}: {venues: Array<Venu
         ...prevDetails,
         [venueID]: event,
       }));
-      console.log(event);
-      console.log("for venue with ID: ", venueID);
-    } else {
-      console.log("no event was found")
     }
   }
 

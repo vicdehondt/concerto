@@ -28,61 +28,52 @@ type User = {
   updatedAt: string;
 };
 
-// Notification response
-// [
-//   {
-//     "notificationID": 1,
-//     "status": "unseen",
-//     "NotificationObject": {
-//       "notificationType": "friendrequestreceived",
-//       "actor": 2
-//     }
-//   }
-// ]
+function Notification({ notification, removeNotification }: {notification: Notification, removeNotification: (number: number) => void}) {
 
+  const [from, setFrom] = useState({username: "Loading..."});
 
-// User respons
-// {
-//   "userID": 1,
-//   "username": "Test",
-//   "image": null,
-//   "createdAt": "2023-11-23T10:37:01.810Z",
-//   "updatedAt": "2023-11-23T10:37:01.810Z"
-// }
+  useEffect(() => {
+    fetch(environment.backendURL + `/users/${notification.NotificationObject.actor}`, {
+      mode: "cors",
+      credentials: "include",
+    })
+      .then((response) => {
+        if (response.status == 200) {
+          return response.json();
+        }
+        return null
+      })
+      .then((responseJSON) => {
+        setFrom(responseJSON)
+      });
+  }, []);
 
-// function Notification({notification}: {notification: Notification}) {
-function Notification({ key, notificationObject }: {key: number, notificationObject: Notification}) {
+  function acceptFriend() {
+    fetch(environment.backendURL + `/friends/${notification.NotificationObject.actor}/accept`, {
+      method: 'POST',
+      mode: "cors",
+      credentials: "include",
+    });
+    removeNotification(notification.notificationID)
+  }
 
-  const placeholder = "Reinout Cloosen"
-
-  // const [from, setFrom] = useState(null);
-
-  // useEffect(() => {
-  //   fetch(environment.backendURL + "/users", {
-  //     mode: "cors",
-  //     credentials: "include",
-  //   })
-  //     .then((response) => {
-  //       if (response.status == 200) {
-  //         return response.json();
-  //       }
-  //       return null
-  //     })
-  //     .then((responseJSON) => {
-  //       console.log(responseJSON)
-  //       setFrom(responseJSON)
-  //     });
-  // }, []);
+  function declineFriend() {
+    fetch(environment.backendURL + `/friends/${notification.NotificationObject.actor}/deny`, {
+      method: 'POST',
+      mode: "cors",
+      credentials: "include",
+    });
+  }
 
   // return notification.NotificationObject.notificationType == "friendrequestreceived" ? (
   return (
     <>
-      <div key={key} className={styles.notificationContainer}>
-        <div className={styles.message}>{placeholder} wants to be your friend.</div>
-        <form className={styles.buttonBox}>
-          <button>Accept</button>
-          <button>Decline</button>
-        </form>
+      <div key={notification.notificationID} className={styles.notificationContainer}>
+        <div className={styles.message}>{from.username} wants to be your friend.</div>
+        <div className={styles.buttonBox}>
+          <button onClick={(event) => acceptFriend()}>Accept</button>
+          <button onClick={(event) => declineFriend()}>Decline</button>
+        </div>
       </div>
     </>
   )

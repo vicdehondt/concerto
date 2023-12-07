@@ -4,10 +4,6 @@ import styles from "@/styles/EventCard.module.css";
 import Tag from "@/components/Tag";
 import Link from "next/link";
 
-function handleAddToWishlist() {
-  console.log("Need to access back-end for this one!");
-}
-
 function getMonth(month: number) {
   switch (month) {
     case 0:
@@ -98,9 +94,6 @@ function EventCard({ loggedIn, eventId, title, location, amountAttending, dateAn
           {/* <div>100 &ndash; 200 EUR</div> */}
           <div>{price} EUR</div>
         </div>
-      </div>
-      <div className={styles.addToWishlist} onClick={handleAddToWishlist}>
-        <Image src="/icons/heart.png" width={28} height={28} alt="Add to wishlist" />
       </div>
       <div className={styles.tags}>
         <div className={styles.divider}></div>
