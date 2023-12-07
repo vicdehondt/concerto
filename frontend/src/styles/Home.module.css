@@ -424,9 +424,6 @@
   grid-area: biography;
 }
 
-.attendedEventSection {
-
-}
 /* Still have to make parent container class */
 .attendedEventsContainer {
   overflow: scroll;

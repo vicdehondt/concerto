@@ -32,7 +32,7 @@ export class NotificationController extends BaseController {
 			(req: express.Request, res: express.Response) => {
 				this.markNotificationAsRead(req, res);
 			});
-        this.router.delete('/:notificationid', this.requireAuth,
+        this.router.post('/:notificationid', this.requireAuth,
 			upload.none(),
 			(req: express.Request, res: express.Response) => {
 				this.deleteNotification(req, res);
@@ -47,10 +47,13 @@ export class NotificationController extends BaseController {
             'Cache-Control': 'no-cache',
         });
 
+        console.log("Subscribed to SSE");
+
         res.write('event: connected\n');
         res.write(`data: You are now subscribed!\n\n`);
 
         notificationEmitter.on(newNotification, (notification) => {
+            console.log("New SSE event sent");
             res.write('event: notification\n');
             res.write(`data: ${notification}\n\n`);
         });

@@ -27,7 +27,6 @@ function Rating({score}: {score: number}) {
   }
 
   function showScore() {
-    console.log(score);
     if ((score != null) && (score > 0.5)) {
       const roundedScore = Math.round(score);
       return (Array.from({ length: 5 }).map((_, i) => (

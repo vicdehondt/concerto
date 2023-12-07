@@ -62,8 +62,6 @@ export default function AddEvent() {
     formData.append("price", "20");
     formData.append("artistID", selectedArtist.id);
     formData.append("venueID", location.venueID);
-    const form_values = Object.fromEntries(formData);
-    console.log(form_values);
     const response = await fetch(environment.backendURL + "/events", {
       method: "POST",
       body: formData,
@@ -74,7 +72,6 @@ export default function AddEvent() {
     // Handle response if necessary
     const data = await response.json();
     if (response.status == 200) {
-      console.log(response);
       router.push("/")
     }
   }

@@ -4,7 +4,7 @@ import styles from "@/styles/Navbar.module.css";
 import Link from "next/link";
 import Searchbar from "./Searchbar";
 import Notification from "./Notification";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, ReactNode } from "react";
 import { useRouter } from "next/router";
 import { X, User } from 'lucide-react';
 
@@ -32,19 +32,45 @@ function Navbar({pictureSource}: {pictureSource: string}) {
   const router = useRouter();
 
   const [notificationsVisible, setNotificationsVisible] = useState(false);
-
-  const [notifications, setNotifications] = useState([]);
-
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [notificationsHTML, setNotificationsHTML] = useState<ReactNode[]>([]);
   const [dropdownVisible, setDropdownVisible] = useState(false);
-
   const [loggedIn, setLoggedIn] = useState(false);
-
   const [profile, setProfile] = useState({userID: 0, image: null});
 
   const notificationButtonRef = useRef<HTMLDivElement>(null);
   const notificationsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+
+    const eventSource = new EventSource(environment.backendURL + '/notifications/subscribe', { withCredentials: true });
+
+    eventSource.onopen = (event) => {
+      console.log("The connection has been established.", event);
+    };
+
+    eventSource.onerror = (err) => {
+      console.error("EventSource failed:", err);
+    };
+
+    eventSource.addEventListener('notification', async (event) => {
+      const eventData = JSON.parse(event.data);
+      if (eventData.NotificationObject.notificationType !== 'friendrequestaccepted') {
+        const updatedNotifications = [...notifications, eventData];
+        setNotifications(updatedNotifications);
+        setNotificationsHTML(convertNotifications(updatedNotifications));
+      }
+    });
+
+    setNotificationsHTML(convertNotifications(notifications));
+
+    return () => {
+      eventSource.close();
+    };
+  }, [notifications]);
+
+  useEffect(() => {
+
     fetch(environment.backendURL + "/notifications", {
       mode: "cors",
       credentials: "include",
@@ -100,7 +126,7 @@ function Navbar({pictureSource}: {pictureSource: string}) {
 
   function toggleNotifications() {
     if (loggedIn) {
-      setNotificationsVisible(val => !val)
+      setNotificationsVisible(val => !val);
       const notificationBox = document.getElementsByClassName(styles.notificationsBox) as HTMLCollectionOf<HTMLElement>;
       if (notificationsVisible) {
         notificationBox[0].style.display = "none";
@@ -118,15 +144,45 @@ function Navbar({pictureSource}: {pictureSource: string}) {
     notificationBox[0].style.display = "none";
   }
 
-  function getNotifications(notifications: Array<Notification>) {
-    if (notifications.length == 0) {
-      return <div>No notifications found.</div>
-    }
-    var key = 0;
-    return notifications.map((notification) => {
-      key += 1;
-      return <Notification key={key} notificationObject={notification} />;
+  const removeNotification = (notificationID: number) => {
+    fetch(environment.backendURL + `/notifications/${notificationID}`, {
+      method: 'POST',
+      mode: 'cors',
+      credentials: 'include',
     })
+    .then(response => {
+      if (response.status === 200) {
+        setNotifications((prevNotifications) =>
+          prevNotifications.filter(
+            (notification: Notification) => notification.notificationID !== notificationID
+          )
+        );
+        setNotificationsHTML((prevNotificationsHTML) =>
+          prevNotificationsHTML.filter(
+            (notification: ReactNode) => {
+              const notificationWithKey = notification as { key?: number };
+              return notificationWithKey && notificationWithKey.key !== notificationID;
+            }
+          )
+        );
+      } else {
+        console.error('Error removing notification. Server response:', response);
+      }
+    })
+    .catch(error => console.error('Error removing notification:', error));
+  };
+
+
+  function convertNotifications(notifications: Array<Notification>): JSX.Element[] {
+    if (notifications.length === 0) {
+      return [<div key={0}>No notifications found.</div>];
+    }
+
+    return notifications.map((notification, index) => (
+      <div key={notification.notificationID}>
+        <Notification notification={notification} removeNotification={removeNotification} />
+      </div>
+    ));
   }
 
   function redirectURL(normalURL: string) {
@@ -145,7 +201,6 @@ function Navbar({pictureSource}: {pictureSource: string}) {
     .then((response) => {
       if (response.status == 200) {
         router.reload();
-        console.log("Logged out");
       }
     });
   }
@@ -190,7 +245,7 @@ function Navbar({pictureSource}: {pictureSource: string}) {
           <button id="closeNotifications" className={styles.closeNotifications} onClick={() => closeNotifications()}>
             <X />
           </button>
-          {notificationsVisible && getNotifications(notifications)}
+          {notificationsVisible && notificationsHTML}
         </div>
         <div className={styles.accountDropdown}>
           <div className={styles.profilePicture} onMouseEnter={() => setDropdownVisible(true)} onMouseLeave={() => setDropdownVisible(false)}>
