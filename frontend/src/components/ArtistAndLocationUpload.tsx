@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import styles from "../styles/ArtistAndLocationUpload.module.css";
-import { Star } from "lucide-react";
 import Searchbar from "./Searchbar";
 
 const environment = {
@@ -106,7 +105,6 @@ function ArtistAndLocationUpload({
     });
   }
 
-  // De locationCallback moet later gebruikt worden voor
   return (
     <div className={styles.container}>
       <div className={styles.box}>

@@ -5,7 +5,6 @@ import { useRouter } from "next/router";
 import FriendInvites from "@/components/FriendInvite";
 import Banner from "@/components/Banner";
 import Rating from "@/components/Rating";
-import type { InferGetServerSidePropsType, GetServerSideProps } from "next";
 import Timetable from "@/components/Timetable";
 import Image from "next/image";
 import { useEffect, useState } from "react";
@@ -72,6 +71,7 @@ export default function Concert() {
 
   const [artist, setArtist] = useState({Rating: {score: 0}})
   const [artistScore, setArtistScore] = useState(0);
+  const [venueScore, setVenueScore] = useState(0);
 
   function showBanner() {
     if (concert.eventID > 0) {
@@ -102,9 +102,28 @@ export default function Concert() {
             setArtistScore(responseJSON.Rating.score);
           });
         }
+        // if (responseJSON.venueID) {
+        //   fetch(environment.backendURL + `/venues/${responseJSON.venueID}`, {
+        //     mode: "cors",
+        //     credentials: "include",
+        //   })
+        //   .then((response) => {
+        //     return response.json();
+        //   }).then((responseJSON) => {
+        //     setVenueScore(responseJSON.Rating.score);
+        //   });
+        // }
       });
     }
   }, [router.query.concert])
+
+  function convertTime(time: string) {
+    if (time !== null) {
+      const hoursMinutesSeconds = time.split(":");
+      return hoursMinutesSeconds[0].concat(":").concat(hoursMinutesSeconds[1]);
+    }
+    return null;
+  }
 
   return (
     <>
@@ -126,7 +145,7 @@ export default function Concert() {
           <div className={styles.programContainer}>
             <div className={styles.programTitle}>Program</div>
             <div className={styles.programText}>
-              <Timetable doorTime={concert.doors} supportTime={concert.support} concertTime={concert.main} />
+              <Timetable doorTime={convertTime(concert.doors)} supportTime={convertTime(concert.support)} concertTime={convertTime(concert.main)} />
             </div>
             <div className={styles.ticketsAndWishlist}>
               <button className={styles.ticketsButton}>Buy tickets</button>
@@ -136,7 +155,7 @@ export default function Concert() {
             </div>
           </div>
           <div className={styles.ratingContainer}>
-            <Rating score={artistScore} />
+            <Rating artistScore={artistScore} venueScore={venueScore} />
           </div>
           <div className={styles.friendInviteContainer}>
             <FriendInvites />
