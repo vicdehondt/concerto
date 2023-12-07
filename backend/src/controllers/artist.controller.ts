@@ -2,8 +2,9 @@ import * as express from 'express';
 import { BaseController } from './base.controller';
 import {body, validationResult} from "express-validator"
 import {createMulter} from "../configs/multerConfig";
-import { Artist, EventModel, retrieveArtist, createArtist } from '../models/Eventmodel';
+import { Artist, EventModel, retrieveArtist, createArtist, RetrieveEvent } from '../models/Eventmodel';
 import { Rating, Review, createReview } from '../models/Ratingmodel';
+import { retrieveCheckIn } from '../models/Checkinmodel';
 
 const eventImagePath = './public/artists';
 
@@ -27,6 +28,16 @@ export class ArtistController extends BaseController {
                 this.getReviews(req, res);
             });
         this.router.post('/:artistID/reviews', this.requireAuth, upload.none(),
+        [
+            body("eventID").trim().notEmpty().custom(async (value, {req}) => {
+                const event = await RetrieveEvent(value)
+                if (event != null) {
+                    req.body.event = event;
+                } else {
+                    throw new Error("This event does not exist");
+                }
+            }),
+        ],
             (req: express.Request, res: express.Response) => {
                 res.set('Access-Control-Allow-Credentials', 'true');
                 this.reviewArtist(req, res);
@@ -59,20 +70,24 @@ export class ArtistController extends BaseController {
         const artistID = req.params.artistID;
         const artist = await Artist.findByPk(artistID);
         if (artist != null) {
-            const {message, score, eventID} = req.body;
-            const event = await EventModel.findByPk(eventID);
-            if (event == null) {
-                res.status(400).json({ success: false, error: "Event not found in database"});
+            const {message, score, event} = req.body;
+            const checkedin = await retrieveCheckIn(sessiondata.userID, event);
+            if (checkedin == null) {
+                res.status(400).json({ success: false, error: "Not allowed to review this event"});
             } else {
-                const rating = await Rating.findByPk(artist.ratingID);
-                const result = await createReview(sessiondata.userID, rating, eventID, score, message);
-                if (result) {
-                    res.status(200).json({ success: true, message: "Created a review for this artist"});
-                } else {
-                    res.status(400).json({ success: false, error: "Already reviewed this artist for this event"});
+                try {
+                    const rating = await Rating.findByPk(artist.ratingID);
+                    const result = await createReview(sessiondata.userID, rating, event.eventID, score, message);
+                    if (result) {
+                        res.status(200).json({ success: true, message: "Created a review for this artist"});
+                    } else {
+                        res.status(400).json({ success: false, error: "Already reviewed this artist for this event"});
+                    }
+                } catch (error) {
+                    res.status(400).json({success: false, error: "You are not allowed to review this event"});
                 }
             }
-        } else {
+    } else {
             res.status(400).json({ success: false, error: "Artist not found in database"});
         }
     }

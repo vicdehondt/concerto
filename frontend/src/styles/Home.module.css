@@ -560,3 +560,18 @@
   grid-area: review;
   margin: 5px 0;
 }
+.settingsPage {
+  color: black;
+  display: flex;
+}
+
+
+.settingContainer {
+  width: 50%;
+  margin: auto;
+  margin-left: 5%;
+}
+
+.accountOverviewContainer {
+  width: 50%;
+}

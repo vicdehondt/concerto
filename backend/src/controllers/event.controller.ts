@@ -83,7 +83,6 @@ export class EventController extends BaseController {
 		const inviterID = req.session.userID;
 		const receiverID = req.body.userID;
 		const eventID = req.params.id;
-		console.log(receiverID);
 		const event = await database.EventModel.findByPk(eventID);
 		if (event != null) {
 			if (await retrieveCheckIn(receiverID, event) == null) {

@@ -1,0 +1,19 @@
+.setting {
+    display: flex;
+    width: 500px;
+    border: 3px solid black;
+}
+
+.settingName {
+    width: 80%;
+    margin: 5px
+}
+
+.settingValue {
+    display: flex;
+    justify-content: right;
+    margin-right: 10px;
+    width: 20%;
+    margin: 5px
+}
+
