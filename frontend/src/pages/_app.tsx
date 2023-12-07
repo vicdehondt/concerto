@@ -1,8 +1,9 @@
 import '@/styles/globals.css'
 import type { AppProps } from 'next/app'
 import Navbar from "@/components/Navbar";
+import HamburgerMenu from '@/components/HamburgerMenu';
 import { useRouter } from "next/router";
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 const environment = {
   backendURL: "http://localhost:8080",
@@ -13,6 +14,19 @@ if (process.env.NODE_ENV == "production") {
 
 export default function App({ Component, pageProps }: AppProps) {
   const router = useRouter();
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 600);
+    };
+
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
 
   useEffect(() => {
     fetch(environment.backendURL + "/auth/status", {
@@ -26,16 +40,16 @@ export default function App({ Component, pageProps }: AppProps) {
       });
   }, [])
 
-  function NavbarIfNeeded() {
+  function NavbarOrHamburgerIfNeeded() {
     const path = router.asPath;
     if (path != "/login" && path != "/register") {
-      return <Navbar pictureSource="/photos/Rombout.jpeg" />
+      return isMobile ? <HamburgerMenu /> : <Navbar pictureSource="/photos/Rombout.jpeg" />
     }
   }
 
   return(
     <>
-      <NavbarIfNeeded />
+      <NavbarOrHamburgerIfNeeded />
       <Component {...pageProps} />
     </>
   )
