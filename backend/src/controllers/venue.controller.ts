@@ -32,7 +32,7 @@ export class VenueController extends BaseController {
         for(let offset = 0; true ;offset += limit){
             const musicBrainzApiUrl = `http://musicbrainz.org/ws/2/place?query='Brussels'&offset=${offset}&limit=${limit}`;
             this.lastRequest = new Date();
-            const response = await axios.get(musicBrainzApiUrl);
+            const response = await axios.get(musicBrainzApiUrl, {timeout: 5000});
             const data = await response.data
             const places = data.places;
             if (places.length == 0) {
