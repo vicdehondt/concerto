@@ -1,6 +1,6 @@
 import * as express from 'express';
 import { BaseController } from './base.controller';
-import {body, check, validationResult} from "express-validator"
+import {body, validationResult} from "express-validator"
 import {createMulter} from "../configs/multerConfig";
 import { Artist, EventModel, retrieveArtist, createArtist, RetrieveEvent } from '../models/Eventmodel';
 import { Rating, Review, createReview } from '../models/Ratingmodel';

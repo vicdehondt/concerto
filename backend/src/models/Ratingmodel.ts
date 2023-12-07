@@ -1,8 +1,6 @@
 import { ARRAY, DataTypes, Op } from 'sequelize';
 import {sequelize} from '../configs/sequelizeConfig'
 import { UserModel } from './Usermodel';
-import { CheckedInUsers, retrieveCheckIn } from './Checkinmodel';
-import { RetrieveEvent } from './Eventmodel';
 
 export const Rating = sequelize.define('Rating', {
     ratingID: {
