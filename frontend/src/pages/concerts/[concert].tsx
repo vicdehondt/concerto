@@ -102,17 +102,17 @@ export default function Concert() {
             setArtistScore(responseJSON.Rating.score);
           });
         }
-        // if (responseJSON.venueID) {
-        //   fetch(environment.backendURL + `/venues/${responseJSON.venueID}`, {
-        //     mode: "cors",
-        //     credentials: "include",
-        //   })
-        //   .then((response) => {
-        //     return response.json();
-        //   }).then((responseJSON) => {
-        //     setVenueScore(responseJSON.Rating.score);
-        //   });
-        // }
+        if (responseJSON.venueID) {
+          fetch(environment.backendURL + `/venues/${responseJSON.venueID}`, {
+            mode: "cors",
+            credentials: "include",
+          })
+          .then((response) => {
+            return response.json();
+          }).then((responseJSON) => {
+            setVenueScore(responseJSON.score);
+          });
+        }
       });
     }
   }, [router.query.concert])
