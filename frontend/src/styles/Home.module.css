@@ -455,3 +455,108 @@
   border-bottom-left-radius: 10px;
   border-bottom-right-radius: 10px;
 }
+
+.artistPage {
+  background-color: #e8f7ee;
+  display: grid;
+  grid-template-columns: 50% auto;
+  grid-template-rows: 177px auto;
+  grid-template-areas:
+    "pageHeader pageHeader"
+    "reviewBox reviewBox";
+  height: 100vh;
+}
+
+.artistPage .pageHeader {
+  grid-area: pageHeader;
+  width: 100%;
+  height: fit-content;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.artistPage .artistName {
+  font-size: 60px;
+  font-weight: bold;
+  text-align: center;
+  margin-top: 30px;
+}
+
+.artistPage .artistStar {
+  margin: 0 20px;
+}
+
+.artistPage .reviewBox {
+  grid-area: reviewBox;
+  border: solid 1px black;
+  border-radius: 5px;
+  margin: 20px;
+  background-color: white;
+  box-shadow: 0px 1px 2px;
+  overflow: auto;
+}
+
+.artistPage .reviewContainer {
+  display: grid;
+  grid-template-columns: auto auto;
+  grid-template-rows: auto auto;
+  grid-template-areas:
+    "info score"
+    "review review";
+  margin: 15px;
+  padding: 5px;
+  border: solid 1px black;
+  border-radius: 5px;
+  box-shadow: 0px 1px 2px;
+}
+
+.artistPage .reviewHeader {
+  grid-area: info;
+  display: flex;
+  flex-direction: row;
+  border-bottom: solid 0.5px black;
+}
+
+.artistPage .reviewHeaderNoBorder {
+  grid-area: info;
+  display: flex;
+  flex-direction: row;
+}
+
+.artistPage img {
+  border-radius: 50%;
+  width: 100%;
+}
+
+.artistPage .infoBox {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-left: 5px;
+}
+
+.artistPage .created {
+  font-size: small;
+}
+
+.artistPage .score {
+  grid-area: score;
+  border-bottom: solid 0.5px black;
+  display: flex;
+  align-items: center;
+  justify-content: right;
+}
+
+.artistPage .scoreNoBorder {
+  grid-area: score;
+  display: flex;
+  align-items: center;
+  justify-content: right;
+}
+
+.artistPage .review {
+  grid-area: review;
+  margin: 5px 0;
+}
