@@ -48,14 +48,20 @@ const HamburgerMenu = ({pictureSource}: {pictureSource: string}) => {
             </Link>
           );
         }
-      }
+    }
+
+    const toggleHamburgerMenu = () => {
+        setIsOpen(!isOpen);
+      };
 
     return (
         <div className={styles.hamburgerDropdown}>
-            <div className={styles.hamburgerMenu} onMouseDown={() => setIsOpen(true)} onMouseLeave={() => setIsOpen(false)}>
+            <div className={styles.hamburgerMenu}>
+                <div className={`${styles.button} ${isOpen ? styles.open : ''}`} onClick={() => toggleHamburgerMenu()}>
                     <div className={styles.bar}></div>
                     <div className={styles.bar}></div>
                     <div className={styles.bar}></div>
+                </div>
                     {isOpen && (
                         <div className={styles.dropdownContent} onMouseEnter={() => {setDropdownVisible(true);}} onMouseLeave={() => {setDropdownVisible(false);}}>
                             <Searchbar type="long" />
