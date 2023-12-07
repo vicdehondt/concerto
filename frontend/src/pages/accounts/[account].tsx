@@ -49,7 +49,10 @@ export default function Account() {
   const router = useRouter();
 
   function requestCheckins(user: User) {
-    fetch(environment.backendURL + "/users" + `/${user.userID}/checkins`).then((response) => {
+    fetch(environment.backendURL + "/users" + `/${user.userID}/checkins`, {
+      mode: "cors",
+      credentials: "include",
+  }).then((response) => {
       if (response.status == 200) {
         return response.json();
       } else {

@@ -131,7 +131,7 @@ function Navbar({pictureSource}: {pictureSource: string}) {
           {notificationsVisible && getNotifications(notifications)}
         </div>
         <div className={styles.profilePicture}>
-          <Link href={redirectURL("/account")}>
+          <Link href={redirectURL("/settings")}>
             <Image src={pictureSource} width={56} height={56} alt="Profile picture"/>
           </Link>
         </div>
