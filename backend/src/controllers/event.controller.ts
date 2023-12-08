@@ -83,14 +83,19 @@ export class EventController extends BaseController {
 	async editEvent(req: express.Request, res: express.Response) {
 		console.log("Received request to edit event");
 		const event = req.body.event;
-		const {description, main, doors, support, price} = req.body;
-		event.price = price;
-		event.description = description;
-		event.main = main;
-		event.doors = doors;
-		event.support = support;
-		event.save();
-		res.status(200).json({ success: true, error: "Event has been updated"});
+		const sessiondata = req.session;
+		if (event.userID != sessiondata.userID) {
+			res.status(401).json({ success: true, error: "No permission to update this event"});
+		} else {
+			const {description, main, doors, support, price} = req.body;
+			event.price = price;
+			event.description = description;
+			event.main = main;
+			event.doors = doors;
+			event.support = support;
+			event.save();
+			res.status(200).json({ success: true, message: "Event has been updated"});
+		}
 	}
 
 	async inviteFriend(req: express.Request, res: express.Response) {
