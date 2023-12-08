@@ -46,7 +46,6 @@ export class EventController extends BaseController {
 				body("main").trim().notEmpty(),
 				body("doors").trim().notEmpty(),
 				body("price").trim().notEmpty(),
-				body("price").trim().notEmpty(),
 				body("mainGenre").trim().notEmpty(),
 				body("secondGenre").trim().notEmpty(),
 				body("dateAndTime").trim().notEmpty(),
@@ -58,6 +57,10 @@ export class EventController extends BaseController {
 		this.router.get('/:eventID', this.requireAuth, [this.checkEventExists], this.verifyErrors, (req: express.Request, res: express.Response) => {
 			res.set('Access-Control-Allow-Credentials', 'true');
 			this.getEvent(req, res);
+		});
+		this.router.post('/:eventID', this.requireAuth,  upload.none(), [this.checkEventExists], this.verifyErrors, (req: express.Request, res: express.Response) => {
+			res.set('Access-Control-Allow-Credentials', 'true');
+			this.editEvent(req, res);
 		});
 		this.router.get('/:eventID/checkins', this.requireAuth, [this.checkEventExists], this.verifyErrors, (req: express.Request, res: express.Response) => {
 			res.set('Access-Control-Allow-Credentials', 'true');
@@ -76,6 +79,19 @@ export class EventController extends BaseController {
 			this.checkOut(req, res);
 		});
     }
+
+	async editEvent(req: express.Request, res: express.Response) {
+		console.log("Received request to edit event");
+		const event = req.body.event;
+		const {description, main, doors, support, price} = req.body;
+		event.price = price;
+		event.description = description;
+		event.main = main;
+		event.doors = doors;
+		event.support = support;
+		event.save();
+		res.status(200).json({ success: true, error: "Event has been updated"});
+	}
 
 	async inviteFriend(req: express.Request, res: express.Response) {
 		console.log("Received request to invite friend");
@@ -96,7 +112,7 @@ export class EventController extends BaseController {
 	}
 
 	async getAllEvents(req: express.Request, res: express.Response) {
-		console.log("Accepted request for all events")
+		console.log("Accepted request for all events");
 		const events = await database.RetrieveAllEvents();
 		res.status(200).json(events);
 	}
