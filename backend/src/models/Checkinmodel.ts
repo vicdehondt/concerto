@@ -73,7 +73,7 @@ export async function userCheckIn(userID, event): Promise<boolean> {
 }
 
 export async function userCheckOut(userID, event): Promise<boolean> {
-    const checkIn = await retrieveCheckIn(userID, event.eventID);
+    const checkIn = await retrieveCheckIn(userID, event);
     if (checkIn != null) {
         await checkIn.destroy();
         event.checkedIn = event.checkedIn - 1;
