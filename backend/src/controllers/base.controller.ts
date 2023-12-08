@@ -1,5 +1,6 @@
 import * as express from 'express';
 import { RetrieveUser } from '../models/Usermodel';
+import { validationResult } from 'express-validator';
 const fs = require('fs');
 
 export abstract class BaseController {
@@ -31,6 +32,15 @@ export abstract class BaseController {
 			res.status(400).json({ error: `The user with userID ${ userid } is not found`});
 		}
 	}
+
+    verifyErrors(req: express.Request, res: express.Response, next) {
+        const errors = validationResult(req);
+        if (errors.isEmpty()) {
+            next();
+        } else {
+            res.status(400).json({success: false, errors: errors.array()});
+        }
+    }
 
     // It is important for this function that BaseController is in the same directory as the other controllers.
     DeleteFile(path: String, file) {

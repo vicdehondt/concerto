@@ -1,19 +1,12 @@
 import * as express from 'express';
 import { BaseController } from './base.controller';
-import * as database from '../models/Venuemodel';
-import {body, param, validationResult} from "express-validator"
-import {createMulter} from "../configs/multerConfig";
-import { getCorsConfiguration } from '../configs/corsConfig';
+import {body, param} from "express-validator"
 import { CreateVenue, retrieveVenue, VenueModel } from '../models/Venuemodel';
 import { retrieveCheckIn } from '../models/Checkinmodel';
 import { RetrieveEvent } from '../models/Eventmodel';
-import { Rating, Review, createReview } from '../models/Ratingmodel';
+import { Review, createReview } from '../models/Ratingmodel';
 
 const axios = require('axios');
-const eventImagePath = './public/venues';
-const cors = getCorsConfiguration();
-const upload = createMulter(eventImagePath);
-
 
 export class VenueController extends BaseController {
 
@@ -59,48 +52,26 @@ export class VenueController extends BaseController {
 
 	initializeRoutes(): void {
         this.initialize();
-        this.router.get('/:venueID', cors, upload.none(), (req: express.Request, res: express.Response) => {
+        this.router.get('/:venueID',
+        [this.checkVenueExists], this.verifyErrors,
+        (req: express.Request, res: express.Response) => {
 			res.set('Access-Control-Allow-Credentials', 'true');
 			this.getVenue(req, res);
 		});
-		this.router.get('/', cors, upload.none(), (req: express.Request, res: express.Response) => {
+		this.router.get('/', (req: express.Request, res: express.Response) => {
 			res.set('Access-Control-Allow-Credentials', 'true');
 			this.getAllVenues(req, res);
 		});
-        this.router.get('/:venueID/reviews', cors, upload.none(),
-        [
-            param("venueID").custom(async (value, { req }) => {
-                const venue = await retrieveVenue(value);
-                if (venue != null) {
-                    req.body.venue = venue;
-                } else {
-                    throw new Error("The venue was not found!");
-                }
-            }),
-        ],
+        this.router.get('/:venueID/reviews',
+            [this.checkVenueExists],
+            this.verifyErrors,
             (req: express.Request, res: express.Response) => {
                 res.set('Access-Control-Allow-Credentials', 'true');
                 this.getReviews(req, res);
             });
-        this.router.post('/:venueID/reviews', cors, upload.none(),
-            [
-                body("eventID").trim().notEmpty().custom(async (value, {req}) => {
-                    const event = await RetrieveEvent(value)
-                    if (event != null) {
-                        req.body.event = event;
-                    } else {
-                        throw new Error("This event does not exist");
-                    }
-                }),
-                param("venueID").custom(async (value, { req }) => {
-                    const venue = await retrieveVenue(value);
-                    if (venue != null) {
-                        req.body.venue = venue;
-                    } else {
-                        throw new Error("The venue was not found!");
-                    }
-                }),
-            ],
+        this.router.post('/:venueID/reviews',
+            [this.checkEventExists, this.checkVenueExists],
+            this.verifyErrors,
             (req: express.Request, res: express.Response) => {
                 res.set('Access-Control-Allow-Credentials', 'true');
                 this.reviewVenue(req, res);
@@ -119,50 +90,60 @@ export class VenueController extends BaseController {
 
     async getVenue(req: express.Request, res: express.Response) {
         console.log("Received request to lookup venue information");
-        const venue = await retrieveVenue(req.params.venueID);
-        if (venue) {
-           res.status(200).json(venue);
-        } else {
-            res.status(404).json({succes: false, error: "No venue was found with this ID"})
-        }
+        const venue = req.body.venue;
+        res.status(200).json(venue);
     }
 
     async getReviews(req: express.Request, res: express.Response) {
-        const result = validationResult(req);
-        if (result.isEmpty()) {
-            const venue = req.body.venue;
-            const ratingID = venue.Rating.ratingID;
-            const result = await Review.findAll({
-                where: {
-                    ratingID: ratingID
-                }
-            });
-            res.status(200).json(result);
-        } else {
-            res.status(400).json({success: false, errors: result.array()});
-        }
+        const venue = req.body.venue;
+        const ratingID = venue.Rating.ratingID;
+        const result = await Review.findAll({
+            where: {
+                ratingID: ratingID
+            }
+        });
+        res.status(200).json(result);
     }
 
     async reviewVenue(req: express.Request, res: express.Response) {
-        const result = validationResult(req);
-        if (result.isEmpty()) {
-            const venue = req.body.venue;
-            const sessiondata = req.session;
-            const {message, score, event} = req.body;
-            const checkedin = await retrieveCheckIn(sessiondata.userID, event);
-            if (checkedin == null) {
-                res.status(400).json({ success: false, error: "Not allowed to review this event"});
-            } else {
-                const rating = venue.Rating;
-                const result = await createReview(sessiondata.userID, rating, event.eventID, score, message);
-                if (result) {
-                    res.status(200).json({ success: true, message: "Created a review for this venue"});
-                } else {
-                    res.status(400).json({ success: false, error: "Already reviewed this venue for this event"});
-                }
-            }
+        const venue = req.body.venue;
+        const sessiondata = req.session;
+        const {message, score, event} = req.body;
+        const checkedin = await retrieveCheckIn(sessiondata.userID, event);
+        if (checkedin == null) {
+            res.status(400).json({ success: false, error: "Not allowed to review this event"});
         } else {
-            res.status(400).json({success: false, errors: result.array()});
+            const rating = venue.Rating;
+            const result = await createReview(sessiondata.userID, rating, event.eventID, score, message);
+            if (result) {
+                res.status(200).json({ success: true, message: "Created a review for this venue"});
+            } else {
+                res.status(400).json({ success: false, error: "Already reviewed this venue for this event"});
+            }
         }
+    }
+
+    async checkEventExists(req: express.Request, res: express.Response, next) {
+        await body("eventID").custom(async (eventID, { req }) => {
+            const event = await RetrieveEvent(eventID);
+            if (event != null) {
+                req.body.event = event;
+                return true;
+            } else {
+                throw new Error("Event with that ID does not exist");
+            }
+        })(req, res, next);
+    }
+
+    async checkVenueExists(req: express.Request, res: express.Response, next) {
+        await param("venueID").custom(async (venueID, { req }) => {
+            const venue = await retrieveVenue(venueID);
+            if (venue != null) {
+                req.body.venue = venue;
+                return true;
+            } else {
+                throw new Error("Venue with that ID does not exist");
+            }
+        })(req, res, next);
     }
 }
