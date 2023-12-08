@@ -17,19 +17,16 @@ export const Artist = sequelize.define('Artist', {
   type: {
       type: DataTypes.STRING,
       allowNull: false
-  }
+  },
 });
 
 Artist.hasOne(Rating, {
-  foreignKey: {
-      name: 'entityID',
-      allowNull: true
-  }
+  foreignKey: 'artistID',
+  allowNull: true
 });
-Rating.hasOne(Artist, {
-  foreignKey: {
-      name: 'ratingID',
-  }
+Rating.belongsTo(Artist, {
+  foreignKey: 'artistID',
+  allowNull: true
 });
 
 export const genres = DataTypes.ENUM('pop', 'rock', 'metal', 'country')
@@ -125,7 +122,7 @@ export async function createArtist(id) {
       });
       const rating = await Rating.create({
         entityType: 'artist',
-        entityID: result.artistID,
+        artistID: result.artistID,
       });
       result.ratingID = rating.ratingID;
       result.save();
@@ -145,7 +142,7 @@ export async function retrieveArtist(id) {
     },
     include: {
         model: Rating,
-        attributes: ['score', 'amountOfReviews']
+        attributes: ['score', 'amountOfReviews', 'ratingID']
     }
   }); return result;
 }

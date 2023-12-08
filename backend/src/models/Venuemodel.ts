@@ -28,15 +28,12 @@ export const VenueModel = sequelize.define('Venue', {
 });
 
 VenueModel.hasOne(Rating, {
-    foreignKey: {
-        name: 'entityID',
-        allowNull: true
-    }
+    foreignKey: 'venueID',
+    allowNull: true
   });
-  Rating.hasOne(VenueModel, {
-    foreignKey: {
-        name: 'ratingID',
-    }
+  Rating.belongsTo(VenueModel, {
+    foreignKey: 'venueID',
+    allowNull: true
   });
 
 VenueModel.hasMany(EventModel, { //multiple events can take place at one venue
@@ -62,6 +59,7 @@ export async function CreateVenue(venueID, venueName, longitude, latitude): Prom
         });
         const rating = await Rating.create({
           entityType: 'venue',
+          venueID: venueID,
         });
         result.ratingID = rating.ratingID;
         result.save();
@@ -78,7 +76,7 @@ export async function retrieveVenue(id) {
         exclude: ['createdAt', 'updatedAt']
       }, include: {
         model: Rating,
-        attributes: ['score', 'amountOfReviews']
+        attributes: ['score', 'amountOfReviews', 'ratingID']
     },
       where: {venueID: id},
     });
