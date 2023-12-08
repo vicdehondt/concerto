@@ -190,7 +190,7 @@ export default function Artist() {
         );
       }
       return (
-        <div className={styles.reviewContainer}>
+        <div key={review.reviewID} className={styles.reviewContainer}>
           <div className={styles.reviewHeaderNoBorder}>
             <div className={styles.imageBox}>
               {showImage(review.image, 40)}
