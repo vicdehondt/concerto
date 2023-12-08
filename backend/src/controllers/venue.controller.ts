@@ -1,7 +1,7 @@
 import * as express from 'express';
 import { BaseController } from './base.controller';
 import * as database from '../models/Venuemodel';
-import {body, validationResult} from "express-validator"
+import {body, param, validationResult} from "express-validator"
 import {createMulter} from "../configs/multerConfig";
 import { getCorsConfiguration } from '../configs/corsConfig';
 import { CreateVenue, retrieveVenue, VenueModel } from '../models/Venuemodel';
@@ -39,7 +39,6 @@ export class VenueController extends BaseController {
             const data = await response.data
             const places = data.places;
             if (places.length == 0) {
-                console.log("no places left")
                 break;
             }
             const venuesInBrussels = places.filter(place => place.type === 'Venue' || place.type == 'Indoor arena' || place.type == 'Stadium');
@@ -69,6 +68,16 @@ export class VenueController extends BaseController {
 			this.getAllVenues(req, res);
 		});
         this.router.get('/:venueID/reviews', cors, upload.none(),
+        [
+            param("venueID").custom(async (value, { req }) => {
+                const venue = await retrieveVenue(value);
+                if (venue != null) {
+                    req.body.venue = venue;
+                } else {
+                    throw new Error("The venue was not found!");
+                }
+            }),
+        ],
             (req: express.Request, res: express.Response) => {
                 res.set('Access-Control-Allow-Credentials', 'true');
                 this.getReviews(req, res);
@@ -81,6 +90,14 @@ export class VenueController extends BaseController {
                         req.body.event = event;
                     } else {
                         throw new Error("This event does not exist");
+                    }
+                }),
+                param("venueID").custom(async (value, { req }) => {
+                    const venue = await retrieveVenue(value);
+                    if (venue != null) {
+                        req.body.venue = venue;
+                    } else {
+                        throw new Error("The venue was not found!");
                     }
                 }),
             ],
@@ -111,11 +128,10 @@ export class VenueController extends BaseController {
     }
 
     async getReviews(req: express.Request, res: express.Response) {
-        const venueID = req.params.venueID;
-        const venue = await retrieveVenue(venueID);
-        const ratingID = venue.ratingID;
-        if (venue != null) {
-            const ratingID = venue.ratingID;
+        const result = validationResult(req);
+        if (result.isEmpty()) {
+            const venue = req.body.venue;
+            const ratingID = venue.Rating.ratingID;
             const result = await Review.findAll({
                 where: {
                     ratingID: ratingID
@@ -123,21 +139,21 @@ export class VenueController extends BaseController {
             });
             res.status(200).json(result);
         } else {
-            res.status(400).json({ success: false, error: "Venue not found in database"});
+            res.status(400).json({success: false, errors: result.array()});
         }
     }
 
     async reviewVenue(req: express.Request, res: express.Response) {
-        const sessiondata = req.session;
-        const venueID = req.params.venueID;
-        const venue = await VenueModel.findByPk(venueID);
-        if (venue != null) {
+        const result = validationResult(req);
+        if (result.isEmpty()) {
+            const venue = req.body.venue;
+            const sessiondata = req.session;
             const {message, score, event} = req.body;
             const checkedin = await retrieveCheckIn(sessiondata.userID, event);
             if (checkedin == null) {
                 res.status(400).json({ success: false, error: "Not allowed to review this event"});
             } else {
-                const rating = await Rating.findByPk(venue.ratingID);
+                const rating = venue.Rating;
                 const result = await createReview(sessiondata.userID, rating, event.eventID, score, message);
                 if (result) {
                     res.status(200).json({ success: true, message: "Created a review for this venue"});
@@ -145,8 +161,8 @@ export class VenueController extends BaseController {
                     res.status(400).json({ success: false, error: "Already reviewed this venue for this event"});
                 }
             }
-    } else {
-            res.status(400).json({ success: false, error: "Venue not found in database"});
+        } else {
+            res.status(400).json({success: false, errors: result.array()});
         }
     }
 }
