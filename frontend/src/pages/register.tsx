@@ -14,9 +14,15 @@ if (process.env.NODE_ENV == "production") {
   environment.backendURL = "https://api.concerto.dehondt.dev"
 }
 
+type Error = {
+  type: string;
+  value: string;
+  msg: string;
+}
+
 export default function Register() {
   const router = useRouter();
-  const[error, setError] = useState("");
+  const[error, setError] = useState([]);
   const [isLengthValid, setIsLengthValid] = useState(false);
   const [isPasswordValid, setIsPasswordValid] = useState(false);
   const [arePasswordsEqual, setArePasswordsEqual] = useState(false);
@@ -38,14 +44,12 @@ export default function Register() {
       credentials: 'include',
     })
 
-    // Handle response if necessary
     const data = await response.json()
     if (response.status == 200) {
       goToLogin();
     } else if (response.status == 400) {
       setError(data.errors)
     }
-    // ...
   }
 
   function checkPasswordValidation(event: ChangeEvent<HTMLInputElement>) {
@@ -65,6 +69,14 @@ export default function Register() {
     }
   }
 
+  function showErrors() {
+    return error.map((error: Error, index: number) => {
+      return (
+        <h4 key={index} className={styles.inputError}>{error.msg}</h4>
+      );
+    });
+  }
+
   return (
     <>
       <Head>
@@ -77,7 +89,7 @@ export default function Register() {
         <div className={[styles.page, styles.registerPage].join(" ")}>
           <form onSubmit={onSubmit} className={styles.registerForm}>
             <h1>Register</h1>
-            { error ? <h4 className={styles.inputError}>{error}</h4> : null }
+            {showErrors()}
             <input className={[styles.registerInput, styles.usernameInput].join(" ")} type="text" name='username' id='username' required placeholder="Username" />
             <input className={[styles.registerInput, styles.emailInput].join(" ")} type="email" name='mail' id='mail' required placeholder="E-mail address" />
             <input className={[styles.registerInput, styles.passwordInput].join(" ")} type="password" name='password' id='password' required placeholder="Password" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}" onChange={(event) => {
