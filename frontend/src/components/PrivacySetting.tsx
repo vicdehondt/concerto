@@ -17,10 +17,10 @@ export default function PrivacySetting({name, setting, initial}: {name: string, 
             {name}
         </div>
         <select id={setting} name={setting} className={styles.settingValue} defaultValue={initial}>
-            {options.map((value) => {
+            {options.map((value, index) => {
                 console.log(initial)
                 return (
-                    <option value={value}> {value} </option>
+                    <option key={index} value={value}> {value} </option>
                 )
             })}
         </select>
