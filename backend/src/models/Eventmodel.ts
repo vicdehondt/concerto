@@ -254,3 +254,9 @@ export async function RetrieveEvent(ID): Promise<typeof EventModel> {
     }
   }
 
+  export function isFinished(event): boolean {
+    const yesterday = new Date();
+    yesterday.setHours(yesterday.getHours() - 24);
+    return event.dateAndTime < yesterday;
+  }
+

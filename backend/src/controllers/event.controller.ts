@@ -4,7 +4,7 @@ import * as database from '../models/Eventmodel';
 import { userCheckIn, userCheckOut, allCheckedInUsers, retrieveCheckIn } from  '../models/Checkinmodel';
 import { NotificationObject, createNewNotification } from '../models/Notificationmodel';
 import { VenueModel } from '../models/Venuemodel';
-import { retrieveArtist, createArtist, RetrieveEvent } from '../models/Eventmodel';
+import { retrieveArtist, createArtist, RetrieveEvent, isFinished } from '../models/Eventmodel';
 import {body, param, validationResult} from "express-validator"
 import {createMulter} from "../configs/multerConfig";
 import { WishListedEvents } from '../models/Wishlistmodel';
@@ -58,7 +58,7 @@ export class EventController extends BaseController {
 			res.set('Access-Control-Allow-Credentials', 'true');
 			this.getEvent(req, res);
 		});
-		this.router.post('/:eventID', this.requireAuth,  upload.none(), [this.checkEventExists], this.verifyErrors, (req: express.Request, res: express.Response) => {
+		this.router.post('/:eventID', this.requireAuth,  upload.none(), [this.checkEventExists, this.checkUnfinished], this.verifyErrors, (req: express.Request, res: express.Response) => {
 			res.set('Access-Control-Allow-Credentials', 'true');
 			this.editEvent(req, res);
 		});
@@ -66,15 +66,15 @@ export class EventController extends BaseController {
 			res.set('Access-Control-Allow-Credentials', 'true');
 			this.allCheckedIn(req, res);
 		});
-		this.router.post('/:eventID/invite', upload.none(),this.requireAuth, [this.checkEventExists, this.checkFriendExists], this.verifyErrors, (req: express.Request, res: express.Response) => {
+		this.router.post('/:eventID/invite', upload.none(),this.requireAuth, [this.checkEventExists, this.checkFriendExists, this.checkUnfinished], this.verifyErrors, (req: express.Request, res: express.Response) => {
 			res.set('Access-Control-Allow-Credentials', 'true');
 			this.inviteFriend(req, res);
 		});
-		this.router.post('/:eventID/checkins', this.requireAuth, [this.checkEventExists], this.verifyErrors, (req: express.Request, res: express.Response) => {
+		this.router.post('/:eventID/checkins', this.requireAuth, [this.checkEventExists, this.checkUnfinished], this.verifyErrors, (req: express.Request, res: express.Response) => {
 			res.set('Access-Control-Allow-Credentials', 'true');
 			this.checkIn(req, res);
 		});
-		this.router.delete('/:eventID/checkins', this.requireAuth, [this.checkEventExists], this.verifyErrors, (req: express.Request, res: express.Response) => {
+		this.router.delete('/:eventID/checkins', this.requireAuth, [this.checkEventExists, this.checkUnfinished], this.verifyErrors, (req: express.Request, res: express.Response) => {
 			res.set('Access-Control-Allow-Credentials', 'true');
 			this.checkOut(req, res);
 		});
@@ -203,6 +203,22 @@ export class EventController extends BaseController {
             }
         })(req, res, next);
 	}
+
+	async checkUnfinished(req: express.Request, res: express.Response, next) {
+        await body("event").custom((event) => {
+            if (event != null) {
+				if (isFinished(event)) {
+					throw new Error("This event has been finished")
+				} else {
+					return true;
+				}
+            } else {
+                return true
+            }
+        })(req, res, next);
+    }
+
+
 
 	async checkEventExists(req: express.Request, res: express.Response, next) {
         await param("eventID").custom(async (eventID, { req }) => {
