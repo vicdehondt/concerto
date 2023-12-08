@@ -1,6 +1,7 @@
-import { ARRAY, DataTypes, Op } from 'sequelize';
+import { DataTypes, Op } from 'sequelize';
 import {sequelize} from '../configs/sequelizeConfig'
 import { Rating } from './Ratingmodel';
+import { UserModel } from './Usermodel';
 const axios = require('axios');
 
 export const Artist = sequelize.define('Artist', {
@@ -90,6 +91,16 @@ export const EventModel = sequelize.define('Event', {
     tableName: 'Events'
 });
 
+UserModel.hasMany(EventModel, {
+  foreignKey: 'userID',
+  allowNull: false,
+});
+
+EventModel.belongsTo(UserModel, {
+  foreignKey: 'userID',
+  allowNull: false,
+});
+
 Artist.hasMany(EventModel, {
   foreignKey: {
     name: 'artistID',
@@ -147,7 +158,7 @@ export async function retrieveArtist(id) {
   }); return result;
 }
 
-export async function CreateEvent(artistID, venueID, title, description, date, price, doors, main, support, genre1, genre2, bannerpath, eventPicturePath) {
+export async function CreateEvent(userID, artistID, venueID, title, description, date, price, doors, main, support, genre1, genre2, bannerpath, eventPicturePath) {
   try {
     const Event = await EventModel.create({
       artistID: artistID,
@@ -163,6 +174,7 @@ export async function CreateEvent(artistID, venueID, title, description, date, p
       support: support,
       baseGenre: genre1,
       secondGenre: genre2,
+      userID: userID
     });
     return Event;
   } catch (error) {
@@ -170,10 +182,16 @@ export async function CreateEvent(artistID, venueID, title, description, date, p
   }
 };
 
-export async function RetrieveAllEvents(): Promise<typeof EventModel>  {
+export async function retrieveUnfinishedEvents(): Promise<typeof EventModel>  {
+  const yesterday = new Date();
+  yesterday.setHours(yesterday.getHours() - 24);
   const events = await EventModel.findAll({
     attributes: {
       exclude: ['createdAt', 'updatedAt']
+    }, where: {
+      dateAndTime: {
+        [Op.gte]: yesterday
+      }
     }
   });
   return events;
@@ -234,5 +252,11 @@ export async function RetrieveEvent(ID): Promise<typeof EventModel> {
     } catch (error) {
       console.error("There was an error finding an event: ", error);
     }
+  }
+
+  export function isFinished(event): boolean {
+    const yesterday = new Date();
+    yesterday.setHours(yesterday.getHours() - 24);
+    return event.dateAndTime < yesterday;
   }
 

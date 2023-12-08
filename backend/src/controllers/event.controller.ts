@@ -4,7 +4,7 @@ import * as database from '../models/Eventmodel';
 import { userCheckIn, userCheckOut, allCheckedInUsers, retrieveCheckIn } from  '../models/Checkinmodel';
 import { NotificationObject, createNewNotification } from '../models/Notificationmodel';
 import { VenueModel } from '../models/Venuemodel';
-import { retrieveArtist, createArtist, RetrieveEvent } from '../models/Eventmodel';
+import { retrieveArtist, createArtist, RetrieveEvent, isFinished } from '../models/Eventmodel';
 import {body, param, validationResult} from "express-validator"
 import {createMulter} from "../configs/multerConfig";
 import { WishListedEvents } from '../models/Wishlistmodel';
@@ -21,13 +21,11 @@ export class EventController extends BaseController {
 	}
 
 	initializeRoutes(): void {
-		this.router.get('/',
-			upload.none(),
-			(req: express.Request, res: express.Response) => {
-				res.set('Access-Control-Allow-Credentials', 'true');
-				this.getAllEvents(req, res);
-			});
-		this.router.post("/",
+		this.router.get('/', (req: express.Request, res: express.Response) => {
+			res.set('Access-Control-Allow-Credentials', 'true');
+			this.getAllEvents(req, res);
+		});
+		this.router.post("/",  this.requireAuth,
 			upload.fields([{ name: 'banner', maxCount: 1}, { name: 'eventPicture', maxCount: 1}]),
 			[	body("artistID").trim().notEmpty().custom(async value => {
 				const artist = await retrieveArtist(value);
@@ -48,7 +46,6 @@ export class EventController extends BaseController {
 				body("main").trim().notEmpty(),
 				body("doors").trim().notEmpty(),
 				body("price").trim().notEmpty(),
-				body("price").trim().notEmpty(),
 				body("mainGenre").trim().notEmpty(),
 				body("secondGenre").trim().notEmpty(),
 				body("dateAndTime").trim().notEmpty(),
@@ -61,23 +58,45 @@ export class EventController extends BaseController {
 			res.set('Access-Control-Allow-Credentials', 'true');
 			this.getEvent(req, res);
 		});
+		this.router.post('/:eventID', this.requireAuth,  upload.none(), [this.checkEventExists, this.checkUnfinished], this.verifyErrors, (req: express.Request, res: express.Response) => {
+			res.set('Access-Control-Allow-Credentials', 'true');
+			this.editEvent(req, res);
+		});
 		this.router.get('/:eventID/checkins', this.requireAuth, [this.checkEventExists], this.verifyErrors, (req: express.Request, res: express.Response) => {
 			res.set('Access-Control-Allow-Credentials', 'true');
 			this.allCheckedIn(req, res);
 		});
-		this.router.post('/:eventID/invite', upload.none(),this.requireAuth, [this.checkEventExists, this.checkFriendExists], this.verifyErrors, (req: express.Request, res: express.Response) => {
+		this.router.post('/:eventID/invite', upload.none(),this.requireAuth, [this.checkEventExists, this.checkFriendExists, this.checkUnfinished], this.verifyErrors, (req: express.Request, res: express.Response) => {
 			res.set('Access-Control-Allow-Credentials', 'true');
 			this.inviteFriend(req, res);
 		});
-		this.router.post('/:eventID/checkins', this.requireAuth, [this.checkEventExists], this.verifyErrors, (req: express.Request, res: express.Response) => {
+		this.router.post('/:eventID/checkins', this.requireAuth, [this.checkEventExists, this.checkUnfinished], this.verifyErrors, (req: express.Request, res: express.Response) => {
 			res.set('Access-Control-Allow-Credentials', 'true');
 			this.checkIn(req, res);
 		});
-		this.router.delete('/:eventID/checkins', this.requireAuth, [this.checkEventExists], this.verifyErrors, (req: express.Request, res: express.Response) => {
+		this.router.delete('/:eventID/checkins', this.requireAuth, [this.checkEventExists, this.checkUnfinished], this.verifyErrors, (req: express.Request, res: express.Response) => {
 			res.set('Access-Control-Allow-Credentials', 'true');
 			this.checkOut(req, res);
 		});
     }
+
+	async editEvent(req: express.Request, res: express.Response) {
+		console.log("Received request to edit event");
+		const event = req.body.event;
+		const sessiondata = req.session;
+		if (event.userID != sessiondata.userID) {
+			res.status(401).json({ success: true, error: "No permission to update this event"});
+		} else {
+			const {description, main, doors, support, price} = req.body;
+			event.price = price;
+			event.description = description;
+			event.main = main;
+			event.doors = doors;
+			event.support = support;
+			event.save();
+			res.status(200).json({ success: true, message: "Event has been updated"});
+		}
+	}
 
 	async inviteFriend(req: express.Request, res: express.Response) {
 		console.log("Received request to invite friend");
@@ -98,8 +117,8 @@ export class EventController extends BaseController {
 	}
 
 	async getAllEvents(req: express.Request, res: express.Response) {
-		console.log("Accepted request for all events")
-		const events = await database.RetrieveAllEvents();
+		console.log("Accepted request for all events");
+		const events = await database.retrieveUnfinishedEvents();
 		res.status(200).json(events);
 	}
 
@@ -126,10 +145,11 @@ export class EventController extends BaseController {
 		const bannerpictures = req.files['banner']
 		const eventPictures = req.files['eventPicture']
 		if (result.isEmpty() && bannerpictures && eventPictures) {
+			const sessiondata = req.session;
 			const {artistID, venueID, title, description, dateAndTime, price, doors, main, support, mainGenre, secondGenre} = req.body;
 			const bannerPath = "http://localhost:8080/events/" + bannerpictures[0].filename;
 			const eventPicturePath = "http://localhost:8080/events/" + eventPictures[0].filename;
-			const result = await database.CreateEvent(artistID, venueID, title, description, dateAndTime, price, doors, main, support, mainGenre, secondGenre, bannerPath, eventPicturePath);
+			const result = await database.CreateEvent(sessiondata.userID, artistID, venueID, title, description, dateAndTime, price, doors, main, support, mainGenre, secondGenre, bannerPath, eventPicturePath);
 			res.status(200).json({ success: true, eventID: result.eventID, message: 'Event created successfully' });
 		} else {
 			if (bannerpictures) {
@@ -183,6 +203,22 @@ export class EventController extends BaseController {
             }
         })(req, res, next);
 	}
+
+	async checkUnfinished(req: express.Request, res: express.Response, next) {
+        await body("event").custom((event) => {
+            if (event != null) {
+				if (isFinished(event)) {
+					throw new Error("This event has been finished")
+				} else {
+					return true;
+				}
+            } else {
+                return true
+            }
+        })(req, res, next);
+    }
+
+
 
 	async checkEventExists(req: express.Request, res: express.Response, next) {
         await param("eventID").custom(async (eventID, { req }) => {
