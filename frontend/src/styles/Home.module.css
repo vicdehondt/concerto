@@ -449,5 +449,17 @@
 }
 
 .accountOverviewContainer {
+  display: flex;
+  flex-direction: column;
   width: 50%;
+}
+
+.profilePictureContainer img {
+  border-radius: 50%;
+  margin-top: 400px;
+}
+
+.BiographySettingsContainer {
+  text-align: center;
+
 }
