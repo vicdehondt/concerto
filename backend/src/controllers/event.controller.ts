@@ -33,6 +33,8 @@ export class EventController extends BaseController {
 					const result = await createArtist(value);
 					if (!result) {
 						throw new Error("No artist was found with this ID");
+					} else {
+						return true;
 					}
 			}}),
 				body("venueID").trim().notEmpty().custom(async value => {
