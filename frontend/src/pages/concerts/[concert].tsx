@@ -102,17 +102,17 @@ export default function Concert() {
             setArtistScore(responseJSON.Rating.score);
           });
         }
-        // if (responseJSON.venueID) {
-        //   fetch(environment.backendURL + `/venues/${responseJSON.venueID}`, {
-        //     mode: "cors",
-        //     credentials: "include",
-        //   })
-        //   .then((response) => {
-        //     return response.json();
-        //   }).then((responseJSON) => {
-        //     setVenueScore(responseJSON.Rating.score);
-        //   });
-        // }
+        if (responseJSON.venueID) {
+          fetch(environment.backendURL + `/venues/${responseJSON.venueID}`, {
+            mode: "cors",
+            credentials: "include",
+          })
+          .then((response) => {
+            return response.json();
+          }).then((responseJSON) => {
+            setVenueScore(responseJSON.score);
+          });
+        }
       });
     }
   }, [router.query.concert])
@@ -155,7 +155,7 @@ export default function Concert() {
             </div>
           </div>
           <div className={styles.ratingContainer}>
-            <Rating artistScore={artistScore} venueScore={venueScore} />
+            <Rating artistScore={artistScore} venueScore={venueScore} artist={concert.artistID} venue={concert.venueID} />
           </div>
           <div className={styles.friendInviteContainer}>
             <FriendInvites />

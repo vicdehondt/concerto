@@ -23,7 +23,7 @@ export const Artist = sequelize.define('Artist', {
 Artist.hasOne(Rating, {
   foreignKey: {
       name: 'entityID',
-      allowNull: false
+      allowNull: true
   }
 });
 Rating.hasOne(Artist, {

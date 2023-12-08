@@ -45,6 +45,10 @@ export const UserModel = sequelize.define('User', {
         type: privacySettings,
         defaultValue: 'public'
     },
+    description: {
+        type: DataTypes.TEXT,
+        defaultValue: "Hello, welcome to my profile page."
+    },
     salt: {
         type: DataTypes.INTEGER,
         allowNull: false

@@ -2,6 +2,8 @@ import * as express from 'express';
 import { BaseController } from './base.controller';
 import * as database from '../models/Usermodel';
 import {createMulter} from "../configs/multerConfig"
+import {body, validationResult} from "express-validator"
+const fs = require('fs');
 
 const userImagePath = './public/users';
 
@@ -19,42 +21,61 @@ export class ProfileController extends BaseController {
 			(req: express.Request, res: express.Response) => {
                 this.getProfile(req, res);
 			});
+        this.router.post('/profilepicture', this.requireAuth,
+			upload.single("picture"),
+			(req: express.Request, res: express.Response) => {
+                this.changeProfilePicture(req, res);
+			});
+        this.router.post('/description', this.requireAuth,
+			upload.none(),
+            [
+                body("description").trim().notEmpty(),
+            ],
+			(req: express.Request, res: express.Response) => {
+                this.changeDescription(req, res);
+			});
         this.router.get('/settings/privacy', this.requireAuth,
 			upload.none(),
 			(req: express.Request, res: express.Response) => {
                 this.getPrivacySettings(req, res);
 			});
-		this.router.put('/settings/privacy/attendedevents', this.requireAuth,
+        this.router.post('/settings/privacy', this.requireAuth,
 			upload.none(),
 			(req: express.Request, res: express.Response) => {
-                this.changePrivacySetting(req, res, 'privacyAttendedEvents');
+                this.changePrivacySetting(req, res);
 			});
-        this.router.put('/settings/privacy/friends', this.requireAuth,
-			upload.none(),
-			(req: express.Request, res: express.Response) => {
-                this.changePrivacySetting(req, res, 'privacyFriends');
-			});
-        this.router.put('/settings/privacy/checkedinevents', this.requireAuth,
-			upload.none(),
-			(req: express.Request, res: express.Response) => {
-                this.changePrivacySetting(req, res, 'privacyCheckedInEvents');
-			});
-        this.router.put('/settings/privacy/attendedevents', this.requireAuth,
-			upload.none(),
-			(req: express.Request, res: express.Response) => {
-                this.changePrivacySetting(req, res, 'privacyAttendedeEvents');
-			});
-        this.router.put('/settings/personal/mail', this.requireAuth,
+        this.router.post('/settings/personal/mail', this.requireAuth,
 			upload.none(),
 			(req: express.Request, res: express.Response) => {
                 this.changeMail(req, res);
 			});
     }
 
+    async changeProfilePicture(req: express.Request, res: express.Response) {
+        const sessiondata = req.session;
+        const user = await database.UserModel.findByPk(sessiondata.userID);
+        const profilepicture = req.file;
+        const picturepath = "http://localhost:8080/users/" + profilepicture.filename;
+        if (user.image) {
+            console.log("Deleting an old profile picture is not implemented yet")
+        }
+        user.image = picturepath;
+        await user.save();
+        res.status(200).json({success: true, message: "profile picture has been changed"});
+    }
+
+    async changeDescription(req: express.Request, res: express.Response) {
+        const sessiondata = req.session;
+        const user = await database.UserModel.findByPk(sessiondata.userID);
+        user.description = req.body.description;
+        await user.save();
+        res.status(200).json({success: true, message: "Description has been changed "});
+    }
+
     async getProfile(req: express.Request, res: express.Response) {
         const sessiondata = req.session;
         const user = await database.UserModel.findByPk(sessiondata.userID, {
-            attributes: ['image', 'username', 'userID', 'mail', 'privacyAttendedEvents', 'privacyCheckedInEvents', 'privacyFriends']
+            attributes: ['image', 'username', 'userID', 'mail', 'privacyAttendedEvents', 'privacyCheckedInEvents', 'privacyFriends', 'description']
         });
         res.status(200).json(user);
     }
@@ -86,18 +107,15 @@ export class ProfileController extends BaseController {
         }
     }
 
-    async changePrivacySetting(req: express.Request, res: express.Response, settingType) {
+    async changePrivacySetting(req: express.Request, res: express.Response) {
         const sessiondata = req.session;
         const userID = sessiondata.userID;
-        const newSetting = req.body.setting;
+        const {privacyCheckedInEvents, privacyAttendedEvents, privacyFriends} = req.body;
         const user = await database.UserModel.findByPk(userID);
-        if (database.isValidPrivacySetting(newSetting)) {
-            user[settingType] = newSetting;
-            await user.save();
-            console
-            res.status(200).json({ success: true, message: 'Changed setting'});
-        } else {
-            res.status(400).json({ success: false, error: 'Invalid setting value'});
-        }
+        user.privacyCheckedInEvents = privacyCheckedInEvents;
+        user.privacyAttendedEvents = privacyAttendedEvents;
+        user.privacyFriends = privacyFriends;
+        await user.save();
+        res.status(200).json({ success: true, message: 'Changed settings'});
     }
 }
