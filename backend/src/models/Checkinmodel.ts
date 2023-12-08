@@ -1,7 +1,7 @@
 import { DataTypes, Op } from 'sequelize';
 import {sequelize} from '../configs/sequelizeConfig'
 import { RetrieveUser, UserModel } from './Usermodel';
-import { EventModel } from './Eventmodel';
+import { EventModel, expiredEventTreshold } from './Eventmodel';
 
 export const CheckedInUsers = sequelize.define('CheckedInUser', {
     checkinID: {
@@ -109,6 +109,32 @@ export async function allCheckedInEvents(userID) {
     });
     const events = await user.getEvents({
         attributes: ['eventID', 'eventPicture', 'title'],
+        where: {
+            dateAndTime: {
+                [Op.gte]: expiredEventTreshold()
+            }
+        }
+    });
+    const cleanedEvents = events.map(event => {
+        const { CheckedInUser, ...eventWithoutCheckedInUser } = event.toJSON();
+        return eventWithoutCheckedInUser;
+    });
+    return cleanedEvents;
+}
+
+export async function allAttendedEvents(userID) {
+    const user = await UserModel.findByPk(userID, {
+        include: [{
+            model: EventModel,
+        }]
+    });
+    const events = await user.getEvents({
+        attributes: ['eventID', 'eventPicture', 'title'],
+        where: {
+            dateAndTime: {
+                [Op.lt]: expiredEventTreshold()
+            }
+        }
     });
     const cleanedEvents = events.map(event => {
         const { CheckedInUser, ...eventWithoutCheckedInUser } = event.toJSON();

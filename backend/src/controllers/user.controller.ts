@@ -2,7 +2,7 @@ import * as express from 'express';
 import { BaseController } from './base.controller';
 import * as database from '../models/Usermodel';
 import {createMulter} from "../configs/multerConfig"
-import { allCheckedInEvents } from "../models/Checkinmodel"
+import { allCheckedInEvents, allAttendedEvents } from "../models/Checkinmodel"
 const fs = require('fs');
 
 const userImagePath = './public/users';
@@ -30,6 +30,11 @@ export class UserController extends BaseController {
 			upload.none(),
 			(req: express.Request, res: express.Response) => {
 				this.getCheckIns(req, res);
+			});
+		this.router.get('/:userid/attended', this.requireAuth, this.checkUserExists,
+			upload.none(),
+			(req: express.Request, res: express.Response) => {
+				this.getAttendedEvents(req, res);
 			});
 		this.router.get('/:userid/friends', this.requireAuth, this.checkUserExists,
 			upload.none(),
@@ -107,6 +112,12 @@ export class UserController extends BaseController {
 	async getCheckIns(req: express.Request, res: express.Response) {
 		this.getUserRelations(req, res, user => { return user.privacyCheckedInEvents}, async userid => {
 			return await allCheckedInEvents(userid)
+		});
+	}
+
+	async getAttendedEvents(req: express.Request, res: express.Response) {
+		this.getUserRelations(req, res, user => { return user.privacyCheckedInEvents}, async userid => {
+			return await allAttendedEvents(userid);
 		});
 	}
 }
