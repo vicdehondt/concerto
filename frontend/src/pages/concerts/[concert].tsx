@@ -110,7 +110,7 @@ export default function Concert() {
           .then((response) => {
             return response.json();
           }).then((responseJSON) => {
-            setVenueScore(responseJSON.score);
+            setVenueScore(responseJSON.Rating.score);
           });
         }
       });
