@@ -4,9 +4,14 @@ import {body, param} from "express-validator"
 import { CreateVenue, retrieveVenue, VenueModel } from '../models/Venuemodel';
 import { retrieveCheckIn } from '../models/Checkinmodel';
 import { RetrieveEvent } from '../models/Eventmodel';
+import {createMulter} from "../configs/multerConfig";
 import { Review, createReview } from '../models/Ratingmodel';
 
 const axios = require('axios');
+
+const eventImagePath = './public/venues';
+
+const upload = createMulter(eventImagePath);
 
 export class VenueController extends BaseController {
 
@@ -69,7 +74,7 @@ export class VenueController extends BaseController {
                 res.set('Access-Control-Allow-Credentials', 'true');
                 this.getReviews(req, res);
             });
-        this.router.post('/:venueID/reviews',
+        this.router.post('/:venueID/reviews', upload.none(),
             [this.checkEventExists, this.checkVenueExists],
             this.verifyErrors,
             (req: express.Request, res: express.Response) => {
