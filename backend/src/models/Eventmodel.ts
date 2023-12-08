@@ -1,4 +1,4 @@
-import { ARRAY, DataTypes, Op } from 'sequelize';
+import { DataTypes, Op } from 'sequelize';
 import {sequelize} from '../configs/sequelizeConfig'
 import { Rating } from './Ratingmodel';
 import { UserModel } from './Usermodel';
@@ -182,10 +182,16 @@ export async function CreateEvent(userID, artistID, venueID, title, description,
   }
 };
 
-export async function RetrieveAllEvents(): Promise<typeof EventModel>  {
+export async function retrieveUnfinishedEvents(): Promise<typeof EventModel>  {
+  const yesterday = new Date();
+  yesterday.setHours(yesterday.getHours() - 24);
   const events = await EventModel.findAll({
     attributes: {
       exclude: ['createdAt', 'updatedAt']
+    }, where: {
+      dateAndTime: {
+        [Op.gte]: yesterday
+      }
     }
   });
   return events;

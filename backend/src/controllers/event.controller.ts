@@ -118,7 +118,7 @@ export class EventController extends BaseController {
 
 	async getAllEvents(req: express.Request, res: express.Response) {
 		console.log("Accepted request for all events");
-		const events = await database.RetrieveAllEvents();
+		const events = await database.retrieveUnfinishedEvents();
 		res.status(200).json(events);
 	}
 
