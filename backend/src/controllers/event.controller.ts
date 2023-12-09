@@ -33,6 +33,8 @@ export class EventController extends BaseController {
 					const result = await createArtist(value);
 					if (!result) {
 						throw new Error("No artist was found with this ID");
+					} else {
+						return true;
 					}
 			}}),
 				body("venueID").trim().notEmpty().custom(async value => {
@@ -70,11 +72,11 @@ export class EventController extends BaseController {
 			res.set('Access-Control-Allow-Credentials', 'true');
 			this.inviteFriend(req, res);
 		});
-		this.router.post('/:eventID/checkins', this.requireAuth, [this.checkEventExists, this.checkUnfinished], this.verifyErrors, (req: express.Request, res: express.Response) => {
+		this.router.post('/:eventID/checkins', this.requireAuth, [this.checkEventExists], this.verifyErrors, (req: express.Request, res: express.Response) => {
 			res.set('Access-Control-Allow-Credentials', 'true');
 			this.checkIn(req, res);
 		});
-		this.router.delete('/:eventID/checkins', this.requireAuth, [this.checkEventExists, this.checkUnfinished], this.verifyErrors, (req: express.Request, res: express.Response) => {
+		this.router.post('/:eventID/checkouts', this.requireAuth, [this.checkEventExists, this.checkUnfinished], this.verifyErrors, (req: express.Request, res: express.Response) => {
 			res.set('Access-Control-Allow-Credentials', 'true');
 			this.checkOut(req, res);
 		});
@@ -132,9 +134,11 @@ export class EventController extends BaseController {
 				userID: sessiondata.userID,
 			}
 		});
+		const checkedIn = await retrieveCheckIn(sessiondata.userID, event) != null;
 		const eventWithWishlist = {
 			...event.toJSON(),
 			wishlisted: wishlisted !== null,
+			checkedIn: checkedIn,
 		};
 		res.status(200).json(eventWithWishlist);
 	}

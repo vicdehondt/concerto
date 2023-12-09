@@ -47,7 +47,7 @@ export const EventModel = sequelize.define('Event', {
     type: DataTypes.TEXT,
     allowNull: false
   },
-  checkedIn: {
+  amountCheckedIn: {
     type: DataTypes.INTEGER,
     allowNull: false,
     defaultValue: 0,
@@ -182,15 +182,19 @@ export async function CreateEvent(userID, artistID, venueID, title, description,
   }
 };
 
-export async function retrieveUnfinishedEvents(): Promise<typeof EventModel>  {
+export function expiredEventTreshold() {
   const yesterday = new Date();
   yesterday.setHours(yesterday.getHours() - 24);
+  return yesterday;
+}
+
+export async function retrieveUnfinishedEvents(): Promise<typeof EventModel>  {
   const events = await EventModel.findAll({
     attributes: {
       exclude: ['createdAt', 'updatedAt']
     }, where: {
       dateAndTime: {
-        [Op.gte]: yesterday
+        [Op.gte]: expiredEventTreshold(),
       }
     }
   });

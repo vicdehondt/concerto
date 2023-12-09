@@ -12,7 +12,7 @@ const options = ["public", "friends", "private"];
 
 export default function PrivacySetting({name, setting, initial}: {name: string, setting: string, initial: string}) {
   return (
-    <div className={styles.setting}>
+    <div  key={setting} className={styles.setting}>
         <div className={styles.settingName}>
             {name}
         </div>
