@@ -43,7 +43,8 @@ export default function Account() {
     privacyFriends: "",
     description: "",
   });
-  const [events, setEvents] = useState([]);
+  const [checkedevents, setcheckedEvents] = useState([]);
+  const [attendedevents, setAttendedEvents] = useState([]);
   const [checkedInPrivacy, setCheckedInPrivacy] = useState(true)
 
   const router = useRouter();
@@ -61,7 +62,25 @@ export default function Account() {
       }
     }).then((responseJSON) => {
       if (responseJSON != null) {
-        setEvents(responseJSON)
+        setcheckedEvents(responseJSON);
+      }
+    });
+  }
+
+  function requestAttended(user: User) {
+    fetch(environment.backendURL + "/users" + `/${user.userID}/attended`, {
+      mode: "cors",
+      credentials: "include",
+  }).then((response) => {
+      if (response.status == 200) {
+        return response.json();
+      } else {
+        setCheckedInPrivacy(false);
+        return null;
+      }
+    }).then((responseJSON) => {
+      if (responseJSON != null) {
+        setAttendedEvents(responseJSON)
       }
     });
   }
@@ -97,6 +116,7 @@ export default function Account() {
         .then((responseJSON) => {
           setUser(responseJSON);
           requestCheckins(responseJSON);
+          requestAttended(responseJSON);
         });
     }
   }, [router.query.account]);
@@ -114,10 +134,10 @@ export default function Account() {
             <Biography source={user.image} username={user.username} description={user.description} />
           </div>
           <div className={styles.attendedEventsContainer}>
-            {showCheckins(events)}
+            {showCheckins(checkedevents)}
           </div>
           <div className={styles.pastEventsContainer}>
-            Not implemented yet.
+          {showCheckins(attendedevents)}
           </div>
         </div>
       </main>
