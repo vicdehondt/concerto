@@ -36,8 +36,8 @@ export default function UserSettings(userid: { userid: number}) {
   }
 
   async function onDiscard() {
-    console.log("Discarding settings")
-    setPrivacySettings(initialprivacySettings)
+    console.log("Discarding settings");
+    setPrivacySettings(initialprivacySettings);
     console.log("Original settings: ", initialprivacySettings);
   }
 
@@ -66,11 +66,11 @@ export default function UserSettings(userid: { userid: number}) {
         <PrivacySetting name={"Upcoming events you have checked in"} setting={"privacyCheckedInEvents"} initial={privacySettings.privacyCheckedInEvents} />
         <PrivacySetting name={"Your friends"} setting={"privacyFriends"} initial={privacySettings.privacyFriends} />
         <div className={styles.saveButton} >
-          <button type="submit">
-            Save settings
-          </button>
           <button onClick={onDiscard}>
             Discard settings
+          </button>
+          <button type="submit">
+            Save settings
           </button>
         </div>
       </form>

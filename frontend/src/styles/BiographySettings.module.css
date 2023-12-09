@@ -11,11 +11,12 @@
 .username {
     height: 20%;
     margin-top: 10px;
-    margin-left: 40px;
+    margin-left: 30px;
     font-size: x-large;
     font-weight: 700;
 }
 
-.descriptionContainer {
-    text-align: center;
+.description {
+    font-weight: 500;
+    margin-left: 30px;
 }

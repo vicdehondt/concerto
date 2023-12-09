@@ -464,11 +464,15 @@
   margin-top: 100px;
 }
 .profilePicture {
-  margin-left: 50px;
-  height: 50%;
+  margin-left: 33%;
+  width: 180px;
+  height: 180px;
+  background-color: white;
+  border-radius: 50%;
 }
 
 
 .BiographySettingsContainer {
+  margin-top: 20px;
   height: 50%;
 }

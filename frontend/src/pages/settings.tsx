@@ -41,7 +41,7 @@ export default function Settings() {
 
   function showPicture(source: string) {
     if (source != null) {
-      return <Image className={styles.profilePicture} src={source} width={170} height={170} alt="Profile picture of user." />;
+      return <Image src={source} width={170} height={170} alt="Profile picture of user." />;
     }
     return <User fill={'black'} className={styles.userPicture} width={170} height={170} />;
   }
@@ -78,7 +78,9 @@ export default function Settings() {
             </div>
             <div className={styles.accountOverviewContainer}>
               <div className={styles.profilePictureContainer}>
+                <div className={styles.profilePicture}>
                 {showPicture(user.image)}
+                </div>
               </div>
               <div className={styles.BiographySettingsContainer}>
                 <BiographySettings username={user.username} description={user.description}/>
