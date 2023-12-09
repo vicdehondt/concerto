@@ -10,18 +10,6 @@ if (process.env.NODE_ENV == "production") {
   environment.backendURL = "https://api.concerto.dehondt.dev";
 }
 
-async function onSave(event: FormEvent<HTMLFormElement>) {
-  event.preventDefault();
-  var formData = new FormData(event.currentTarget);
-  const form_values = Object.fromEntries(formData);
-  const response = await fetch(environment.backendURL + "/profile/settings/privacy", {
-    method: "POST",
-    body: formData,
-    mode: "cors",
-    credentials: "include",
-  });
-}
-
 export default function UserSettings(userid: { userid: number}) {
   const [loading, setLoading] = useState(true);
   const [privacySettings, setPrivacySettings] = useState({
@@ -29,6 +17,29 @@ export default function UserSettings(userid: { userid: number}) {
     privacyCheckedInEvents: "",
     privacyFriends: "",
   })
+  const [initialprivacySettings, setinitialPrivacySettings] = useState({
+    privacyAttendedEvents: "",
+    privacyCheckedInEvents: "",
+    privacyFriends: "",
+  })
+
+  async function onSave(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    var formData = new FormData(event.currentTarget);
+    const form_values = Object.fromEntries(formData);
+    const response = await fetch(environment.backendURL + "/profile/settings/privacy", {
+      method: "POST",
+      body: formData,
+      mode: "cors",
+      credentials: "include",
+    });
+  }
+
+  async function onDiscard() {
+    console.log("Discarding settings")
+    setPrivacySettings(initialprivacySettings)
+    console.log("Original settings: ", initialprivacySettings);
+  }
 
   useEffect(() => {
     fetch(environment.backendURL + `/profile/settings/privacy`, {
@@ -40,9 +51,10 @@ export default function UserSettings(userid: { userid: number}) {
       })
       .then((responseJSON) => {
         setPrivacySettings(responseJSON);
+        setinitialPrivacySettings(responseJSON);
         setLoading(false);
       });
-}, []);
+},  []);
 
   return (
     <div className={styles.settingContainer}>
@@ -56,6 +68,9 @@ export default function UserSettings(userid: { userid: number}) {
         <div className={styles.saveButton} >
           <button type="submit">
             Save settings
+          </button>
+          <button onClick={onDiscard}>
+            Discard settings
           </button>
         </div>
       </form>

@@ -5,6 +5,7 @@ import Image from "next/image";
 import { User } from 'lucide-react';
 import { useEffect, useState } from "react";
 import UserSettings from "@/components/UserSettings"
+import { BiographySettings} from "@/components/BiographySettings"
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -40,7 +41,7 @@ export default function Settings() {
 
   function showPicture(source: string) {
     if (source != null) {
-      return <Image src={source} width={170} height={170} alt="Profile picture of user." />;
+      return <Image className={styles.profilePicture} src={source} width={170} height={170} alt="Profile picture of user." />;
     }
     return <User fill={'black'} className={styles.userPicture} width={170} height={170} />;
   }
@@ -80,7 +81,7 @@ export default function Settings() {
                 {showPicture(user.image)}
               </div>
               <div className={styles.BiographySettingsContainer}>
-                test
+                <BiographySettings username={user.username} description={user.description}/>
               </div>
             </div>
         </div>
