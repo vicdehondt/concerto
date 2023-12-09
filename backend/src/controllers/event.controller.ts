@@ -134,9 +134,11 @@ export class EventController extends BaseController {
 				userID: sessiondata.userID,
 			}
 		});
+		const checkedIn = await retrieveCheckIn(sessiondata.userID, event) != null;
 		const eventWithWishlist = {
 			...event.toJSON(),
 			wishlisted: wishlisted !== null,
+			checkedIn: checkedIn,
 		};
 		res.status(200).json(eventWithWishlist);
 	}

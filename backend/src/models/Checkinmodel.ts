@@ -45,11 +45,11 @@ EventModel.belongsToMany(UserModel, {
 CheckedInUsers.belongsTo(UserModel, { foreignKey: 'userID' });
 CheckedInUsers.belongsTo(EventModel, { foreignKey: 'eventID' });
 
-export async function retrieveCheckIn(user, event) {
+export async function retrieveCheckIn(userID, event) {
     const result = await CheckedInUsers.findOne({
         where: {
             [Op.and]: [
-                { userID: user },
+                { userID: userID },
                 { eventID: event.eventID }
             ]
         }
@@ -64,7 +64,7 @@ export async function userCheckIn(userID, event): Promise<boolean> {
             userID: userID,
             eventID: event.eventID
         });
-        event.checkedIn = event.checkedIn + 1;
+        event.amountCheckedIn = event.amountCheckedIn + 1;
         await event.save();
         return true;
     } else {
@@ -76,7 +76,7 @@ export async function userCheckOut(userID, event): Promise<boolean> {
     const checkIn = await retrieveCheckIn(userID, event);
     if (checkIn != null) {
         await checkIn.destroy();
-        event.checkedIn = event.checkedIn - 1;
+        event.amountCheckedIn = event.amountCheckedIn - 1;
         await event.save();
         return true;
     } else {
