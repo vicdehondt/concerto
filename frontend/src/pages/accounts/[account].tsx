@@ -29,7 +29,20 @@ type User = {
 type Event = {
   eventID: number;
   title: string;
+  description: string;
+  amountCheckedIn: number;
+  dateAndTime: string;
+  support: string;
+  doors: string;
+  main: string;
+  baseGenre: string;
+  secondGenre: string;
+  price: number;
+  banner: string;
   eventPicture: string;
+  artistID: string;
+  venueID: string;
+  checkedIn: boolean;
 };
 
 export default function Account() {

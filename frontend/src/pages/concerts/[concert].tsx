@@ -8,6 +8,7 @@ import Rating from "@/components/Rating";
 import Timetable from "@/components/Timetable";
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import { FormEvent } from "react";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -22,7 +23,7 @@ type Event = {
   eventID: number;
   title: string;
   description: string;
-  checkedIn: number;
+  amountCheckedIn: number;
   dateAndTime: string;
   support: string;
   doors: string;
@@ -34,6 +35,7 @@ type Event = {
   eventPicture: string;
   artistID: string;
   venueID: string;
+  checkedIn: boolean;
 };
 
 type Artist = {
@@ -55,7 +57,7 @@ export default function Concert() {
     eventID: 0,
     title: "",
     description: "",
-    checkedIn: 0,
+    amountCheckedIn: 0,
     dateAndTime: "",
     price: 0,
     banner: "",
@@ -67,11 +69,13 @@ export default function Concert() {
     secondGenre: "ph",
     artistID: "123",
     venueID: "123",
+    checkedIn: false,
   });
 
   const [artist, setArtist] = useState({Rating: {score: 0}})
   const [artistScore, setArtistScore] = useState(0);
   const [venueScore, setVenueScore] = useState(0);
+  const [checkedIn, setCheckedIn] = useState(false);
 
   function showBanner() {
     if (concert.eventID > 0) {
@@ -90,6 +94,7 @@ export default function Concert() {
         return response.json();
       }).then((responseJSON) => {
         setConcert(responseJSON);
+        setCheckedIn(responseJSON.checkedIn);
         if (responseJSON.artistID) {
           fetch(environment.backendURL + `/artists/${responseJSON.artistID}`, {
             mode: "cors",
@@ -125,6 +130,41 @@ export default function Concert() {
     return null;
   }
 
+  function showCheckIn() {
+    if (checkedIn) {
+      return (
+        <button type="submit" className={styles.checkinButton}>Checked-in!</button>
+      );
+    } else {
+      return (
+        <button type="submit" className={styles.checkinButton}>Check-in</button>
+      );
+    }
+  }
+
+  async function onSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (checkedIn) {
+      const response = await fetch(environment.backendURL + `/events/${router.query.concert}/checkouts`, {
+        method: "POST",
+        mode: "cors",
+        credentials: "include",
+      });
+      if (response.status == 200) {
+        setCheckedIn(false)
+      }
+    } else {
+      const response = await fetch(environment.backendURL + `/events/${router.query.concert}/checkins`, {
+        method: "POST",
+        mode: "cors",
+        credentials: "include",
+      });
+      if (response.status == 200) {
+        setCheckedIn(true)
+      }
+    }
+  }
+
   return (
     <>
       <Head>
@@ -153,6 +193,9 @@ export default function Concert() {
                 <Image src="/icons/heart.png" width={50} height={50} alt="Add to wishlist" />
               </div>
             </div>
+            <form onSubmit={onSubmit}>
+              {showCheckIn()}
+            </form>
           </div>
           <div className={styles.ratingContainer}>
             <Rating artistScore={artistScore} venueScore={venueScore} artist={concert.artistID} venue={concert.venueID} />
