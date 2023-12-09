@@ -165,6 +165,22 @@
   box-shadow: 0px 3px 3px grey;
 }
 
+.concertPage .checkinButton {
+  all: unset;
+  cursor: pointer;
+  background-color: black;
+  color: white;
+  font-size: large;
+  font-weight: bold;
+  padding: 15px;
+  border: 1px solid black;
+  border-radius: 15px;
+  box-shadow: 0 3px 3px grey;
+  margin-top: 15px;
+  width: 110px;
+  text-align: center;
+}
+
 .concertPage .addToWishlist {
   margin: 15px;
   padding-top: 15px;
@@ -438,6 +454,8 @@
   border-bottom-left-radius: 10px;
   border-bottom-right-radius: 10px;
   border: 4px solid black;
+  background-color: white;
+  box-shadow: 0 2px 2px;
 }
 
 .pastEventsContainer {
@@ -451,9 +469,11 @@
   width: 70%;
   height: 70%;
   margin-right: 25%;
+  background-color: white;
   border-top-right-radius: 10px;
   border-bottom-left-radius: 10px;
   border-bottom-right-radius: 10px;
+  box-shadow: 0 2px 2px;
 }
 
 .artistPage {
@@ -563,6 +583,7 @@
 .settingsPage {
   color: black;
   display: flex;
+  background-color: #e8f7ee;
 }
 
 
@@ -573,5 +594,25 @@
 }
 
 .accountOverviewContainer {
+  display: flex;
+  flex-direction: column;
   width: 50%;
+}
+
+.profilePictureContainer {
+  text-align: center;
+  margin-top: 100px;
+}
+.profilePicture {
+  margin-left: 33%;
+  width: 180px;
+  height: 180px;
+  background-color: white;
+  border-radius: 50%;
+}
+
+
+.BiographySettingsContainer {
+  margin-top: 20px;
+  height: 50%;
 }

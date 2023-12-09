@@ -1,8 +1,11 @@
 import Head from "next/head";
 import { Inter } from "next/font/google";
 import styles from "@/styles/Home.module.css";
+import Image from "next/image";
+import { User } from 'lucide-react';
 import { useEffect, useState } from "react";
 import UserSettings from "@/components/UserSettings"
+import { BiographySettings} from "@/components/BiographySettings"
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -36,6 +39,13 @@ export default function Settings() {
     description: "",
   });
 
+  function showPicture(source: string) {
+    if (source != null) {
+      return <Image src={source} width={170} height={170} alt="Profile picture of user." />;
+    }
+    return <User fill={'black'} className={styles.userPicture} width={170} height={170} />;
+  }
+
 
   useEffect(() => {
       fetch(environment.backendURL + `/profile`, {
@@ -46,6 +56,7 @@ export default function Settings() {
           return response.json();
         })
         .then((responseJSON) => {
+          console.log(responseJSON);
           setUser(responseJSON);
         });
   }, []);
@@ -59,16 +70,23 @@ export default function Settings() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className={`${styles.main} ${inter.className}`}>
-      <div className={[styles.page, styles.settingsPage].join(" ")}>
-          <div className={styles.settingContainer}>
-            <UserSettings
-            userid={user.userID}
-            />
-          </div>
-          <div className={styles.accountOverviewContainer}>
-            account overview
-          </div>
-      </div>
+        <div className={[styles.page, styles.settingsPage].join(" ")}>
+            <div className={styles.settingContainer}>
+              <UserSettings
+              userid={user.userID}
+              />
+            </div>
+            <div className={styles.accountOverviewContainer}>
+              <div className={styles.profilePictureContainer}>
+                <div className={styles.profilePicture}>
+                {showPicture(user.image)}
+                </div>
+              </div>
+              <div className={styles.BiographySettingsContainer}>
+                <BiographySettings username={user.username} description={user.description}/>
+              </div>
+            </div>
+        </div>
       </main>
     </>
   );

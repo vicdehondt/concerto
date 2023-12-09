@@ -22,7 +22,7 @@ type Event = {
   eventID: number;
   title: string;
   description: string;
-  checkedIn: number;
+  amountCheckedIn: number;
   dateAndTime: string;
   support: string;
   doors: string;
@@ -34,6 +34,7 @@ type Event = {
   eventPicture: string;
   artistID: string;
   venueID: string;
+  checkedIn: boolean;
 };
 
 export default function Home() {
@@ -60,7 +61,7 @@ export default function Home() {
               eventId={event.eventID}
               title={event.title}
               location={jsonResponse.venueName}
-              amountAttending={event.checkedIn}
+              amountAttending={event.amountCheckedIn}
               dateAndTime={event.dateAndTime}
               price={event.price}
               image={event.eventPicture}

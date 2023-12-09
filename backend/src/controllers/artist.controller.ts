@@ -51,9 +51,9 @@ export class ArtistController extends BaseController {
 
     async getReviews(req: express.Request, res: express.Response) {
         const artistID = req.params.artistID;
-        const artist = await Artist.findByPk(artistID);
+        const artist = await retrieveArtist(artistID);
         if (artist != null) {
-            const ratingID = artist.ratingID;
+            const ratingID = artist.Rating.ratingID;
             const result = await Review.findAll({
                 where: {
                     ratingID: ratingID
@@ -68,7 +68,7 @@ export class ArtistController extends BaseController {
     async reviewArtist(req: express.Request, res: express.Response) {
         const sessiondata = req.session;
         const artistID = req.params.artistID;
-        const artist = await Artist.findByPk(artistID);
+        const artist = await retrieveArtist(artistID)
         if (artist != null) {
             const {message, score, event} = req.body;
             const checkedin = await retrieveCheckIn(sessiondata.userID, event);
@@ -76,7 +76,7 @@ export class ArtistController extends BaseController {
                 res.status(400).json({ success: false, error: "Not allowed to review this event"});
             } else {
                 try {
-                    const rating = await Rating.findByPk(artist.ratingID);
+                    const rating = artist.Rating;
                     const result = await createReview(sessiondata.userID, rating, event.eventID, score, message);
                     if (result) {
                         res.status(200).json({ success: true, message: "Created a review for this artist"});
