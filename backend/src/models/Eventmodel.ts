@@ -47,7 +47,7 @@ export const EventModel = sequelize.define('Event', {
     type: DataTypes.TEXT,
     allowNull: false
   },
-  checkedIn: {
+  amountCheckedIn: {
     type: DataTypes.INTEGER,
     allowNull: false,
     defaultValue: 0,
