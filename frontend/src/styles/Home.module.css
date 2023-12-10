@@ -601,8 +601,44 @@
   border-radius: 50%;
 }
 
-
 .BiographySettingsContainer {
   margin-top: 20px;
   height: 50%;
+}
+
+.wishlistPage {
+  background-color: #e8f7ee;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+.wishlistPage .header {
+  font-size: 60px;
+  font-weight: bold;
+  text-align: center;
+  margin-top: 30px;
+  margin-bottom: 80px;
+}
+
+.wishlistPage .wishContainer {
+  flex: 1;
+  min-width: fit-content;
+  background-color: white;
+  border: solid black 0;
+  border-radius: 8px;
+  box-shadow: 1px 2px 2px;
+  margin: 0 10% 20px 10%;
+  padding: 15px 0 15px 0;
+}
+
+.wishlistPage .wishContainer >* {
+  margin: 15px 20px 15px 20px;
+}
+
+.settingsPage {
+  color: black;
+  display: flex;
+  background-color: #e8f7ee;
 }
