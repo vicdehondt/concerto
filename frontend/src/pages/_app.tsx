@@ -44,9 +44,7 @@ export default function App({ Component, pageProps }: AppProps) {
         const notHomePage = router.asPath != "/";
         const notRegisterPage = !router.asPath.includes("/register");
         const notLoginPage = !router.asPath.includes("/login");
-        const notMapPage = !router.asPath.includes("/map");
-        const notOnAllowedPages = notHomePage && notRegisterPage && notLoginPage && notMapPage
-        if ((response.status == 400) && notOnAllowedPages) {
+        if ((response.status == 400) && notHomePage && notRegisterPage && notLoginPage) {
           const from = router.query.from || '/';
           router.push(`/login?from=${router.asPath}`);
         }
@@ -56,8 +54,12 @@ export default function App({ Component, pageProps }: AppProps) {
 
   function NavbarOrHamburgerIfNeeded() {
     const path = router.asPath;
-    if (path != "/login" && path != "/register") {
-      return isMobile ? <HamburgerMenu pictureSource="/photos/Rombout.jpeg" /> : <Navbar pictureSource="/photos/Rombout.jpeg" />
+    if (!path.includes("/login") && !path.includes("/register")) {
+      if(isMobile){
+        return <HamburgerMenu pictureSource="/photos/Rombout.jpeg" />
+      } else{
+        return <Navbar pictureSource="/photos/Rombout.jpeg" />
+      }
     }
   }
 
