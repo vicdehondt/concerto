@@ -201,7 +201,7 @@ function Navbar({ pictureSource }: { pictureSource: string }) {
       credentials: "include",
     }).then((response) => {
       if (response.status == 200) {
-        router.reload();
+        router.push("/");
       }
     });
   }
