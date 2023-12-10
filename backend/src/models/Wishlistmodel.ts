@@ -43,6 +43,15 @@ WishListedEvents.belongsTo(EventModel, { foreignKey: 'eventID' });
 
 export async function getAllWishListed(userID: number) {
     const result = await WishListedEvents.findAll({
+        attributes: {
+            exclude: ['eventID'],
+        },
+        include: {
+            model: EventModel,
+            attributes: {
+                exclude: ['description', 'support', 'doors', 'main', 'banner', 'userID']
+            }
+        },
         where: {
             userID: userID
         }

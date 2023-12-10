@@ -4,7 +4,7 @@ import styles from "@/styles/Navbar.module.css";
 import Link from "next/link";
 import Searchbar from "./Searchbar";
 import Notification from "./Notification";
-import { useState, useEffect, useRef, ReactNode } from "react";
+import { useState, useEffect, useRef, ReactNode, useCallback } from "react";
 import { useRouter } from "next/router";
 import { X, User } from "lucide-react";
 
@@ -38,6 +38,18 @@ function Navbar({ pictureSource }: { pictureSource: string }) {
   const notificationButtonRef = useRef<HTMLDivElement>(null);
   const notificationsRef = useRef<HTMLDivElement>(null);
 
+  const convertNotifications = useCallback((notifications: Array<Notification>) => {
+    if (notifications.length === 0) {
+      return [<div key={0}>No notifications found.</div>];
+    }
+
+    return notifications.map((notification, index) => (
+      <div key={notification.notificationID}>
+        <Notification notification={notification} removeNotification={removeNotification} />
+      </div>
+    ));
+  }, []);
+
   useEffect(() => {
     const eventSource = new EventSource(environment.backendURL + "/notifications/subscribe", {
       withCredentials: true,
@@ -65,7 +77,7 @@ function Navbar({ pictureSource }: { pictureSource: string }) {
     return () => {
       eventSource.close();
     };
-  }, [notifications]);
+  }, [notifications, convertNotifications]);
 
   useEffect(() => {
     fetch(environment.backendURL + "/notifications", {
@@ -175,18 +187,6 @@ function Navbar({ pictureSource }: { pictureSource: string }) {
       .catch((error) => console.error("Error removing notification:", error));
   };
 
-  function convertNotifications(notifications: Array<Notification>): JSX.Element[] {
-    if (notifications.length === 0) {
-      return [<div key={0}>No notifications found.</div>];
-    }
-
-    return notifications.map((notification, index) => (
-      <div key={notification.notificationID}>
-        <Notification notification={notification} removeNotification={removeNotification} />
-      </div>
-    ));
-  }
-
   function redirectURL(normalURL: string) {
     if (loggedIn) {
       return normalURL;
@@ -201,7 +201,7 @@ function Navbar({ pictureSource }: { pictureSource: string }) {
       credentials: "include",
     }).then((response) => {
       if (response.status == 200) {
-        router.reload();
+        router.push("/");
       }
     });
   }

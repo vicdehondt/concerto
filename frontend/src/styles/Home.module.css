@@ -18,19 +18,13 @@
 
 .friendsPage .friendsContainer {
   grid-area: page-content;
-  /* height: 100%; */
   display: grid;
   grid-auto-rows: 255px;
   grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
-
-  /* margin: 50px 25px; */
-  /* padding: 5px 100px; */
-  /* grid-gap: 20px; */
 }
 
 .pageContent {
   color: black;
-  /* overflow: auto; */
   overflow: scroll;
   grid-area: page-content;
   background-color: #e8f7ee;
@@ -89,8 +83,6 @@
   grid-area: invites;
   display: flex;
   justify-content: right;
-  /* position: relative; */
-  /* left: 20%; */
 }
 
 .concertPage .descriptionContainer {
@@ -189,7 +181,6 @@
 
 .addEventPage {
   color: black;
-  /* width: 100%; */
   background-color: #e8f7ee;
   grid-template-columns: auto auto;
   grid-template-rows: [banner] 200px auto auto auto;
@@ -441,7 +432,6 @@
   grid-area: biography;
 }
 
-/* Still have to make parent container class */
 .attendedEventsContainer {
   overflow: scroll;
   display: flex;
@@ -611,8 +601,44 @@
   border-radius: 50%;
 }
 
-
 .BiographySettingsContainer {
   margin-top: 20px;
   height: 50%;
+}
+
+.wishlistPage {
+  background-color: #e8f7ee;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+.wishlistPage .header {
+  font-size: 60px;
+  font-weight: bold;
+  text-align: center;
+  margin-top: 30px;
+  margin-bottom: 80px;
+}
+
+.wishlistPage .wishContainer {
+  flex: 1;
+  min-width: fit-content;
+  background-color: white;
+  border: solid black 0;
+  border-radius: 8px;
+  box-shadow: 1px 2px 2px;
+  margin: 0 10% 20px 10%;
+  padding: 15px 0 15px 0;
+}
+
+.wishlistPage .wishContainer >* {
+  margin: 15px 20px 15px 20px;
+}
+
+.settingsPage {
+  color: black;
+  display: flex;
+  background-color: #e8f7ee;
 }
