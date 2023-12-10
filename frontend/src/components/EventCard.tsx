@@ -55,7 +55,7 @@ function EventCard({ loggedIn, eventId, title, location, amountAttending, dateAn
     if (loggedIn) {
       return normalURL;
     }
-    return "/login"
+    return `/login?from=${encodeURIComponent(normalURL)}`;
   }
 
   return (
