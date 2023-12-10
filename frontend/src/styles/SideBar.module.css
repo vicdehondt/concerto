@@ -35,3 +35,105 @@
 .dateInput {
   margin-left: 55px;
 }
+
+.filterButton{
+  display: none
+}
+
+@media (max-width: 600px) {
+  .sidebar {
+    color: black;
+    overflow: hidden;
+    grid-area: sidebar;
+    height: 60px;
+    border-bottom: 8px solid;
+    width: 100%;
+    z-index: 100;
+    position: fixed;
+    display: flex;
+    flex-direction: row;
+  }
+
+  .searchbar{
+    position: fixed;
+    top: 43px;
+  }
+
+  .sidebarMenu {
+    position: fixed;
+    width: 100%;
+    height: 60px;
+    z-index: 100;
+    overflow: visible;
+    background-color: #0B2027;
+  }
+
+  .sidebarMenu a{
+    color: white;
+  }
+
+  .dropdownContent {
+    display: flex;
+    top: -110px;
+    right: 10px;
+    flex-direction: column;
+    position: fixed;
+    background-color: beige;
+    color: black;
+    z-index: 1000;
+    padding: 0;
+    transform: translateY(98%);
+    width: fit-content;
+    height: fit-content;
+    border: 0px;
+    border-radius: 6px;
+    box-shadow: 1px 1px 2px;
+    opacity: 0.9;
+  }
+  
+  .dropdownContent a,
+  .dropdownContent button {
+    all: unset;
+    padding: 10px;
+  }
+  
+  .dropdownContent button {
+    color: red;
+  }
+  
+  .dropdownContent a:hover,
+  .dropdownContent button:hover {
+    all: unset;
+    cursor: pointer;
+    padding: 10px;
+    border: 0px;
+  }
+  
+  .dropdownContent a:hover {
+    background-color: #0B2027;
+    color: white;
+    border-radius: 6px 6px 0 0;
+  }
+  
+  .dropdownContent button:hover {
+    background-color: red;
+    color: white;
+    border-radius: 0 0 6px 6px;
+  }
+
+  .filterButton {
+    all: unset;
+    color: black;
+    padding: 20px;
+    position: fixed;
+    top: 50px;
+    right: 0px;
+    text-align: center;
+  }
+  
+  .filterButton:hover {
+    cursor: pointer;
+    font-weight: bold;
+  }
+  
+}

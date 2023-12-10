@@ -10,6 +10,24 @@
     "sidebar page-content";
 }
 
+@media (max-width: 600px) {
+  .homePage{
+    grid-template-columns: auto;
+    grid-template-rows: 60px auto;
+    grid-template-areas:
+    "sidebar sidebar"
+    "page-content page-content";
+  }
+
+  .friendsPage{
+    grid-template-columns: auto;
+    grid-template-rows: 60px auto;
+    grid-template-areas:
+    "sidebar sidebar"
+    "page-content page-content";
+  }
+}
+
 .friendsPage {
   grid-template-columns: 350px auto;
   grid-template-areas:

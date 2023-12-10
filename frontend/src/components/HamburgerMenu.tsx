@@ -55,8 +55,8 @@ const HamburgerMenu = ({pictureSource}: {pictureSource: string}) => {
       };
 
     return (
-        <div className={styles.hamburgerDropdown}>
-            <div className={styles.hamburgerMenu}>
+        <div className={styles.hamburgerMenu}>
+            <div className={styles.hamburgerDropdown}>
                 <div className={`${styles.button} ${isOpen ? styles.open : ''}`} onClick={() => toggleHamburgerMenu()}>
                     <div className={styles.bar}></div>
                     <div className={styles.bar}></div>
@@ -64,6 +64,7 @@ const HamburgerMenu = ({pictureSource}: {pictureSource: string}) => {
                 </div>
                     {isOpen && (
                         <div className={styles.dropdownContent} onMouseEnter={() => {setDropdownVisible(true);}} onMouseLeave={() => {setDropdownVisible(false);}}>
+                            <Link href="/">Concerto</Link>
                             <Searchbar type="long" />
                             <Link href={redirectURL("/add-event")}>Add Event</Link>
                             <Link href={redirectURL("/friends")}>Friends</Link>

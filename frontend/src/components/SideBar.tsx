@@ -4,6 +4,7 @@ import styles from "../styles/SideBar.module.css";
 import Link from "next/link";
 import Searchbar from "./Searchbar";
 import { FUNCTIONS_CONFIG_MANIFEST } from "next/dist/shared/lib/constants";
+import React, {useState, useEffect} from 'react';
 
 type SideBarProps = {
   type: "event" | "friends";
@@ -54,10 +55,40 @@ function SideBarContent({ type }: SideBarProps) {
 }
 
 function SideBar({ type }: SideBarProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [dropdownVisible, setDropdownVisible] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsOpen(window.innerWidth > 600);
+    };
+
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
   return (
+    
     <div className={styles.sidebar}>
-      <Searchbar type="thick" onChange={(event) => console.log("Not implemented yet.")} />
-      <SideBarContent type={type} />
+      <div className={styles.searchbar}>
+        <Searchbar type="thick" onChange={(event) => console.log("Not implemented yet.")} />
+      </div>
+      <div className={styles.sidebareMenu}>
+        <button className={`${styles.filterButton} ${isOpen ? styles.open : ''}`} onClick={() =>  setIsOpen(!isOpen)}>
+            Filters
+        </button>
+      <div className={styles.sidebarDropdown}>
+      {isOpen && (
+        <div className={styles.dropdownContent} onMouseEnter={() => {setDropdownVisible(true);}} onMouseLeave={() => {setDropdownVisible(false);}}>
+          <SideBarContent type={type} />
+        </div>
+      )}
+      </div>
+      </div>
     </div>
   );
 }
