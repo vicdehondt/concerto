@@ -2,7 +2,7 @@ import Head from "next/head";
 import { Inter } from "next/font/google";
 import styles from "@/styles/Home.module.css";
 import { useRouter } from "next/router";
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useCallback, useEffect, useState } from "react";
 import { Star, User } from "lucide-react";
 import Image from "next/image";
 
@@ -51,97 +51,7 @@ export default function Artist() {
   const [reviews, setReviews] = useState<ReviewWithUserInfo[]>([]);
   const [reviewsHTML, setReviewsHTML] = useState<ReactNode[]>([]);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [artistResponse, reviewsResponse] = await Promise.all([
-          fetch(environment.backendURL + `/artists/${router.query.artist}`, {
-            mode: "cors",
-            credentials: "include",
-          }),
-          fetch(environment.backendURL + `/artists/${router.query.artist}/reviews`, {
-            mode: "cors",
-            credentials: "include",
-          }),
-        ]);
-
-        if (artistResponse.status === 200) {
-          const artistData = await artistResponse.json();
-          setArtist(artistData);
-        }
-
-        if (reviewsResponse.status === 200) {
-          const reviewsData = await reviewsResponse.json();
-          const reviewsWithUsernames = await Promise.all(
-            reviewsData.map(async (review: Review) => {
-              const userResponse = await fetch(environment.backendURL + `/users/${review.userID}`, {
-                mode: "cors",
-                credentials: "include",
-              });
-
-              if (userResponse.status === 200) {
-                const userData = await userResponse.json();
-                return { ...review, username: userData?.username, image: userData?.image ?? null };
-              }
-              return { ...review, username: 'Unknown User', image: null };
-            })
-          );
-          setReviews(reviewsWithUsernames);
-          setReviewsHTML(convertReviews(reviewsWithUsernames))
-        }
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    };
-
-    if (router.isReady) {
-      fetchData();
-    }
-  }, [router.isReady, router.query.artist]);
-
-  function showScore(score: number, size: number, styleClass: string ) {
-    if ((score != null) && (score > 0.5)) {
-      const roundedScore = Math.round(score);
-      return (Array.from({ length: 5 }).map((_, i) => (
-        <Star className={styleClass} key={i} size={size} fill={i <= (roundedScore - 1) ? "yellow" : "none"} />
-      )));
-    } else {
-      return (Array.from({ length: 5 }).map((_, i) => (
-        <Star className={styleClass} key={i} size={size} fill={"none"} />
-      )));
-    }
-  }
-
-  function getMonth(month: number) {
-    switch (month) {
-      case 0:
-        return "January";
-      case 1:
-        return "February";
-      case 2:
-        return "March";
-      case 3:
-        return "April";
-      case 4:
-        return "May";
-      case 5:
-        return "June";
-      case 6:
-        return "July";
-      case 7:
-        return "August";
-      case 8:
-        return "September";
-      case 9:
-        return "October";
-      case 10:
-        return "November";
-      case 11:
-        return "December";
-    }
-  }
-
-  function getCreated(dateAndTime: string) {
+  const getCreated = useCallback((dateAndTime: string) => {
     const convertedDateAndTime = new Date(dateAndTime);
     const year = convertedDateAndTime.getFullYear();
     const month = getMonth(convertedDateAndTime.getMonth());
@@ -151,18 +61,9 @@ export default function Artist() {
 
     const result = "Created on " + date + " at " + time;
     return result;
-  }
+  }, []);
 
-  function showImage(imageSource: string, size: number) {
-    if (imageSource == null) {
-      return (<User width={size} height={size} />);
-    }
-    return (
-      <Image src={imageSource} style={{objectFit:"cover"}} width={size} height={size} alt="User profile picture" />
-    );
-  }
-
-  function convertReviews(reviews: ReviewWithUserInfo[]) {
+  const convertReviews = useCallback((reviews: ReviewWithUserInfo[]) => {
     return reviews.map((review) => {
       if (review.message != null) {
         return (
@@ -210,6 +111,105 @@ export default function Artist() {
         </div>
       );
     });
+  }, [getCreated]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [artistResponse, reviewsResponse] = await Promise.all([
+          fetch(environment.backendURL + `/artists/${router.query.artist}`, {
+            mode: "cors",
+            credentials: "include",
+          }),
+          fetch(environment.backendURL + `/artists/${router.query.artist}/reviews`, {
+            mode: "cors",
+            credentials: "include",
+          }),
+        ]);
+
+        if (artistResponse.status === 200) {
+          const artistData = await artistResponse.json();
+          setArtist(artistData);
+        }
+
+        if (reviewsResponse.status === 200) {
+          const reviewsData = await reviewsResponse.json();
+          const reviewsWithUsernames = await Promise.all(
+            reviewsData.map(async (review: Review) => {
+              const userResponse = await fetch(environment.backendURL + `/users/${review.userID}`, {
+                mode: "cors",
+                credentials: "include",
+              });
+
+              if (userResponse.status === 200) {
+                const userData = await userResponse.json();
+                return { ...review, username: userData?.username, image: userData?.image ?? null };
+              }
+              return { ...review, username: 'Unknown User', image: null };
+            })
+          );
+          setReviews(reviewsWithUsernames);
+          setReviewsHTML(convertReviews(reviewsWithUsernames))
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    if (router.isReady) {
+      fetchData();
+    }
+  }, [router.isReady, router.query.artist, convertReviews]);
+
+  function showScore(score: number, size: number, styleClass: string ) {
+    if ((score != null) && (score > 0.5)) {
+      const roundedScore = Math.round(score);
+      return (Array.from({ length: 5 }).map((_, i) => (
+        <Star className={styleClass} key={i} size={size} fill={i <= (roundedScore - 1) ? "yellow" : "none"} />
+      )));
+    } else {
+      return (Array.from({ length: 5 }).map((_, i) => (
+        <Star className={styleClass} key={i} size={size} fill={"none"} />
+      )));
+    }
+  }
+
+  function getMonth(month: number) {
+    switch (month) {
+      case 0:
+        return "January";
+      case 1:
+        return "February";
+      case 2:
+        return "March";
+      case 3:
+        return "April";
+      case 4:
+        return "May";
+      case 5:
+        return "June";
+      case 6:
+        return "July";
+      case 7:
+        return "August";
+      case 8:
+        return "September";
+      case 9:
+        return "October";
+      case 10:
+        return "November";
+      case 11:
+        return "December";
+    }
+  }
+
+  function showImage(imageSource: string, size: number) {
+    if (imageSource == null) {
+      return (<User width={size} height={size} />);
+    }
+    return (
+      <Image src={imageSource} style={{objectFit:"cover"}} width={size} height={size} alt="User profile picture" />
+    );
   }
 
   return (
