@@ -145,8 +145,8 @@ export default function Concert() {
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (checkedIn) {
-      const response = await fetch(environment.backendURL + `/events/${router.query.concert}/checkouts`, {
-        method: "POST",
+      const response = await fetch(environment.backendURL + `/events/${router.query.concert}/checkins`, {
+        method: "DELETE",
         mode: "cors",
         credentials: "include",
       });
