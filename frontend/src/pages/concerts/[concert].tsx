@@ -9,6 +9,7 @@ import Timetable from "@/components/Timetable";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { FormEvent } from "react";
+import { Heart } from "lucide-react";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -76,6 +77,7 @@ export default function Concert() {
   const [artistScore, setArtistScore] = useState(0);
   const [venueScore, setVenueScore] = useState(0);
   const [checkedIn, setCheckedIn] = useState(false);
+  const [inWishlist, setInWishlist] = useState(false);
 
   function showBanner() {
     if (concert.eventID > 0) {
@@ -95,6 +97,7 @@ export default function Concert() {
       }).then((responseJSON) => {
         setConcert(responseJSON);
         setCheckedIn(responseJSON.checkedIn);
+        setInWishlist(responseJSON.wishlisted);
         if (responseJSON.artistID) {
           fetch(environment.backendURL + `/artists/${responseJSON.artistID}`, {
             mode: "cors",
@@ -165,6 +168,49 @@ export default function Concert() {
     }
   }
 
+  function showHeart() {
+    if (inWishlist) {
+      return (
+        <Heart width={50} height={50} fill="red" />
+      );
+    }
+    return (
+      <Heart width={50} height={50} />
+    );
+  }
+
+  function addToWishlist() {
+    const formData = new FormData();
+    const concertID = String(concert.eventID)
+    formData.append("eventID", concertID);
+    fetch(environment.backendURL + "/wishlist", {
+      method: "POST",
+      body: formData,
+      mode: "cors",
+      credentials: "include",
+    }).then((response) => {
+      if (response.status == 200) {
+        setInWishlist(true);
+      }
+    });
+  }
+
+  function removeFromWishlist() {
+    const formData = new FormData();
+    const concertID = String(concert.eventID)
+    formData.append("eventID", concertID);
+    fetch(environment.backendURL + "/wishlist", {
+      method: "DELETE",
+      body: formData,
+      mode: "cors",
+      credentials: "include",
+    }).then((response) => {
+      if (response.status == 200) {
+        setInWishlist(false);
+      }
+    });
+  }
+
   return (
     <>
       <Head>
@@ -189,8 +235,14 @@ export default function Concert() {
             </div>
             <div className={styles.ticketsAndWishlist}>
               <button className={styles.ticketsButton}>Buy tickets</button>
-              <div className={styles.addToWishlist}>
-                <Image src="/icons/heart.png" width={50} height={50} alt="Add to wishlist" />
+              <div className={styles.addToWishlist} onClick={(event) => {
+                if (inWishlist) {
+                  removeFromWishlist();
+                } else {
+                  addToWishlist();
+                }
+              }}>
+                {showHeart()}
               </div>
             </div>
             <form onSubmit={onSubmit}>
