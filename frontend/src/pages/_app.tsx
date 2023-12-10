@@ -55,7 +55,7 @@ export default function App({ Component, pageProps }: AppProps) {
   function NavbarOrHamburgerIfNeeded() {
     const path = router.asPath;
     if (path != "/login" && path != "/register") {
-      return isMobile ? <HamburgerMenu /> : <Navbar pictureSource="/photos/Rombout.jpeg" />
+      return isMobile ? <HamburgerMenu pictureSource="/photos/Rombout.jpeg" /> : <Navbar pictureSource="/photos/Rombout.jpeg" />
     }
   }
 

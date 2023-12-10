@@ -126,7 +126,6 @@
   text-align: center;
 }
 
-.rightTopics a:hover,
 .notificationButton:hover {
   background-color: #7180B9;
 }
@@ -135,7 +134,7 @@
   position: relative;
 }
 
-.notificationsBox {
+.notificationBox {
   display: none;
   position: absolute;
   background-color: white;
