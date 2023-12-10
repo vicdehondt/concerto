@@ -18,9 +18,16 @@ export default function App({ Component, pageProps }: AppProps) {
 
   useEffect(() => {
     const handleResize = () => {
-      setIsMobile(window.innerWidth <= 850);
+      // Use requestAnimationFrame for smoother performance
+      requestAnimationFrame(() => {
+        setIsMobile(window.innerWidth <= 850);
+      });
     };
 
+    // Initial check
+    handleResize();
+
+    // Add event listener for window resize
     window.addEventListener('resize', handleResize);
 
     return () => {

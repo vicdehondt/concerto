@@ -61,9 +61,16 @@ function SideBar({ type }: SideBarProps) {
 
   useEffect(() => {
     const handleResize = () => {
-      setIsOpen(window.innerWidth > 600);
+      // Use requestAnimationFrame for smoother performance
+      requestAnimationFrame(() => {
+        setIsOpen(window.innerWidth > 600);
+      });
     };
 
+    // Initial check
+    handleResize();
+
+    // Add event listener for window resize
     window.addEventListener('resize', handleResize);
 
     return () => {
