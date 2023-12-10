@@ -44,7 +44,9 @@ export default function App({ Component, pageProps }: AppProps) {
         const notHomePage = router.asPath != "/";
         const notRegisterPage = !router.asPath.includes("/register");
         const notLoginPage = !router.asPath.includes("/login");
-        if ((response.status == 400) && notHomePage && notRegisterPage && notLoginPage) {
+        const notMapPage = !router.asPath.includes("/map");
+        const notOnAllowedPages = notHomePage && notRegisterPage && notLoginPage && notMapPage
+        if ((response.status == 400) && notOnAllowedPages) {
           const from = router.query.from || '/';
           router.push(`/login?from=${router.asPath}`);
         }

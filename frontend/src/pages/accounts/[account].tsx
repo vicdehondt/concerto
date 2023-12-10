@@ -23,12 +23,26 @@ type User = {
   privacyAttendedEvents: string;
   privacyCheckedInEvents: string;
   privacyFriends: string;
+  description: string;
 }
 
 type Event = {
   eventID: number;
   title: string;
+  description: string;
+  amountCheckedIn: number;
+  dateAndTime: string;
+  support: string;
+  doors: string;
+  main: string;
+  baseGenre: string;
+  secondGenre: string;
+  price: number;
+  banner: string;
   eventPicture: string;
+  artistID: string;
+  venueID: string;
+  checkedIn: boolean;
 };
 
 export default function Account() {
@@ -40,14 +54,19 @@ export default function Account() {
     privacyAttendedEvents: "",
     privacyCheckedInEvents: "",
     privacyFriends: "",
+    description: "",
   });
-  const [events, setEvents] = useState([]);
+  const [checkedevents, setcheckedEvents] = useState([]);
+  const [attendedevents, setAttendedEvents] = useState([]);
   const [checkedInPrivacy, setCheckedInPrivacy] = useState(true)
 
   const router = useRouter();
 
   function requestCheckins(user: User) {
-    fetch(environment.backendURL + "/users" + `/${user.userID}/checkins`).then((response) => {
+    fetch(environment.backendURL + "/users" + `/${user.userID}/checkins`, {
+      mode: "cors",
+      credentials: "include",
+  }).then((response) => {
       if (response.status == 200) {
         return response.json();
       } else {
@@ -56,7 +75,25 @@ export default function Account() {
       }
     }).then((responseJSON) => {
       if (responseJSON != null) {
-        setEvents(responseJSON)
+        setcheckedEvents(responseJSON);
+      }
+    });
+  }
+
+  function requestAttended(user: User) {
+    fetch(environment.backendURL + "/users" + `/${user.userID}/attended`, {
+      mode: "cors",
+      credentials: "include",
+  }).then((response) => {
+      if (response.status == 200) {
+        return response.json();
+      } else {
+        setCheckedInPrivacy(false);
+        return null;
+      }
+    }).then((responseJSON) => {
+      if (responseJSON != null) {
+        setAttendedEvents(responseJSON)
       }
     });
   }
@@ -92,6 +129,7 @@ export default function Account() {
         .then((responseJSON) => {
           setUser(responseJSON);
           requestCheckins(responseJSON);
+          requestAttended(responseJSON);
         });
     }
   }, [router.query.account]);
@@ -106,13 +144,13 @@ export default function Account() {
       <main className={`${styles.main} ${inter.className}`}>
         <div className={[styles.page, styles.accountPage].join(" ")}>
           <div className={styles.biographyContainer}>
-            <Biography source={user.image} username={user.username} />
+            <Biography source={user.image} username={user.username} description={user.description} />
           </div>
           <div className={styles.attendedEventsContainer}>
-            {showCheckins(events)}
+            {showCheckins(checkedevents)}
           </div>
           <div className={styles.pastEventsContainer}>
-
+          {showCheckins(attendedevents)}
           </div>
         </div>
       </main>

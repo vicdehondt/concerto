@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import styles from "../styles/ArtistAndLocationUpload.module.css";
-import { Star } from "lucide-react";
 import Searchbar from "./Searchbar";
 
 const environment = {
@@ -67,7 +66,7 @@ function ArtistAndLocationUpload({
 
   function handlechange(value: string) {
     const currentTime = new Date();
-    if (!((currentTime.getTime() - lastRequest.getTime()) < timeTreshold)) {
+    if ((!((currentTime.getTime() - lastRequest.getTime()) < timeTreshold)) && value.length !== 0) {
       fetchArtist(value)
       lastRequest = new Date();
     }
@@ -106,7 +105,6 @@ function ArtistAndLocationUpload({
     });
   }
 
-  // De locationCallback moet later gebruikt worden voor
   return (
     <div className={styles.container}>
       <div className={styles.box}>

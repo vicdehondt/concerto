@@ -36,19 +36,13 @@
 
 .friendsPage .friendsContainer {
   grid-area: page-content;
-  /* height: 100%; */
   display: grid;
   grid-auto-rows: 255px;
   grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
-
-  /* margin: 50px 25px; */
-  /* padding: 5px 100px; */
-  /* grid-gap: 20px; */
 }
 
 .pageContent {
   color: black;
-  /* overflow: auto; */
   overflow: scroll;
   grid-area: page-content;
   background-color: #e8f7ee;
@@ -107,8 +101,6 @@
   grid-area: invites;
   display: flex;
   justify-content: right;
-  /* position: relative; */
-  /* left: 20%; */
 }
 
 .concertPage .descriptionContainer {
@@ -127,6 +119,7 @@
   margin-top: 5px;
   font-size: large;
   font-weight: 400;
+  text-wrap: wrap;
 }
 
 .concertPage .descriptionText textarea {
@@ -182,6 +175,22 @@
   box-shadow: 0px 3px 3px grey;
 }
 
+.concertPage .checkinButton {
+  all: unset;
+  cursor: pointer;
+  background-color: black;
+  color: white;
+  font-size: large;
+  font-weight: bold;
+  padding: 15px;
+  border: 1px solid black;
+  border-radius: 15px;
+  box-shadow: 0 3px 3px grey;
+  margin-top: 15px;
+  width: 110px;
+  text-align: center;
+}
+
 .concertPage .addToWishlist {
   margin: 15px;
   padding-top: 15px;
@@ -190,7 +199,6 @@
 
 .addEventPage {
   color: black;
-  /* width: 100%; */
   background-color: #e8f7ee;
   grid-template-columns: auto auto;
   grid-template-rows: [banner] 200px auto auto auto;
@@ -442,7 +450,6 @@
   grid-area: biography;
 }
 
-/* Still have to make parent container class */
 .attendedEventsContainer {
   overflow: scroll;
   display: flex;
@@ -455,6 +462,8 @@
   border-bottom-left-radius: 10px;
   border-bottom-right-radius: 10px;
   border: 4px solid black;
+  background-color: white;
+  box-shadow: 0 2px 2px;
 }
 
 .pastEventsContainer {
@@ -468,7 +477,186 @@
   width: 70%;
   height: 70%;
   margin-right: 25%;
+  background-color: white;
   border-top-right-radius: 10px;
   border-bottom-left-radius: 10px;
   border-bottom-right-radius: 10px;
+  box-shadow: 0 2px 2px;
+}
+
+.artistPage {
+  background-color: #e8f7ee;
+  display: grid;
+  grid-template-columns: 50% auto;
+  grid-template-rows: 177px auto;
+  grid-template-areas:
+    "pageHeader pageHeader"
+    "reviewBox reviewBox";
+  height: 100vh;
+}
+
+.artistPage .pageHeader {
+  grid-area: pageHeader;
+  width: 100%;
+  height: fit-content;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.artistPage .artistName {
+  font-size: 60px;
+  font-weight: bold;
+  text-align: center;
+  margin-top: 30px;
+}
+
+.artistPage .artistStar {
+  margin: 0 20px;
+}
+
+.artistPage .reviewBox {
+  grid-area: reviewBox;
+  border: solid 1px black;
+  border-radius: 5px;
+  margin: 20px;
+  background-color: white;
+  box-shadow: 0px 1px 2px;
+  overflow: auto;
+}
+
+.artistPage .reviewContainer {
+  display: grid;
+  grid-template-columns: auto auto;
+  grid-template-rows: auto auto;
+  grid-template-areas:
+    "info score"
+    "review review";
+  margin: 15px;
+  padding: 5px;
+  border: solid 1px black;
+  border-radius: 5px;
+  box-shadow: 0px 1px 2px;
+}
+
+.artistPage .reviewHeader {
+  grid-area: info;
+  display: flex;
+  flex-direction: row;
+  border-bottom: solid 0.5px black;
+}
+
+.artistPage .reviewHeaderNoBorder {
+  grid-area: info;
+  display: flex;
+  flex-direction: row;
+}
+
+.artistPage img {
+  border-radius: 50%;
+  width: 100%;
+}
+
+.artistPage .infoBox {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-left: 5px;
+}
+
+.artistPage .created {
+  font-size: small;
+}
+
+.artistPage .score {
+  grid-area: score;
+  border-bottom: solid 0.5px black;
+  display: flex;
+  align-items: center;
+  justify-content: right;
+}
+
+.artistPage .scoreNoBorder {
+  grid-area: score;
+  display: flex;
+  align-items: center;
+  justify-content: right;
+}
+
+.artistPage .review {
+  grid-area: review;
+  margin: 5px 0;
+}
+.settingsPage {
+  color: black;
+  display: flex;
+  background-color: #e8f7ee;
+}
+
+
+.settingContainer {
+  width: 50%;
+  margin: auto;
+  margin-left: 5%;
+}
+
+.accountOverviewContainer {
+  display: flex;
+  flex-direction: column;
+  width: 50%;
+}
+
+.profilePictureContainer {
+  text-align: center;
+  margin-top: 100px;
+}
+.profilePicture {
+  margin-left: 33%;
+  width: 180px;
+  height: 180px;
+  background-color: white;
+  border-radius: 50%;
+}
+
+.BiographySettingsContainer {
+  margin-top: 20px;
+  height: 50%;
+}
+
+.wishlistPage {
+  background-color: #e8f7ee;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+.wishlistPage .header {
+  font-size: 60px;
+  font-weight: bold;
+  text-align: center;
+  margin-top: 30px;
+  margin-bottom: 80px;
+}
+
+.wishlistPage .wishContainer {
+  flex: 1;
+  min-width: fit-content;
+  background-color: white;
+  border: solid black 0;
+  border-radius: 8px;
+  box-shadow: 1px 2px 2px;
+  margin: 0 10% 20px 10%;
+  padding: 15px 0 15px 0;
+}
+
+.wishlistPage .wishContainer >* {
+  margin: 15px 20px 15px 20px;
+}
+
+.settingsPage {
+  color: black;
+  display: flex;
+  background-color: #e8f7ee;
 }

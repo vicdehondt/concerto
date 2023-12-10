@@ -5,10 +5,11 @@ import { useRouter } from "next/router";
 import FriendInvites from "@/components/FriendInvite";
 import Banner from "@/components/Banner";
 import Rating from "@/components/Rating";
-import type { InferGetServerSidePropsType, GetServerSideProps } from "next";
 import Timetable from "@/components/Timetable";
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import { FormEvent } from "react";
+import { Heart } from "lucide-react";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -23,7 +24,7 @@ type Event = {
   eventID: number;
   title: string;
   description: string;
-  checkedIn: number;
+  amountCheckedIn: number;
   dateAndTime: string;
   support: string;
   doors: string;
@@ -35,6 +36,7 @@ type Event = {
   eventPicture: string;
   artistID: string;
   venueID: string;
+  checkedIn: boolean;
 };
 
 type Artist = {
@@ -56,7 +58,7 @@ export default function Concert() {
     eventID: 0,
     title: "",
     description: "",
-    checkedIn: 0,
+    amountCheckedIn: 0,
     dateAndTime: "",
     price: 0,
     banner: "",
@@ -68,10 +70,14 @@ export default function Concert() {
     secondGenre: "ph",
     artistID: "123",
     venueID: "123",
+    checkedIn: false,
   });
 
   const [artist, setArtist] = useState({Rating: {score: 0}})
   const [artistScore, setArtistScore] = useState(0);
+  const [venueScore, setVenueScore] = useState(0);
+  const [checkedIn, setCheckedIn] = useState(false);
+  const [inWishlist, setInWishlist] = useState(false);
 
   function showBanner() {
     if (concert.eventID > 0) {
@@ -90,6 +96,8 @@ export default function Concert() {
         return response.json();
       }).then((responseJSON) => {
         setConcert(responseJSON);
+        setCheckedIn(responseJSON.checkedIn);
+        setInWishlist(responseJSON.wishlisted);
         if (responseJSON.artistID) {
           fetch(environment.backendURL + `/artists/${responseJSON.artistID}`, {
             mode: "cors",
@@ -102,9 +110,106 @@ export default function Concert() {
             setArtistScore(responseJSON.Rating.score);
           });
         }
+        if (responseJSON.venueID) {
+          fetch(environment.backendURL + `/venues/${responseJSON.venueID}`, {
+            mode: "cors",
+            credentials: "include",
+          })
+          .then((response) => {
+            return response.json();
+          }).then((responseJSON) => {
+            setVenueScore(responseJSON.Rating.score);
+          });
+        }
       });
     }
   }, [router.query.concert])
+
+  function convertTime(time: string) {
+    if (time !== null) {
+      const hoursMinutesSeconds = time.split(":");
+      return hoursMinutesSeconds[0].concat(":").concat(hoursMinutesSeconds[1]);
+    }
+    return null;
+  }
+
+  function showCheckIn() {
+    if (checkedIn) {
+      return (
+        <button type="submit" className={styles.checkinButton}>Checked-in!</button>
+      );
+    } else {
+      return (
+        <button type="submit" className={styles.checkinButton}>Check-in</button>
+      );
+    }
+  }
+
+  async function onSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (checkedIn) {
+      const response = await fetch(environment.backendURL + `/events/${router.query.concert}/checkins`, {
+        method: "DELETE",
+        mode: "cors",
+        credentials: "include",
+      });
+      if (response.status == 200) {
+        setCheckedIn(false)
+      }
+    } else {
+      const response = await fetch(environment.backendURL + `/events/${router.query.concert}/checkins`, {
+        method: "POST",
+        mode: "cors",
+        credentials: "include",
+      });
+      if (response.status == 200) {
+        setCheckedIn(true)
+      }
+    }
+  }
+
+  function showHeart() {
+    if (inWishlist) {
+      return (
+        <Heart width={50} height={50} fill="red" />
+      );
+    }
+    return (
+      <Heart width={50} height={50} />
+    );
+  }
+
+  function addToWishlist() {
+    const formData = new FormData();
+    const concertID = String(concert.eventID)
+    formData.append("eventID", concertID);
+    fetch(environment.backendURL + "/wishlist", {
+      method: "POST",
+      body: formData,
+      mode: "cors",
+      credentials: "include",
+    }).then((response) => {
+      if (response.status == 200) {
+        setInWishlist(true);
+      }
+    });
+  }
+
+  function removeFromWishlist() {
+    const formData = new FormData();
+    const concertID = String(concert.eventID)
+    formData.append("eventID", concertID);
+    fetch(environment.backendURL + "/wishlist", {
+      method: "DELETE",
+      body: formData,
+      mode: "cors",
+      credentials: "include",
+    }).then((response) => {
+      if (response.status == 200) {
+        setInWishlist(false);
+      }
+    });
+  }
 
   return (
     <>
@@ -126,17 +231,26 @@ export default function Concert() {
           <div className={styles.programContainer}>
             <div className={styles.programTitle}>Program</div>
             <div className={styles.programText}>
-              <Timetable doorTime={concert.doors} supportTime={concert.support} concertTime={concert.main} />
+              <Timetable doorTime={convertTime(concert.doors)} supportTime={convertTime(concert.support)} concertTime={convertTime(concert.main)} />
             </div>
             <div className={styles.ticketsAndWishlist}>
               <button className={styles.ticketsButton}>Buy tickets</button>
-              <div className={styles.addToWishlist}>
-                <Image src="/icons/heart.png" width={50} height={50} alt="Add to wishlist" />
+              <div className={styles.addToWishlist} onClick={(event) => {
+                if (inWishlist) {
+                  removeFromWishlist();
+                } else {
+                  addToWishlist();
+                }
+              }}>
+                {showHeart()}
               </div>
             </div>
+            <form onSubmit={onSubmit}>
+              {showCheckIn()}
+            </form>
           </div>
           <div className={styles.ratingContainer}>
-            <Rating score={artistScore} />
+            <Rating artistScore={artistScore} venueScore={venueScore} artist={concert.artistID} venue={concert.venueID} />
           </div>
           <div className={styles.friendInviteContainer}>
             <FriendInvites />

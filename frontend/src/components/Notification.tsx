@@ -46,7 +46,7 @@ function Notification({ notification, removeNotification }: {notification: Notif
       .then((responseJSON) => {
         setFrom(responseJSON)
       });
-  }, []);
+  }, [notification.NotificationObject.actor]);
 
   function acceptFriend() {
     fetch(environment.backendURL + `/friends/${notification.NotificationObject.actor}/accept`, {

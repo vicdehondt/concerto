@@ -5,9 +5,9 @@ function Timetable({
   supportTime,
   concertTime,
 }: {
-  doorTime: string;
-  supportTime: string;
-  concertTime: string;
+  doorTime: string | null;
+  supportTime: string | null;
+  concertTime: string | null;
 }) {
 
   function showSupportTime() {

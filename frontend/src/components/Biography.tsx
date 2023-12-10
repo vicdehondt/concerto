@@ -1,9 +1,8 @@
-import { Inter } from "next/font/google";
 import Image from "next/image";
 import { User } from 'lucide-react';
 import styles from "../styles/Biography.module.css";
 
-function Biography({ source, username }: { source: string; username: string }) {
+function Biography({ source, username, description }: { source: string; username: string, description: string }) {
 
   function showPicture(source: string) {
     if (source != null) {
@@ -27,7 +26,7 @@ function Biography({ source, username }: { source: string; username: string }) {
           Biography
         </div>
         <div className={styles.description}>
-          Lorem ipsum of the description.
+          {description}
         </div>
       </div>
     </>

@@ -1,9 +1,9 @@
 import { DataTypes, Op } from 'sequelize';
 import {sequelize} from '../configs/sequelizeConfig'
 import { RetrieveUser, UserModel } from './Usermodel';
-import { EventModel } from './Eventmodel';
+import { EventModel, expiredEventTreshold } from './Eventmodel';
 
-const CheckedInUsers = sequelize.define('CheckedInUser', {
+export const CheckedInUsers = sequelize.define('CheckedInUser', {
     checkinID: {
         type: DataTypes.INTEGER,
         primaryKey: true,
@@ -34,24 +34,22 @@ const CheckedInUsers = sequelize.define('CheckedInUser', {
 
 UserModel.belongsToMany(EventModel, {
     through: CheckedInUsers,
-    onDelete: 'CASCADE',
     foreignKey: 'userID'
 });
 
 EventModel.belongsToMany(UserModel, {
     through: CheckedInUsers,
-    onDelete: 'CASCADE',
     foreignKey: 'eventID'
 });
 
 CheckedInUsers.belongsTo(UserModel, { foreignKey: 'userID' });
 CheckedInUsers.belongsTo(EventModel, { foreignKey: 'eventID' });
 
-export async function retrieveCheckIn(user, event) {
+export async function retrieveCheckIn(userID, event) {
     const result = await CheckedInUsers.findOne({
         where: {
             [Op.and]: [
-                { userID: user },
+                { userID: userID },
                 { eventID: event.eventID }
             ]
         }
@@ -66,7 +64,7 @@ export async function userCheckIn(userID, event): Promise<boolean> {
             userID: userID,
             eventID: event.eventID
         });
-        event.checkedIn = event.checkedIn + 1;
+        event.amountCheckedIn = event.amountCheckedIn + 1;
         await event.save();
         return true;
     } else {
@@ -75,10 +73,10 @@ export async function userCheckIn(userID, event): Promise<boolean> {
 }
 
 export async function userCheckOut(userID, event): Promise<boolean> {
-    const checkIn = await retrieveCheckIn(userID, event.eventID);
+    const checkIn = await retrieveCheckIn(userID, event);
     if (checkIn != null) {
         await checkIn.destroy();
-        event.checkedIn = event.checkedIn - 1;
+        event.amountCheckedIn = event.amountCheckedIn - 1;
         await event.save();
         return true;
     } else {
@@ -111,6 +109,32 @@ export async function allCheckedInEvents(userID) {
     });
     const events = await user.getEvents({
         attributes: ['eventID', 'eventPicture', 'title'],
+        where: {
+            dateAndTime: {
+                [Op.gte]: expiredEventTreshold()
+            }
+        }
+    });
+    const cleanedEvents = events.map(event => {
+        const { CheckedInUser, ...eventWithoutCheckedInUser } = event.toJSON();
+        return eventWithoutCheckedInUser;
+    });
+    return cleanedEvents;
+}
+
+export async function allAttendedEvents(userID) {
+    const user = await UserModel.findByPk(userID, {
+        include: [{
+            model: EventModel,
+        }]
+    });
+    const events = await user.getEvents({
+        attributes: ['eventID', 'eventPicture', 'title'],
+        where: {
+            dateAndTime: {
+                [Op.lt]: expiredEventTreshold()
+            }
+        }
     });
     const cleanedEvents = events.map(event => {
         const { CheckedInUser, ...eventWithoutCheckedInUser } = event.toJSON();

@@ -11,16 +11,23 @@ if (process.env.NODE_ENV == "production") {
 }
 
 type Event = {
-  eventID: number;
-  title: string;
-  description: string;
-  checkedIn: number;
-  dateAndTime: string;
-  price: number;
-  eventPicture: string;
-  venueID: string;
-  artistID: string;
-};
+    eventID: number;
+    title: string;
+    description: string;
+    amountCheckedIn: number;
+    dateAndTime: string;
+    support: string;
+    doors: string;
+    main: string;
+    baseGenre: string;
+    secondGenre: string;
+    price: number;
+    banner: string;
+    eventPicture: string;
+    artistID: string;
+    venueID: string;
+    checkedIn: boolean;
+  };
 
 export default function EventMarker({event}: {event: Event}) {
     const [loggedIn, setLoggedIn] = useState(false);

@@ -18,6 +18,22 @@ export const Rating = sequelize.define('Rating', {
         type: DataTypes.ENUM('artist', 'venue'),
         allowNull: false,
     },
+    artistID: {
+        type: DataTypes.INTEGER,
+        references: {
+            model: 'Artists',
+            key: 'artistID',
+        },
+        allowNull: true,
+    },
+    venueID: {
+        type: DataTypes.STRING,
+        references: {
+            model: 'Venues',
+            key: 'venueID',
+        },
+        allowNull: true,
+    },
     score: {
         type: DataTypes.FLOAT,
         allowNull: true,
