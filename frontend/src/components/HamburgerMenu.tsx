@@ -38,8 +38,7 @@ const HamburgerMenu = ({pictureSource}: {pictureSource: string}) => {
 
     const notificationButtonRef = useRef<HTMLDivElement>(null);
     const notificationsRef = useRef<HTMLDivElement>(null);
-
-
+  
     const convertNotifications = useCallback((notifications: Array<Notification>) => {
       if (notifications.length === 0) {
         return [<div key={0}>No notifications found.</div>];
@@ -165,69 +164,71 @@ const HamburgerMenu = ({pictureSource}: {pictureSource: string}) => {
   
     const removeNotification = (notificationID: number) => {
       fetch(environment.backendURL + `/notifications/${notificationID}`, {
-        method: "POST",
-        mode: "cors",
-        credentials: "include",
+        method: 'POST',
+        mode: 'cors',
+        credentials: 'include',
       })
-        .then((response) => {
-          if (response.status === 200) {
-            setNotifications((prevNotifications) =>
-              prevNotifications.filter(
-                (notification: Notification) => notification.notificationID !== notificationID
-              )
-            );
-            setNotificationsHTML((prevNotificationsHTML) =>
-              prevNotificationsHTML.filter((notification: ReactNode) => {
+      .then(response => {
+        if (response.status === 200) {
+          setNotifications((prevNotifications) =>
+            prevNotifications.filter(
+              (notification: Notification) => notification.notificationID !== notificationID
+            )
+          );
+          setNotificationsHTML((prevNotificationsHTML) =>
+            prevNotificationsHTML.filter(
+              (notification: ReactNode) => {
                 const notificationWithKey = notification as { key?: number };
                 return notificationWithKey && notificationWithKey.key !== notificationID;
-              })
-            );
-          } else {
-            console.error("Error removing notification. Server response:", response);
-          }
-        })
-        .catch((error) => console.error("Error removing notification:", error));
+              }
+            )
+          );
+        } else {
+          console.error('Error removing notification. Server response:', response);
+        }
+      })
+      .catch(error => console.error('Error removing notification:', error));
     };
   
     function redirectURL(normalURL: string) {
       if (loggedIn) {
         return normalURL;
       }
-      return `/login?from=${encodeURIComponent(normalURL)}`;
+      return `/login?from=${encodeURIComponent(normalURL)}`
     }
-  
+
+
     function logOut() {
       fetch(environment.backendURL + "/logout", {
-        method: "POST",
-        mode: "cors",
-        credentials: "include",
-      }).then((response) => {
+        method: 'POST',
+        mode: 'cors',
+        credentials: 'include',
+      })
+      .then((response) => {
         if (response.status == 200) {
-          router.push("/");
+          router.reload();
         }
       });
     }
-  
+
     function showAccountImage() {
-      if (profile.userID == 0) {
-        return (
-          <button className={styles.loginButton} onClick={(event) => router.push(redirectURL("/"))}>
-            Log In
-          </button>
-        );
-      } else if (profile.image == null) {
-        return (
-          <Link href={redirectURL("/account")}>
-            <User className={styles.userImage} width={40} height={40} />
-          </Link>
-        );
-      } else {
-        return (
-          <Link href={redirectURL("/account")}>
-            <Image src={pictureSource} width={56} height={56} alt="Profile picture" />
-          </Link>
-        );
-      }
+        if (profile.userID == 0) {
+          return (
+            <button className={styles.loginButton} onClick={(event) => router.push(redirectURL("/"))}>Log In</button>
+          );
+        } else if (profile.image == null) {
+          return (
+            <Link href={redirectURL("/account")}>
+              <User className={styles.userImage} width={40} height={40} />
+            </Link>
+          );
+        } else {
+          return (
+            <Link href={redirectURL("/account")}>
+              <Image src={pictureSource} width={56} height={56} alt="Profile picture"/>
+            </Link>
+          );
+        }
     }
 
     const toggleHamburgerMenu = () => {
@@ -235,7 +236,6 @@ const HamburgerMenu = ({pictureSource}: {pictureSource: string}) => {
       };
 
     return (
-      <>
         <nav className={styles.hamburgerMenu}>
             <div className={styles.hamburgerDropdown}>
                 <div className={`${styles.button} ${isOpen ? styles.open : ''}`} onClick={() => toggleHamburgerMenu()}>
@@ -246,11 +246,11 @@ const HamburgerMenu = ({pictureSource}: {pictureSource: string}) => {
                     {isOpen && (
                         <div className={styles.dropdownContent} onMouseEnter={() => {setDropdownVisible(true);}} onMouseLeave={() => {setDropdownVisible(false);}}>
                             <Link href="/">Concerto</Link>
-                            <Searchbar type="long" />
+                            <Searchbar type="long" onChange={(event) => console.log("Not impmeneted yet")} />
                             <Link href={redirectURL("/add-event")}>Add Event</Link>
                             <Link href={redirectURL("/friends")}>Friends</Link>
                             <Link href={redirectURL("/wishlist")}>Wishlist</Link>
-                            {/* <div className={styles.notifications} ref={notificationButtonRef}>
+                            <div className={styles.notifications} ref={notificationButtonRef}>
                               <button
                                 id="notifications"
                                 className={styles.notificationButton}
@@ -267,16 +267,35 @@ const HamburgerMenu = ({pictureSource}: {pictureSource: string}) => {
                               >
                                 <X />
                               </button>
-                            </div> */}
-                            <Link href="/settings">Settings</Link>
+                              {notificationsVisible && notificationsHTML}
+                            </div>
                         </div>
                     )}
             </div>
-            <div className={styles.profilePicture}>
+            <div className={styles.accountDropdown}>
+              <div
+                className={styles.profilePicture}
+                onMouseEnter={() => setDropdownVisible(true)}
+                onMouseLeave={() => setDropdownVisible(false)}
+              >
                 {showAccountImage()}
+              </div>
+              {loggedIn && dropdownVisible && (
+                <div
+                  className={styles.dropdownContent}
+                  onMouseEnter={() => {
+                    setDropdownVisible(true);
+                  }}
+                  onMouseLeave={() => {
+                    setDropdownVisible(false);
+                  }}
+                >
+                  <Link href="/settings">Settings</Link>
+                  <button onClick={(event) => logOut()}>Log out</button>
+                </div>
+              )}
             </div>
         </nav>
-        </>
 
     );
 };

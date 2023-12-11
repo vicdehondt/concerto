@@ -114,13 +114,12 @@
   transform: translateY(-8px) rotate(45deg);
 }
 
-
 .notificationButton {
   background: none;
-  color: white;
-  border: none;
-  font: inherit;
-  cursor: pointer;
+	color: white;
+	border: none;
+	font: inherit;
+	cursor: pointer;
   height: 60px;
   padding: 20px;
   text-align: center;
@@ -134,7 +133,7 @@
   position: relative;
 }
 
-.notificationBox {
+.notificationsBox {
   display: none;
   position: absolute;
   background-color: white;
@@ -151,9 +150,9 @@
 
 .closeNotifications {
   background: none;
-  border: none;
-  font: inherit;
-  cursor: pointer;
+	border: none;
+	font: inherit;
+	cursor: pointer;
   width: 250px;
   text-align: right;
 }
