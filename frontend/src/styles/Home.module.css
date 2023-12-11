@@ -572,15 +572,35 @@
 }
 .settingsPage {
   color: black;
-  display: flex;
   background-color: #e8f7ee;
 }
 
-
-.settingContainer {
+.settingsPage .settingContainer {
   width: 50%;
   margin: auto;
-  margin-left: 5%;
+  background-color: white;
+  padding: 20px;
+  border: 3px solid black;
+  border-radius: 20px;
+}
+
+ .personalSettingTitle {
+    font-size: x-large;
+    font-weight: 800;
+    margin-bottom: 5px;
+}
+
+.personalSetting {
+  margin-bottom: 5px;
+}
+
+.settingName {
+  font-weight: 600;
+  font-size: large;
+}
+
+.settingValue {
+  margin-left: 20px;
 }
 
 .accountOverviewContainer {
@@ -593,17 +613,13 @@
   text-align: center;
   margin-top: 100px;
 }
+
 .profilePicture {
   margin-left: 33%;
   width: 180px;
   height: 180px;
   background-color: white;
   border-radius: 50%;
-}
-
-.BiographySettingsContainer {
-  margin-top: 20px;
-  height: 50%;
 }
 
 .wishlistPage {

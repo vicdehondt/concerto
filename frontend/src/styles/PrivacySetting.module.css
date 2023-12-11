@@ -1,7 +1,9 @@
 .setting {
     display: flex;
-    width: 500px;
+    width: 100%;
     border: 3px solid black;
+    margin-bottom: 12px;
+    padding: 10px;
 }
 
 .settingName {
