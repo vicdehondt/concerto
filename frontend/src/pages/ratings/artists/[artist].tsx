@@ -215,7 +215,7 @@ export default function Artist() {
   return (
     <>
       <Head>
-        <title>{`Concerto | Rate ${artist?.name}`}</title>
+        <title>{`Concerto | Ratings of ${artist?.name}`}</title>
         <meta name="description" content={`Rate the artist! Rate ${artist?.name}`} />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
