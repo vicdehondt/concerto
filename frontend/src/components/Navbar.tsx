@@ -215,7 +215,7 @@ function Navbar({ pictureSource }: { pictureSource: string }) {
       );
     } else if (profile.image == null) {
       return (
-        <Link href={redirectURL("/account")}>
+        <Link href={redirectURL(`/accounts/${profile.userID}`)}>
           <User className={styles.userImage} width={40} height={40} />
         </Link>
       );
