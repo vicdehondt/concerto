@@ -33,7 +33,6 @@ const HamburgerMenu = ({pictureSource}: {pictureSource: string}) => {
     const [notifications, setNotifications] = useState<Notification[]>([]);
     const [notificationsHTML, setNotificationsHTML] = useState<ReactNode[]>([]);
     const [dropdownVisible, setDropdownVisible] = useState(false);
-    const [profileDropdownVisible, setProfileDropdownVisible] = useState(false);
     const [loggedIn, setLoggedIn] = useState(false);
     const [profile, setProfile] = useState({ userID: 0, image: null });
 
@@ -160,9 +159,7 @@ const HamburgerMenu = ({pictureSource}: {pictureSource: string}) => {
         styles.notificationsBox
       ) as HTMLCollectionOf<HTMLElement>;
       setNotificationsVisible(false);
-      if (notificationBox && notificationBox.length > 0){
       notificationBox[0].style.display = "none";
-      }
     }
   
     const removeNotification = (notificationID: number) => {
@@ -219,11 +216,15 @@ const HamburgerMenu = ({pictureSource}: {pictureSource: string}) => {
         );
       } else if (profile.image == null) {
         return (
+          <Link href={redirectURL("/account")}>
             <User className={styles.userImage} width={40} height={40} />
+          </Link>
         );
       } else {
         return (
+          <Link href={redirectURL("/account")}>
             <Image src={pictureSource} width={56} height={56} alt="Profile picture" />
+          </Link>
         );
       }
     }
@@ -270,29 +271,28 @@ const HamburgerMenu = ({pictureSource}: {pictureSource: string}) => {
                     )}
             </div>
             <div className={styles.accountDropdown}>
-              <div
-                className={styles.profilePicture}
-                onMouseEnter={() => setProfileDropdownVisible(true)}
-                onMouseLeave={() => setProfileDropdownVisible(false)}
-              >
-                {showAccountImage()}
-              </div>
-              {loggedIn && profileDropdownVisible && (
-                <div
-                  className={styles.pofileDropdownContent}
-                  onMouseEnter={() => {
-                    setProfileDropdownVisible(true);
-                  }}
-                  onMouseLeave={() => {
-                    setProfileDropdownVisible(false);
-                  }}
-                >
-                  <Link href={redirectURL("/account")}> Show profile</Link>
-                  <Link href="/settings">Settings</Link>
-                  <button onClick={(event) => logOut()}>Log out</button>
-                </div>
-              )}
+            <div
+              className={styles.profilePicture}
+              onMouseEnter={() => setDropdownVisible(true)}
+              onMouseLeave={() => setDropdownVisible(false)}
+            >
+              {showAccountImage()}
             </div>
+            {loggedIn && dropdownVisible && (
+              <div
+                className={styles.dropdownContent}
+                onMouseEnter={() => {
+                  setDropdownVisible(true);
+                }}
+                onMouseLeave={() => {
+                  setDropdownVisible(false);
+                }}
+              >
+                <Link href="/settings">Settings</Link>
+                <button onClick={(event) => logOut()}>Log out</button>
+              </div>
+            )}
+          </div>
         </nav>
 
     );
