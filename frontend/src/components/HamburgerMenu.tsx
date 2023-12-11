@@ -250,7 +250,7 @@ const HamburgerMenu = ({pictureSource}: {pictureSource: string}) => {
                             <Link href={redirectURL("/add-event")}>Add Event</Link>
                             <Link href={redirectURL("/friends")}>Friends</Link>
                             <Link href={redirectURL("/wishlist")}>Wishlist</Link>
-                            <div className={styles.notifications} ref={notificationButtonRef}>
+                            {/* <div className={styles.notifications} ref={notificationButtonRef}>
                               <button
                                 id="notifications"
                                 className={styles.notificationButton}
@@ -268,11 +268,11 @@ const HamburgerMenu = ({pictureSource}: {pictureSource: string}) => {
                                 <X />
                               </button>
                               {notificationsVisible && notificationsHTML}
-                            </div>
+                            </div> */}
                         </div>
                     )}
             </div>
-            <div className={styles.accountDropdown}>
+            {/* <div className={styles.accountDropdown}>
               <div
                 className={styles.profilePicture}
                 onMouseEnter={() => setDropdownVisible(true)}
@@ -294,7 +294,7 @@ const HamburgerMenu = ({pictureSource}: {pictureSource: string}) => {
                   <button onClick={(event) => logOut()}>Log out</button>
                 </div>
               )}
-            </div>
+            </div> */}
         </nav>
 
     );

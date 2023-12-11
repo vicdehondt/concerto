@@ -56,6 +56,7 @@
 
   .searchbar{
     position: fixed;
+    z-index: 50;
     top: 43px;
   }
 
@@ -80,7 +81,7 @@
     position: fixed;
     background-color: beige;
     color: black;
-    z-index: 1000;
+    z-index: 50;
     padding: 0;
     transform: translateY(98%);
     width: fit-content;
