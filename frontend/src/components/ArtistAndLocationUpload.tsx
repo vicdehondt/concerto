@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import styles from "../styles/ArtistAndLocationUpload.module.css";
 import Searchbar from "./Searchbar";
+import LocationPicker from "./LocationPicker";
 
 const environment = {
   backendURL: "http://localhost:8080",
@@ -42,7 +43,6 @@ function ArtistAndLocationUpload({
     artists: []
   };
   const [apiResponse, setAPIResponse] = useState(dummyResponse);
-  const [venueOptions, setVenueOptions] = useState([]);
 
 
   const apiURL = "https://musicbrainz.org/ws/2/artist?query="
@@ -51,18 +51,6 @@ function ArtistAndLocationUpload({
 
   var lastRequest = new Date();
   const timeTreshold = 1001;
-
-  useEffect(() => {
-    fetch(environment.backendURL + "/venues", {
-      mode: "cors",
-      credentials: "include",
-    })
-    .then((response) => {
-      return response.json();
-    }).then((responseJSON) => {
-      setVenueOptions(responseJSON);
-    });
-  }, [])
 
   function handlechange(value: string) {
     const currentTime = new Date();
@@ -97,27 +85,12 @@ function ArtistAndLocationUpload({
     }
   }
 
-  function showVenueOptions() {
-    return venueOptions.map((venue: Venue) => {
-      return (
-        <option key={venue.venueID} value={venue.venueName} data-venue={JSON.stringify(venue)}>{venue.venueName}</option>
-      )
-    });
-  }
-
   return (
     <div className={styles.container}>
       <div className={styles.box}>
         <div className={styles.text}>Location:</div>
         <div className={styles.name}>
-        <select name="venue" id="venue" onChange={(event) => {
-          const selectedOption = event.target.options[event.target.selectedIndex].getAttribute("data-venue");
-          const selectedVenue = selectedOption != null ? JSON.parse(selectedOption) : {venueID: "123", venueName: "Not selected"};
-          locationCallback(selectedVenue);
-        }}>
-            <option key="1" value="" hidden defaultValue="Choose venue" >Choose venue</option>
-            {showVenueOptions()}
-          </select>
+        <LocationPicker locationCallback={locationCallback} />
         </div>
       </div>
       <div className={styles.box}>

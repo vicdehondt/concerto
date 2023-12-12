@@ -4,8 +4,6 @@ import styles from "@/styles/Home.module.css";
 import Navbar from "../components/Navbar";
 import EventCard from "../components/EventCard";
 import SideBar from "../components/SideBar";
-import { Nav } from "react-bootstrap";
-import type { InferGetServerSidePropsType, GetServerSideProps } from "next";
 import { ReactNode, useEffect, useState } from "react";
 import Link from "next/link";
 
@@ -37,11 +35,64 @@ type Event = {
   checkedIn: boolean;
 };
 
+type Filter = {
+  venueID: string | null;
+  datetime: Date | null;
+  genre1: string | null;
+};
+
+type Venue = {
+  venueID: string;
+  venueName: string;
+  longitude: number;
+  latitude: number;
+  ratingID: number;
+};
+
 export default function Home() {
   const [events, setEvents] = useState([]);
   const [eventsHTML, setEventsHTML] = useState<ReactNode[]>([]);
+  const [filters, setFilters] = useState<Filter>({venueID: null, datetime: null, genre1: null});
 
   useEffect(() => {
+    if (filters.venueID != null || filters.datetime != null || filters.genre1 != null) {
+      let url = environment.backendURL + "/search/events/filter?";
+      for (const [key, value] of Object.entries(filters)) {
+        if (value != null) {
+          url += `&${key}=${value}`;
+        }
+      }
+      fetch(url, {
+        mode: "cors",
+        credentials: "include",
+      })
+      .then((response) => {
+        return response.json();
+      })
+      .then((responseJSON) => {
+        setEvents(responseJSON);
+      });
+    }
+  }, [filters]);
+
+  useEffect(() => {
+    convertEventsToHTML(events);
+  }, [events]);
+
+  useEffect(() => {
+    fetch(environment.backendURL + "/events", {
+      mode: "cors",
+      credentials: "include",
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((responseJSON) => {
+        setEvents(responseJSON);
+      });
+  }, []);
+
+  function convertEventsToHTML(events: Array<Event>) {
     const fetchData = async () => {
       const eventsArray = await Promise.all(
         events.map(async (event: Event) => {
@@ -69,24 +120,10 @@ export default function Home() {
           );
         })
       );
-
       setEventsHTML(eventsArray);
     };
     fetchData();
-  }, [events]);
-
-  useEffect(() => {
-    fetch(environment.backendURL + "/events", {
-      mode: "cors",
-      credentials: "include",
-    })
-      .then((response) => {
-        return response.json();
-      })
-      .then((responseJSON) => {
-        setEvents(responseJSON);
-      });
-  }, []);
+  };
 
   return (
     <>
@@ -98,15 +135,13 @@ export default function Home() {
       </Head>
       <main className={`${styles.main} ${inter.className}`}>
         <div className={[styles.page, styles.homePage].join(" ")}>
-          <SideBar type="event" />
+          <SideBar type="event" filters={filters} filterCallback={(filter: Filter) => setFilters(filter)} />
           <div className={styles.pageContent}>
             <div className={styles.headerBox}>
               <h1>Events this week you may like</h1>
               <Link href="/map">Map View</Link>
             </div>
-            <div className={styles.eventCardContainer}>
-              {eventsHTML}
-            </div>
+            <div className={styles.eventCardContainer}>{eventsHTML}</div>
           </div>
         </div>
       </main>
