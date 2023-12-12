@@ -53,16 +53,6 @@ export async function createNewNotification(objectID, receiverID) {
         receiver: receiverID,
         objectID: objectID
     });
-    const improved_result = await Notification.findByPk(result.notificationID, {
-        attributes: {
-            exclude: ['createdAt', 'updatedAt']
-        },
-        include: {
-                model: NotificationObject,
-                attributes: ['notificationType', 'actor', 'typeID']
-        }
-    });
-    notificationEmitter.emit(newNotification, JSON.stringify(improved_result));
 }
 
 export async function userNotifications(userid) {
