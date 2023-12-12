@@ -43,7 +43,7 @@ function Navbar({ pictureSource }: { pictureSource: string }) {
       return [<div key={0}>No notifications found.</div>];
     }
 
-    return notifications.map((notification, index) => (
+    return notifications.map((notification) => (
       <div key={notification.notificationID}>
         <Notification notification={notification} removeNotification={removeNotification} />
       </div>
@@ -54,14 +54,6 @@ function Navbar({ pictureSource }: { pictureSource: string }) {
     const eventSource = new EventSource(environment.backendURL + "/notifications/subscribe", {
       withCredentials: true,
     });
-
-    eventSource.onopen = (event) => {
-      console.log("The connection has been established.", event);
-    };
-
-    eventSource.onerror = (err) => {
-      console.error("EventSource failed:", err);
-    };
 
     eventSource.addEventListener("notification", async (event) => {
       const eventData = JSON.parse(event.data);
