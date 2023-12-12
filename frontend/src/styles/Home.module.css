@@ -575,6 +575,11 @@
   background-color: #e8f7ee;
 }
 
+.settingsPage .profilePicture {
+  margin: auto;
+  text-align: center;
+}
+
 .settingsPage .settingContainer {
   width: 50%;
   margin: auto;
@@ -584,7 +589,7 @@
   border-radius: 20px;
 }
 
- .personalSettingTitle {
+.personalSettingTitle {
     font-size: x-large;
     font-weight: 800;
     margin-bottom: 5px;
@@ -651,10 +656,4 @@
 
 .wishlistPage .wishContainer >* {
   margin: 15px 20px 15px 20px;
-}
-
-.settingsPage {
-  color: black;
-  display: flex;
-  background-color: #e8f7ee;
 }

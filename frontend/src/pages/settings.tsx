@@ -3,8 +3,17 @@ import { Inter } from "next/font/google";
 import styles from "@/styles/Home.module.css";
 import { useEffect, useState } from "react";
 import PrivacySettings from "@/components/PrivacySettings"
+import Image from "next/image";
+import { User } from 'lucide-react';
 
 const inter = Inter({ subsets: ["latin"] });
+
+function showPicture(source: string) {
+  if (source != null) {
+    return <Image src={source} width={170} height={170} alt="Profile picture of user." />;
+  }
+  return <User fill={'black'} className={styles.userPicture} width={170} height={170} />;
+}
 
 const environment = {
   backendURL: "http://localhost:8080",
@@ -88,6 +97,9 @@ export default function Settings() {
       </Head>
       <main className={`${styles.main} ${inter.className}`}>
         <div className={[styles.page, styles.settingsPage].join(" ")}>
+            <div className={styles.profilePicture}>
+              {showPicture(user.image)}
+            </div>
             <div className={styles.settingContainer}>
               <PersonalSettings />
               <PrivacySettings userid={user.userID} />
