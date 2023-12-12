@@ -179,6 +179,15 @@
   cursor: pointer;
 }
 
+.concertPage .editBox {
+  display: flex;
+  justify-content: right;
+}
+
+.concertPage .editBox a {
+  margin: 20px 20px 0 0;
+}
+
 .addEventPage {
   color: black;
   background-color: #e8f7ee;

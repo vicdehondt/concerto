@@ -15,8 +15,14 @@ type Venue = {
   ratingID: number;
 };
 
-export default function LocationPicker({ locationCallback }: { locationCallback: (venue: Venue) => void }) {
+type LocationPickerProps = {
+  venueID?: string;
+  locationCallback: (venue: Venue) => void;
+};
+
+export default function LocationPicker({ venueID, locationCallback }: LocationPickerProps) {
   const [venueOptions, setVenueOptions] = useState([]);
+  const [defaultVenue, setDefaultVenue] = useState<Venue | null>(null);
 
   useEffect(() => {
     fetch(environment.backendURL + "/venues", {
@@ -31,10 +37,26 @@ export default function LocationPicker({ locationCallback }: { locationCallback:
       });
   }, []);
 
+  useEffect(() => {
+    venueOptions.forEach((venue: Venue) => {
+      if (venueID && venue.venueID == venueID) {
+        setDefaultVenue(venue);
+        locationCallback(venue);
+      }
+    })
+  }, [venueID]);
+
   function showVenueOptions() {
     return venueOptions.map((venue: Venue) => {
+      if (defaultVenue && venue.venueID == defaultVenue.venueID) {
+        return (
+          <option id={venue.venueID} key={venue.venueID} value={venue.venueName} data-venue={JSON.stringify(venue)} selected>
+            {venue.venueName}
+          </option>
+        );
+      }
       return (
-        <option key={venue.venueID} value={venue.venueName} data-venue={JSON.stringify(venue)}>
+        <option id={venue.venueID} key={venue.venueID} value={venue.venueName} data-venue={JSON.stringify(venue)}>
           {venue.venueName}
         </option>
       );
@@ -56,9 +78,11 @@ export default function LocationPicker({ locationCallback }: { locationCallback:
           locationCallback(selectedVenue);
         }}
       >
-        <option key="1" value="" hidden defaultValue="Choose venue">
-          Choose venue
-        </option>
+        {defaultVenue ? null : (
+          <option key="1" value="" hidden defaultValue="Choose venue">
+            Choose venue
+          </option>
+        )}
         {showVenueOptions()}
       </select>
     </>
