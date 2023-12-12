@@ -188,8 +188,10 @@ export function expiredEventTreshold() {
   return yesterday;
 }
 
-export async function retrieveUnfinishedEvents(): Promise<typeof EventModel>  {
+
+export async function retrieveUnfinishedEvents(limit): Promise<typeof EventModel>  {
   const events = await EventModel.findAll({
+    limit: limit,
     attributes: {
       exclude: ['createdAt', 'updatedAt']
     }, where: {

@@ -21,7 +21,7 @@ export class EventController extends BaseController {
 	}
 
 	initializeRoutes(): void {
-		this.router.get('/', (req: express.Request, res: express.Response) => {
+		this.router.get('/', upload.none(), (req: express.Request, res: express.Response) => {
 			res.set('Access-Control-Allow-Credentials', 'true');
 			this.getAllEvents(req, res);
 		});
@@ -134,8 +134,9 @@ export class EventController extends BaseController {
 
 	async getAllEvents(req: express.Request, res: express.Response) {
 		console.log("Accepted request for all events");
-		const { limit } = req.body;
-		const events = await database.retrieveUnfinishedEvents();
+		const limit = req.query.limit;
+		console.log(limit);
+		const events = await database.retrieveUnfinishedEvents(limit);
 		res.status(200).json(events);
 	}
 
