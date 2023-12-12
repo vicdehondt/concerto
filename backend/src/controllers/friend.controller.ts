@@ -2,7 +2,6 @@ import * as express from 'express';
 import { BaseController } from './base.controller';
 import * as database from '../models/Usermodel';
 import { NotificationObject, createNewNotification } from '../models/Notificationmodel';
-import {body, validationResult} from "express-validator";
 import {createMulter} from "../configs/multerConfig"
 const fs = require('fs');
 
