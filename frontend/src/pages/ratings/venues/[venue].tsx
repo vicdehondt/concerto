@@ -216,7 +216,7 @@ export default function Venue() {
   return (
     <>
       <Head>
-        <title>{`Concerto | Rate ${venue?.venueName}`}</title>
+        <title>{`Concerto | Ratings of ${venue?.venueName}`}</title>
         <meta name="description" content={`Rate the artist! Rate ${venue?.venueName}`} />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
