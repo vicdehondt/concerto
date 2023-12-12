@@ -75,7 +75,7 @@ export class ProfileController extends BaseController {
     async getProfile(req: express.Request, res: express.Response) {
         const sessiondata = req.session;
         const user = await database.UserModel.findByPk(sessiondata.userID, {
-            attributes: ['image', 'username', 'userID', 'mail', 'privacyAttendedEvents', 'privacyCheckedInEvents', 'privacyFriends', 'description']
+            attributes: ['image', 'username', 'userID', 'mail', 'privacyAttendedEvents', 'privacyCheckedInEvents', 'privacyFriends', 'description', 'genres']
         });
         res.status(200).json(user);
     }

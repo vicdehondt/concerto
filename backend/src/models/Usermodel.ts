@@ -49,6 +49,16 @@ export const UserModel = sequelize.define('User', {
         type: DataTypes.TEXT,
         defaultValue: "Hello, welcome to my profile page."
     },
+    genres: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+        get: function() {
+            return JSON.parse(this.getDataValue('genres'));
+          },
+          set: function(value) {
+            this.setDataValue('genres', JSON.stringify(value));
+          }
+    },
     salt: {
         type: DataTypes.INTEGER,
         allowNull: false
@@ -107,13 +117,14 @@ export async function DeleteUser(userID) {
     });
 }
 
-export async function CreateUser(username, email, hashedpassword, saltingrounds) {
+export async function CreateUser(username, email, genres, hashedpassword, saltingrounds) {
     try {
         const User = await UserModel.create({
             username: username,
             mail: email,
             password: hashedpassword,
             salt: saltingrounds,
+            genres: genres,
         });
         return User;
     } catch (error) {

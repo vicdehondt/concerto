@@ -106,7 +106,7 @@ export class SessionController extends BaseController {
 		if (result.isEmpty()){
 			bcrypt.hash(req.body.password, saltingRounds, async (err, hash) => {
 			database.sendMailVerification(req.body.username, req.body.mail);
-			const user = await database.CreateUser(req.body.username, req.body.mail, hash, saltingRounds);
+			const user = await database.CreateUser(req.body.username, req.body.mail, req.body.genres, hash, saltingRounds);
 			res.status(200).json({success: true, message: "User has been created!", userID: user.userID});
 			})
 		} else {
