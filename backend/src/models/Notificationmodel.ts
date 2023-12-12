@@ -1,4 +1,4 @@
-import { DataTypes, Op } from 'sequelize';
+import { DataTypes } from 'sequelize';
 import {sequelize} from '../configs/sequelizeConfig'
 import { UserModel } from './Usermodel';
 import { newNotification, notificationEmitter } from '../configs/emitterConfig';
@@ -11,7 +11,7 @@ export const NotificationObject = sequelize.define('NotificationObject', {
         autoIncrement: true
     },
     notificationType: {
-        type: DataTypes.ENUM('friendrequestreceived', 'friendrequestaccepted', 'eventInviteReceived'),
+        type: DataTypes.ENUM('friendrequestreceived', 'friendrequestaccepted', 'eventInviteReceived', 'reviewEvent'),
         allowNull: false,
     },
     actor: {
