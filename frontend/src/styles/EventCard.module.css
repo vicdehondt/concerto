@@ -24,6 +24,7 @@
 }
 
 .event {
+  cursor: pointer;
   grid-area: event;
 }
 

@@ -32,8 +32,8 @@ function Navbar({ pictureSource }: { pictureSource: string }) {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [notificationsHTML, setNotificationsHTML] = useState<ReactNode[]>([]);
   const [dropdownVisible, setDropdownVisible] = useState(false);
-  const [loggedIn, setLoggedIn] = useState(false);
   const [profile, setProfile] = useState({ userID: 0, image: null });
+  const [userIsLoggedIn, setUserIsLoggedIn] = useState(false);
 
   const notificationButtonRef = useRef<HTMLDivElement>(null);
   const notificationsRef = useRef<HTMLDivElement>(null);
@@ -86,17 +86,6 @@ function Navbar({ pictureSource }: { pictureSource: string }) {
         setNotifications(responseJSON);
       });
 
-    fetch(environment.backendURL + "/auth/status", {
-      mode: "cors",
-      credentials: "include",
-    }).then((response) => {
-      if (response.status == 200) {
-        setLoggedIn(true);
-      } else if (response.status == 400) {
-        setLoggedIn(false);
-      }
-    });
-
     fetch(environment.backendURL + "/profile", {
       mode: "cors",
       credentials: "include",
@@ -110,6 +99,16 @@ function Navbar({ pictureSource }: { pictureSource: string }) {
       })
       .then((responseJSON) => {
         setProfile(responseJSON);
+      });
+      fetch(environment.backendURL + "/auth/status", {
+        mode: "cors",
+        credentials: "include",
+      }).then((response) => {
+        if (response.status == 200) {
+          setUserIsLoggedIn(true);
+        } else if (response.status == 400) {
+          setUserIsLoggedIn(false);
+        }
       });
   }, []);
 
@@ -129,20 +128,40 @@ function Navbar({ pictureSource }: { pictureSource: string }) {
     };
   }, [notificationButtonRef, notificationsRef]);
 
-  function toggleNotifications() {
-    if (loggedIn) {
-      setNotificationsVisible((val) => !val);
-      const notificationBox = document.getElementsByClassName(
-        styles.notificationsBox
-      ) as HTMLCollectionOf<HTMLElement>;
-      if (notificationsVisible) {
-        notificationBox[0].style.display = "none";
-      } else {
-        notificationBox[0].style.display = "block";
-      }
-    } else {
-      router.push(`/login?from=${router.asPath}`);
+  async function loggedIn() {
+    try {
+      const response = await fetch(environment.backendURL + "/auth/status", {
+        mode: "cors",
+        credentials: "include",
+      });
+      setUserIsLoggedIn(true);
+      return response.status === 200;
+    } catch (error) {
+      setUserIsLoggedIn(false);
+      return false;
     }
+  }
+
+  function toggleNotifications() {
+    fetch(environment.backendURL + "/auth/status", {
+      mode: "cors",
+      credentials: "include",
+    }).then(async (response) => {
+      const userLoggedIn = await loggedIn();
+      if (userLoggedIn) {
+        setNotificationsVisible((val) => !val);
+        const notificationBox = document.getElementsByClassName(
+          styles.notificationsBox
+        ) as HTMLCollectionOf<HTMLElement>;
+        if (notificationsVisible) {
+          notificationBox[0].style.display = "none";
+        } else {
+          notificationBox[0].style.display = "block";
+        }
+      } else {
+        router.push(`/login?from=${router.asPath}`);
+      }
+    });
   }
 
   function closeNotifications() {
@@ -179,12 +198,25 @@ function Navbar({ pictureSource }: { pictureSource: string }) {
       .catch((error) => console.error("Error removing notification:", error));
   };
 
-  function redirectURL(normalURL: string) {
-    if (loggedIn) {
+  async function redirectURL(normalURL: string) {
+    const userLoggedIn = await loggedIn();
+    if (userLoggedIn) {
       return normalURL;
     }
     return `/login?from=${encodeURIComponent(normalURL)}`;
   }
+
+  async function redirectClicked(event: React.MouseEvent<HTMLDivElement, MouseEvent>, url: string) {
+    event.preventDefault();
+    const newUrl = await redirectURL(url);
+    router.push(newUrl);
+  };
+
+  async function redirectButtonClicked(event: React.MouseEvent<HTMLButtonElement, MouseEvent>, url: string) {
+    event.preventDefault();
+    const newUrl = await redirectURL(url);
+    router.push(newUrl);
+  };
 
   function logOut() {
     fetch(environment.backendURL + "/logout", {
@@ -201,21 +233,21 @@ function Navbar({ pictureSource }: { pictureSource: string }) {
   function showAccountImage() {
     if (profile.userID == 0) {
       return (
-        <button className={styles.loginButton} onClick={(event) => router.push(redirectURL("/"))}>
+        <button className={styles.loginButton} onClick={(event) => redirectButtonClicked(event, "/")}>
           Log In
         </button>
       );
     } else if (profile.image == null) {
       return (
-        <Link href={redirectURL("/account")}>
+        <div className={styles.account} onClick={(event) => redirectClicked(event, "/account")}>
           <User className={styles.userImage} width={40} height={40} />
-        </Link>
+        </div>
       );
     } else {
       return (
-        <Link href={redirectURL("/account")}>
+        <div className={styles.account} onClick={(event) => redirectClicked(event, "/account")}>
           <Image src={pictureSource} width={56} height={56} alt="Profile picture" />
-        </Link>
+        </div>
       );
     }
   }
@@ -227,12 +259,12 @@ function Navbar({ pictureSource }: { pictureSource: string }) {
           <Link href="/">Concerto</Link>
           <Searchbar type="long" onChange={(event) => console.log("Not impmeneted yet")} />
           <div className={styles.addEventButton}>
-            <Link href={redirectURL("/add-event")}>+</Link>
+            <div className={styles.add} onClick={(event) => redirectClicked(event, "/add-event")}>+</div>
           </div>
         </div>
         <div className={styles.rightTopics}>
-          <Link href={redirectURL("/friends")}>Friends</Link>
-          <Link href={redirectURL("/wishlist")}>Wishlist</Link>
+          <div className={styles.friendsRedirect} onClick={(event) => redirectClicked(event, "/friends")}>Friends</div>
+          <div className={styles.wishlistRedirect} onClick={(event) => redirectClicked(event, "/wishlist")}>Wishlist</div>
           <div className={styles.notifications} ref={notificationButtonRef}>
             <button
               id="notifications"
@@ -260,7 +292,7 @@ function Navbar({ pictureSource }: { pictureSource: string }) {
             >
               {showAccountImage()}
             </div>
-            {loggedIn && dropdownVisible && (
+            {userIsLoggedIn && dropdownVisible && (
               <div
                 className={styles.dropdownContent}
                 onMouseEnter={() => {
