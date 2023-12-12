@@ -34,7 +34,7 @@ export class ArtistController extends BaseController {
                 if (event != null) {
                     req.body.event = event;
                 } else {
-                    throw new Error("This event does not exist");
+                    throw new Error("This event does not exist.");
                 }
             }),
         ],
@@ -61,7 +61,7 @@ export class ArtistController extends BaseController {
             });
             res.status(200).json(result);
         } else {
-            res.status(400).json({ success: false, error: "Artist not found in database"});
+            res.status(400).json({ success: false, error: "Artist not found in database."});
         }
     }
 
@@ -79,16 +79,16 @@ export class ArtistController extends BaseController {
                     const rating = artist.Rating;
                     const result = await createReview(sessiondata.userID, rating, event.eventID, score, message);
                     if (result) {
-                        res.status(200).json({ success: true, message: "Created a review for this artist"});
+                        res.status(200).json({ success: true, message: "Created a review for this artist."});
                     } else {
-                        res.status(400).json({ success: false, error: "Already reviewed this artist for this event"});
+                        res.status(400).json({ success: false, error: "Already reviewed this artist for this event."});
                     }
                 } catch (error) {
-                    res.status(400).json({success: false, error: "You are not allowed to review this event"});
+                    res.status(400).json({success: false, error: "You are not allowed to review this event."});
                 }
             }
     } else {
-            res.status(400).json({ success: false, error: "Artist not found in database"});
+            res.status(400).json({ success: false, error: "Artist not found in database."});
         }
     }
 
@@ -111,7 +111,7 @@ export class ArtistController extends BaseController {
                 const result = await retrieveArtist(req.params.artistID);
                 res.status(200).json(result);
             } else {
-                res.status(400).json({ success: false, error: "There was an error adding an artist"});
+                res.status(400).json({ success: false, error: "There was an error adding an artist."});
             }
         }
     }
