@@ -80,6 +80,11 @@ export const EventModel = sequelize.define('Event', {
     type: genres,
     allowNull: false
   },
+  finishedNotificationSent: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+    allowNull: false,
+  },
   banner: {
     type: DataTypes.STRING,
     allowNull: false
