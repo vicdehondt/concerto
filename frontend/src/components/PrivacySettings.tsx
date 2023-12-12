@@ -1,4 +1,4 @@
-import styles from "../styles/Settings.module.css";
+import styles from "../styles/PrivacySettings.module.css";
 import PrivacySetting from "./PrivacySetting";
 import { useEffect, useState } from "react";
 import { FormEvent } from "react";
@@ -10,7 +10,7 @@ if (process.env.NODE_ENV == "production") {
   environment.backendURL = "https://api.concerto.dehondt.dev";
 }
 
-export default function UserSettings(userid: { userid: number}) {
+export default function PrivacySettings(userid: { userid: number}) {
   const [loading, setLoading] = useState(true);
   const [privacySettings, setPrivacySettings] = useState({
     privacyAttendedEvents: "",
@@ -62,6 +62,12 @@ export default function UserSettings(userid: { userid: number}) {
       <p>Loading...</p>
     ) : (
       <form onSubmit={onSave}>
+        <div className={styles.title}>
+          Privacy Settings
+        </div>
+        <div className={styles.explanation}>
+          Decide who can see this information
+        </div>
         <PrivacySetting name={"Events you attended"} setting={"privacyAttendedEvents"} initial={privacySettings.privacyAttendedEvents} />
         <PrivacySetting name={"Upcoming events you have checked in"} setting={"privacyCheckedInEvents"} initial={privacySettings.privacyCheckedInEvents} />
         <PrivacySetting name={"Your friends"} setting={"privacyFriends"} initial={privacySettings.privacyFriends} />

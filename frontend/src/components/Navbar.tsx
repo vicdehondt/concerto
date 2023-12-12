@@ -239,7 +239,7 @@ function Navbar({ pictureSource }: { pictureSource: string }) {
       );
     } else if (profile.image == null) {
       return (
-        <div className={styles.account} onClick={(event) => redirectClicked(event, "/account")}>
+        <div className={styles.account} onClick={(event) => redirectClicked(event, `/accounts/${profile.userID}`)}>
           <User className={styles.userImage} width={40} height={40} />
         </div>
       );
