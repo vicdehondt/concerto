@@ -64,6 +64,10 @@ export class EventController extends BaseController {
 			res.set('Access-Control-Allow-Credentials', 'true');
 			this.editEvent(req, res);
 		});
+		this.router.get('/:eventID/auth', this.requireAuth,  upload.none(), [this.checkEventExists, this.checkUnfinished], this.verifyErrors, (req: express.Request, res: express.Response) => {
+			res.set('Access-Control-Allow-Credentials', 'true');
+			this.checkEventAuth(req, res);
+		});
 		this.router.get('/:eventID/checkins', this.requireAuth, [this.checkEventExists], this.verifyErrors, (req: express.Request, res: express.Response) => {
 			res.set('Access-Control-Allow-Credentials', 'true');
 			this.allCheckedIn(req, res);
@@ -81,6 +85,16 @@ export class EventController extends BaseController {
 			this.checkOut(req, res);
 		});
     }
+
+	async checkEventAuth(req: express.Request, res: express.Response) {
+		const event = req.body.event;
+		const sessiondata = req.session;
+		if (sessiondata.userID == event.userID) {
+			res.status(200).json({ success: true, message: "Allowed to edit event."});
+		} else {
+			res.status(401).json({ success: false, message: "Not allowed to edit event."});
+		}
+	}
 
 	async editEvent(req: express.Request, res: express.Response) {
 		console.log("Received request to edit event");
@@ -120,6 +134,7 @@ export class EventController extends BaseController {
 
 	async getAllEvents(req: express.Request, res: express.Response) {
 		console.log("Accepted request for all events");
+		const { limit } = req.body;
 		const events = await database.retrieveUnfinishedEvents();
 		res.status(200).json(events);
 	}
