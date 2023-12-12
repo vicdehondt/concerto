@@ -61,7 +61,7 @@ export class ProfileController extends BaseController {
         }
         user.image = picturepath;
         await user.save();
-        res.status(200).json({success: true, message: "profile picture has been changed"});
+        res.status(200).json({success: true, message: "Profile picture has been changed."});
     }
 
     async changeDescription(req: express.Request, res: express.Response) {
@@ -69,7 +69,7 @@ export class ProfileController extends BaseController {
         const user = await database.UserModel.findByPk(sessiondata.userID);
         user.description = req.body.description;
         await user.save();
-        res.status(200).json({success: true, message: "Description has been changed "});
+        res.status(200).json({success: true, message: "Description has been changed."});
     }
 
     async getProfile(req: express.Request, res: express.Response) {
@@ -116,6 +116,6 @@ export class ProfileController extends BaseController {
         user.privacyAttendedEvents = privacyAttendedEvents;
         user.privacyFriends = privacyFriends;
         await user.save();
-        res.status(200).json({ success: true, message: 'Changed settings'});
+        res.status(200).json({ success: true, message: 'Changed settings.'});
     }
 }

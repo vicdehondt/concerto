@@ -56,7 +56,7 @@ export class SearchController extends BaseController {
 		let filterfields: any[] = [];
 		let filtervalues: any[] = [];
 		if (filters.length === 0){
-			res.status(404).json({succes: false, error: "No filters were activated"})
+			res.status(404).json({succes: false, error: "No filters were activated."})
 		} else{
 			// if(req.body.maxpeople){
 			// 	filterfields.push("maxpeople");
@@ -91,7 +91,7 @@ export class SearchController extends BaseController {
 			if (events) {
 				res.status(200).json(events);
 			} else {
-				res.status(404).json({succes: false, error: "No event was found with this search value"})
+				res.status(404).json({succes: false, error: "No event was found with this search value."})
 			}
 		} else {
 			res.status(400).json({succes: false, error: "No search value was provided!" });
