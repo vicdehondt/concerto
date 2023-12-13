@@ -686,7 +686,11 @@
   font-weight: bold;
   text-align: center;
   margin-top: 30px;
-  margin-bottom: 80px;
+}
+
+.addRatingPage .info {
+  text-align: center;
+  margin-bottom: 60px;
 }
 
 .addRatingPage .ratingBox {
@@ -758,4 +762,14 @@
   font-weight: bold;
   font-size: x-large;
   width: fit-content;
+}
+
+.mapPage {
+  grid-template-columns: 350px auto;
+  grid-template-areas:
+    "sidebar page-content";
+}
+
+.mapPage .pageContent {
+  overflow: auto;
 }
