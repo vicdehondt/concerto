@@ -76,7 +76,7 @@ export default function Map() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className={`${styles.main} ${inter.className}`}>
-        <div className={[styles.page, styles.homePage].join(" ")}>
+        <div className={[styles.page, styles.mapPage].join(" ")}>
           <SideBar type="event" />
           <div className={styles.pageContent}>
             {showVenues(venues)}

@@ -127,9 +127,6 @@ export default function AddRating() {
     const eventID = router.query.event;
     const venueForm = new FormData();
     const artistForm = new FormData();
-    var submitSuccess = false;
-    var venueSuccess = false;
-    var artistSuccess = false;
     venueForm.append("eventID", String(eventID));
     venueForm.append("score", String(venueScore));
     artistForm.append("eventID", String(eventID));
@@ -148,24 +145,29 @@ export default function AddRating() {
     })
     .then((response) => {
       if (response.status == 200) {
-        venueSuccess = true;
+        fetch(environment.backendURL + `/artists/${artistID}/reviews`, {
+          method: "POST",
+          body: artistForm,
+          mode: "cors",
+          credentials: "include",
+        })
+        .then((response) => {
+          if (response.status == 200) {
+            fetch(environment.backendURL + `/notifications/${router.query.notificationID}`, {
+              method: "DELETE",
+              mode: "cors",
+              credentials: "include",
+            })
+            .then((response) => {
+              if (response.status == 200) {
+                const from = Array.isArray(router.query.from) ? router.query.from[0] : router.query.from || '/';
+                router.push(from);
+              }
+            });
+          }
+        });
       }
     });
-    fetch(environment.backendURL + `/artists/${artistID}/reviews`, {
-      method: "POST",
-      body: artistForm,
-      mode: "cors",
-      credentials: "include",
-    })
-    .then((response) => {
-      if (response.status == 200) {
-        artistSuccess = true;
-      }
-    });
-    if (venueSuccess && artistSuccess) {
-      const from = Array.isArray(router.query.from) ? router.query.from[0] : router.query.from || '/';
-      router.push(from);
-    }
   }
 
   return (
@@ -181,6 +183,7 @@ export default function AddRating() {
           <div className={styles.pageHeader}>
             Rate {venueName} and {artistName}
           </div>
+          <div className={styles.info}>Submit available when both are rated. Comments are optional.</div>
           <div className={styles.ratingBox}>
             <div className={styles.venueRatingBox}>
               <div className={styles.header}>
