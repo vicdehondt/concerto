@@ -33,3 +33,27 @@
   font-size: 60px;
   font-weight: 900;
 }
+
+@media (max-width: 600px){
+
+  .bannerContainer {
+    height: 100px;
+  }
+
+  .uploadBox {
+    margin-top: 20%;
+    margin-left: 1%;
+  }
+
+  .titleContainer {
+    height: 40%;
+    width: 60%;
+  }
+
+  .titleContainer input {
+    font-size: medium;
+    font-weight: medium;
+    height: 100%;
+    width: 100%;
+  }
+}

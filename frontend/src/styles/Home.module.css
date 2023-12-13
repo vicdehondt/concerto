@@ -343,6 +343,75 @@
   border: 1px solid #7180B9;
 }
 
+@media (max-width: 600px){
+  .addEventPage {
+    display: flex;
+    flex-direction: column;
+    grid-template-columns:auto;
+    grid-template-rows: [banner] 200px auto auto auto auto auto;
+    grid-template-areas:
+      "banner banner"
+      "description description"
+      "location-artist location-artist"
+      "timetable timetable"
+      "invites invites"
+      "add-event add-event";
+  }
+  
+  .addEventPage .bannerContainer {
+    font-size: small;
+    height: fit-content;
+    align-items: center;
+  }
+
+  .addEventPage .friendInviteContainer {
+    background-color: #e8f7ee;
+  }
+  
+  .addEventPage .descriptionContainer {
+    margin-right: 15px;
+    align-items: center;
+  }
+  
+  .addEventPage .descriptionContainer .descriptionTitle {
+    font-size: large;
+  }
+  
+  .addEventPage .inputContainer {
+    background-color: #e8f7ee;
+  }
+  
+  .addEventPage .programAndDateContainer {
+    flex-direction: column;
+  }
+  
+  .addEventPage .programTitle {
+    font-size: large;
+  }
+  
+  .addEventPage .programText {
+    font-size: small;
+  }
+  
+  .addEventPage .dateTitle {
+    font-size: large;
+  }
+  
+  .addEventPage .datePane {
+    font-size: large;
+  }
+  
+  .addEventPage .artistAndLocationContainer {
+    background-color: #e8f7ee;
+    flex-direction: column;
+  }
+  
+  .addEventPage .cardPreview {
+    padding-top: 5%;
+    padding-bottom: 5%;
+  }
+}
+
 .registerPage {
   background-color: #e8f7ee;
   display: flex;

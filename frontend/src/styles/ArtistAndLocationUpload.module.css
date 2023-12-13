@@ -54,3 +54,66 @@
   margin-top: 5px;
   width: fit-content;
 }
+
+@media (max-width: 600px) {
+  .container {
+    width: 100%;
+    margin: 15px;
+    padding: 0 15px;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .box {
+    height: fit-content;
+    width: 100%;
+    margin-right: 10px;
+    display: flex;
+    align-items: center;
+  }
+  
+  .text {
+    font-size: medium;
+    font-weight: bold;
+    float: left;
+    text-decoration: underline;
+  }
+  
+  .name {
+    margin-left: 20px;
+    float: right;
+    font-size: medium;
+    font-weight: bold;
+  }
+  
+  .name select {
+    all: unset;
+    border: solid;
+    text-align: center;
+    max-width: 50%;
+    background-color: white;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+  
+  .searchArtists {
+    margin-top: 10px;
+  }
+  
+  .artistCard:hover {
+    background-color: grey;
+    cursor: pointer;
+  }
+  
+  .searchResults {
+    background-color: white;
+    height: 93px;
+    min-width: 200px;
+    text-align: center;
+    border: solid;
+    overflow: scroll;
+    margin-top: 5px;
+    width: fit-content;
+  }
+}

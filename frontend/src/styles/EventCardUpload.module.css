@@ -181,7 +181,7 @@
 @media (max-width: 600px) {
   .eventCard{
     min-width: 250px;
-    height: 100px;
+    height: fit-content;
     display: grid;
     grid-template-columns: [photo] 50px [event] 1fr [tickets] 50px [info] 70px;
     grid-template-rows: [card] 65px [tags] auto [price] auto;
@@ -194,6 +194,16 @@
     height: 60px;
   }
 
+  .eventPicture {
+    width: 100%;
+    height: 80%;
+  }
+
+  .eventPicture img {
+    border-radius: 50%;
+    height: 100%;
+  }
+  
   .price {
     grid-area: price;
     font-size: 10px;
@@ -230,7 +240,6 @@
     width: 38px;
     height: 38px;
   }
-
 
   .divider {
     display: none;
