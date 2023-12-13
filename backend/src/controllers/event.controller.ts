@@ -178,10 +178,24 @@ export class EventController extends BaseController {
 		if (result.isEmpty() && bannerpictures && eventPictures) {
 			const sessiondata = req.session;
 			const {artistID, venueID, title, description, dateAndTime, price, doors, main, support, mainGenre, secondGenre} = req.body;
-			const bannerPath = "http://localhost:8080/events/" + bannerpictures[0].filename;
-			const eventPicturePath = "http://localhost:8080/events/" + eventPictures[0].filename;
-			const result = await database.CreateEvent(sessiondata.userID, artistID, venueID, title, description, dateAndTime, price, doors, main, support, mainGenre, secondGenre, bannerPath, eventPicturePath);
-			res.status(200).json({ success: true, eventID: result.eventID, message: 'Event created successfully.' });
+			const suppliedDate = new Date(dateAndTime);
+			const event = await database.EventModel.findOne({
+				where: {
+					artistID: artistID,
+					venueID: venueID,
+					dateAndTime: suppliedDate
+				}
+			});
+			if (event) {
+				this.DeleteFile(eventImagePath, bannerpictures[0]);
+				this.DeleteFile(eventImagePath, eventPictures[0]);
+				res.status(400).json({ success: false, message: 'This event already exists so a new one could not be created.'});
+			} else {
+				const bannerPath = "http://localhost:8080/events/" + bannerpictures[0].filename;
+				const eventPicturePath = "http://localhost:8080/events/" + eventPictures[0].filename;
+				const result = await database.CreateEvent(sessiondata.userID, artistID, venueID, title, description, dateAndTime, price, doors, main, support, mainGenre, secondGenre, bannerPath, eventPicturePath);
+				res.status(200).json({ success: true, eventID: result.eventID, message: 'Event created successfully.' });
+			}
 		} else {
 			if (bannerpictures) {
 				this.DeleteFile(eventImagePath, bannerpictures[0]);
