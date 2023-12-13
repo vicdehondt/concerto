@@ -49,7 +49,7 @@ export class UserController extends BaseController {
 		if (loggedInUser == req.params.userid) {
 			await database.DeleteUser(sessiondata.userID);
 			sessiondata.userID = null;
-			res.status(200).json({ success: true, message: "User successfully deleted"});
+			res.status(200).json({ success: true, message: "User successfully deleted."});
 		} else {
 			res.status(400).json({ success: false, error: "You do not have permission to delete this user!"});
 		}
@@ -81,7 +81,7 @@ export class UserController extends BaseController {
 		console.log(privacy)
 		if (user.userID == sessiondata.userID) {
 			const result = await retrieveDataFunction(user.userID);
-			console.log("Requesting your own information")
+			console.log("Requesting your own information.")
 			res.status(200).json(result);
 		}
 		else if (privacy == 'private') {
@@ -89,12 +89,12 @@ export class UserController extends BaseController {
 		} else {
 			const result = await retrieveDataFunction(user.userID);
 			if (privacy == 'public') {
-				console.log("This information is public")
+				console.log("This information is public.")
 				res.status(200).json(result);
 			} else {
 				const friendship = await database.FindFriend(user.userID, sessiondata.userID);
 				if ((friendship != null) && (friendship.status == 'accepted')) {
-					console.log("You are friends so able to receive the information")
+					console.log("You are friends so able to receive the information.")
 					res.status(200).json(result);
 				} else {
 					res.status(401).json({ error: database.privacyErrorMsg});

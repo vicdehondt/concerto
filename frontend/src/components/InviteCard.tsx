@@ -1,5 +1,5 @@
 import Image from "next/image";
-import styles from "../styles/InviteCard.module.css"
+import styles from "@/styles/InviteCard.module.css"
 
 function InviteCard({name, pictureSource}: {name: string, pictureSource: string}){
     return (

@@ -80,6 +80,11 @@ export const EventModel = sequelize.define('Event', {
     type: genres,
     allowNull: false
   },
+  finishedNotificationSent: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+    allowNull: false,
+  },
   banner: {
     type: DataTypes.STRING,
     allowNull: false
@@ -188,8 +193,10 @@ export function expiredEventTreshold() {
   return yesterday;
 }
 
-export async function retrieveUnfinishedEvents(): Promise<typeof EventModel>  {
+
+export async function retrieveUnfinishedEvents(limit): Promise<typeof EventModel>  {
   const events = await EventModel.findAll({
+    limit: limit,
     attributes: {
       exclude: ['createdAt', 'updatedAt']
     }, where: {

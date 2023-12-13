@@ -1,4 +1,4 @@
-import { DataTypes, Op } from 'sequelize';
+import { DataTypes, Op, json } from 'sequelize';
 import {sequelize} from '../configs/sequelizeConfig'
 import { mailAccount, mailPassword } from '../configs/mailConfig';
 
@@ -48,6 +48,14 @@ export const UserModel = sequelize.define('User', {
     description: {
         type: DataTypes.TEXT,
         defaultValue: "Hello, welcome to my profile page."
+    },
+    firstGenre: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+    },
+    secondGenre: {
+        type: DataTypes.TEXT,
+        allowNull: true,
     },
     salt: {
         type: DataTypes.INTEGER,
@@ -107,13 +115,15 @@ export async function DeleteUser(userID) {
     });
 }
 
-export async function CreateUser(username, email, hashedpassword, saltingrounds) {
+export async function CreateUser(username, email, genre1, genre2, hashedpassword, saltingrounds) {
     try {
         const User = await UserModel.create({
             username: username,
             mail: email,
             password: hashedpassword,
             salt: saltingrounds,
+            firstGenre: genre1,
+            secondGenre: genre2
         });
         return User;
     } catch (error) {

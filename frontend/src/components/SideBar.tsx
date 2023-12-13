@@ -1,12 +1,12 @@
-import Image from "next/image";
-import { Inter } from "next/font/google";
-import styles from "../styles/SideBar.module.css";
-import Link from "next/link";
+import styles from "@/styles/SideBar.module.css";
 import Searchbar from "./Searchbar";
-import { FUNCTIONS_CONFIG_MANIFEST } from "next/dist/shared/lib/constants";
+import LocationPicker from "@/components/LocationPicker";
+import { Filter, Venue } from "./BackendTypes";
 
 type SideBarProps = {
   type: "event" | "friends";
+  filters?: Filter;
+  filterCallback?: (filter: Filter) => void;
 };
 
 const currentDate = getFormattedDate(new Date());
@@ -19,14 +19,19 @@ function getFormattedDate(date: Date) {
   );
 }
 
-function SideBarContent({ type }: SideBarProps) {
+function SideBarContent({ type, filters, filterCallback }: SideBarProps) {
+
+  function setLocation(venue: Venue) {
+    filters && filterCallback && filterCallback({venueID: venue.venueID, datetime: filters.datetime, genre1: filters.genre1});
+  }
+
   return type == "event" ? (
     <>
       <div className={styles.title}>Filter</div>
       <div className={styles.filters}>
         <div className={styles.locationFilter}>
           <div className={styles.location}>Location</div>
-          <Searchbar type="thin" onChange={(event) => console.log("Not implemented yet")}/>
+          <LocationPicker locationCallback={(venue: Venue) => setLocation(venue)} />
         </div>
         <div className={styles.date}>
           <form>
@@ -53,11 +58,12 @@ function SideBarContent({ type }: SideBarProps) {
   );
 }
 
-function SideBar({ type }: SideBarProps) {
+function SideBar({ type, filters, filterCallback }: SideBarProps) {
+
   return (
     <div className={styles.sidebar}>
       <Searchbar type="thick" onChange={(event) => console.log("Not implemented yet.")} />
-      <SideBarContent type={type} />
+      <SideBarContent type={type} filters={filters} filterCallback={(filter: Filter) => filterCallback && filterCallback(filter)} />
     </div>
   );
 }

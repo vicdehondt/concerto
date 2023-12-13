@@ -1,5 +1,4 @@
-import { Inter } from "next/font/google";
-import styles from "../styles/Searchbar.module.css";
+import styles from "@/styles/Searchbar.module.css";
 
 type SearchBarProps = {
   type: "long" | "thick" | "thin";

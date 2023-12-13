@@ -1,30 +1,19 @@
 import Head from "next/head";
 import { Inter } from "next/font/google";
 import styles from "@/styles/Home.module.css";
+import { useEffect, useState } from "react";
+import PrivacySettings from "@/components/PrivacySettings"
 import Image from "next/image";
 import { User } from 'lucide-react';
-import { useEffect, useState } from "react";
-import UserSettings from "@/components/UserSettings"
-import { BiographySettings} from "@/components/BiographySettings"
+import { environment } from "@/components/Environment";
 
 const inter = Inter({ subsets: ["latin"] });
 
-const environment = {
-  backendURL: "http://localhost:8080",
-};
-if (process.env.NODE_ENV == "production") {
-  environment.backendURL = "https://api.concerto.dehondt.dev";
-}
-
-type User = {
-  username: string;
-  userID: number;
-  mail: string;
-  image: string;
-  privacyAttendedEvents: string;
-  privacyCheckedInEvents: string;
-  privacyFriends: string;
-  description: string;
+function showPicture(source: string) {
+  if (source != null) {
+    return <Image src={source} width={170} height={170} alt="Profile picture of user." />;
+  }
+  return <User fill={'black'} className={styles.userPicture} width={170} height={170} />;
 }
 
 export default function Settings() {
@@ -39,13 +28,33 @@ export default function Settings() {
     description: "",
   });
 
-  function showPicture(source: string) {
-    if (source != null) {
-      return <Image src={source} width={170} height={170} alt="Profile picture of user." />;
-    }
-    return <User fill={'black'} className={styles.userPicture} width={170} height={170} />;
+  function PersonalSettings() {
+    return (
+      <>
+        <div>
+          <div className={styles.personalSettingTitle}>
+            Personal information
+          </div>
+          <div className={styles.personalSetting}>
+            <div className={styles.settingName}>
+            Your e-mail:
+            </div>
+            <div className={styles.settingValue}>
+              {user.mail}
+            </div>
+          </div>
+          <div className={styles.personalSetting}>
+            <div className={styles.settingName}>
+            Your biography:
+            </div>
+            <div className={styles.settingValue}>
+              {user.description}
+            </div>
+          </div>
+        </div>
+      </>
+    );
   }
-
 
   useEffect(() => {
       fetch(environment.backendURL + `/profile`, {
@@ -71,20 +80,12 @@ export default function Settings() {
       </Head>
       <main className={`${styles.main} ${inter.className}`}>
         <div className={[styles.page, styles.settingsPage].join(" ")}>
-            <div className={styles.settingContainer}>
-              <UserSettings
-              userid={user.userID}
-              />
+            <div className={styles.profilePicture}>
+              {showPicture(user.image)}
             </div>
-            <div className={styles.accountOverviewContainer}>
-              <div className={styles.profilePictureContainer}>
-                <div className={styles.profilePicture}>
-                {showPicture(user.image)}
-                </div>
-              </div>
-              <div className={styles.BiographySettingsContainer}>
-                <BiographySettings username={user.username} description={user.description}/>
-              </div>
+            <div className={styles.settingContainer}>
+              <PersonalSettings />
+              <PrivacySettings userid={user.userID} />
             </div>
         </div>
       </main>

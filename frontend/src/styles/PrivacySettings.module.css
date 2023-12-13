@@ -4,6 +4,16 @@
     border: 3px solid black;
 }
 
+.title{
+    font-size: x-large;
+    font-weight: 800;
+}
+.explanation {
+    font-size: medium;
+    font-weight: 500;
+    margin-bottom: 5PX;
+}
+
 .saveButton {
     display: flex;
     justify-content: center;

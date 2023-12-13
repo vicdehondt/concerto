@@ -1,6 +1,6 @@
 import { DataTypes, Op } from 'sequelize';
 import {sequelize} from '../configs/sequelizeConfig'
-import { RetrieveUser, UserModel } from './Usermodel';
+import { UserModel } from './Usermodel';
 import { EventModel, expiredEventTreshold } from './Eventmodel';
 
 export const CheckedInUsers = sequelize.define('CheckedInUser', {

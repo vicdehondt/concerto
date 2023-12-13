@@ -21,7 +21,7 @@ export class EventController extends BaseController {
 	}
 
 	initializeRoutes(): void {
-		this.router.get('/', (req: express.Request, res: express.Response) => {
+		this.router.get('/', upload.none(), (req: express.Request, res: express.Response) => {
 			res.set('Access-Control-Allow-Credentials', 'true');
 			this.getAllEvents(req, res);
 		});
@@ -32,7 +32,7 @@ export class EventController extends BaseController {
 				if (artist == null) {
 					const result = await createArtist(value);
 					if (!result) {
-						throw new Error("No artist was found with this ID");
+						throw new Error("No artist was found with this ID.");
 					} else {
 						return true;
 					}
@@ -40,7 +40,7 @@ export class EventController extends BaseController {
 				body("venueID").trim().notEmpty().custom(async value => {
 					const venue = await VenueModel.findByPk(value);
 					if (venue == null) {
-						throw new Error("No venue was found with this ID");
+						throw new Error("No venue was found with this ID.");
 					}
 				}),
 				body("title").trim().notEmpty(),
@@ -64,6 +64,10 @@ export class EventController extends BaseController {
 			res.set('Access-Control-Allow-Credentials', 'true');
 			this.editEvent(req, res);
 		});
+		this.router.get('/:eventID/auth', this.requireAuth,  upload.none(), [this.checkEventExists, this.checkUnfinished], this.verifyErrors, (req: express.Request, res: express.Response) => {
+			res.set('Access-Control-Allow-Credentials', 'true');
+			this.checkEventAuth(req, res);
+		});
 		this.router.get('/:eventID/checkins', this.requireAuth, [this.checkEventExists], this.verifyErrors, (req: express.Request, res: express.Response) => {
 			res.set('Access-Control-Allow-Credentials', 'true');
 			this.allCheckedIn(req, res);
@@ -82,12 +86,22 @@ export class EventController extends BaseController {
 		});
     }
 
+	async checkEventAuth(req: express.Request, res: express.Response) {
+		const event = req.body.event;
+		const sessiondata = req.session;
+		if (sessiondata.userID == event.userID) {
+			res.status(200).json({ success: true, message: "Allowed to edit event."});
+		} else {
+			res.status(401).json({ success: false, message: "Not allowed to edit event."});
+		}
+	}
+
 	async editEvent(req: express.Request, res: express.Response) {
-		console.log("Received request to edit event");
+		console.log("Received request to edit event.");
 		const event = req.body.event;
 		const sessiondata = req.session;
 		if (event.userID != sessiondata.userID) {
-			res.status(401).json({ success: true, error: "No permission to update this event"});
+			res.status(401).json({ success: true, error: "No permission to update this event."});
 		} else {
 			const {description, main, doors, support, price} = req.body;
 			event.price = price;
@@ -96,7 +110,7 @@ export class EventController extends BaseController {
 			event.doors = doors;
 			event.support = support;
 			event.save();
-			res.status(200).json({ success: true, message: "Event has been updated"});
+			res.status(200).json({ success: true, message: "Event has been updated."});
 		}
 	}
 
@@ -112,15 +126,17 @@ export class EventController extends BaseController {
 				typeID: event.eventID,
 			});
 			await createNewNotification(object.ID, receiverID);
-			res.status(200).json({ success: true, message: "Invite of event has been sent to user"});
+			res.status(200).json({ success: true, message: "Invite of event has been sent to user."});
 		} else {
-			res.status(200).json({ success: false, error: "This user is already checked in for this event"});
+			res.status(200).json({ success: false, error: "This user is already checked in for this event."});
 		}
 	}
 
 	async getAllEvents(req: express.Request, res: express.Response) {
 		console.log("Accepted request for all events");
-		const events = await database.retrieveUnfinishedEvents();
+		const limit = req.query.limit;
+		console.log(limit);
+		const events = await database.retrieveUnfinishedEvents(limit);
 		res.status(200).json(events);
 	}
 
@@ -154,7 +170,7 @@ export class EventController extends BaseController {
 			const bannerPath = "http://localhost:8080/events/" + bannerpictures[0].filename;
 			const eventPicturePath = "http://localhost:8080/events/" + eventPictures[0].filename;
 			const result = await database.CreateEvent(sessiondata.userID, artistID, venueID, title, description, dateAndTime, price, doors, main, support, mainGenre, secondGenre, bannerPath, eventPicturePath);
-			res.status(200).json({ success: true, eventID: result.eventID, message: 'Event created successfully' });
+			res.status(200).json({ success: true, eventID: result.eventID, message: 'Event created successfully.' });
 		} else {
 			if (bannerpictures) {
 				this.DeleteFile(eventImagePath, bannerpictures[0]);
@@ -171,9 +187,9 @@ export class EventController extends BaseController {
 		const event = req.body.event;
 		const result = await userCheckIn(sessiondata.userID, event);
 		if (result) {
-			res.status(200).json({ success: true, message: "Succesfully registered for event"});
+			res.status(200).json({ success: true, message: "Succesfully registered for event."});
 		} else {
-			res.status(400).json({ success: false, error: "Already registered for this event"});
+			res.status(400).json({ success: false, error: "Already registered for this event."});
 		}
 	}
 
@@ -183,9 +199,9 @@ export class EventController extends BaseController {
 		const event = req.body.event;
 		const result = await userCheckOut(sessiondata.userID, event);
 		if (result) {
-			res.status(200).json({ success: true, message: "Succesfully checked out for event"});
+			res.status(200).json({ success: true, message: "Succesfully checked out for event."});
 		} else {
-			res.status(400).json({ success: false, error: "Unable to check out: You were not checked in for this event"});
+			res.status(400).json({ success: false, error: "Unable to check out: You were not checked in for this event."});
 		}
 	}
 
@@ -203,7 +219,7 @@ export class EventController extends BaseController {
             if (user != null) {
                 return true;
             } else {
-                throw new Error("Friend does not exist");
+                throw new Error("Friend does not exist.");
             }
         })(req, res, next);
 	}
@@ -212,7 +228,7 @@ export class EventController extends BaseController {
         await body("event").custom((event) => {
             if (event != null) {
 				if (isFinished(event)) {
-					throw new Error("This event has been finished")
+					throw new Error("This event has been finished.")
 				} else {
 					return true;
 				}
@@ -231,7 +247,7 @@ export class EventController extends BaseController {
                 req.body.event = event;
                 return true;
             } else {
-                throw new Error("Event with that ID does not exist");
+                throw new Error("Event with that ID does not exist.");
             }
         })(req, res, next);
     }

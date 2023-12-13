@@ -1,5 +1,4 @@
-import { useState } from "react";
-import styles from "../styles/Rating.module.css";
+import styles from "@/styles/Rating.module.css";
 import { Star } from 'lucide-react';
 import Link from "next/link";
 

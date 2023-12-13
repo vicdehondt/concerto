@@ -31,13 +31,13 @@ export class SessionController extends BaseController {
 				body("username").custom(async value => {
 					const user = await database.RetrieveUser('username', value);
 					if  (user != null) {
-						throw new Error('username already in use by other user');
+						throw new Error('Username already in use by other user.');
 					}
 				}),
-				body("password").trim().isLength({ min: 6}).withMessage('Password must be at least 6 characters long').matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/).withMessage('Password must include at least one lowercase letter, one uppercase letter, and one number'),
+				body("password").trim().isLength({ min: 6}).withMessage('Password must be at least 6 characters long.').matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/).withMessage('Password must include at least one lowercase letter, one uppercase letter, and one number.'),
 				body("verifyPassword").trim().custom((value, { req }) => {
 					if (value !== req.body.password) {
-						throw new Error('passwords do not match!');
+						throw new Error('Passwords do not match!');
 					} else {
 						return true;
 					}
@@ -45,7 +45,7 @@ export class SessionController extends BaseController {
 				body("mail").isEmail().withMessage("Provide an email").custom(async value => {
 					const user = await database.RetrieveUser('mail', value);
 					if (user != null) {
-						throw new Error("Email already used by other user");
+						throw new Error("Email already used by other user.");
 					}
 				})
 			],
@@ -59,7 +59,7 @@ export class SessionController extends BaseController {
 				body("username").trim().custom(async (value, { req }) => {
 					const user = await database.RetrieveUser('username', value);
 					if (user == null) {
-						throw new Error("There exists no user with this username");
+						throw new Error("There exists no user with this username.");
 					} else {
 						req.body.user = user;
 						return true;
@@ -79,7 +79,7 @@ export class SessionController extends BaseController {
     }
 
 	async loginUser(req: express.Request, res: express.Response) {
-        console.log("Received request to login");
+        console.log("Received request to login.");
 		const sessiondata = req.session;
 		const result = validationResult(req);
 		if (sessiondata.userID != null) {
@@ -90,9 +90,9 @@ export class SessionController extends BaseController {
 			bcrypt.compare(password, user.password, function (err, result) {
 				if (result == true) {
 					sessiondata.userID = user.userID;
-					res.status(200).json({success: true, message: "You are succesfully logged in!"})
+					res.status(200).json({success: true, message: "You are succesfully logged in."})
 				} else {
-					res.status(400).json({success: false, message: "The provided password is incorrect"})
+					res.status(400).json({success: false, message: "The provided password is incorrect."})
 				}
 			});
 		} else {
@@ -106,7 +106,8 @@ export class SessionController extends BaseController {
 		if (result.isEmpty()){
 			bcrypt.hash(req.body.password, saltingRounds, async (err, hash) => {
 			database.sendMailVerification(req.body.username, req.body.mail);
-			const user = await database.CreateUser(req.body.username, req.body.mail, hash, saltingRounds);
+			const {username, mail, firstGenre, secondGenre } = req.body;
+			const user = await database.CreateUser(username, mail, firstGenre, secondGenre, hash, saltingRounds);
 			res.status(200).json({success: true, message: "User has been created!", userID: user.userID});
 			})
 		} else {

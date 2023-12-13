@@ -4,21 +4,10 @@ import styles from '@/styles/Home.module.css'
 import { FormEvent, useState } from 'react'
 import { useRouter } from "next/router";
 import Link from "next/link";
+import { Error } from '@/components/BackendTypes';
+import { environment } from "@/components/Environment";
 
 const inter = Inter({ subsets: ['latin'] })
-
-const environment = {
-  backendURL: "http://localhost:8080"
-}
-if (process.env.NODE_ENV == "production") {
-  environment.backendURL = "https://api.concerto.dehondt.dev"
-}
-
-type Error = {
-  type: string;
-  value: string;
-  msg: string;
-}
 
 export default function Login() {
   const router = useRouter();

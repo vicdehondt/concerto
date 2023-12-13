@@ -179,6 +179,15 @@
   cursor: pointer;
 }
 
+.concertPage .editBox {
+  display: flex;
+  justify-content: right;
+}
+
+.concertPage .editBox a {
+  margin: 20px 20px 0 0;
+}
+
 .addEventPage {
   color: black;
   background-color: #e8f7ee;
@@ -572,15 +581,40 @@
 }
 .settingsPage {
   color: black;
-  display: flex;
   background-color: #e8f7ee;
 }
 
+.settingsPage .profilePicture {
+  margin: auto;
+  text-align: center;
+}
 
-.settingContainer {
+.settingsPage .settingContainer {
   width: 50%;
   margin: auto;
-  margin-left: 5%;
+  background-color: white;
+  padding: 20px;
+  border: 3px solid black;
+  border-radius: 20px;
+}
+
+.personalSettingTitle {
+    font-size: x-large;
+    font-weight: 800;
+    margin-bottom: 5px;
+}
+
+.personalSetting {
+  margin-bottom: 5px;
+}
+
+.settingName {
+  font-weight: 600;
+  font-size: large;
+}
+
+.settingValue {
+  margin-left: 20px;
 }
 
 .accountOverviewContainer {
@@ -593,17 +627,13 @@
   text-align: center;
   margin-top: 100px;
 }
+
 .profilePicture {
   margin-left: 33%;
   width: 180px;
   height: 180px;
   background-color: white;
   border-radius: 50%;
-}
-
-.BiographySettingsContainer {
-  margin-top: 20px;
-  height: 50%;
 }
 
 .wishlistPage {
@@ -656,7 +686,11 @@
   font-weight: bold;
   text-align: center;
   margin-top: 30px;
-  margin-bottom: 80px;
+}
+
+.addRatingPage .info {
+  text-align: center;
+  margin-bottom: 60px;
 }
 
 .addRatingPage .ratingBox {
@@ -728,4 +762,14 @@
   font-weight: bold;
   font-size: x-large;
   width: fit-content;
+}
+
+.mapPage {
+  grid-template-columns: 350px auto;
+  grid-template-areas:
+    "sidebar page-content";
+}
+
+.mapPage .pageContent {
+  overflow: auto;
 }

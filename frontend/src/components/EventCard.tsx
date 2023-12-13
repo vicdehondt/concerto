@@ -1,16 +1,8 @@
 import Image from "next/image";
-import { Inter } from "next/font/google";
 import styles from "@/styles/EventCard.module.css";
 import Tag from "@/components/Tag";
-import Link from "next/link";
 import { useRouter } from "next/router";
-
-const environment = {
-  backendURL: "http://localhost:8080",
-};
-if (process.env.NODE_ENV == "production") {
-  environment.backendURL = "https://api.concerto.dehondt.dev";
-}
+import { environment } from "./Environment";
 
 function getMonth(month: number) {
   switch (month) {
