@@ -199,6 +199,8 @@ export async function retrieveUnfinishedEvents(limit): Promise<typeof EventModel
     limit: limit,
     attributes: {
       exclude: ['createdAt', 'updatedAt']
+    }, include: {
+      model: Artist,
     }, where: {
       dateAndTime: {
         [Op.gte]: expiredEventTreshold(),
@@ -213,6 +215,8 @@ export async function RetrieveEvent(ID): Promise<typeof EventModel> {
     const Event = await EventModel.findOne({
       attributes: {
         exclude: ['createdAt', 'updatedAt']
+      }, include: {
+        model: Artist,
       },
       where: {eventID: ID},
     });
