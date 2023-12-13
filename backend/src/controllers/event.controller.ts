@@ -60,7 +60,7 @@ export class EventController extends BaseController {
 			res.set('Access-Control-Allow-Credentials', 'true');
 			this.getEvent(req, res);
 		});
-		this.router.post('/:eventID', this.requireAuth,  upload.none(), [this.checkEventExists, this.checkUnfinished], this.verifyErrors, (req: express.Request, res: express.Response) => {
+		this.router.post('/:eventID', this.requireAuth, upload.fields([{ name: 'banner', maxCount: 1}, { name: 'eventPicture', maxCount: 1}]), [this.checkEventExists, this.checkUnfinished], this.verifyErrors, (req: express.Request, res: express.Response) => {
 			res.set('Access-Control-Allow-Credentials', 'true');
 			this.editEvent(req, res);
 		});
@@ -103,13 +103,24 @@ export class EventController extends BaseController {
 		if (event.userID != sessiondata.userID) {
 			res.status(401).json({ success: true, error: "No permission to update this event."});
 		} else {
-			const {description, main, doors, support, price} = req.body;
-			event.price = price;
-			event.description = description;
-			event.main = main;
-			event.doors = doors;
-			event.support = support;
-			event.save();
+			const updateFields = ['description', 'main', 'doors', 'support', 'price', 'title', 'secondGenre', 'mainGenre'];
+			const imageFields = ['eventPicture', 'banner'];
+
+            updateFields.forEach(field => {
+                if (req.body[field]) {
+					event[field] = req.body[field];
+                }
+            });
+			imageFields.forEach(field => {
+				if (req.files[field]) {
+					console.log("Edititing the image of an event ", field);
+					const image = req.files[field]
+					const imagePath = "http://localhost:8080/events/" + image[0].filename;
+					event[field] = imagePath;
+					console.log(event[field]);
+				}
+			});
+			await event.save();
 			res.status(200).json({ success: true, message: "Event has been updated."});
 		}
 	}
