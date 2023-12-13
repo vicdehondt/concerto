@@ -1,8 +1,5 @@
 import Image from "next/image";
-import { Inter } from "next/font/google";
 import styles from "@/styles/EventCardUpload.module.css";
-import Tag from "@/components/Tag";
-import Link from "next/link";
 import { ChangeEvent, useEffect, useState } from "react";
 
 function getMonth(month: number) {

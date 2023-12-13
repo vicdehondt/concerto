@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { User } from 'lucide-react';
-import styles from "../styles/Biography.module.css";
+import styles from "@/styles/Biography.module.css";
 
 function Biography({ source, username, description }: { source: string; username: string, description: string }) {
 

@@ -6,34 +6,13 @@ import FriendInvites from "@/components/FriendInvite";
 import BannerUpload from "@/components/BannerUpload";
 import { useState } from "react";
 import { FormEvent } from "react";
-import Rating from '@/components/Rating'
 import TimetableUpload from "@/components/TimetableUpload";
 import ArtistAndLocationUpload from "@/components/ArtistAndLocationUpload";
 import EventCardUpload from "@/components/EventCardUpload";
+import { Artist, Venue } from "@/components/BackendTypes";
+import { environment } from "@/components/Environment";
 
 const inter = Inter({ subsets: ["latin"] });
-
-const environment = {
-  backendURL: "http://localhost:8080",
-};
-if (process.env.NODE_ENV == "production") {
-  environment.backendURL = "https://api.concerto.dehondt.dev";
-}
-
-type Artist = {
-  artistID: string;
-  type: string;
-  name: string;
-  id: string;
-};
-
-type Venue = {
-  venueID: string;
-  venueName: string;
-  longitude: number;
-  latitude: number;
-  ratingID: number;
-};
 
 function getFormattedDate(date: Date) {
   return (
@@ -66,8 +45,8 @@ export default function AddEvent() {
       if (selectedArtist.artistID) {
         formData.append("artistID", selectedArtist.artistID);
       }
-      if (selectedArtist.id) {
-        formData.append("artistID", selectedArtist.id);
+      if (selectedArtist.artistID) {
+        formData.append("artistID", selectedArtist.artistID);
       }
     }
     const response = await fetch(environment.backendURL + "/events", {

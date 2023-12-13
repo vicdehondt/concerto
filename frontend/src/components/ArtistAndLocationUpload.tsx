@@ -1,34 +1,9 @@
 import { useEffect, useState } from "react";
-import styles from "../styles/ArtistAndLocationUpload.module.css";
+import styles from "@/styles/ArtistAndLocationUpload.module.css";
 import Searchbar from "./Searchbar";
 import LocationPicker from "./LocationPicker";
-
-const environment = {
-  backendURL: "http://localhost:8080",
-};
-if (process.env.NODE_ENV == "production") {
-  environment.backendURL = "https://api.concerto.dehondt.dev";
-}
-
-type Artist = {
-  artistID: string;
-  type: string;
-  name: string;
-  id: string;
-};
-
-type APIResponse = {
-  created: string;
-  artists: Array<Artist>;
-};
-
-type Venue = {
-  venueID: string;
-  venueName: string;
-  longitude: number;
-  latitude: number;
-  ratingID: number;
-};
+import { Artist, Venue, APIResponse } from "./BackendTypes";
+import { environment } from "./Environment";
 
 type ArtistAndLocationUploadProps = {
   locationCallback: (venue: Venue) => void;
@@ -101,7 +76,6 @@ function ArtistAndLocationUpload({
             key={index}
             className={styles.artistCard}
             onClick={(event) => {
-              console.log(artist);
               artistCallback(artist);
               setSelectedArtist(artist);
             }}

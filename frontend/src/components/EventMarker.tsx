@@ -1,34 +1,7 @@
-import { useEffect, useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
 import { useRouter } from "next/router";
-
-const environment = {
-  backendURL: "http://localhost:8080",
-};
-
-if (process.env.NODE_ENV == "production") {
-  environment.backendURL = "https://api.concerto.dehondt.dev";
-}
-
-type Event = {
-  eventID: number;
-  title: string;
-  description: string;
-  amountCheckedIn: number;
-  dateAndTime: string;
-  support: string;
-  doors: string;
-  main: string;
-  baseGenre: string;
-  secondGenre: string;
-  price: number;
-  banner: string;
-  eventPicture: string;
-  artistID: string;
-  venueID: string;
-  checkedIn: boolean;
-};
+import { Event } from "./BackendTypes";
+import { environment } from "./Environment";
 
 export default function EventMarker({ event }: { event: Event }) {
 

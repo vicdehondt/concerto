@@ -1,5 +1,5 @@
 import { useState } from "react";
-import styles from "../styles/TimetableUpload.module.css";
+import styles from "@/styles/TimetableUpload.module.css";
 
 type TimetableUploadProps = {
   time?: string;

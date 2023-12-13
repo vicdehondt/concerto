@@ -1,5 +1,4 @@
 import Image from "next/image";
-import { Inter } from "next/font/google";
 import styles from "@/styles/Navbar.module.css";
 import Link from "next/link";
 import Searchbar from "./Searchbar";
@@ -7,23 +6,7 @@ import Notification from "./Notification";
 import { useState, useEffect, useRef, ReactNode, useCallback } from "react";
 import { useRouter } from "next/router";
 import { X, User } from "lucide-react";
-
-type Profile = {
-  image: string;
-  username: string;
-  userID: number;
-  mail: string;
-  privacyAttendedEvents: string;
-  privacyCheckedInEvents: string;
-  privacyFriends: string;
-};
-
-const environment = {
-  backendURL: "http://localhost:8080",
-};
-if (process.env.NODE_ENV == "production") {
-  environment.backendURL = "https://api.concerto.dehondt.dev";
-}
+import { environment } from "./Environment";
 
 function Navbar({ pictureSource }: { pictureSource: string }) {
   const router = useRouter();
@@ -51,24 +34,24 @@ function Navbar({ pictureSource }: { pictureSource: string }) {
   }, []);
 
   useEffect(() => {
-    const eventSource = new EventSource(environment.backendURL + "/notifications/subscribe", {
-      withCredentials: true,
-    });
+    // const eventSource = new EventSource(environment.backendURL + "/notifications/subscribe", {
+    //   withCredentials: true,
+    // });
 
-    eventSource.addEventListener("notification", async (event) => {
-      const eventData = JSON.parse(event.data);
-      if (eventData.NotificationObject.notificationType !== "friendrequestaccepted") {
-        const updatedNotifications = [...notifications, eventData];
-        setNotifications(updatedNotifications);
-        setNotificationsHTML(convertNotifications(updatedNotifications));
-      }
-    });
+    // eventSource.addEventListener("notification", async (event) => {
+    //   const eventData = JSON.parse(event.data);
+    //   if (eventData.NotificationObject.notificationType !== "friendrequestaccepted") {
+    //     const updatedNotifications = [...notifications, eventData];
+    //     setNotifications(updatedNotifications);
+    //     setNotificationsHTML(convertNotifications(updatedNotifications));
+    //   }
+    // });
 
     setNotificationsHTML(convertNotifications(notifications));
 
-    return () => {
-      eventSource.close();
-    };
+    // return () => {
+    //   eventSource.close();
+    // };
   }, [notifications, convertNotifications]);
 
   useEffect(() => {
@@ -174,7 +157,7 @@ function Navbar({ pictureSource }: { pictureSource: string }) {
 
   const removeNotification = (notificationID: number) => {
     fetch(environment.backendURL + `/notifications/${notificationID}`, {
-      method: "POST",
+      method: "DELETE",
       mode: "cors",
       credentials: "include",
     })

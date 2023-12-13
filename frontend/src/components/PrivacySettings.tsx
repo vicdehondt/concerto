@@ -1,14 +1,8 @@
-import styles from "../styles/PrivacySettings.module.css";
+import styles from "@/styles/PrivacySettings.module.css";
 import PrivacySetting from "./PrivacySetting";
 import { useEffect, useState } from "react";
 import { FormEvent } from "react";
-
-const environment = {
-  backendURL: "http://localhost:8080",
-};
-if (process.env.NODE_ENV == "production") {
-  environment.backendURL = "https://api.concerto.dehondt.dev";
-}
+import { environment } from "./Environment";
 
 export default function PrivacySettings(userid: { userid: number}) {
   const [loading, setLoading] = useState(true);

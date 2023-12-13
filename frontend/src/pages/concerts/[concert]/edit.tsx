@@ -6,53 +6,13 @@ import FriendInvites from "@/components/FriendInvite";
 import BannerUpload from "@/components/BannerUpload";
 import { useEffect, useState } from "react";
 import { FormEvent } from "react";
-import Rating from '@/components/Rating'
 import TimetableUpload from "@/components/TimetableUpload";
 import ArtistAndLocationUpload from "@/components/ArtistAndLocationUpload";
 import EventCardUpload from "@/components/EventCardUpload";
+import { Event, Venue, Artist } from "@/components/BackendTypes";
+import { environment } from "@/components/Environment";
 
 const inter = Inter({ subsets: ["latin"] });
-
-const environment = {
-  backendURL: "http://localhost:8080",
-};
-if (process.env.NODE_ENV == "production") {
-  environment.backendURL = "https://api.concerto.dehondt.dev";
-}
-
-type Artist = {
-  artistID: string;
-  type: string;
-  name: string;
-  id: string;
-};
-
-type Venue = {
-  venueID: string;
-  venueName: string;
-  longitude: number;
-  latitude: number;
-  ratingID: number;
-};
-
-type Event = {
-  eventID: number;
-  title: string;
-  description: string;
-  amountCheckedIn: number;
-  dateAndTime: string;
-  support: string;
-  doors: string;
-  main: string;
-  baseGenre: string;
-  secondGenre: string;
-  price: number;
-  banner: string;
-  eventPicture: string;
-  artistID: string;
-  venueID: string;
-  checkedIn: boolean;
-};
 
 function getFormattedDate(date: Date) {
   return (
@@ -65,7 +25,7 @@ function getFormattedDate(date: Date) {
 export default function EditEvent() {
   const router = useRouter();
   const [title, setTitle] = useState("");
-  const [location, setLocation] = useState({venueID: "123", venueName: "Not selected"});
+  const [location, setLocation] = useState<Venue | null>(null);
   const [time, setTime] = useState("")
   const [date, setDate] = useState(getFormattedDate(new Date()))
   const [price, setPrice] = useState(0);
@@ -106,7 +66,9 @@ export default function EditEvent() {
     var formData = new FormData(event.currentTarget);
     formData.append("dateAndTime", concatDateAndTime());
     formData.append("price", "20");
-    formData.append("venueID", location.venueID);
+    if (location) {
+      formData.append("venueID", location?.venueID);
+    }
     const banner: File = formData.get("eventPicture") as File;
     // if (banner.name === "") {
     //   formData.append("banner", "");
@@ -115,8 +77,8 @@ export default function EditEvent() {
       if (selectedArtist.artistID) {
         formData.append("artistID", selectedArtist.artistID);
       }
-      if (selectedArtist.id) {
-        formData.append("artistID", selectedArtist.id);
+      if (selectedArtist.artistID) {
+        formData.append("artistID", selectedArtist.artistID);
       }
     }
     // console.log(concert);
@@ -173,7 +135,7 @@ export default function EditEvent() {
               </div>
             </div>
             <div className={styles.cardPreview}>
-              <EventCardUpload genre1={concert?.baseGenre} genre2={concert?.secondGenre} image={concert?.eventPicture} title={title} location={location.venueName} date={date} time={time} price={price} />
+              {location && <EventCardUpload genre1={concert?.baseGenre} genre2={concert?.secondGenre} image={concert?.eventPicture} title={title} location={location.venueName} date={date} time={time} price={price} />}
             </div>
           </div>
           <div className={styles.artistAndLocationContainer}>

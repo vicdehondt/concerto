@@ -6,73 +6,20 @@ import FriendInvites from "@/components/FriendInvite";
 import Banner from "@/components/Banner";
 import Rating from "@/components/Rating";
 import Timetable from "@/components/Timetable";
-import Image from "next/image";
 import { useEffect, useState } from "react";
 import { FormEvent } from "react";
 import { Heart, Pencil } from "lucide-react";
 import Link from "next/link";
+import { Event } from "@/components/BackendTypes";
+import { environment } from "@/components/Environment";
 
 const inter = Inter({ subsets: ["latin"] });
-
-const environment = {
-  backendURL: "http://localhost:8080",
-};
-if (process.env.NODE_ENV == "production") {
-  environment.backendURL = "https://api.concerto.dehondt.dev";
-}
-
-type Event = {
-  eventID: number;
-  title: string;
-  description: string;
-  amountCheckedIn: number;
-  dateAndTime: string;
-  support: string;
-  doors: string;
-  main: string;
-  baseGenre: string;
-  secondGenre: string;
-  price: number;
-  banner: string;
-  eventPicture: string;
-  artistID: string;
-  venueID: string;
-  checkedIn: boolean;
-};
-
-type Artist = {
-  artistID: string;
-  name: string;
-  type: string;
-  ratingID: number;
-  Rating: {
-    score: number;
-    amountOfReviews: number;
-  };
-};
 
 export default function Concert() {
   const router = useRouter();
   const title = "Concerto | " + router.query.concert;
 
-  const [concert, setConcert] = useState({
-    eventID: 0,
-    title: "",
-    description: "",
-    amountCheckedIn: 0,
-    dateAndTime: "",
-    price: 0,
-    banner: "",
-    eventPicture: "string",
-    support: "99:99",
-    doors: "99:99",
-    main: "99:99",
-    baseGenre: "",
-    secondGenre: "",
-    artistID: "123",
-    venueID: "123",
-    checkedIn: false,
-  });
+  const [concert, setConcert] = useState<Event | null>(null);
 
   const [artistScore, setArtistScore] = useState(0);
   const [venueScore, setVenueScore] = useState(0);
@@ -81,8 +28,8 @@ export default function Concert() {
   const [canEdit, setCanEdit] = useState(false);
 
   function showBanner() {
-    if (concert.eventID > 0) {
-      return <Banner imageSource={concert.banner} concertName={concert.title} />;
+    if (concert &&  concert?.eventID > 0) {
+      return <Banner imageSource={concert?.banner} concertName={concert?.title} />;
     }
   }
 
@@ -196,7 +143,7 @@ export default function Concert() {
 
   function addToWishlist() {
     const formData = new FormData();
-    const concertID = String(concert.eventID);
+    const concertID = String(concert?.eventID);
     formData.append("eventID", concertID);
     fetch(environment.backendURL + "/wishlist", {
       method: "POST",
@@ -212,7 +159,7 @@ export default function Concert() {
 
   function removeFromWishlist() {
     const formData = new FormData();
-    const concertID = String(concert.eventID);
+    const concertID = String(concert?.eventID);
     formData.append("eventID", concertID);
     fetch(environment.backendURL + "/wishlist", {
       method: "DELETE",
@@ -239,16 +186,16 @@ export default function Concert() {
           <div className={styles.bannerContainer}>{showBanner()}</div>
           <div className={styles.descriptionContainer}>
             <div className={styles.descriptionTitle}>Description</div>
-            <div className={styles.descriptionText}>{concert.description}</div>
+            <div className={styles.descriptionText}>{concert?.description}</div>
           </div>
           <div className={styles.programContainer}>
             <div className={styles.programTitle}>Program</div>
             <div className={styles.programText}>
-              <Timetable
+              {concert && <Timetable
                 doorTime={convertTime(concert.doors)}
                 supportTime={convertTime(concert.support)}
                 concertTime={convertTime(concert.main)}
-              />
+              />}
             </div>
             <div className={styles.ticketsAndWishlist}>
               <button className={styles.ticketsButton}>Buy tickets</button>
@@ -270,18 +217,18 @@ export default function Concert() {
           <div>
             <div className={styles.editBox}>
               {canEdit && (
-                <Link href={`/concerts/${concert.eventID}/edit`}>
+                <Link href={`/concerts/${concert?.eventID}/edit`}>
                   <Pencil size={50} />
                 </Link>
               )}
             </div>
             <div className={styles.ratingContainer}>
-              <Rating
+              {concert && <Rating
                 artistScore={artistScore}
                 venueScore={venueScore}
                 artist={concert.artistID}
                 venue={concert.venueID}
-              />
+              />}
             </div>
           </div>
           <div className={styles.friendInviteContainer}>

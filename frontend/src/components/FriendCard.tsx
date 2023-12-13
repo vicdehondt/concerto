@@ -1,8 +1,6 @@
-import { Inter } from "next/font/google";
 import Image from "next/image";
-import styles from "../styles/FriendCard.module.css";
+import styles from "@/styles/FriendCard.module.css";
 import { User } from 'lucide-react';
-import { useState } from "react";
 
 function FriendCard({ source, username }: { source: string; username: string }) {
 

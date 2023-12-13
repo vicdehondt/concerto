@@ -1,19 +1,6 @@
 import { useEffect, useState } from "react";
-
-const environment = {
-  backendURL: "http://localhost:8080",
-};
-if (process.env.NODE_ENV == "production") {
-  environment.backendURL = "https://api.concerto.dehondt.dev";
-}
-
-type Venue = {
-  venueID: string;
-  venueName: string;
-  longitude: number;
-  latitude: number;
-  ratingID: number;
-};
+import { Venue } from "./BackendTypes";
+import { environment } from "./Environment";
 
 type LocationPickerProps = {
   venueID?: string;

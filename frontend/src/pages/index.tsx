@@ -1,53 +1,14 @@
 import Head from "next/head";
 import { Inter } from "next/font/google";
 import styles from "@/styles/Home.module.css";
-import Navbar from "../components/Navbar";
-import EventCard from "../components/EventCard";
-import SideBar from "../components/SideBar";
+import EventCard from "@/components/EventCard";
+import SideBar from "@/components/SideBar";
 import { ReactNode, useEffect, useState } from "react";
 import Link from "next/link";
+import { Event, Filter } from "@/components/BackendTypes";
+import { environment } from "@/components/Environment";
 
 const inter = Inter({ subsets: ["latin"] });
-
-const environment = {
-  backendURL: "http://localhost:8080",
-};
-if (process.env.NODE_ENV == "production") {
-  environment.backendURL = "https://api.concerto.dehondt.dev";
-}
-
-type Event = {
-  eventID: number;
-  title: string;
-  description: string;
-  amountCheckedIn: number;
-  dateAndTime: string;
-  support: string;
-  doors: string;
-  main: string;
-  baseGenre: string;
-  secondGenre: string;
-  price: number;
-  banner: string;
-  eventPicture: string;
-  artistID: string;
-  venueID: string;
-  checkedIn: boolean;
-};
-
-type Filter = {
-  venueID: string | null;
-  datetime: Date | null;
-  genre1: string | null;
-};
-
-type Venue = {
-  venueID: string;
-  venueName: string;
-  longitude: number;
-  latitude: number;
-  ratingID: number;
-};
 
 export default function Home() {
   const [events, setEvents] = useState([]);

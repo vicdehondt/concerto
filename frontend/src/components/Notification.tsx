@@ -1,32 +1,9 @@
-import Image from "next/image";
-import { Inter } from "next/font/google";
 import styles from "@/styles/Notification.module.css";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-
-const environment = {
-  backendURL: "http://localhost:8080",
-};
-if (process.env.NODE_ENV == "production") {
-  environment.backendURL = "https://api.concerto.dehondt.dev";
-}
-
-type Notification = {
-  notificationID: number;
-  status: string;
-  NotificationObject: {
-    notificationType: string,
-    actor: number,
-  }
-};
-
-type User = {
-  userID: number;
-  username: string;
-  image: string;
-  createdAt: string;
-  updatedAt: string;
-};
+import { Event } from "./BackendTypes";
+import { environment } from "./Environment";
+import { Notification } from "./BackendTypes";
 
 function Notification({ notification, removeNotification }: {notification: Notification, removeNotification: (number: number) => void}) {
 

@@ -1,5 +1,5 @@
 import Image from "next/image";
-import styles from "../styles/BannerUpload.module.css";
+import styles from "@/styles/BannerUpload.module.css";
 import { useState, ChangeEvent, useEffect } from "react";
 
 type BannerUploadProps = {

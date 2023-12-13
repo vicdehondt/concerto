@@ -1,25 +1,7 @@
-import Image from "next/image";
-import { Inter } from "next/font/google";
-import styles from "../styles/SideBar.module.css";
-import Link from "next/link";
+import styles from "@/styles/SideBar.module.css";
 import Searchbar from "./Searchbar";
 import LocationPicker from "@/components/LocationPicker";
-import { FUNCTIONS_CONFIG_MANIFEST } from "next/dist/shared/lib/constants";
-import { useState } from "react";
-
-type Venue = {
-  venueID: string;
-  venueName: string;
-  longitude: number;
-  latitude: number;
-  ratingID: number;
-}
-
-type Filter = {
-  venueID: string | null;
-  datetime: Date | null;
-  genre1: string | null;
-};
+import { Filter, Venue } from "./BackendTypes";
 
 type SideBarProps = {
   type: "event" | "friends";

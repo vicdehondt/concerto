@@ -2,18 +2,11 @@ import Head from "next/head";
 import { Inter } from "next/font/google";
 import styles from "@/styles/Home.module.css";
 import { useRouter } from "next/router";
-import { ChangeEvent, ReactNode, useCallback, useEffect, useRef, useState } from "react";
-import { Star, User } from "lucide-react";
-import Image from "next/image";
+import { useEffect, useRef, useState } from "react";
+import { Star } from "lucide-react";
+import { environment } from "@/components/Environment";
 
 const inter = Inter({ subsets: ["latin"] });
-
-const environment = {
-  backendURL: "http://localhost:8080",
-};
-if (process.env.NODE_ENV == "production") {
-  environment.backendURL = "https://api.concerto.dehondt.dev";
-}
 
 export default function AddRating() {
   const router = useRouter();

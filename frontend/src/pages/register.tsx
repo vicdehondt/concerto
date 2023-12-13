@@ -1,24 +1,12 @@
 import Head from 'next/head'
 import { Inter } from 'next/font/google'
 import styles from '@/styles/Home.module.css'
-import type { NextApiRequest, NextApiResponse } from 'next'
-import { ChangeEvent, FormEvent, useEffect, useRef, useState } from 'react'
+import { ChangeEvent, FormEvent, useState } from 'react'
 import { useRouter } from "next/router";
+import { Error } from '@/components/BackendTypes'
+import { environment } from "@/components/Environment";
 
 const inter = Inter({ subsets: ['latin'] })
-
-const environment = {
-  backendURL: "http://localhost:8080"
-}
-if (process.env.NODE_ENV == "production") {
-  environment.backendURL = "https://api.concerto.dehondt.dev"
-}
-
-type Error = {
-  type: string;
-  value: string;
-  msg: string;
-}
 
 export default function Register() {
   const router = useRouter();
