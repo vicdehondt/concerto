@@ -137,16 +137,16 @@ export class VenueController extends BaseController {
     const { message, score, event } = req.body;
     const checkedin = await retrieveCheckIn(sessiondata.userID, event);
     if (checkedin == null) {
-      res.status(400).json({ success: false, error: "Not allowed to review this event" });
+      res.status(400).json({ success: false, error: "Not allowed to review this event." });
     } else {
       const rating = venue.Rating;
       const result = await createReview(sessiondata.userID, rating, event.eventID, score, message);
       if (result) {
-        res.status(200).json({ success: true, message: "Created a review for this venue" });
+        res.status(200).json({ success: true, message: "Created a review for this venue." });
       } else {
         res
           .status(400)
-          .json({ success: false, error: "Already reviewed this venue for this event" });
+          .json({ success: false, error: "Already reviewed this venue for this event." });
       }
     }
   }

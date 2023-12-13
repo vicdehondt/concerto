@@ -17,12 +17,12 @@ export class ProfileController extends BaseController {
 
     initializeRoutes(): void {
         this.router.get('/', this.requireAuth,
-			upload.none(),
+			upload.none(), this.verifyErrors,
 			(req: express.Request, res: express.Response) => {
                 this.getProfile(req, res);
 			});
         this.router.post('/profilepicture', this.requireAuth,
-			upload.single("picture"),
+			upload.single("picture"), this.verifyErrors,
 			(req: express.Request, res: express.Response) => {
                 this.changeProfilePicture(req, res);
 			});
@@ -30,9 +30,14 @@ export class ProfileController extends BaseController {
 			upload.none(),
             [
                 body("description").trim().notEmpty(),
-            ],
+            ], this.verifyErrors,
 			(req: express.Request, res: express.Response) => {
                 this.changeDescription(req, res);
+			});
+        this.router.post('/genres', this.requireAuth,
+			upload.none(), [body("firstGenre").trim().notEmpty(), body("secondGenre").trim().notEmpty()], this.verifyErrors,
+			(req: express.Request, res: express.Response) => {
+                this.changeGenres(req, res);
 			});
         this.router.get('/settings/privacy', this.requireAuth,
 			upload.none(),
@@ -61,7 +66,7 @@ export class ProfileController extends BaseController {
         }
         user.image = picturepath;
         await user.save();
-        res.status(200).json({success: true, message: "profile picture has been changed"});
+        res.status(200).json({success: true, message: "Profile picture has been changed."});
     }
 
     async changeDescription(req: express.Request, res: express.Response) {
@@ -69,13 +74,23 @@ export class ProfileController extends BaseController {
         const user = await database.UserModel.findByPk(sessiondata.userID);
         user.description = req.body.description;
         await user.save();
-        res.status(200).json({success: true, message: "Description has been changed "});
+        res.status(200).json({success: true, message: "Description has been changed."});
+    }
+
+    async changeGenres(req: express.Request, res: express.Response) {
+        const sessiondata = req.session;
+        const user = await database.UserModel.findByPk(sessiondata.userID);
+        const { firstGenre, secondGenre } = req.body;
+        user.firstGenre = firstGenre;
+        user.secondGenre = secondGenre;
+        await user.save();
+        res.status(200).json({success: true, message: "Genres have been changed."});
     }
 
     async getProfile(req: express.Request, res: express.Response) {
         const sessiondata = req.session;
         const user = await database.UserModel.findByPk(sessiondata.userID, {
-            attributes: ['image', 'username', 'userID', 'mail', 'privacyAttendedEvents', 'privacyCheckedInEvents', 'privacyFriends', 'description']
+            attributes: ['image', 'username', 'userID', 'mail', 'privacyAttendedEvents', 'privacyCheckedInEvents', 'privacyFriends', 'description', 'firstGenre', 'secondGenre']
         });
         res.status(200).json(user);
     }
@@ -116,6 +131,6 @@ export class ProfileController extends BaseController {
         user.privacyAttendedEvents = privacyAttendedEvents;
         user.privacyFriends = privacyFriends;
         await user.save();
-        res.status(200).json({ success: true, message: 'Changed settings'});
+        res.status(200).json({ success: true, message: 'Changed settings.'});
     }
 }

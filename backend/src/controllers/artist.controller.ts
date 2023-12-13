@@ -1,6 +1,6 @@
 import * as express from 'express';
 import { BaseController } from './base.controller';
-import {body, validationResult} from "express-validator"
+import {body, param } from "express-validator"
 import {createMulter} from "../configs/multerConfig";
 import { Artist, EventModel, retrieveArtist, createArtist, RetrieveEvent } from '../models/Eventmodel';
 import { Rating, Review, createReview } from '../models/Ratingmodel';
@@ -22,19 +22,19 @@ export class ArtistController extends BaseController {
                 res.set('Access-Control-Allow-Credentials', 'true');
                 this.getArtist(req, res);
             });
-        this.router.get('/:artistID/reviews', upload.none(),
+        this.router.get('/:artistID/reviews', upload.none(), [this.checkArtistExists], this.verifyErrors,
             (req: express.Request, res: express.Response) => {
                 res.set('Access-Control-Allow-Credentials', 'true');
                 this.getReviews(req, res);
             });
-        this.router.post('/:artistID/reviews', this.requireAuth, upload.none(),
+        this.router.post('/:artistID/reviews', this.requireAuth, upload.none(), [this.checkArtistExists], this.verifyErrors,
         [
             body("eventID").trim().notEmpty().custom(async (value, {req}) => {
                 const event = await RetrieveEvent(value)
                 if (event != null) {
                     req.body.event = event;
                 } else {
-                    throw new Error("This event does not exist");
+                    throw new Error("This event does not exist.");
                 }
             }),
         ],
@@ -50,45 +50,35 @@ export class ArtistController extends BaseController {
     }
 
     async getReviews(req: express.Request, res: express.Response) {
-        const artistID = req.params.artistID;
-        const artist = await retrieveArtist(artistID);
-        if (artist != null) {
-            const ratingID = artist.Rating.ratingID;
-            const result = await Review.findAll({
-                where: {
-                    ratingID: ratingID
-                }
-            });
-            res.status(200).json(result);
-        } else {
-            res.status(400).json({ success: false, error: "Artist not found in database"});
-        }
+        const artist = req.body.artist;
+        const ratingID = artist.Rating.ratingID;
+        const result = await Review.findAll({
+            where: {
+                ratingID: ratingID
+            }
+        });
+        res.status(200).json(result);
     }
 
     async reviewArtist(req: express.Request, res: express.Response) {
         const sessiondata = req.session;
-        const artistID = req.params.artistID;
-        const artist = await retrieveArtist(artistID)
-        if (artist != null) {
-            const {message, score, event} = req.body;
-            const checkedin = await retrieveCheckIn(sessiondata.userID, event);
-            if (checkedin == null) {
-                res.status(400).json({ success: false, error: "Not allowed to review this event"});
-            } else {
-                try {
-                    const rating = artist.Rating;
-                    const result = await createReview(sessiondata.userID, rating, event.eventID, score, message);
-                    if (result) {
-                        res.status(200).json({ success: true, message: "Created a review for this artist"});
-                    } else {
-                        res.status(400).json({ success: false, error: "Already reviewed this artist for this event"});
-                    }
-                } catch (error) {
-                    res.status(400).json({success: false, error: "You are not allowed to review this event"});
+        const artist = req.body.artist;
+        const {message, score, event} = req.body;
+        const checkedin = await retrieveCheckIn(sessiondata.userID, event);
+        if (checkedin == null) {
+            res.status(400).json({ success: false, error: "Not allowed to review this event."});
+        } else {
+            try {
+                const rating = artist.Rating;
+                const result = await createReview(sessiondata.userID, rating, event.eventID, score, message);
+                if (result) {
+                    res.status(200).json({ success: true, message: "Created a review for this artist."});
+                } else {
+                    res.status(400).json({ success: false, error: "Already reviewed this artist for this event."});
                 }
+            } catch (error) {
+                res.status(400).json({success: false, error: "You are not allowed to review this event."});
             }
-    } else {
-            res.status(400).json({ success: false, error: "Artist not found in database"});
         }
     }
 
@@ -111,8 +101,20 @@ export class ArtistController extends BaseController {
                 const result = await retrieveArtist(req.params.artistID);
                 res.status(200).json(result);
             } else {
-                res.status(400).json({ success: false, error: "There was an error adding an artist"});
+                res.status(400).json({ success: false, error: "This artist was not found in the database."});
             }
         }
+    }
+
+    async checkArtistExists(req: express.Request, res: express.Response, next) {
+        await param("artistID").custom(async (artistID, { req }) => {
+            const artist = await retrieveArtist(artistID);
+            if (artist != null) {
+                req.body.artist = artist;
+                return true;
+            } else {
+                throw new Error("Artist with that ID does not exist.");
+            }
+        })(req, res, next);
     }
 }

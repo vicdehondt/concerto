@@ -29,7 +29,7 @@ export abstract class BaseController {
 			req.body.user = user;
 			next();
 		} else {
-			res.status(400).json({ error: `The user with userID ${ userid } is not found`});
+			res.status(400).json({ error: `The user with userID ${ userid } is not found.`});
 		}
 	}
 
