@@ -99,7 +99,6 @@ export class SearchController extends BaseController {
 		if (limit == null || limit > 10) {
 			limit = 10;
 		}
-		console.log(limit);
 		const foundUsers = await userdatabase.UserModel.findAll({
 			limit: limit,
 			offset: req.query.offset,

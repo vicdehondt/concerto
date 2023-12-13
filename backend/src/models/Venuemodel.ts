@@ -1,6 +1,5 @@
 import { DataTypes, Op } from 'sequelize';
 import {sequelize} from '../configs/sequelizeConfig'
-import { EventModel } from './Eventmodel';
 import { Rating } from './Ratingmodel';
 
 //events belong to venue
@@ -35,19 +34,6 @@ VenueModel.hasOne(Rating, {
     foreignKey: 'venueID',
     allowNull: true
   });
-
-VenueModel.hasMany(EventModel, { //multiple events can take place at one venue
-    foreignKey: {
-      name: 'venueID',
-      allowNull: false
-    }
-});
-
-EventModel.belongsTo(VenueModel, {//one event has one venue
-    foreignKey: {
-      name: 'venueID'
-    }
-});
 
 export async function CreateVenue(venueID, venueName, longitude, latitude): Promise<void> {
     try {
