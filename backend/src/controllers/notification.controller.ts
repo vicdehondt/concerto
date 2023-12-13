@@ -83,7 +83,7 @@ export class NotificationController extends BaseController {
 			(req: express.Request, res: express.Response) => {
 				this.markNotificationAsRead(req, res);
 			});
-        this.router.post('/:notificationID/delete', this.requireAuth, [this.notificationCheck], this.verifyErrors,
+        this.router.delete('/:notificationID', this.requireAuth, [this.notificationCheck], this.verifyErrors,
 			upload.none(),
 			(req: express.Request, res: express.Response) => {
 				this.deleteNotification(req, res);
