@@ -1,7 +1,8 @@
 import { DataTypes, Op } from 'sequelize';
 import {sequelize} from '../configs/sequelizeConfig'
 import { UserModel } from './Usermodel';
-import { EventModel, expiredEventTreshold } from './Eventmodel';
+import { Artist, EventModel, expiredEventTreshold } from './Eventmodel';
+import { VenueModel } from './Venuemodel';
 
 export const CheckedInUsers = sequelize.define('CheckedInUser', {
     checkinID: {
@@ -102,24 +103,31 @@ export async function allCheckedInUsers(eventid) {
 }
 
 export async function allCheckedInEvents(userID) {
-    const user = await UserModel.findByPk(userID, {
-        include: [{
-            model: EventModel,
-        }]
-    });
-    const events = await user.getEvents({
-        attributes: ['eventID', 'eventPicture', 'title'],
+    const checkins = await CheckedInUsers.findAll({
+        attributes: ['eventID'],
         where: {
-            dateAndTime: {
+            userID: userID
+        }
+    });
+    const eventIDs = checkins.map(event => {
+        return event.eventID
+    });
+    console.log('Checkins: ', eventIDs);
+    const events = await EventModel.findAll({
+        attributes: ['eventID', 'eventPicture', 'title'],
+        include: [
+            { model: Artist, attributes: ['artistID', 'name']},
+            { model: VenueModel, attributes: ['venueID', 'venueName'] }
+        ],
+        where: {
+            eventID: {
+                [Op.in]: eventIDs,
+            }, dateAndTime: {
                 [Op.gte]: expiredEventTreshold()
             }
         }
-    });
-    const cleanedEvents = events.map(event => {
-        const { CheckedInUser, ...eventWithoutCheckedInUser } = event.toJSON();
-        return eventWithoutCheckedInUser;
-    });
-    return cleanedEvents;
+    })
+    return events;
 }
 
 export async function allAttendedEvents(userID) {
