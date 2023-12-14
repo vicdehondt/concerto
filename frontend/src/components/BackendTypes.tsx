@@ -64,9 +64,9 @@ export type Event = {
   price: number;
   banner: string;
   eventPicture: string;
-  artistID: string;
-  venueID: string;
   checkedIn: boolean;
+  Artist: Artist;
+  Venue: Venue;
 };
 
 export type Profile = {
