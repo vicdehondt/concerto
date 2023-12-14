@@ -32,6 +32,7 @@ export type Filter = {
   venueID: string | null;
   datetime: Date | null;
   genre1: string | null;
+  price: number | null;
 };
 
 export type Rating = {
