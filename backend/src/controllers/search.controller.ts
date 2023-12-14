@@ -58,7 +58,7 @@ export class SearchController extends BaseController {
 	//expand with an optional limitator so if no filters are selected you only get for example the first 10 events
 	async filterEvents(req: express.Request, res: express.Response): Promise<void>{
 		console.log("Received post request to filter events");
-		const filters = req.body;
+		const filters = req.query;
 		let filterfields: any[] = [];
 		let filtervalues: any[] = [];
 		if (filters.length === 0){
@@ -68,13 +68,13 @@ export class SearchController extends BaseController {
 			// 	filterfields.push("maxpeople");
 			// 	filtervalues.push(req.body.maxpeople);
 			// }
-			if(req.body.datetime){
+			if(req.query.datetime){
 				filterfields.push("datetime");
-				filtervalues.push(req.body.datetime);
+				filtervalues.push(req.query.datetime);
 			}
-			if(req.body.price){
+			if(req.query.price){
 				filterfields.push("price");
-				filtervalues.push(req.body.price);
+				filtervalues.push(req.query.price);
 			}
 			if(req.query.venueID){
 				filterfields.push("venueID");
