@@ -1,50 +1,12 @@
 import Head from "next/head";
-import Image from "next/image";
 import { Inter } from "next/font/google";
 import styles from "@/styles/Home.module.css";
-import Link from "next/link";
-import Navbar from "../components/Navbar";
-import { FormEvent, ReactNode, useEffect, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import EventCard from "@/components/EventCard";
+import { Event, Wish } from "@/components/BackendTypes";
+import { environment } from "@/components/Environment";
 
 const inter = Inter({ subsets: ["latin"] });
-
-const environment = {
-  backendURL: "http://localhost:8080",
-};
-if (process.env.NODE_ENV == "production") {
-  environment.backendURL = "https://api.concerto.dehondt.dev";
-}
-
-type Wish = {
-  wishlistID: number,
-  userID: number,
-  createdAt: string,
-  updatedAt: string,
-  Event: {
-    eventID: number,
-    title: string;
-    amountCheckedIn: number;
-    dateAndTime: string;
-    baseGenre: string;
-    secondGenre: string;
-    price: number;
-    eventPicture: string;
-    venueID: string;
-  }
-}
-
-type Event = {
-  eventID: number,
-  title: string;
-  amountCheckedIn: number;
-  dateAndTime: string;
-  baseGenre: string;
-  secondGenre: string;
-  price: number;
-  eventPicture: string;
-  venueID: string;
-};
 
 export default function Wishlist() {
 
@@ -76,7 +38,7 @@ export default function Wishlist() {
       const eventsArray = await Promise.all(
         events.map(async (event: Event) => {
           const response = await fetch(
-            environment.backendURL + `/venues/${event.venueID}`,
+            environment.backendURL + `/venues/${event.Venue?.venueID}`,
             {
               mode: "cors",
               credentials: "include",
@@ -85,7 +47,6 @@ export default function Wishlist() {
           const jsonResponse = await response.json();
           return (
             <EventCard
-              loggedIn={true}
               key={event.eventID}
               eventId={event.eventID}
               title={event.title}

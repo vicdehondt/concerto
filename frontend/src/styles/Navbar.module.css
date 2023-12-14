@@ -18,10 +18,24 @@
 }
 
 .leftTopics a,
-.rightTopics a {
+.add {
   height: 60px;
   padding: 20px;
   text-align: center;
+}
+
+.friendsRedirect,
+.wishlistRedirect {
+  height: 60px;
+  padding: 20px;
+  text-align: center;
+  color: white;
+}
+
+.friendsRedirect:hover,
+.wishlistRedirect:hover {
+  background-color: #7180B9;
+  cursor: pointer;
 }
 
 .notificationButton {
@@ -59,6 +73,20 @@
   box-shadow: 1px 1px 2px;
 }
 
+.searchBox {
+  display: none;
+  position: absolute;
+  background-color: white;
+  z-index: 1000;
+  bottom: 0;
+  left: 110px;
+  transform: translateY(98%);
+  padding: 5px;
+  border: 0px;
+  border-radius: 6px;
+  box-shadow: 1px 1px 2px;
+}
+
 .closeNotifications {
   background: none;
 	border: none;
@@ -68,18 +96,33 @@
   text-align: right;
 }
 
+.profilePicture {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 .profilePicture  img{
   border-radius: 50%;
 }
 
-.profilePicture a {
+.account {
   display: flex;
   padding: 0 20px;
   align-items: center;
+  color: white;
+}
+
+.account:hover {
+  cursor: pointer;
 }
 
 .profilePicture a:hover {
   background-color: #0B2027;
+}
+
+.accountDropdown {
+  height: 100%;
 }
 
 .dropdownContent {
@@ -131,7 +174,7 @@
   padding: 20px;
 }
 
-.addEventButton a {
+.addEventButton .add {
   width: 40px;
   height: 40px;
   top: 10px;
@@ -145,8 +188,9 @@
   border-radius: 50%;
 }
 
-.addEventButton a:hover {
+.addEventButton .add:hover {
   color: white;
+  cursor: pointer;
   background-color: #7180B9;
   border: 5px solid #7180B9;
 }

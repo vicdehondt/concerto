@@ -1,4 +1,4 @@
-import styles from "../styles/FriendInvite.module.css"
+import styles from "@/styles/FriendInvite.module.css"
 
 import InviteCard from "@/components/InviteCard"
 

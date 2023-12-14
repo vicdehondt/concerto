@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import PrivacySettings from "@/components/PrivacySettings"
 import Image from "next/image";
 import { User } from 'lucide-react';
+import { environment } from "@/components/Environment";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -13,24 +14,6 @@ function showPicture(source: string) {
     return <Image src={source} width={170} height={170} alt="Profile picture of user." />;
   }
   return <User fill={'black'} className={styles.userPicture} width={170} height={170} />;
-}
-
-const environment = {
-  backendURL: "http://localhost:8080",
-};
-if (process.env.NODE_ENV == "production") {
-  environment.backendURL = "https://api.concerto.dehondt.dev";
-}
-
-type User = {
-  username: string;
-  userID: number;
-  mail: string;
-  image: string;
-  privacyAttendedEvents: string;
-  privacyCheckedInEvents: string;
-  privacyFriends: string;
-  description: string;
 }
 
 export default function Settings() {

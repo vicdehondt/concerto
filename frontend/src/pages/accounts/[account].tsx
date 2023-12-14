@@ -5,45 +5,10 @@ import styles from "@/styles/Home.module.css";
 import { useEffect, useState } from "react";
 import Biography from "@/components/Biography";
 import UserEvent from "@/components/UserEvent";
+import { Event, User } from "@/components/BackendTypes";
+import { environment } from "@/components/Environment";
 
 const inter = Inter({ subsets: ["latin"] });
-
-const environment = {
-  backendURL: "http://localhost:8080",
-};
-if (process.env.NODE_ENV == "production") {
-  environment.backendURL = "https://api.concerto.dehondt.dev";
-}
-
-type User = {
-  username: string;
-  userID: number;
-  mail: string;
-  image: string;
-  privacyAttendedEvents: string;
-  privacyCheckedInEvents: string;
-  privacyFriends: string;
-  description: string;
-}
-
-type Event = {
-  eventID: number;
-  title: string;
-  description: string;
-  amountCheckedIn: number;
-  dateAndTime: string;
-  support: string;
-  doors: string;
-  main: string;
-  baseGenre: string;
-  secondGenre: string;
-  price: number;
-  banner: string;
-  eventPicture: string;
-  artistID: string;
-  venueID: string;
-  checkedIn: boolean;
-};
 
 export default function Account() {
   const [user, setUser] = useState({
