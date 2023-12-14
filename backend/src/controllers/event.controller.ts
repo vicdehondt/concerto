@@ -1,7 +1,7 @@
 import * as express from 'express';
 import { BaseController } from './base.controller';
 import * as database from '../models/Eventmodel';
-import { userCheckIn, userCheckOut, allCheckedInUsers, retrieveCheckIn } from  '../models/Checkinmodel';
+import { userCheckIn, userCheckOut, allCheckedInUsers, retrieveCheckIn, allCheckedInEvents } from  '../models/Checkinmodel';
 import { NotificationObject, createNewNotification } from '../models/Notificationmodel';
 import { VenueModel } from '../models/Venuemodel';
 import { retrieveArtist, createArtist, RetrieveEvent, isFinished } from '../models/Eventmodel';
@@ -9,6 +9,7 @@ import {body, param, validationResult} from "express-validator"
 import {createMulter} from "../configs/multerConfig";
 import { WishListedEvents } from '../models/Wishlistmodel';
 import { RetrieveUser } from '../models/Usermodel';
+import { getAllWishListed } from '../models/Wishlistmodel';
 
 const eventImagePath = './public/events';
 
@@ -96,6 +97,7 @@ export class EventController extends BaseController {
 		}
 	}
 
+	// changing the artist and venue still has to be done
 	async editEvent(req: express.Request, res: express.Response) {
 		console.log("Received request to edit event.");
 		const event = req.body.event;
@@ -146,9 +148,20 @@ export class EventController extends BaseController {
 	async getAllEvents(req: express.Request, res: express.Response) {
 		console.log("Accepted request for all events");
 		const limit = req.query.limit;
-		console.log(limit);
-		const events = await database.retrieveUnfinishedEvents(limit);
-		res.status(200).json(events);
+		const offset = req.query.offset;
+		const sessiondata = req.session;
+		const userID = sessiondata.userID;
+		if (userID) {
+			const checkIns = await allCheckedInEvents(sessiondata.userID);
+			var wishlisted = await getAllWishListed(sessiondata.userID);
+			wishlisted = wishlisted.map((wishlisted) => { return wishlisted.Event.eventID});
+			const eventIds = checkIns.map((checkedInEvent) => checkedInEvent.eventID);
+			const events = await database.retrieveNewUnfinishedEvents(limit, offset, eventIds.concat(wishlisted));
+			res.status(200).json(events);
+		} else {
+			const events = await database.retrieveUnfinishedEvents(limit, offset);
+			res.status(200).json(events);
+		}
 	}
 
 	async getEvent(req: express.Request, res: express.Response): Promise<void> {
