@@ -93,7 +93,7 @@ export default function AddEvent() {
               <div className={styles.dateContainer}>
                 <div className={styles.dateTitle}>Pick a date!</div>
                 <div className={styles.datePane}>
-                  <input type="date" defaultValue={date} onChange={(event) => setDate(getFormattedDate(new Date(event.target.value)))} required />
+                  <input type="date" onChange={(event) => setDate(getFormattedDate(new Date(event.target.value)))} required />
                 </div>
               </div>
             </div>
