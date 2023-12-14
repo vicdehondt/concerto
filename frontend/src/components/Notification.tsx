@@ -45,6 +45,35 @@ function Notification({ notification, removeNotification }: {notification: Notif
             setEvent(responseJSON);
           });
       }
+      if (notificationType === "eventInviteReceived") {
+        fetch(environment.backendURL + `/users/${notification.NotificationObject.actor}`, {
+          mode: "cors",
+          credentials: "include",
+        })
+          .then((response) => {
+            if (response.status == 200) {
+              return response.json();
+            }
+            return null
+          })
+          .then((responseJSON) => {
+            setFrom(responseJSON);
+          });
+
+        fetch(environment.backendURL + `/events/${notification.NotificationObject.typeID}`, {
+          mode: "cors",
+          credentials: "include",
+        })
+          .then((response) => {
+            if (response.status == 200) {
+              return response.json();
+            }
+            return null
+          })
+          .then((responseJSON) => {
+            setEvent(responseJSON);
+          });
+      }
     }
   }, [notification]);
 
@@ -82,11 +111,21 @@ function Notification({ notification, removeNotification }: {notification: Notif
     return (
       <>
         <div key={notification.notificationID} className={styles.notificationContainer}>
-          {/* http://localhost:3000/ratings/add-rating?from=${fromURL}&venue=${venueID}&artist=${artistID}&event=${eventID} */}
           <Link className={styles.message} href={`/ratings/add-rating?from=${encodeURIComponent("/")}&venue=${event?.Venue.venueID}&artist=${event?.Artist.artistID}&event=${event?.eventID}&notificationID=${notification?.notificationID}`}>
             <div className={styles.eventMessage}>Event {event?.title} ended.</div>
             <div className={styles.rateMessage}>Would you like to rate &quot;artistName&quot; and &quot;venueName&quot;?</div>
-            {/* Would you like to rate {event?.artistName} and {event?.venueName} it? */}
+          </Link>
+        </div>
+      </>
+    )
+  }
+  if (notification.NotificationObject.notificationType == "eventInviteReceived") {
+    return (
+      <>
+        <div key={notification.notificationID} className={styles.notificationContainer}>
+          <Link className={styles.message} href={`/concerts/${event?.eventID}`}>
+            <div className={styles.eventMessage}> {from.username} invited you to {event?.title}.</div>
+            <div className={styles.rateMessage}>Click to see the event.</div>
           </Link>
         </div>
       </>

@@ -64,24 +64,7 @@ function Navbar({ pictureSource }: { pictureSource: string }) {
   }, []);
 
   useEffect(() => {
-    // const eventSource = new EventSource(environment.backendURL + "/notifications/subscribe", {
-    //   withCredentials: true,
-    // });
-
-    // eventSource.addEventListener("notification", async (event) => {
-    //   const eventData = JSON.parse(event.data);
-    //   if (eventData.NotificationObject.notificationType !== "friendrequestaccepted") {
-    //     const updatedNotifications = [...notifications, eventData];
-    //     setNotifications(updatedNotifications);
-    //     setNotificationsHTML(convertNotifications(updatedNotifications));
-    //   }
-    // });
-
     setNotificationsHTML(convertNotifications(notifications));
-
-    // return () => {
-    //   eventSource.close();
-    // };
   }, [notifications, convertNotifications]);
 
   useEffect(() => {
