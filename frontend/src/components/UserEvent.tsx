@@ -37,7 +37,7 @@ function UserEvent({ event }: { event: Event}) {
   return (
     <div className={styles.eventCard}>
       <div className={styles.eventPicture}>
-        <Image src={event.eventPicture} width={75} height={75} alt="Picture of the event"/>
+        <Image style={{ objectFit: "cover" }} src={event.eventPicture} width={75} height={75} alt="Picture of the event"/>
       </div>
       <div className={styles.information}>
         <div className={styles.title}>
