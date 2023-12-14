@@ -211,7 +211,7 @@ export function expiredEventTreshold() {
 export async function retrieveUnfinishedEvents(limit, offset): Promise<typeof EventModel>  {
   const events = await EventModel.findAll({
     limit: limit,
-    attributes: ['eventID', 'eventPicture', 'title'],
+    attributes: ['eventID', 'title', 'eventPicture', 'dateAndTime', 'baseGenre', 'secondGenre', 'price', 'amountCheckedIn'],
     include: [
       { model: Artist , attributes: {
         exclude: ['createdAt', 'updatedAt']
@@ -234,7 +234,7 @@ export async function retrieveNewUnfinishedEvents(limit, offset, checkedInEvents
   const events = await EventModel.findAll({
     limit: limit,
     offset: offset,
-    attributes: ['eventID', 'eventPicture', 'title'],
+    attributes: ['eventID', 'title', 'eventPicture', 'dateAndTime', 'baseGenre', 'secondGenre', 'price', 'amountCheckedIn'],
     include: [
       { model: Artist , attributes: {
         exclude: ['createdAt', 'updatedAt']
@@ -318,7 +318,7 @@ export async function RetrieveEvent(ID): Promise<typeof EventModel> {
         whereClause[Op.or] = orConditions;
       }
       const Event = await EventModel.findAll({
-        attributes: ['eventID', 'eventPicture', 'title'],
+        attributes: ['eventID', 'title', 'eventPicture', 'dateAndTime', 'baseGenre', 'secondGenre', 'price', 'amountCheckedIn'],
         include: [
           { model: Artist , attributes: {
             exclude: ['createdAt', 'updatedAt']
@@ -338,7 +338,7 @@ export async function RetrieveEvent(ID): Promise<typeof EventModel> {
   export async function SearchEvents(searchvalue){
     try {
       const Events = await EventModel.findAll({
-      attributes: ['eventID', 'eventPicture', 'title'],
+      attributes: ['eventID', 'title', 'eventPicture', 'dateAndTime', 'baseGenre', 'secondGenre', 'price', 'amountCheckedIn'],
       include: [
         { model: Artist , attributes: {
           exclude: ['createdAt', 'updatedAt']

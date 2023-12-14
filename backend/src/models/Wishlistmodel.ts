@@ -48,7 +48,7 @@ export async function getAllWishListed(userID: number) {
         attributes: ['wishlistID'],
         include: {
             model: EventModel,
-            attributes: ['eventID', 'title', 'eventPicture'],
+            attributes: ['eventID', 'title', 'eventPicture', 'dateAndTime', 'baseGenre', 'secondGenre', 'price', 'amountCheckedIn'],
             include: [
                 { model: Artist , attributes: {
                   exclude: ['createdAt', 'updatedAt']
