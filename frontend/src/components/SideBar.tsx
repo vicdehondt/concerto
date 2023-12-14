@@ -41,6 +41,7 @@ function SideBarContent({ type, filters, filterCallback }: SideBarProps) {
         </div>
         <div className={styles.genre}>Genre</div>
       </div>
+      <button>Remove filters</button>
     </>
   ) : type == "friends" ? (
     <>
