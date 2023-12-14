@@ -14,6 +14,8 @@ export default function Home() {
   const [events, setEvents] = useState([]);
   const [eventsHTML, setEventsHTML] = useState<ReactNode[]>([]);
   const [filters, setFilters] = useState<Filter>({venueID: null, datetime: null, genre1: null});
+  const [thisWeek, setThisWeek] = useState(true);
+  const [searching, setSearching] = useState(false);
 
   useEffect(() => {
     if (filters.venueID != null || filters.datetime != null || filters.genre1 != null) {
@@ -99,7 +101,8 @@ export default function Home() {
           <SideBar type="event" filters={filters} filterCallback={(filter: Filter) => setFilters(filter)} />
           <div className={styles.pageContent}>
             <div className={styles.headerBox}>
-              <h1>Events this week you may like</h1>
+              {thisWeek && <h1>Events this week you may like</h1>}
+              {searching && <h1>Results for: {"Hallo"}</h1>}
               <Link href="/map">Map View</Link>
             </div>
             <div className={styles.eventCardContainer}>{eventsHTML}</div>
