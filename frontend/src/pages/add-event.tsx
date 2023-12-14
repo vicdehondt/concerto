@@ -104,9 +104,6 @@ export default function AddEvent() {
           <div className={styles.artistAndLocationContainer}>
             <ArtistAndLocationUpload locationCallback={(venue: Venue) => setLocation(venue)} artistCallback={(artist: Artist) => setSelectedArtist(artist)} />
           </div>
-          <div className={styles.friendInviteContainer}>
-            <FriendInvites />
-          </div>
           <div className={styles.addEventButton}>
             <button className={styles.submitButton} type="submit">Add event!</button>
           </div>
