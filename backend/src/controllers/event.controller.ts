@@ -105,7 +105,7 @@ export class EventController extends BaseController {
 		if (event.userID != sessiondata.userID) {
 			res.status(401).json({ success: true, error: "No permission to update this event."});
 		} else {
-			const updateFields = ['description', 'main', 'doors', 'support', 'price', 'title', 'secondGenre', 'mainGenre'];
+			const updateFields = ['description', 'main', 'doors', 'support', 'price', 'title', 'secondGenre', 'mainGenre', 'artistID', 'venueID'];
 			const imageFields = ['eventPicture', 'banner'];
 
             updateFields.forEach(field => {
