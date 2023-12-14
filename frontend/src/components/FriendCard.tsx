@@ -2,10 +2,10 @@ import Image from "next/image";
 import styles from "@/styles/FriendCard.module.css";
 import { User as LucideUser } from 'lucide-react';
 import Link from "next/link";
-import { User } from "@/components/BackendTypes";
+import { Friend } from "@/components/BackendTypes";
 
 type FriendCardProps = {
-  friend: User;
+  friend: Friend;
 }
 
 function FriendCard({ friend }: FriendCardProps) {
