@@ -17,7 +17,7 @@ export default function Friends() {
     var key = 0;
     return response.map((friend) => {
       key += 1;
-      return <FriendCard key={key} source={friend.image} username={friend.username} />
+      return <FriendCard key={key} friend={friend} />
     })
   }
 
