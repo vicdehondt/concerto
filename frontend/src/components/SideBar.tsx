@@ -2,6 +2,7 @@ import styles from "@/styles/SideBar.module.css";
 import Searchbar from "./Searchbar";
 import LocationPicker from "@/components/LocationPicker";
 import { Filter, Venue } from "./BackendTypes";
+import { useRef } from "react";
 
 type SideBarProps = {
   type: "event" | "friends";
@@ -21,8 +22,24 @@ function getFormattedDate(date: Date) {
 
 function SideBarContent({ type, filters, filterCallback }: SideBarProps) {
 
+  const datePickerRef = useRef<HTMLInputElement>(null);
+  const priceRangeRef = useRef<HTMLInputElement>(null);
+  const locationPickerRef = useRef<HTMLSelectElement>(null);
+
   function setLocation(venue: Venue) {
-    filters && filterCallback && filterCallback({venueID: venue.venueID, datetime: filters.datetime, genre1: filters.genre1});
+    filters && filterCallback && filterCallback({venueID: venue.venueID, datetime: filters.datetime, genre1: filters.genre1, price: filters.price});
+  }
+
+  function clearFilters() {
+    if (datePickerRef.current) {
+      datePickerRef.current.value = "";
+    }
+    if (priceRangeRef.current) {
+      priceRangeRef.current.value = "";
+    }
+    if (locationPickerRef.current) {
+      locationPickerRef.current.value = "";
+    }
   }
 
   return type == "event" ? (
@@ -31,17 +48,22 @@ function SideBarContent({ type, filters, filterCallback }: SideBarProps) {
       <div className={styles.filters}>
         <div className={styles.locationFilter}>
           <div className={styles.location}>Location</div>
-          <LocationPicker locationCallback={(venue: Venue) => setLocation(venue)} />
+          <LocationPicker locationCallback={(venue: Venue) => setLocation(venue)} forwardedRef={locationPickerRef} />
+          <button>+</button>
         </div>
         <div className={styles.date}>
-          <form>
-            Date
-            <input className={styles.dateInput} type="date" name="date" id="date"></input>
-          </form>
+          Date
+          <input ref={datePickerRef} className={styles.dateInput} type="date" name="date" id="date"></input>
+          <button>+</button>
         </div>
         <div className={styles.genre}>Genre</div>
+        <div className={styles.price}>
+          Price
+          <input ref={priceRangeRef} type="number" min="0" />
+          <button>+</button>
+          </div>
       </div>
-      <button>Remove filters</button>
+      <button className={styles.clearFilters} onClick={(event) =>clearFilters()}>Remove filters</button>
     </>
   ) : type == "friends" ? (
     <>
