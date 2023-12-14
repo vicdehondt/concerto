@@ -2,6 +2,8 @@ import { DataTypes} from 'sequelize';
 import {sequelize} from '../configs/sequelizeConfig'
 import { EventModel } from './Eventmodel';
 import { UserModel } from './Usermodel';
+import { Artist } from './Eventmodel';
+import { VenueModel } from './Venuemodel';
 
 export const WishListedEvents = sequelize.define('WishListedEvent', {
     wishlistID: {
@@ -43,14 +45,20 @@ WishListedEvents.belongsTo(EventModel, { foreignKey: 'eventID' });
 
 export async function getAllWishListed(userID: number) {
     const result = await WishListedEvents.findAll({
-        attributes: {
-            exclude: ['eventID'],
-        },
+        attributes: ['wishlistID'],
         include: {
             model: EventModel,
-            attributes: {
-                exclude: ['description', 'support', 'doors', 'main', 'banner', 'userID']
-            }
+            attributes: ['eventID', 'title', 'eventPicture'],
+            include: [
+                { model: Artist , attributes: {
+                  exclude: ['createdAt', 'updatedAt']
+                }},
+                { model: VenueModel, attributes: {
+                  exclude: ['createdAt', 'updatedAt']
+                }}, { model: VenueModel, attributes: {
+                  exclude: ['createdAt', 'updatedAt']
+                }},
+              ]
         },
         where: {
             userID: userID
