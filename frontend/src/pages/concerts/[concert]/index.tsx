@@ -232,7 +232,7 @@ export default function Concert() {
             </div>
           </div>
           <div className={styles.friendInviteContainer}>
-            <FriendInvites />
+            <FriendInvites eventID={concert?.eventID} />
           </div>
         </div>
       </main>
