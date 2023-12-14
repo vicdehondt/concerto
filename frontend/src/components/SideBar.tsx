@@ -63,7 +63,7 @@ function SideBar({ type, filters, filterCallback }: SideBarProps) {
 
   return (
     <div className={styles.sidebar}>
-      <Searchbar type="thick" onChange={(event) => console.log("Not implemented yet.")} />
+      <Searchbar type="thick" onClick={(string) => console.log("Not implemented yet.", string)} onChange={(string) => console.log("Not implemented yet.", string)} />
       <SideBarContent type={type} filters={filters} filterCallback={(filter: Filter) => filterCallback && filterCallback(filter)} />
     </div>
   );
