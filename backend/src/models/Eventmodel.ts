@@ -211,9 +211,8 @@ export function expiredEventTreshold() {
 export async function retrieveUnfinishedEvents(limit, offset): Promise<typeof EventModel>  {
   const events = await EventModel.findAll({
     limit: limit,
-    attributes: {
-      exclude: ['createdAt', 'updatedAt', 'venueID', 'artistID']
-    }, include: [
+    attributes: ['eventID', 'eventPicture', 'title'],
+    include: [
       { model: Artist , attributes: {
         exclude: ['createdAt', 'updatedAt']
       }},
@@ -235,9 +234,8 @@ export async function retrieveNewUnfinishedEvents(limit, offset, checkedInEvents
   const events = await EventModel.findAll({
     limit: limit,
     offset: offset,
-    attributes: {
-      exclude: ['createdAt', 'updatedAt', 'venueID', 'artistID']
-    }, include: [
+    attributes: ['eventID', 'eventPicture', 'title'],
+    include: [
       { model: Artist , attributes: {
         exclude: ['createdAt', 'updatedAt']
       }},
@@ -296,6 +294,15 @@ export async function RetrieveEvent(ID): Promise<typeof EventModel> {
         }
       }
       const Event = await EventModel.findAll({
+        attributes: ['eventID', 'eventPicture', 'title'],
+        include: [
+          { model: Artist , attributes: {
+            exclude: ['createdAt', 'updatedAt']
+          }},
+          { model: VenueModel, attributes: {
+            exclude: ['createdAt', 'updatedAt']
+          }},
+        ],
         where: whereClause,
       });
       return Event;
@@ -307,9 +314,15 @@ export async function RetrieveEvent(ID): Promise<typeof EventModel> {
   export async function SearchEvents(searchvalue){
     try {
       const Events = await EventModel.findAll({
-      attributes: {
-        exclude: ['createdAt', 'updatedAt'],
-      },
+      attributes: ['eventID', 'eventPicture', 'title'],
+      include: [
+        { model: Artist , attributes: {
+          exclude: ['createdAt', 'updatedAt']
+        }},
+        { model: VenueModel, attributes: {
+          exclude: ['createdAt', 'updatedAt']
+        }},
+      ],
       where: {
         title: { //for now only searching on title, need to add location...
             [Op.like]: '%' + searchvalue + '%',
