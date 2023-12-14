@@ -36,7 +36,7 @@ function SideBarContent({ type, filters, filterCallback }: SideBarProps) {
         <div className={styles.date}>
           <form>
             Date
-            <input className={styles.dateInput} type="date" name="date" id="date" defaultValue={currentDate}></input>
+            <input className={styles.dateInput} type="date" name="date" id="date"></input>
           </form>
         </div>
         <div className={styles.genre}>Genre</div>
