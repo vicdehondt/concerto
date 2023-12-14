@@ -1,13 +1,14 @@
-import { useEffect, useState } from "react";
+import { ForwardedRef, useEffect, useState } from "react";
 import { Venue } from "./BackendTypes";
 import { environment } from "./Environment";
 
 type LocationPickerProps = {
   venueID?: string;
   locationCallback: (venue: Venue) => void;
+  forwardedRef?: ForwardedRef<HTMLSelectElement>;
 };
 
-export default function LocationPicker({ venueID, locationCallback }: LocationPickerProps) {
+export default function LocationPicker({ venueID, locationCallback, forwardedRef }: LocationPickerProps) {
   const [venueOptions, setVenueOptions] = useState([]);
   const [defaultVenue, setDefaultVenue] = useState<Venue | null>(null);
 
@@ -55,6 +56,7 @@ export default function LocationPicker({ venueID, locationCallback }: LocationPi
       <select
         name="venue"
         id="venue"
+        ref={forwardedRef}
         onChange={(event) => {
           const selectedOption =
             event.target.options[event.target.selectedIndex].getAttribute("data-venue");
