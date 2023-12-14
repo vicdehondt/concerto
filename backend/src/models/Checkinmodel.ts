@@ -112,7 +112,6 @@ export async function allCheckedInEvents(userID) {
     const eventIDs = checkins.map(event => {
         return event.eventID
     });
-    console.log('Checkins: ', eventIDs);
     const events = await EventModel.findAll({
         attributes: ['eventID', 'eventPicture', 'title'],
         include: [
