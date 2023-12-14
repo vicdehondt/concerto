@@ -73,6 +73,20 @@
   box-shadow: 1px 1px 2px;
 }
 
+.searchBox {
+  display: none;
+  position: absolute;
+  background-color: white;
+  z-index: 1000;
+  bottom: 0;
+  left: 110px;
+  transform: translateY(98%);
+  padding: 5px;
+  border: 0px;
+  border-radius: 6px;
+  box-shadow: 1px 1px 2px;
+}
+
 .closeNotifications {
   background: none;
 	border: none;
