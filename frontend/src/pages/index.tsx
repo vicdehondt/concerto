@@ -13,7 +13,10 @@ const inter = Inter({ subsets: ["latin"] });
 export default function Home() {
   const [events, setEvents] = useState([]);
   const [eventsHTML, setEventsHTML] = useState<ReactNode[]>([]);
-  const [filters, setFilters] = useState<Filter>({venueID: null, datetime: null, genre1: null});
+  const [filters, setFilters] = useState<Filter>({venueID: null, datetime: null, genre1: null, price: null});
+  const [thisWeek, setThisWeek] = useState(true);
+  const [searching, setSearching] = useState(false);
+
 
   useEffect(() => {
     if (filters.venueID != null || filters.datetime != null || filters.genre1 != null) {
@@ -54,36 +57,23 @@ export default function Home() {
   }, []);
 
   function convertEventsToHTML(events: Array<Event>) {
-    const fetchData = async () => {
-      const eventsArray = await Promise.all(
-        events.map(async (event: Event) => {
-          const response = await fetch(
-            environment.backendURL + `/venues/${event.venueID}`,
-            {
-              mode: "cors",
-              credentials: "include",
-            }
-          );
-          const jsonResponse = await response.json();
-          return (
-            <EventCard
-              key={event.eventID}
-              eventId={event.eventID}
-              title={event.title}
-              location={jsonResponse.venueName}
-              amountAttending={event.amountCheckedIn}
-              dateAndTime={event.dateAndTime}
-              price={event.price}
-              image={event.eventPicture}
-              genre1={event.baseGenre}
-              genre2={event.secondGenre}
-            />
-          );
-        })
-      );
-      setEventsHTML(eventsArray);
-    };
-    fetchData();
+    const eventsArray = events.map((event: Event) => {
+        return (
+          <EventCard
+            key={event.eventID}
+            eventId={event.eventID}
+            title={event.title}
+            location={event.Venue.venueName}
+            amountAttending={event.amountCheckedIn}
+            dateAndTime={event.dateAndTime}
+            price={event.price}
+            image={event.eventPicture}
+            genre1={event.baseGenre}
+            genre2={event.secondGenre}
+          />
+        );
+      })
+    setEventsHTML(eventsArray);
   };
 
   return (
@@ -99,7 +89,8 @@ export default function Home() {
           <SideBar type="event" filters={filters} filterCallback={(filter: Filter) => setFilters(filter)} />
           <div className={styles.pageContent}>
             <div className={styles.headerBox}>
-              <h1>Events this week you may like</h1>
+              {thisWeek && <h1>Events this week you may like</h1>}
+              {searching && <h1>Results for: {"Hallo"}</h1>}
               <Link href="/map">Map View</Link>
             </div>
             <div className={styles.eventCardContainer}>{eventsHTML}</div>

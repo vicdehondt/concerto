@@ -2,10 +2,9 @@ import * as express from 'express';
 import { BaseController } from './base.controller';
 import * as database from '../models/Eventmodel';
 import * as userdatabase from '../models/Usermodel';
-import { userCheckIn, userCheckOut } from  '../models/Checkinmodel'
-import {body, validationResult} from "express-validator"
+import {body, param} from "express-validator"
 import {createMulter} from "../configs/multerConfig";
-import * as crypto from "crypto"
+import { Op } from 'sequelize';
 
 const eventImagePath = './public/events';
 
@@ -40,6 +39,13 @@ export class SearchController extends BaseController {
 			(req: express.Request, res: express.Response) => {
 				this.filterEvents(req, res);
 			});
+		this.router.get('/users',
+			upload.none(), this.verifyErrors,
+			(req: express.Request, res: express.Response) => {
+				console.log("search request");
+				res.set('Access-Control-Allow-Credentials', 'true');
+				this.searchUsers(req, res);
+			});
 		this.router.get('/events',
 			upload.none(),
 			(req: express.Request, res: express.Response) => {
@@ -52,7 +58,7 @@ export class SearchController extends BaseController {
 	//expand with an optional limitator so if no filters are selected you only get for example the first 10 events
 	async filterEvents(req: express.Request, res: express.Response): Promise<void>{
 		console.log("Received post request to filter events");
-		const filters = req.body;
+		const filters = req.query;
 		let filterfields: any[] = [];
 		let filtervalues: any[] = [];
 		if (filters.length === 0){
@@ -62,17 +68,21 @@ export class SearchController extends BaseController {
 			// 	filterfields.push("maxpeople");
 			// 	filtervalues.push(req.body.maxpeople);
 			// }
-			if(req.body.datetime){
+			if(req.query.datetime){
 				filterfields.push("datetime");
-				filtervalues.push(req.body.datetime);
+				filtervalues.push(req.query.datetime);
 			}
-			if(req.body.price){
+			if(req.query.price){
 				filterfields.push("price");
-				filtervalues.push(req.body.price);
+				filtervalues.push(req.query.price);
 			}
 			if(req.query.venueID){
 				filterfields.push("venueID");
 				filtervalues.push(req.query.venueID);
+			}
+			if (req.query.genre) {
+				filterfields.push("genre");
+				filtervalues.push(req.query.genre);
 			}
 			const events = await database.FilterEvents(filterfields, filtervalues);//gives the events that match the given filters
 			if(events){
@@ -81,6 +91,29 @@ export class SearchController extends BaseController {
 				res.status(400).json({succes: false, error: events});// something went wrong while retrieving the events
 			}
 		}
+	}
+
+	async searchUsers(req: express.Request, res: express.Response): Promise<void> {
+		console.log("Accepted the incoming search request for users");
+		var username = req.query.username;
+		var limit = req.query.limit;
+		if (username == null) {
+			username = "";
+		}
+		if (limit == null || limit > 10) {
+			limit = 10;
+		}
+		const foundUsers = await userdatabase.UserModel.findAll({
+			limit: limit,
+			offset: req.query.offset,
+			attributes: ['username', 'userID', 'image'],
+			where: {
+				username: {
+					[Op.like]:  '%' + username + '%',
+				}
+			}
+		});
+		res.status(200).json(foundUsers);
 	}
 
 	async searchEvents(req: express.Request, res: express.Response): Promise<void> {

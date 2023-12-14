@@ -34,11 +34,8 @@ export class VenueController extends BaseController {
         this.lastRequest = new Date();
         const response = await axios.get(musicBrainzApiUrl);
         const data = response.data;
-        if (data === undefined) {
-          break;
-        }
         const places = data.places;
-        if (!data.places) {
+        if (places.length == 0) {
           break;
         }
         const venuesInBrussels = places.filter(

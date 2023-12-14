@@ -67,8 +67,7 @@ function EventCard({
     const month = getMonth(convertedDateAndTime.getMonth());
     const day = convertedDateAndTime.getDate();
     const date = [[month, day].join(" "), year].join(", ");
-    const time = dateAndTime.split("T", 2)[1].split(":", 2).join(":");
-
+    const time = convertedDateAndTime.toLocaleTimeString('default', { hour: '2-digit', minute: '2-digit' });
     return [date, time];
   }
 

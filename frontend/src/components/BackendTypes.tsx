@@ -32,6 +32,7 @@ export type Filter = {
   venueID: string | null;
   datetime: Date | null;
   genre1: string | null;
+  price: number | null;
 };
 
 export type Rating = {
@@ -64,9 +65,9 @@ export type Event = {
   price: number;
   banner: string;
   eventPicture: string;
-  artistID: string;
-  venueID: string;
   checkedIn: boolean;
+  Artist: Artist;
+  Venue: Venue;
 };
 
 export type Profile = {
