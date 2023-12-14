@@ -139,7 +139,7 @@ export default function EditEvent() {
             </div>
           </div>
           <div className={styles.artistAndLocationContainer}>
-            <ArtistAndLocationUpload venueID={concert?.venueID} artistID={concert?.artistID} locationCallback={(venue: Venue) => setLocation(venue)} artistCallback={(artist: Artist) => setSelectedArtist(artist)} />
+            <ArtistAndLocationUpload venueID={concert?.Venue.venueID} artistID={concert?.Artist.artistID} locationCallback={(venue: Venue) => setLocation(venue)} artistCallback={(artist: Artist) => setSelectedArtist(artist)} />
           </div>
           <div className={styles.friendInviteContainer}>
             <FriendInvites />

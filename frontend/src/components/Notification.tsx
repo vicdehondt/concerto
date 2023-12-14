@@ -83,7 +83,7 @@ function Notification({ notification, removeNotification }: {notification: Notif
       <>
         <div key={notification.notificationID} className={styles.notificationContainer}>
           {/* http://localhost:3000/ratings/add-rating?from=${fromURL}&venue=${venueID}&artist=${artistID}&event=${eventID} */}
-          <Link className={styles.message} href={`/ratings/add-rating?from=${encodeURIComponent("/")}&venue=${event?.venueID}&artist=${event?.artistID}&event=${event?.eventID}&notificationID=${notification?.notificationID}`}>
+          <Link className={styles.message} href={`/ratings/add-rating?from=${encodeURIComponent("/")}&venue=${event?.Venue.venueID}&artist=${event?.Artist.artistID}&event=${event?.eventID}&notificationID=${notification?.notificationID}`}>
             <div className={styles.eventMessage}>Event {event?.title} ended.</div>
             <div className={styles.rateMessage}>Would you like to rate &quot;artistName&quot; and &quot;venueName&quot;?</div>
             {/* Would you like to rate {event?.artistName} and {event?.venueName} it? */}

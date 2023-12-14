@@ -58,7 +58,7 @@ export default function Home() {
       const eventsArray = await Promise.all(
         events.map(async (event: Event) => {
           const response = await fetch(
-            environment.backendURL + `/venues/${event.venueID}`,
+            environment.backendURL + `/venues/${event.Venue.venueID}`,
             {
               mode: "cors",
               credentials: "include",

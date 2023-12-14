@@ -47,8 +47,8 @@ export default function Concert() {
           setConcert(responseJSON);
           setCheckedIn(responseJSON.checkedIn);
           setInWishlist(responseJSON.wishlisted);
-          if (responseJSON.artistID) {
-            fetch(environment.backendURL + `/artists/${responseJSON.artistID}`, {
+          if (responseJSON.Artist.artistID) {
+            fetch(environment.backendURL + `/artists/${responseJSON.Artist.artistID}`, {
               mode: "cors",
               credentials: "include",
             })
@@ -59,8 +59,8 @@ export default function Concert() {
                 setArtistScore(responseJSON.Rating.score);
               });
           }
-          if (responseJSON.venueID) {
-            fetch(environment.backendURL + `/venues/${responseJSON.venueID}`, {
+          if (responseJSON.Venue.venueID) {
+            fetch(environment.backendURL + `/venues/${responseJSON.Venue.venueID}`, {
               mode: "cors",
               credentials: "include",
             })
@@ -226,8 +226,8 @@ export default function Concert() {
               {concert && <Rating
                 artistScore={artistScore}
                 venueScore={venueScore}
-                artist={concert.artistID}
-                venue={concert.venueID}
+                artist={concert.Artist.artistID}
+                venue={concert.Venue.venueID}
               />}
             </div>
           </div>
