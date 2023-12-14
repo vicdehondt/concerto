@@ -80,6 +80,10 @@ export class SearchController extends BaseController {
 				filterfields.push("venueID");
 				filtervalues.push(req.query.venueID);
 			}
+			if (req.query.genre) {
+				filterfields.push("genre");
+				filtervalues.push(req.query.genre);
+			}
 			const events = await database.FilterEvents(filterfields, filtervalues);//gives the events that match the given filters
 			if(events){
 				res.status(200).json(events); //succes

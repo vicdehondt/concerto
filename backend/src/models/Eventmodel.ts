@@ -281,6 +281,7 @@ export async function RetrieveEvent(ID): Promise<typeof EventModel> {
   export async function FilterEvents(filterfields,filtervalues){
     try {
       const whereClause = {};
+      const orConditions = [];
       for (let i = 0; i < filterfields.length; i++) {
         const field = filterfields[i];
         const value = filtervalues[i];
@@ -289,9 +290,32 @@ export async function RetrieveEvent(ID): Promise<typeof EventModel> {
           whereClause[field] = {
             [Op.between]: value.split('/'),
           };
+        } else if (field == 'genre') {
+          if (Array.isArray(value)) {
+            orConditions.push({
+              baseGenre: {
+                [Op.in]: value,
+              },
+            });
+            orConditions.push({
+              secondGenre: {
+                [Op.in]: value,
+              },
+            });
+          } else {
+            orConditions.push({
+              baseGenre: value,
+            });
+            orConditions.push({
+              secondGenre: value,
+            });
+          }
         } else {
           whereClause[field] = value;
         }
+      }
+      if (orConditions.length > 0) {
+        whereClause[Op.or] = orConditions;
       }
       const Event = await EventModel.findAll({
         attributes: ['eventID', 'eventPicture', 'title'],
