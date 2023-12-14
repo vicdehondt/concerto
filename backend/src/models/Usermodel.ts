@@ -1,4 +1,4 @@
-import { DataTypes, Op, json } from 'sequelize';
+import { DataTypes, Op } from 'sequelize';
 import {sequelize} from '../configs/sequelizeConfig'
 import { mailAccount, mailPassword } from '../configs/mailConfig';
 
