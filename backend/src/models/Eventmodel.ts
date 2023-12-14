@@ -2,6 +2,7 @@ import { DataTypes, Op } from 'sequelize';
 import {sequelize} from '../configs/sequelizeConfig'
 import { Rating } from './Ratingmodel';
 import { UserModel } from './Usermodel';
+import { VenueModel } from './Venuemodel';
 const axios = require('axios');
 
 export const Artist = sequelize.define('Artist', {
@@ -117,6 +118,19 @@ EventModel.belongsTo(Artist, {
   foreignKey: 'artistID'
 });
 
+VenueModel.hasMany(EventModel, { //multiple events can take place at one venue
+  foreignKey: {
+    name: 'venueID',
+    allowNull: false
+  }
+});
+
+EventModel.belongsTo(VenueModel, {//one event has one venue
+  foreignKey: {
+    name: 'venueID'
+  }
+});
+
 var lastRequest = new Date();
 const timeTreshold = 1000; // Musicbrainz API has limit of maximum 1 request per second.
 
@@ -198,8 +212,15 @@ export async function retrieveUnfinishedEvents(limit): Promise<typeof EventModel
   const events = await EventModel.findAll({
     limit: limit,
     attributes: {
-      exclude: ['createdAt', 'updatedAt']
-    }, where: {
+      exclude: ['createdAt', 'updatedAt', 'venueID', 'artistID']
+    }, include: [
+      { model: Artist , attributes: {
+        exclude: ['createdAt', 'updatedAt']
+      }},
+      { model: VenueModel, attributes: {
+        exclude: ['createdAt', 'updatedAt']
+      }},
+    ], where: {
       dateAndTime: {
         [Op.gte]: expiredEventTreshold(),
       }
@@ -212,8 +233,15 @@ export async function RetrieveEvent(ID): Promise<typeof EventModel> {
   try {
     const Event = await EventModel.findOne({
       attributes: {
-        exclude: ['createdAt', 'updatedAt']
-      },
+        exclude: ['createdAt', 'updatedAt', 'venueID', 'artistID']
+      }, include: [
+        { model: Artist , attributes: {
+          exclude: ['createdAt', 'updatedAt']
+        }},
+        { model: VenueModel, attributes: {
+          exclude: ['createdAt', 'updatedAt']
+        }},
+      ],
       where: {eventID: ID},
     });
     return Event;

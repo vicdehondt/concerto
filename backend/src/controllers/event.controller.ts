@@ -60,7 +60,7 @@ export class EventController extends BaseController {
 			res.set('Access-Control-Allow-Credentials', 'true');
 			this.getEvent(req, res);
 		});
-		this.router.post('/:eventID', this.requireAuth,  upload.none(), [this.checkEventExists, this.checkUnfinished], this.verifyErrors, (req: express.Request, res: express.Response) => {
+		this.router.post('/:eventID', this.requireAuth, upload.fields([{ name: 'banner', maxCount: 1}, { name: 'eventPicture', maxCount: 1}]), [this.checkEventExists, this.checkUnfinished], this.verifyErrors, (req: express.Request, res: express.Response) => {
 			res.set('Access-Control-Allow-Credentials', 'true');
 			this.editEvent(req, res);
 		});
@@ -103,13 +103,24 @@ export class EventController extends BaseController {
 		if (event.userID != sessiondata.userID) {
 			res.status(401).json({ success: true, error: "No permission to update this event."});
 		} else {
-			const {description, main, doors, support, price} = req.body;
-			event.price = price;
-			event.description = description;
-			event.main = main;
-			event.doors = doors;
-			event.support = support;
-			event.save();
+			const updateFields = ['description', 'main', 'doors', 'support', 'price', 'title', 'secondGenre', 'mainGenre'];
+			const imageFields = ['eventPicture', 'banner'];
+
+            updateFields.forEach(field => {
+                if (req.body[field]) {
+					event[field] = req.body[field];
+                }
+            });
+			imageFields.forEach(field => {
+				if (req.files[field]) {
+					console.log("Edititing the image of an event ", field);
+					const image = req.files[field]
+					const imagePath = "http://localhost:8080/events/" + image[0].filename;
+					event[field] = imagePath;
+					console.log(event[field]);
+				}
+			});
+			await event.save();
 			res.status(200).json({ success: true, message: "Event has been updated."});
 		}
 	}
@@ -167,10 +178,24 @@ export class EventController extends BaseController {
 		if (result.isEmpty() && bannerpictures && eventPictures) {
 			const sessiondata = req.session;
 			const {artistID, venueID, title, description, dateAndTime, price, doors, main, support, mainGenre, secondGenre} = req.body;
-			const bannerPath = "http://localhost:8080/events/" + bannerpictures[0].filename;
-			const eventPicturePath = "http://localhost:8080/events/" + eventPictures[0].filename;
-			const result = await database.CreateEvent(sessiondata.userID, artistID, venueID, title, description, dateAndTime, price, doors, main, support, mainGenre, secondGenre, bannerPath, eventPicturePath);
-			res.status(200).json({ success: true, eventID: result.eventID, message: 'Event created successfully.' });
+			const suppliedDate = new Date(dateAndTime);
+			const event = await database.EventModel.findOne({
+				where: {
+					artistID: artistID,
+					venueID: venueID,
+					dateAndTime: suppliedDate
+				}
+			});
+			if (event) {
+				this.DeleteFile(eventImagePath, bannerpictures[0]);
+				this.DeleteFile(eventImagePath, eventPictures[0]);
+				res.status(400).json({ success: false, message: 'This event already exists so a new one could not be created.'});
+			} else {
+				const bannerPath = "http://localhost:8080/events/" + bannerpictures[0].filename;
+				const eventPicturePath = "http://localhost:8080/events/" + eventPictures[0].filename;
+				const result = await database.CreateEvent(sessiondata.userID, artistID, venueID, title, description, dateAndTime, price, doors, main, support, mainGenre, secondGenre, bannerPath, eventPicturePath);
+				res.status(200).json({ success: true, eventID: result.eventID, message: 'Event created successfully.' });
+			}
 		} else {
 			if (bannerpictures) {
 				this.DeleteFile(eventImagePath, bannerpictures[0]);

@@ -2,10 +2,9 @@ import * as express from 'express';
 import { BaseController } from './base.controller';
 import * as database from '../models/Eventmodel';
 import * as userdatabase from '../models/Usermodel';
-import { userCheckIn, userCheckOut } from  '../models/Checkinmodel'
-import {body, validationResult} from "express-validator"
+import {body, param} from "express-validator"
 import {createMulter} from "../configs/multerConfig";
-import * as crypto from "crypto"
+import { Op } from 'sequelize';
 
 const eventImagePath = './public/events';
 
@@ -39,6 +38,13 @@ export class SearchController extends BaseController {
 			],
 			(req: express.Request, res: express.Response) => {
 				this.filterEvents(req, res);
+			});
+		this.router.get('/users',
+			upload.none(), this.verifyErrors,
+			(req: express.Request, res: express.Response) => {
+				console.log("search request");
+				res.set('Access-Control-Allow-Credentials', 'true');
+				this.searchUsers(req, res);
 			});
 		this.router.get('/events',
 			upload.none(),
@@ -81,6 +87,29 @@ export class SearchController extends BaseController {
 				res.status(400).json({succes: false, error: events});// something went wrong while retrieving the events
 			}
 		}
+	}
+
+	async searchUsers(req: express.Request, res: express.Response): Promise<void> {
+		console.log("Accepted the incoming search request for users");
+		var username = req.query.username;
+		var limit = req.query.limit;
+		if (username == null) {
+			username = "";
+		}
+		if (limit == null || limit > 10) {
+			limit = 10;
+		}
+		const foundUsers = await userdatabase.UserModel.findAll({
+			limit: limit,
+			offset: req.query.offset,
+			attributes: ['username', 'userID', 'image'],
+			where: {
+				username: {
+					[Op.like]:  '%' + username + '%',
+				}
+			}
+		});
+		res.status(200).json(foundUsers);
 	}
 
 	async searchEvents(req: express.Request, res: express.Response): Promise<void> {
