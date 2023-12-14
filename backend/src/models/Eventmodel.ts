@@ -208,7 +208,7 @@ export function expiredEventTreshold() {
 }
 
 
-export async function retrieveUnfinishedEvents(limit): Promise<typeof EventModel>  {
+export async function retrieveUnfinishedEvents(limit, offset): Promise<typeof EventModel>  {
   const events = await EventModel.findAll({
     limit: limit,
     attributes: {
@@ -219,10 +219,39 @@ export async function retrieveUnfinishedEvents(limit): Promise<typeof EventModel
       }},
       { model: VenueModel, attributes: {
         exclude: ['createdAt', 'updatedAt']
+      }}, { model: VenueModel, attributes: {
+        exclude: ['createdAt', 'updatedAt']
       }},
     ], where: {
       dateAndTime: {
         [Op.gte]: expiredEventTreshold(),
+      }
+    }
+  });
+  return events;
+}
+
+export async function retrieveNewUnfinishedEvents(limit, offset, checkedInEvents): Promise<typeof EventModel>  {
+  const events = await EventModel.findAll({
+    limit: limit,
+    offset: offset,
+    attributes: {
+      exclude: ['createdAt', 'updatedAt', 'venueID', 'artistID']
+    }, include: [
+      { model: Artist , attributes: {
+        exclude: ['createdAt', 'updatedAt']
+      }},
+      { model: VenueModel, attributes: {
+        exclude: ['createdAt', 'updatedAt']
+      }}, { model: VenueModel, attributes: {
+        exclude: ['createdAt', 'updatedAt']
+      }},
+    ], where: {
+      dateAndTime: {
+        [Op.gte]: expiredEventTreshold(),
+      },
+      eventID: {
+        [Op.notIn]: checkedInEvents
       }
     }
   });
