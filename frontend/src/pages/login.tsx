@@ -31,7 +31,11 @@ export default function Login() {
       const from = Array.isArray(router.query.from) ? router.query.from[0] : router.query.from || '/';
       router.push(from);
     } else if (response.status == 400) {
-      setError(data.errors);
+      if (data.errors) {
+        setError(data.errors);
+      } else {
+        setError(data);
+      }
     }
   }
 
@@ -42,6 +46,11 @@ export default function Login() {
 
   function showErrors() {
     if (error) {
+      if (!Array.isArray(error)) {
+        return (
+          <h4 className={styles.inputError}>{error.message}</h4>
+        );
+      }
       return error.map((error: Error, index: number) => {
         return (
           <h4 key={index} className={styles.inputError}>{error.msg}</h4>
