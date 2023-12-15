@@ -48,7 +48,7 @@ function ArtistAndLocationUpload({
           }
         });
     }
-  }, [artistID]);
+  }, [artistID, artistCallback]);
 
   function handlechange(value: string) {
     const currentTime = new Date();
@@ -104,7 +104,7 @@ function ArtistAndLocationUpload({
         <div className={styles.name}>{selectedArtist.name}</div>
         </div>
         <div className={styles.searchArtists}>
-        <Searchbar type="thin" onChange={(string: string) => handlechange(string)} />
+        <Searchbar type="thin" onClick={(event) => null} onChange={(string: string) => handlechange(string)} />
         </div>
 
         <div className={styles.searchResults}>{showArtists(apiResponse.artists)}</div>

@@ -39,15 +39,10 @@ export default function AddEvent() {
     event.preventDefault();
     var formData = new FormData(event.currentTarget);
     formData.append("dateAndTime", concatDateAndTime());
-    formData.append("price", "20");
     formData.append("venueID", location.venueID);
+    console.log(selectedArtist);
     if (selectedArtist) {
-      if (selectedArtist.artistID) {
-        formData.append("artistID", selectedArtist.artistID);
-      }
-      if (selectedArtist.artistID) {
-        formData.append("artistID", selectedArtist.artistID);
-      }
+      formData.append("artistID", selectedArtist.id);
     }
     const response = await fetch(environment.backendURL + "/events", {
       method: "POST",
@@ -103,6 +98,17 @@ export default function AddEvent() {
           </div>
           <div className={styles.artistAndLocationContainer}>
             <ArtistAndLocationUpload locationCallback={(venue: Venue) => setLocation(venue)} artistCallback={(artist: Artist) => setSelectedArtist(artist)} />
+          </div>
+          <div className={styles.priceContainer}>
+            Tickets
+            <div className={styles.priceInput}>
+              <input type="number" name="price" id="price" placeholder="Minimum price" required />
+              EUR
+            </div>
+            <div className={styles.ticketURL}>
+              Add site to buy tickets:
+              <input type="url" name="url" id="url" placeholder="https://example.com" pattern="https://.*" required />
+            </div>
           </div>
           <div className={styles.addEventButton}>
             <button className={styles.submitButton} type="submit">Add event!</button>

@@ -35,7 +35,11 @@ export class ProfileController extends BaseController {
                 this.changeDescription(req, res);
 			});
         this.router.post('/genres', this.requireAuth,
-			upload.none(), [body("firstGenre").trim().notEmpty(), body("secondGenre").trim().notEmpty()], this.verifyErrors,
+			upload.none(),
+            [
+                body("firstGenre").trim().notEmpty(),
+                body("firstGenre").trim().notEmpty(),
+            ], this.verifyErrors,
 			(req: express.Request, res: express.Response) => {
                 this.changeGenres(req, res);
 			});

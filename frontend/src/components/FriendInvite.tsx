@@ -24,17 +24,19 @@ function FriendInvites({ eventID }: FriendInvitesProps) {
 	}
 
   useEffect(() => {
-    fetch(environment.backendURL + "/friends" + `?eventID=${eventID}`, {
-      mode: "cors",
-      credentials: "include",
-    })
-      .then((response) => {
-        return response.json();
+    if (eventID) {
+      fetch(environment.backendURL + "/events" + `/${eventID}` + "/invitable", {
+        mode: "cors",
+        credentials: "include",
       })
-      .then((responseJSON) => {
-        setFriends(responseJSON);
-      });
-  }, []);
+        .then((response) => {
+          return response.json();
+        })
+        .then((responseJSON) => {
+          setFriends(responseJSON);
+        });
+    }
+  }, [eventID]);
 
   return (
     <div className={styles.inviteContainer}>

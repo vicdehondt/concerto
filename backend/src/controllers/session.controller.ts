@@ -47,7 +47,9 @@ export class SessionController extends BaseController {
 					if (user != null) {
 						throw new Error("Email already used by other user.");
 					}
-				})
+				}),
+				body("firstGenre").trim().notEmpty(),
+				body("secondGenre").trim().notEmpty(),
 			],
 			(req: express.Request, res: express.Response) => {
 				this.registerUser(req, res);

@@ -41,6 +41,7 @@ export type Rating = {
 }
 
 export type Artist = {
+  id: string;
   artistID: string;
   name: string;
   type: string;
@@ -112,6 +113,7 @@ export type Error = {
   type: string;
   value: string;
   msg: string;
+  message: string;
 }
 
 export type Wish = {

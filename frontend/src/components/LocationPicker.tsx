@@ -1,3 +1,4 @@
+import styles from "@/styles/LocationPicker.module.css";
 import { ForwardedRef, useEffect, useState } from "react";
 import { Venue } from "./BackendTypes";
 import { environment } from "./Environment";
@@ -32,7 +33,7 @@ export default function LocationPicker({ venueID, locationCallback, forwardedRef
         locationCallback(venue);
       }
     })
-  }, [venueID]);
+  }, [venueID, venueOptions, locationCallback]);
 
   function showVenueOptions() {
     return venueOptions.map((venue: Venue) => {
@@ -52,7 +53,7 @@ export default function LocationPicker({ venueID, locationCallback, forwardedRef
   }
 
   return (
-    <>
+    <div className={styles.locationPicker}>
       <select
         name="venue"
         id="venue"
@@ -74,6 +75,6 @@ export default function LocationPicker({ venueID, locationCallback, forwardedRef
         )}
         {showVenueOptions()}
       </select>
-    </>
+    </div>
   );
 }

@@ -1,15 +1,16 @@
 import * as express from 'express';
 import { BaseController } from './base.controller';
 import * as database from '../models/Eventmodel';
-import { userCheckIn, userCheckOut, allCheckedInUsers, retrieveCheckIn, allCheckedInEvents } from  '../models/Checkinmodel';
-import { NotificationObject, createNewNotification } from '../models/Notificationmodel';
+import { userCheckIn, userCheckOut, allCheckedInUsers, retrieveCheckIn, allCheckedInEvents, CheckedInUsers } from  '../models/Checkinmodel';
+import { Notification, NotificationObject, createNewNotification } from '../models/Notificationmodel';
 import { VenueModel } from '../models/Venuemodel';
 import { retrieveArtist, createArtist, RetrieveEvent, isFinished } from '../models/Eventmodel';
 import {body, param, validationResult} from "express-validator"
 import {createMulter} from "../configs/multerConfig";
 import { WishListedEvents } from '../models/Wishlistmodel';
-import { RetrieveUser } from '../models/Usermodel';
+import { GetAllFriends, RetrieveUser, UserModel } from '../models/Usermodel';
 import { getAllWishListed } from '../models/Wishlistmodel';
+import { Op } from 'sequelize';
 
 const eventImagePath = './public/events';
 
@@ -69,6 +70,10 @@ export class EventController extends BaseController {
 			res.set('Access-Control-Allow-Credentials', 'true');
 			this.checkEventAuth(req, res);
 		});
+		this.router.get('/:eventID/invitable', this.requireAuth,  upload.none(), [this.checkEventExists, this.checkUnfinished], this.verifyErrors, (req: express.Request, res: express.Response) => {
+			res.set('Access-Control-Allow-Credentials', 'true');
+			this.inviteAbleFriends(req, res);
+		});
 		this.router.get('/:eventID/checkins', this.requireAuth, [this.checkEventExists], this.verifyErrors, (req: express.Request, res: express.Response) => {
 			res.set('Access-Control-Allow-Credentials', 'true');
 			this.allCheckedIn(req, res);
@@ -86,6 +91,41 @@ export class EventController extends BaseController {
 			this.checkOut(req, res);
 		});
     }
+
+	async inviteAbleFriends(req: express.Request, res: express.Response) {
+		const friends = await GetAllFriends(req.session.userID);
+		console.log(req.param.eventID);
+		const filteredFriends = await Promise.all(friends.map(async friend => {
+			const hasNotification = await Notification.findOne({
+				where: {
+					receiver: friend.userID,
+				},
+				include: {
+					model: NotificationObject,
+					where: {
+						actor: req.session.userID,
+						notificationType: 'eventInviteReceived',
+						typeID: req.params.eventID,
+					}
+				}
+			});
+			if (hasNotification) {
+				return null;
+			}
+			const hasCheckedIn = await CheckedInUsers.findOne({
+				where: {
+					userID: friend.userID,
+					eventID: req.params.eventID,
+				}
+			});
+			if (hasCheckedIn) {
+				return null;
+			}
+			return friend;
+		}));
+		const inviteableFriends = filteredFriends.filter(friend => friend !== null);
+		res.status(200).json(inviteableFriends);
+	}
 
 	async checkEventAuth(req: express.Request, res: express.Response) {
 		const event = req.body.event;
@@ -132,16 +172,32 @@ export class EventController extends BaseController {
 		const inviterID = req.session.userID;
 		const receiverID = req.body.userID;
 		const event = await req.body.event;
-		if (await retrieveCheckIn(receiverID, event) == null) {
-			const object = await NotificationObject.create({
-				notificationType: 'eventInviteReceived',
-				actor: inviterID,
-				typeID: event.eventID,
-			});
-			await createNewNotification(object.ID, receiverID);
-			res.status(200).json({ success: true, message: "Invite of event has been sent to user."});
+		const alreadyInvited = await Notification.findOne({
+			include: [{
+				model: NotificationObject,
+				where: {
+					typeID: event.eventID,
+					notificationType: 'eventInviteReceived'
+				}
+			}],
+			where: {
+				receiver: receiverID
+			}
+		});
+		if (alreadyInvited == null) {
+			if (await retrieveCheckIn(receiverID, event) == null) {
+				const object = await NotificationObject.create({
+					notificationType: 'eventInviteReceived',
+					actor: inviterID,
+					typeID: event.eventID,
+				});
+				await createNewNotification(object.ID, receiverID);
+				res.status(200).json({ success: true, message: "Invite of event has been sent to user."});
+			} else {
+				res.status(200).json({ success: false, error: "This user is already checked in for this event."});
+			}
 		} else {
-			res.status(200).json({ success: false, error: "This user is already checked in for this event."});
+			res.status(400).json({ success: false, error: "You have already invited this user for this event"});
 		}
 	}
 
@@ -252,7 +308,7 @@ export class EventController extends BaseController {
 	}
 
 	async checkFriendExists(req: express.Request, res: express.Response, next) {
-		await body("userID").custom(async (userID) => {
+		await body("userID").trim().notEmpty().custom(async (userID) => {
             const user = await RetrieveUser('userID', userID);
             if (user != null) {
                 return true;

@@ -77,6 +77,19 @@ function Notification({ notification, removeNotification }: {notification: Notif
     }
   }, [notification]);
 
+  useEffect(() => {
+    if (event?.checkedIn || ended(event)) {
+      removeNotification(notification.notificationID)
+    }
+  }, [event?.checkedIn, event, notification.notificationID, removeNotification]);
+
+  function ended(event: Event | null) {
+    if (event) {
+      return (new Date(event.dateAndTime) < new Date());
+    }
+    return false;
+  }
+
   function acceptFriend() {
     fetch(environment.backendURL + `/friends/${notification.NotificationObject.actor}/accept`, {
       method: 'POST',

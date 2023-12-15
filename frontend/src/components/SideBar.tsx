@@ -49,18 +49,21 @@ function SideBarContent({ type, filters, filterCallback }: SideBarProps) {
         <div className={styles.locationFilter}>
           <div className={styles.location}>Location</div>
           <LocationPicker locationCallback={(venue: Venue) => setLocation(venue)} forwardedRef={locationPickerRef} />
-          <button>+</button>
         </div>
         <div className={styles.date}>
           Date
           <input ref={datePickerRef} className={styles.dateInput} type="date" name="date" id="date"></input>
-          <button>+</button>
         </div>
-        <div className={styles.genre}>Genre</div>
+        <div className={styles.genre}>
+          Genre
+          {/* <select name="genre1">
+          </select>
+          <select name="genre2">
+          </select> */}
+        </div>
         <div className={styles.price}>
           Price
-          <input ref={priceRangeRef} type="number" min="0" />
-          <button>+</button>
+          <input ref={priceRangeRef} type="number" placeholder="Minimum price" min="0" />
           </div>
       </div>
       <button className={styles.clearFilters} onClick={(event) =>clearFilters()}>Remove filters</button>
