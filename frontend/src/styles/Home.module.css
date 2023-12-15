@@ -678,6 +678,12 @@
   height: 180px;
   background-color: white;
   border-radius: 50%;
+  border: 4px solid black;
+}
+
+.profilePicture img {
+  margin-top: 1px;
+  border-radius: 50%;
 }
 
 .wishlistPage {

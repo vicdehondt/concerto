@@ -2,34 +2,11 @@ import * as express from 'express';
 import { BaseController } from './base.controller';
 import {createMulter} from "../configs/multerConfig"
 import { param } from "express-validator"
-import { notificationEmitter, newNotification } from "../configs/emitterConfig";
 import { Notification, userNotifications, NotificationObject, createNewNotification } from '../models/Notificationmodel';
 import { EventModel, expiredEventTreshold } from '../models/Eventmodel';
 import { Op } from 'sequelize';
-import { CheckedInUsers, retrieveCheckIn } from '../models/Checkinmodel';
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-import { getMessaging, getToken } from "firebase/messaging";
+import { CheckedInUsers } from '../models/Checkinmodel';
 const cron = require('node-cron');
-
-// Below is an attempt to use firebase cloud messages, is not finished/in-use yet.
-// -----------------------------------------------
-// const firebaseConfig = {
-//     apiKey: "AIzaSyBdCFSnCVmBQE26UeHnllbRT0tqnWaYqxU",
-//     authDomain: "concerto-22ae3.firebaseapp.com",
-//     projectId: "concerto-22ae3",
-//     storageBucket: "concerto-22ae3.appspot.com",
-//     messagingSenderId: "230484635742",
-//     appId: "1:230484635742:web:9a66e9e31d63a9ee0084cf",
-//     measurementId: "G-V559K9G8PC"
-//   };
-
-// const app = initializeApp(firebaseConfig);
-// const analytics = getAnalytics(app);
-
-// const messaging = getMessaging(app);
-// getToken(messaging, {vapidKey: "btaKMBm9gCJ0ezl_n1DdepCM7x3l-u4ehnYuTVAtkek"});
-// -----------------------------------------------
 
 const userImagePath = './public/users';
 

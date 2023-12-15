@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import PrivacySettings from "@/components/PrivacySettings"
 import Image from "next/image";
 import { User } from 'lucide-react';
+import ProfilePictureUpload from "@/components/ProfilePictureUpload";
 import { environment } from "@/components/Environment";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -81,7 +82,7 @@ export default function Settings() {
       <main className={`${styles.main} ${inter.className}`}>
         <div className={[styles.page, styles.settingsPage].join(" ")}>
             <div className={styles.profilePicture}>
-              {showPicture(user.image)}
+              <ProfilePictureUpload picture={user.image} />
             </div>
             <div className={styles.settingContainer}>
               <PersonalSettings />

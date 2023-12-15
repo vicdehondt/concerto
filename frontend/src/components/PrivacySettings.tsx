@@ -29,12 +29,6 @@ export default function PrivacySettings(userid: { userid: number}) {
     });
   }
 
-  async function onDiscard() {
-    console.log("Discarding settings");
-    setPrivacySettings(initialprivacySettings);
-    console.log("Original settings: ", initialprivacySettings);
-  }
-
   useEffect(() => {
     fetch(environment.backendURL + `/profile/settings/privacy`, {
       mode: "cors",
@@ -66,9 +60,6 @@ export default function PrivacySettings(userid: { userid: number}) {
         <PrivacySetting name={"Upcoming events you have checked in"} setting={"privacyCheckedInEvents"} initial={privacySettings.privacyCheckedInEvents} />
         <PrivacySetting name={"Your friends"} setting={"privacyFriends"} initial={privacySettings.privacyFriends} />
         <div className={styles.saveButton} >
-          <button onClick={onDiscard}>
-            Discard settings
-          </button>
           <button type="submit">
             Save settings
           </button>
