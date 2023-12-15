@@ -2,7 +2,7 @@ import * as express from 'express';
 import { BaseController } from './base.controller';
 import * as database from '../models/Eventmodel';
 import { userCheckIn, userCheckOut, allCheckedInUsers, retrieveCheckIn, allCheckedInEvents } from  '../models/Checkinmodel';
-import { NotificationObject, createNewNotification } from '../models/Notificationmodel';
+import { Notification, NotificationObject, createNewNotification } from '../models/Notificationmodel';
 import { VenueModel } from '../models/Venuemodel';
 import { retrieveArtist, createArtist, RetrieveEvent, isFinished } from '../models/Eventmodel';
 import {body, param, validationResult} from "express-validator"
@@ -132,16 +132,32 @@ export class EventController extends BaseController {
 		const inviterID = req.session.userID;
 		const receiverID = req.body.userID;
 		const event = await req.body.event;
-		if (await retrieveCheckIn(receiverID, event) == null) {
-			const object = await NotificationObject.create({
-				notificationType: 'eventInviteReceived',
-				actor: inviterID,
-				typeID: event.eventID,
-			});
-			await createNewNotification(object.ID, receiverID);
-			res.status(200).json({ success: true, message: "Invite of event has been sent to user."});
+		const alreadyInvited = await Notification.findOne({
+			include: [{
+				model: NotificationObject,
+				where: {
+					typeID: event.eventID,
+					notificationType: 'eventInviteReceived'
+				}
+			}],
+			where: {
+				receiver: receiverID
+			}
+		});
+		if (alreadyInvited == null) {
+			if (await retrieveCheckIn(receiverID, event) == null) {
+				const object = await NotificationObject.create({
+					notificationType: 'eventInviteReceived',
+					actor: inviterID,
+					typeID: event.eventID,
+				});
+				await createNewNotification(object.ID, receiverID);
+				res.status(200).json({ success: true, message: "Invite of event has been sent to user."});
+			} else {
+				res.status(200).json({ success: false, error: "This user is already checked in for this event."});
+			}
 		} else {
-			res.status(200).json({ success: false, error: "This user is already checked in for this event."});
+			res.status(400).json({ success: false, error: "You have already invited this user for this event"});
 		}
 	}
 
