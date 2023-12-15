@@ -1,7 +1,6 @@
 import { DataTypes } from 'sequelize';
 import {sequelize} from '../configs/sequelizeConfig'
 import { UserModel } from './Usermodel';
-import { newNotification, notificationEmitter } from '../configs/emitterConfig';
 
 export const NotificationObject = sequelize.define('NotificationObject', {
     ID: {
