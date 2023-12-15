@@ -51,11 +51,11 @@ export const UserModel = sequelize.define('User', {
     },
     firstGenre: {
         type: DataTypes.TEXT,
-        allowNull: true,
+        allowNull: false,
     },
     secondGenre: {
         type: DataTypes.TEXT,
-        allowNull: true,
+        allowNull: false,
     },
     salt: {
         type: DataTypes.INTEGER,
