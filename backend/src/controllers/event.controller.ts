@@ -252,7 +252,7 @@ export class EventController extends BaseController {
 	}
 
 	async checkFriendExists(req: express.Request, res: express.Response, next) {
-		await body("userID").custom(async (userID) => {
+		await body("userID").trim().notEmpty().custom(async (userID) => {
             const user = await RetrieveUser('userID', userID);
             if (user != null) {
                 return true;
