@@ -41,6 +41,7 @@ export type Rating = {
 }
 
 export type Artist = {
+  id: string;
   artistID: string;
   name: string;
   type: string;
