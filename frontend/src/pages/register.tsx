@@ -119,13 +119,13 @@ export default function Register() {
             />
             <div className={styles.genreContainer}>
               <h3>Choose your two favorite genres!</h3>
-              <select className={styles.genre1Select} name="genre1" id="genre1" required>
+              <select className={styles.genre1Select} name="firstGenre" id="firstGenre" required>
                 <option key={"choose"} id="choose" hidden value="">
                   Choose genre
                 </option>
                 {genreOptions}
               </select>
-              <select className={styles.genre2Select} name="genre2" id="genre2" required>
+              <select className={styles.genre2Select} name="secondGenre" id="secondGenre" required>
                 <option key={"choose"} id="choose" hidden value="">
                   Choose genre
                 </option>
