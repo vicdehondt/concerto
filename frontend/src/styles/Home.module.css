@@ -196,7 +196,7 @@
   grid-template-areas:
     "banner banner"
     "description location-artist"
-    "timetable invites"
+    "timetable tickets"
     "add-event add-event";
 }
 
@@ -206,10 +206,29 @@
   background-color: rgb(194, 194, 194);
 }
 
-.addEventPage .friendInviteContainer {
-  grid-area: invites;
+.addEventPage .priceContainer {
+  grid-area: tickets;
   display: flex;
+  flex-direction: column;
   justify-content: right;
+  font-weight: bold;
+  font-size: x-large;
+}
+
+.addEventPage .priceInput {
+  font-size: medium;
+  font-weight: bold;
+}
+
+.addEventPage .priceInput input {
+  font-size: medium;
+  width: 130px;
+  margin-right: 5px;
+}
+
+.addEventPage .priceContainer .ticketURL {
+  font-size: medium;
+  font-weight: normal;
 }
 
 .addEventPage .descriptionContainer {
