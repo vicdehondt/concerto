@@ -48,7 +48,7 @@ function ArtistAndLocationUpload({
           }
         });
     }
-  }, [artistID]);
+  }, [artistID, artistCallback]);
 
   function handlechange(value: string) {
     const currentTime = new Date();

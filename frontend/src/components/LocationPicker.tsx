@@ -32,7 +32,7 @@ export default function LocationPicker({ venueID, locationCallback, forwardedRef
         locationCallback(venue);
       }
     })
-  }, [venueID]);
+  }, [venueID, venueOptions, locationCallback]);
 
   function showVenueOptions() {
     return venueOptions.map((venue: Venue) => {

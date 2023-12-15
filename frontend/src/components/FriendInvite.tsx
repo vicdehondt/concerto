@@ -34,7 +34,7 @@ function FriendInvites({ eventID }: FriendInvitesProps) {
       .then((responseJSON) => {
         setFriends(responseJSON);
       });
-  }, []);
+  }, [eventID]);
 
   return (
     <div className={styles.inviteContainer}>

@@ -142,7 +142,7 @@ export default function EditEvent() {
             <ArtistAndLocationUpload venueID={concert?.Venue.venueID} artistID={concert?.Artist.artistID} locationCallback={(venue: Venue) => setLocation(venue)} artistCallback={(artist: Artist) => setSelectedArtist(artist)} />
           </div>
           <div className={styles.friendInviteContainer}>
-            <FriendInvites />
+            <FriendInvites eventID={concert?.eventID} />
           </div>
           <div className={styles.addEventButton}>
             <button className={styles.submitButton} type="submit">Save edited event</button>

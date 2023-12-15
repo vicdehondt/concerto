@@ -78,11 +78,10 @@ function Notification({ notification, removeNotification }: {notification: Notif
   }, [notification]);
 
   useEffect(() => {
-    console.log(ended(event));
     if (event?.checkedIn || ended(event)) {
       removeNotification(notification.notificationID)
     }
-  }, [event?.checkedIn]);
+  }, [event?.checkedIn, event, notification.notificationID, removeNotification]);
 
   function ended(event: Event | null) {
     if (event) {
