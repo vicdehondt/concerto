@@ -25,6 +25,7 @@
 
 .location {
   padding-top: 2px;
+  margin-right: 26px;
 }
 
 .title {
@@ -34,4 +35,30 @@
 
 .dateInput {
   margin-left: 55px;
+}
+
+.dateInput:hover {
+  cursor: pointer;
+}
+
+.price input {
+  padding-left: 2px;
+  margin-left: 53px;
+  width: 120px;
+}
+
+.clearFilters {
+  all: unset;
+  margin-left: 120px;
+  padding: 5px 10px;
+  cursor: pointer;
+  border-radius: 10px;
+  color: white;
+  background-color: #0B2027;
+}
+
+.filters button {
+  all: unset;
+  cursor: pointer;
+  font-weight: bold;
 }
