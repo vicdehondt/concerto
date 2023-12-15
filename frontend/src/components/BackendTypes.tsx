@@ -112,6 +112,7 @@ export type Error = {
   type: string;
   value: string;
   msg: string;
+  message: string;
 }
 
 export type Wish = {

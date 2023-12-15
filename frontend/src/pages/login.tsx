@@ -12,7 +12,7 @@ const inter = Inter({ subsets: ['latin'] })
 export default function Login() {
   const router = useRouter();
 
-  const[error, setError] = useState([]);
+  const[error, setError] = useState<Error[] | Error>([]);
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
 
