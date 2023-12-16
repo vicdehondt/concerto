@@ -44,32 +44,38 @@ export default function Concert() {
           return response.json();
         })
         .then((responseJSON) => {
-          setConcert(responseJSON);
-          setCheckedIn(responseJSON.checkedIn);
-          setInWishlist(responseJSON.wishlisted);
-          if (responseJSON.Artist.artistID) {
-            fetch(environment.backendURL + `/artists/${responseJSON.Artist.artistID}`, {
-              mode: "cors",
-              credentials: "include",
-            })
-              .then((response) => {
-                return response.json();
+          if (responseJSON.errors) {
+            if (responseJSON.errors[0].msg == "Event with that ID does not exist.") {
+              router.push("/404");
+            }
+          } else {
+            setConcert(responseJSON);
+            setCheckedIn(responseJSON.checkedIn);
+            setInWishlist(responseJSON.wishlisted);
+            if (responseJSON.Artist.artistID) {
+              fetch(environment.backendURL + `/artists/${responseJSON.Artist.artistID}`, {
+                mode: "cors",
+                credentials: "include",
               })
-              .then((responseJSON) => {
-                setArtistScore(responseJSON.Rating.score);
-              });
-          }
-          if (responseJSON.Venue.venueID) {
-            fetch(environment.backendURL + `/venues/${responseJSON.Venue.venueID}`, {
-              mode: "cors",
-              credentials: "include",
-            })
-              .then((response) => {
-                return response.json();
+                .then((response) => {
+                  return response.json();
+                })
+                .then((responseJSON) => {
+                  setArtistScore(responseJSON.Rating.score);
+                });
+            }
+            if (responseJSON.Venue.venueID) {
+              fetch(environment.backendURL + `/venues/${responseJSON.Venue.venueID}`, {
+                mode: "cors",
+                credentials: "include",
               })
-              .then((responseJSON) => {
-                setVenueScore(responseJSON.Rating.score);
-              });
+                .then((response) => {
+                  return response.json();
+                })
+                .then((responseJSON) => {
+                  setVenueScore(responseJSON.Rating.score);
+                });
+            }
           }
         });
       fetch(environment.backendURL + `/events/${id}/auth`, {

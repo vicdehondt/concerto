@@ -36,23 +36,32 @@ export default function EditEvent() {
   useEffect(() => {
     const id = router.query.concert;
     if (id) {
-      fetch(environment.backendURL + `/events/${id}`, {
+      fetch(environment.backendURL + `/events/${id}/auth`, {
         mode: "cors",
         credentials: "include",
-      })
-        .then((response) => {
-          return response.json();
-        })
-        .then((responseJSON) => {
-          setConcert(responseJSON);
-          setTitle(responseJSON.title);
-          setPrice(responseJSON.price);
-          setDate(responseJSON.dateAndTime.split("T")[0]);
-          const time = new Date(responseJSON.dateAndTime);
-          const currentTimezoneTime = time.toLocaleString();
-          const convertedTime = currentTimezoneTime.split(" ")[1].split(":")[0] + ":" + currentTimezoneTime.split(" ")[1].split(":")[1];
-          setTime(convertedTime);
-        });
+      }).then((response) => {
+        if (response.status == 200) {
+          fetch(environment.backendURL + `/events/${id}`, {
+            mode: "cors",
+            credentials: "include",
+          })
+            .then((response) => {
+              return response.json();
+            })
+            .then((responseJSON) => {
+              setConcert(responseJSON);
+              setTitle(responseJSON.title);
+              setPrice(responseJSON.price);
+              setDate(responseJSON.dateAndTime.split("T")[0]);
+              const time = new Date(responseJSON.dateAndTime);
+              const currentTimezoneTime = time.toLocaleString();
+              const convertedTime = currentTimezoneTime.split(" ")[1].split(":")[0] + ":" + currentTimezoneTime.split(" ")[1].split(":")[1];
+              setTime(convertedTime);
+            });
+          } else {
+            router.push("/404");
+          }
+      });
     }
   }, [router.query.concert]);
 
@@ -139,7 +148,7 @@ export default function EditEvent() {
             </div>
           </div>
           <div className={styles.artistAndLocationContainer}>
-            <ArtistAndLocationUpload venueID={concert?.Venue.venueID} artistID={concert?.Artist.artistID} locationCallback={(venue: Venue) => setLocation(venue)} artistCallback={(artist: Artist) => setSelectedArtist(artist)} />
+            <ArtistAndLocationUpload venueID={concert?.Venue.venueID} artist={concert?.Artist} locationCallback={(venue: Venue) => setLocation(venue)} artistCallback={(artist: Artist) => setSelectedArtist(artist)} />
           </div>
           <div className={styles.friendInviteContainer}>
             <FriendInvites eventID={concert?.eventID} />
