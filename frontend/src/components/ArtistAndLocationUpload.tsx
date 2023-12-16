@@ -8,14 +8,14 @@ import { environment } from "./Environment";
 type ArtistAndLocationUploadProps = {
   locationCallback: (venue: Venue) => void;
   artistCallback: (artist: Artist) => void;
-  artistID?: string;
+  artist?: Artist;
   venueID?: string;
 };
 
 function ArtistAndLocationUpload({
   locationCallback,
   artistCallback,
-  artistID,
+  artist,
   venueID
 }: ArtistAndLocationUploadProps) {
   const [selectedArtist, setSelectedArtist] = useState({ name: "" });
@@ -33,22 +33,11 @@ function ArtistAndLocationUpload({
   const timeTreshold = 1001;
 
   useEffect(() => {
-    if (artistID) {
-      fetch(environment.backendURL + `/artists/${artistID}`, {
-        mode: "cors",
-        credentials: "include",
-      })
-        .then((response) => {
-          return response.json();
-        })
-        .then((responseJSON) => {
-          if (responseJSON.name != null) {
-            setSelectedArtist(responseJSON);
-            artistCallback(responseJSON)
-          }
-        });
+    if (artist) {
+      setSelectedArtist(artist);
+      artistCallback(artist)
     }
-  }, [artistID, artistCallback]);
+  }, [artist, artistCallback]);
 
   function handlechange(value: string) {
     const currentTime = new Date();
