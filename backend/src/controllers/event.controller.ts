@@ -53,6 +53,7 @@ export class EventController extends BaseController {
 				body("mainGenre").trim().notEmpty(),
 				body("secondGenre").trim().notEmpty(),
 				body("dateAndTime").trim().notEmpty(),
+				body("url").trim().notEmpty(),
 			],
 			(req: express.Request, res: express.Response) => {
 				res.set('Access-Control-Allow-Credentials', 'true');
@@ -145,7 +146,7 @@ export class EventController extends BaseController {
 		if (event.userID != sessiondata.userID) {
 			res.status(401).json({ success: true, error: "No permission to update this event."});
 		} else {
-			const updateFields = ['description', 'main', 'doors', 'support', 'price', 'title', 'secondGenre', 'mainGenre', 'artistID', 'venueID'];
+			const updateFields = ['description', 'main', 'doors', 'support', 'price', 'title', 'secondGenre', 'mainGenre', 'artistID', 'venueID', 'url'];
 			const imageFields = ['eventPicture', 'banner'];
 
             updateFields.forEach(field => {
@@ -225,6 +226,9 @@ export class EventController extends BaseController {
 				const events = await database.EventModel.findAll({
 					limit: limit,
 					offset: offset,
+					attributes: {
+						exclude: ['createdAt', 'updatedAt']
+					},
 					include: [
 					  { model: Artist , attributes: {
 						exclude: ['createdAt', 'updatedAt']
@@ -273,7 +277,7 @@ export class EventController extends BaseController {
 		const eventPictures = req.files['eventPicture']
 		if (result.isEmpty() && bannerpictures && eventPictures) {
 			const sessiondata = req.session;
-			const {artistID, venueID, title, description, dateAndTime, price, doors, main, support, mainGenre, secondGenre} = req.body;
+			const {artistID, venueID, title, description, dateAndTime, price, doors, main, support, mainGenre, secondGenre, url} = req.body;
 			const suppliedDate = new Date(dateAndTime);
 			const event = await database.EventModel.findOne({
 				where: {
@@ -289,7 +293,7 @@ export class EventController extends BaseController {
 			} else {
 				const bannerPath = "http://localhost:8080/events/" + bannerpictures[0].filename;
 				const eventPicturePath = "http://localhost:8080/events/" + eventPictures[0].filename;
-				const result = await database.CreateEvent(sessiondata.userID, artistID, venueID, title, description, dateAndTime, price, doors, main, support, mainGenre, secondGenre, bannerPath, eventPicturePath);
+				const result = await database.CreateEvent(sessiondata.userID, artistID, venueID, title, description, dateAndTime, price, doors, main, support, mainGenre, secondGenre, url, bannerPath, eventPicturePath);
 				res.status(200).json({ success: true, eventID: result.eventID, message: 'Event created successfully.' });
 			}
 		} else {

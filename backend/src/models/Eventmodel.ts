@@ -91,6 +91,10 @@ export const EventModel = sequelize.define('Event', {
     type: DataTypes.STRING,
     allowNull: false
   },
+  url: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
   eventPicture: {
     type: DataTypes.STRING,
     allowNull: false
@@ -178,7 +182,7 @@ export async function retrieveArtist(id) {
   }); return result;
 }
 
-export async function CreateEvent(userID, artistID, venueID, title, description, date, price, doors, main, support, genre1, genre2, bannerpath, eventPicturePath) {
+export async function CreateEvent(userID, artistID, venueID, title, description, date, price, doors, main, support, genre1, genre2, url, bannerpath, eventPicturePath) {
   try {
     const Event = await EventModel.create({
       artistID: artistID,
@@ -194,7 +198,8 @@ export async function CreateEvent(userID, artistID, venueID, title, description,
       support: support,
       baseGenre: genre1,
       secondGenre: genre2,
-      userID: userID
+      userID: userID,
+      url: url
     });
     return Event;
   } catch (error) {
