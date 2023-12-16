@@ -222,7 +222,6 @@ export class EventController extends BaseController {
 				if (whereClause['dateAndTime'] == null) {
 					whereClause['dateAndTime'] = { [Op.gte]: expiredEventTreshold() }
 				}
-				console.log(whereClause);
 				const events = await database.EventModel.findAll({
 					limit: limit,
 					offset: offset,
