@@ -234,7 +234,10 @@ export class EventController extends BaseController {
 					  }}, { model: VenueModel, attributes: {
 						exclude: ['createdAt', 'updatedAt']
 					  }},
-					], where: whereClause
+					], where: whereClause,
+					order: [
+						['dateAndTime', 'ASC'] // Sort by 'dateAndTime' in ascending order
+					  ]
 				});
 				res.status(200).json(events);
 			}

@@ -226,7 +226,9 @@ export async function retrieveUnfinishedEvents(limit, offset): Promise<typeof Ev
       dateAndTime: {
         [Op.gte]: expiredEventTreshold(),
       }
-    }
+    }, order: [
+      ['dateAndTime', 'ASC'] // Sort by 'dateAndTime' in ascending order
+      ]
   });
   return events;
 }
@@ -252,7 +254,9 @@ export async function retrieveNewUnfinishedEvents(limit, offset, checkedInEvents
       eventID: {
         [Op.notIn]: checkedInEvents
       }
-    }
+    }, order: [
+      ['dateAndTime', 'ASC'] // Sort by 'dateAndTime' in ascending order
+      ]
   });
   return events;
 }
