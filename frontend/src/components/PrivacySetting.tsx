@@ -1,12 +1,4 @@
-import styles from "../styles/PrivacySetting.module.css";
-import { useEffect, useState } from "react";
-
-const environment = {
-  backendURL: "http://localhost:8080",
-};
-if (process.env.NODE_ENV == "production") {
-  environment.backendURL = "https://api.concerto.dehondt.dev";
-}
+import styles from "@/styles/PrivacySetting.module.css";
 
 const options = ["public", "friends", "private"];
 

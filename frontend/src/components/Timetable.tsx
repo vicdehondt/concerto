@@ -1,4 +1,4 @@
-import styles from "../styles/Timetable.module.css";
+import styles from "@/styles/Timetable.module.css";
 
 function Timetable({
   doorTime,

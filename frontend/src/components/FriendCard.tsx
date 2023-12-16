@@ -1,23 +1,27 @@
-import { Inter } from "next/font/google";
 import Image from "next/image";
-import styles from "../styles/FriendCard.module.css";
-import { User } from 'lucide-react';
-import { useState } from "react";
+import styles from "@/styles/FriendCard.module.css";
+import { User as LucideUser } from 'lucide-react';
+import Link from "next/link";
+import { Friend } from "@/components/BackendTypes";
 
-function FriendCard({ source, username }: { source: string; username: string }) {
+type FriendCardProps = {
+  friend: Friend;
+}
+
+function FriendCard({ friend }: FriendCardProps) {
 
   function showPicture() {
-    if (source != null) {
-      return <Image src={source} width={170} height={170} alt="Profile picture of user." />;
+    if (friend.image != null) {
+      return <Image src={friend.image} width={170} height={170} alt="Profile picture of user." />;
     }
-    return <User className={styles.userPicture} width={170} height={170} />;
+    return <LucideUser className={styles.userPicture} width={170} height={170} />;
   }
 
   return (
-    <div className={styles.friendCardContainer}>
+    <Link href={`/accounts/${friend.userID}`} className={styles.friendCardContainer}>
       {showPicture()}
-      <div className={styles.name}>{username}</div>
-    </div>
+      <div className={styles.name}>{friend.username}</div>
+    </Link>
   );
 }
 

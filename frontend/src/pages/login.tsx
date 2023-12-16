@@ -1,28 +1,23 @@
 import Head from 'next/head'
 import { Inter } from 'next/font/google'
 import styles from '@/styles/Home.module.css'
-import type { NextApiRequest, NextApiResponse } from 'next'
-import { FormEvent } from 'react'
+import { FormEvent, useState } from 'react'
 import { useRouter } from "next/router";
 import Link from "next/link";
+import { Error } from '@/components/BackendTypes';
+import { environment } from "@/components/Environment";
 
 const inter = Inter({ subsets: ['latin'] })
 
-const environment = {
-  backendURL: "http://localhost:8080"
-}
-if (process.env.NODE_ENV == "production") {
-  environment.backendURL = "https://api.concerto.dehondt.dev"
-}
-
 export default function Login() {
   const router = useRouter();
+
+  const[error, setError] = useState<Error[] | Error>([]);
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
 
     event.preventDefault();
     var formData = new FormData(event.currentTarget);
-    const form_values = Object.fromEntries(formData);
     const response = await fetch(environment.backendURL + "/login", {
       method: 'POST',
       body: formData,
@@ -35,13 +30,33 @@ export default function Login() {
     if (response.status == 200) {
       const from = Array.isArray(router.query.from) ? router.query.from[0] : router.query.from || '/';
       router.push(from);
+    } else if (response.status == 400) {
+      if (data.errors) {
+        setError(data.errors);
+      } else {
+        setError(data);
+      }
     }
-    // ...
   }
 
   function redirectURL() {
     const from = Array.isArray(router.query.from) ? router.query.from[0] : router.query.from || '/';
     return `/register?from=${encodeURIComponent(from)}`
+  }
+
+  function showErrors() {
+    if (error) {
+      if (!Array.isArray(error)) {
+        return (
+          <h4 className={styles.inputError}>{error.message}</h4>
+        );
+      }
+      return error.map((error: Error, index: number) => {
+        return (
+          <h4 key={index} className={styles.inputError}>{error.msg}</h4>
+        );
+      });
+    }
   }
 
   return (
@@ -56,6 +71,7 @@ export default function Login() {
         <div className={[styles.page, styles.loginPage].join(" ")}>
         <form onSubmit={onSubmit} className={styles.loginForm}>
             <h1>Login</h1>
+            {showErrors()}
             <input className={[styles.registerInput, styles.usernameInput].join(" ")} type="text" name='username' id='username' required placeholder="Username" />
             <input className={[styles.registerInput, styles.passwordInput].join(" ")} type="password" name='password' id='password' required placeholder="Password" />
             <button className={[styles.registerInput, styles.submitButton].join(" ")} type='submit'>Submit</button>

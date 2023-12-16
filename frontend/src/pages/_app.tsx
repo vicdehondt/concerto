@@ -3,14 +3,8 @@ import type { AppProps } from 'next/app'
 import Navbar from "@/components/Navbar";
 import HamburgerMenu from '@/components/HamburgerMenu';
 import { useRouter } from "next/router";
-import { useEffect, useState } from 'react';
-
-const environment = {
-  backendURL: "http://localhost:8080",
-};
-if (process.env.NODE_ENV == "production") {
-  environment.backendURL = "https://api.concerto.dehondt.dev";
-}
+import { useEffect, useState} from 'react';
+import { environment } from "@/components/Environment";
 
 export default function App({ Component, pageProps }: AppProps) {
   const router = useRouter();

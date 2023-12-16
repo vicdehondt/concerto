@@ -1,8 +1,8 @@
 import Image from "next/image";
-import { Inter } from "next/font/google";
 import styles from "@/styles/EventCard.module.css";
 import Tag from "@/components/Tag";
-import Link from "next/link";
+import { useRouter } from "next/router";
+import { environment } from "./Environment";
 
 function getMonth(month: number) {
   switch (month) {
@@ -33,12 +33,33 @@ function getMonth(month: number) {
   }
 }
 
-function EventCard({ loggedIn, eventId, title, location, amountAttending, dateAndTime, price, image, genre1, genre2 }:
-  { loggedIn: boolean, eventId: number, title: string, location: string, amountAttending: number, dateAndTime: string, price: number, image: string, genre1: string, genre2: string }) {
+function EventCard({
+  eventId,
+  title,
+  location,
+  amountAttending,
+  dateAndTime,
+  price,
+  image,
+  genre1,
+  genre2,
+}: {
+  eventId: number;
+  title: string;
+  location: string;
+  amountAttending: number;
+  dateAndTime: string;
+  price: number;
+  image: string;
+  genre1: string;
+  genre2: string;
+}) {
+
+  const router = useRouter();
 
   const convertedDateAndTime: Array<string> = convertDateAndTime(dateAndTime);
-  const date = convertedDateAndTime[0]
-  const time = convertedDateAndTime[1]
+  const date = convertedDateAndTime[0];
+  const time = convertedDateAndTime[1];
 
   function convertDateAndTime(dateAndTime: string) {
     const convertedDateAndTime = new Date(dateAndTime);
@@ -46,25 +67,51 @@ function EventCard({ loggedIn, eventId, title, location, amountAttending, dateAn
     const month = getMonth(convertedDateAndTime.getMonth());
     const day = convertedDateAndTime.getDate();
     const date = [[month, day].join(" "), year].join(", ");
-    const time = dateAndTime.split("T", 2)[1].split(":", 2).join(":");
-
-    return [date, time]
+    const time = convertedDateAndTime.toLocaleTimeString('default', { hour: '2-digit', minute: '2-digit' });
+    return [date, time];
   }
 
-  function redirectURL(normalURL: string) {
-    if (loggedIn) {
+  async function loggedIn() {
+    try {
+      const response = await fetch(environment.backendURL + "/auth/status", {
+        mode: "cors",
+        credentials: "include",
+      });
+      return response.status === 200;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  async function redirectURL(normalURL: string) {
+    const userLoggedIn = await loggedIn();
+    if (userLoggedIn) {
       return normalURL;
     }
     return `/login?from=${encodeURIComponent(normalURL)}`;
   }
 
+  const redirectClicked = async (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    event.preventDefault();
+    const newUrl = await redirectURL(`/concerts/${eventId}`);
+    router.push(newUrl);
+  };
+
   return (
     <div key={eventId} className={styles.eventCard}>
       <div className={styles.photo}>
-        <Image src={image} style={{objectFit:"cover"}} width={120} height={120} alt="Performer" />
+        <Image
+          src={image}
+          style={{ objectFit: "cover" }}
+          width={120}
+          height={120}
+          alt="Performer"
+        />
       </div>
       <div className={styles.event}>
-        <Link href={redirectURL(`/concerts/${eventId}`)} className={styles.performance}>{title}</Link>
+        <div onClick={(event) => redirectClicked(event)} className={styles.performance}>
+          {title}
+        </div>
         <div className={styles.location}>
           <Image src="/icons/location.png" width={18} height={21} alt="" />
           <div>{location}</div>

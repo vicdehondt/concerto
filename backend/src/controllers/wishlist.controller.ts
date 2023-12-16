@@ -45,9 +45,9 @@ export class WishlistController extends BaseController {
         const { eventID } = req.body;
         const result = await wishlistEvent(userID, eventID);
         if (result) {
-            res.status(200).json({success: true, message: "Event has been wishlisted"});
+            res.status(200).json({success: true, message: "Event has been wishlisted."});
         } else {
-            res.status(400).json({success: false, error: "Event is already wishlisted"});
+            res.status(400).json({success: false, error: "Event is already wishlisted."});
         }
     }
 
@@ -57,9 +57,9 @@ export class WishlistController extends BaseController {
         const { eventID } = req.body;
         const result = await removeWishlist(userID, eventID);
         if (result) {
-            res.status(200).json({success: true, message: "Event has been removed from wishlist"});
+            res.status(200).json({success: true, message: "Event has been removed from wishlist."});
         } else {
-            res.status(200).json({success: false, error: "Event was not wishlisted"});
+            res.status(200).json({success: false, error: "Event was not wishlisted."});
         }
     }
 }

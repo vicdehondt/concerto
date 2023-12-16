@@ -2,6 +2,7 @@ import { DataTypes, Op } from 'sequelize';
 import {sequelize} from '../configs/sequelizeConfig'
 import { Rating } from './Ratingmodel';
 import { UserModel } from './Usermodel';
+import { VenueModel } from './Venuemodel';
 const axios = require('axios');
 
 export const Artist = sequelize.define('Artist', {
@@ -80,6 +81,11 @@ export const EventModel = sequelize.define('Event', {
     type: genres,
     allowNull: false
   },
+  finishedNotificationSent: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+    allowNull: false,
+  },
   banner: {
     type: DataTypes.STRING,
     allowNull: false
@@ -110,6 +116,19 @@ Artist.hasMany(EventModel, {
 
 EventModel.belongsTo(Artist, {
   foreignKey: 'artistID'
+});
+
+VenueModel.hasMany(EventModel, { //multiple events can take place at one venue
+  foreignKey: {
+    name: 'venueID',
+    allowNull: false
+  }
+});
+
+EventModel.belongsTo(VenueModel, {//one event has one venue
+  foreignKey: {
+    name: 'venueID'
+  }
 });
 
 var lastRequest = new Date();
@@ -188,13 +207,49 @@ export function expiredEventTreshold() {
   return yesterday;
 }
 
-export async function retrieveUnfinishedEvents(): Promise<typeof EventModel>  {
+
+export async function retrieveUnfinishedEvents(limit, offset): Promise<typeof EventModel>  {
   const events = await EventModel.findAll({
-    attributes: {
-      exclude: ['createdAt', 'updatedAt']
-    }, where: {
+    limit: limit,
+    attributes: ['eventID', 'title', 'eventPicture', 'dateAndTime', 'baseGenre', 'secondGenre', 'price', 'amountCheckedIn'],
+    include: [
+      { model: Artist , attributes: {
+        exclude: ['createdAt', 'updatedAt']
+      }},
+      { model: VenueModel, attributes: {
+        exclude: ['createdAt', 'updatedAt']
+      }}, { model: VenueModel, attributes: {
+        exclude: ['createdAt', 'updatedAt']
+      }},
+    ], where: {
       dateAndTime: {
         [Op.gte]: expiredEventTreshold(),
+      }
+    }
+  });
+  return events;
+}
+
+export async function retrieveNewUnfinishedEvents(limit, offset, checkedInEvents): Promise<typeof EventModel>  {
+  const events = await EventModel.findAll({
+    limit: limit,
+    offset: offset,
+    attributes: ['eventID', 'title', 'eventPicture', 'dateAndTime', 'baseGenre', 'secondGenre', 'price', 'amountCheckedIn'],
+    include: [
+      { model: Artist , attributes: {
+        exclude: ['createdAt', 'updatedAt']
+      }},
+      { model: VenueModel, attributes: {
+        exclude: ['createdAt', 'updatedAt']
+      }}, { model: VenueModel, attributes: {
+        exclude: ['createdAt', 'updatedAt']
+      }},
+    ], where: {
+      dateAndTime: {
+        [Op.gte]: expiredEventTreshold(),
+      },
+      eventID: {
+        [Op.notIn]: checkedInEvents
       }
     }
   });
@@ -205,8 +260,15 @@ export async function RetrieveEvent(ID): Promise<typeof EventModel> {
   try {
     const Event = await EventModel.findOne({
       attributes: {
-        exclude: ['createdAt', 'updatedAt']
-      },
+        exclude: ['createdAt', 'updatedAt', 'venueID', 'artistID']
+      }, include: [
+        { model: Artist , attributes: {
+          exclude: ['createdAt', 'updatedAt']
+        }},
+        { model: VenueModel, attributes: {
+          exclude: ['createdAt', 'updatedAt']
+        }},
+      ],
       where: {eventID: ID},
     });
     return Event;
@@ -219,6 +281,7 @@ export async function RetrieveEvent(ID): Promise<typeof EventModel> {
   export async function FilterEvents(filterfields,filtervalues){
     try {
       const whereClause = {};
+      const orConditions = [];
       for (let i = 0; i < filterfields.length; i++) {
         const field = filterfields[i];
         const value = filtervalues[i];
@@ -227,11 +290,43 @@ export async function RetrieveEvent(ID): Promise<typeof EventModel> {
           whereClause[field] = {
             [Op.between]: value.split('/'),
           };
+        } else if (field == 'genre') {
+          if (Array.isArray(value)) {
+            orConditions.push({
+              baseGenre: {
+                [Op.in]: value,
+              },
+            });
+            orConditions.push({
+              secondGenre: {
+                [Op.in]: value,
+              },
+            });
+          } else {
+            orConditions.push({
+              baseGenre: value,
+            });
+            orConditions.push({
+              secondGenre: value,
+            });
+          }
         } else {
           whereClause[field] = value;
         }
       }
+      if (orConditions.length > 0) {
+        whereClause[Op.or] = orConditions;
+      }
       const Event = await EventModel.findAll({
+        attributes: ['eventID', 'title', 'eventPicture', 'dateAndTime', 'baseGenre', 'secondGenre', 'price', 'amountCheckedIn'],
+        include: [
+          { model: Artist , attributes: {
+            exclude: ['createdAt', 'updatedAt']
+          }},
+          { model: VenueModel, attributes: {
+            exclude: ['createdAt', 'updatedAt']
+          }},
+        ],
         where: whereClause,
       });
       return Event;
@@ -243,9 +338,15 @@ export async function RetrieveEvent(ID): Promise<typeof EventModel> {
   export async function SearchEvents(searchvalue){
     try {
       const Events = await EventModel.findAll({
-      attributes: {
-        exclude: ['createdAt', 'updatedAt'],
-      },
+      attributes: ['eventID', 'title', 'eventPicture', 'dateAndTime', 'baseGenre', 'secondGenre', 'price', 'amountCheckedIn'],
+      include: [
+        { model: Artist , attributes: {
+          exclude: ['createdAt', 'updatedAt']
+        }},
+        { model: VenueModel, attributes: {
+          exclude: ['createdAt', 'updatedAt']
+        }},
+      ],
       where: {
         title: { //for now only searching on title, need to add location...
             [Op.like]: '%' + searchvalue + '%',

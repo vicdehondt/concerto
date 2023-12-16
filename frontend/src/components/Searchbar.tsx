@@ -1,12 +1,12 @@
-import { Inter } from "next/font/google";
-import styles from "../styles/Searchbar.module.css";
+import styles from "@/styles/Searchbar.module.css";
 
 type SearchBarProps = {
   type: "long" | "thick" | "thin";
-  onChange: (query: string) => void
+  onClick: (query: string) => void;
+  onChange: (query: string) => void;
 };
 
-function Searchbar({ type, onChange }: SearchBarProps) {
+function Searchbar({ type, onClick, onChange }: SearchBarProps) {
   return (
     <div
       className={[
@@ -32,7 +32,15 @@ function Searchbar({ type, onChange }: SearchBarProps) {
             type == "thin" ? styles.thinBorderSearchBar : "",
           ].join(" ")}
         >
-          <input type="text" placeholder="Search..." onChange={(event) => onChange(event.target.value)} />
+          <input
+            type="text"
+            placeholder="Search..."
+            onClick={(event) => {
+              event.currentTarget.select();
+              onClick((event.target as HTMLInputElement).value)
+            }}
+            onChange={(event) => onChange(event.target.value)}
+          />
         </div>
       </div>
     </div>

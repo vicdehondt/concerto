@@ -26,6 +26,10 @@
   font-weight: bold;
 }
 
+.name:hover {
+  cursor: pointer;
+}
+
 .name select {
   all: unset;
   border: solid;

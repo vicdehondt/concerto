@@ -5,42 +5,10 @@ import { useRouter } from "next/router";
 import { ReactNode, useCallback, useEffect, useState } from "react";
 import { Star, User } from "lucide-react";
 import Image from "next/image";
+import { Review, Artist } from "@/components/BackendTypes";
+import { environment } from "@/components/Environment";
 
 const inter = Inter({ subsets: ["latin"] });
-
-const environment = {
-  backendURL: "http://localhost:8080",
-};
-if (process.env.NODE_ENV == "production") {
-  environment.backendURL = "https://api.concerto.dehondt.dev";
-}
-
-type Rating = {
-  score: number;
-  amountOfReviews: number;
-}
-
-type Artist = {
-  artistID: string;
-  name: string;
-  type: string;
-  ratingID: number;
-  Rating: {
-    score: number;
-    amountOfReviews: number;
-  }
-};
-
-type Review = {
-  reviewID: number;
-  eventID: number;
-  message: string;
-  score: number;
-  createdAt: string;
-  updatedAt: string;
-  ratingID: number;
-  userID: number;
-}
 
 type ReviewWithUserInfo = Review & { username: string, image: string };
 
@@ -215,7 +183,7 @@ export default function Artist() {
   return (
     <>
       <Head>
-        <title>{`Concerto | Rate ${artist?.name}`}</title>
+        <title>{`Concerto | Ratings of ${artist?.name}`}</title>
         <meta name="description" content={`Rate the artist! Rate ${artist?.name}`} />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />

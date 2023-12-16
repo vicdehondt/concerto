@@ -1,50 +1,12 @@
 import Head from "next/head";
-import Image from "next/image";
 import { Inter } from "next/font/google";
 import styles from "@/styles/Home.module.css";
-import Link from "next/link";
-import Navbar from "../components/Navbar";
-import { FormEvent, ReactNode, useEffect, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import EventCard from "@/components/EventCard";
+import { Event, Wish } from "@/components/BackendTypes";
+import { environment } from "@/components/Environment";
 
 const inter = Inter({ subsets: ["latin"] });
-
-const environment = {
-  backendURL: "http://localhost:8080",
-};
-if (process.env.NODE_ENV == "production") {
-  environment.backendURL = "https://api.concerto.dehondt.dev";
-}
-
-type Wish = {
-  wishlistID: number,
-  userID: number,
-  createdAt: string,
-  updatedAt: string,
-  Event: {
-    eventID: number,
-    title: string;
-    amountCheckedIn: number;
-    dateAndTime: string;
-    baseGenre: string;
-    secondGenre: string;
-    price: number;
-    eventPicture: string;
-    venueID: string;
-  }
-}
-
-type Event = {
-  eventID: number,
-  title: string;
-  amountCheckedIn: number;
-  dateAndTime: string;
-  baseGenre: string;
-  secondGenre: string;
-  price: number;
-  eventPicture: string;
-  venueID: string;
-};
 
 export default function Wishlist() {
 
@@ -72,38 +34,23 @@ export default function Wishlist() {
   }
 
   useEffect(() => {
-    const fetchData = async () => {
-      const eventsArray = await Promise.all(
-        events.map(async (event: Event) => {
-          const response = await fetch(
-            environment.backendURL + `/venues/${event.venueID}`,
-            {
-              mode: "cors",
-              credentials: "include",
-            }
-          );
-          const jsonResponse = await response.json();
-          return (
-            <EventCard
-              loggedIn={true}
-              key={event.eventID}
-              eventId={event.eventID}
-              title={event.title}
-              location={jsonResponse.venueName}
-              amountAttending={event.amountCheckedIn}
-              dateAndTime={event.dateAndTime}
-              price={event.price}
-              image={event.eventPicture}
-              genre1={event.baseGenre}
-              genre2={event.secondGenre}
-            />
-          );
-        })
+    const eventsArray = events.map((event: Event) => {
+      return (
+        <EventCard
+          key={event.eventID}
+          eventId={event.eventID}
+          title={event.title}
+          location={event.Venue?.venueName}
+          amountAttending={event.amountCheckedIn}
+          dateAndTime={event.dateAndTime}
+          price={event.price}
+          image={event.eventPicture}
+          genre1={event.baseGenre}
+          genre2={event.secondGenre}
+        />
       );
-
-      setEventsHTML(eventsArray);
-    };
-    fetchData();
+    })
+    setEventsHTML(eventsArray);
   }, [events]);
 
   return (

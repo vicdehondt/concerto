@@ -1,24 +1,13 @@
 import Head from "next/head";
 import { Inter } from "next/font/google";
 import styles from "@/styles/Home.module.css";
-import SideBar from "../components/SideBar";
-import FriendCard from "../components/FriendCard";
+import SideBar from "@/components/SideBar";
+import FriendCard from "@/components/FriendCard";
 import { useEffect, useState } from "react";
+import { Friend } from "@/components/BackendTypes";
+import { environment } from "@/components/Environment";
 
 const inter = Inter({ subsets: ["latin"] });
-
-const environment = {
-  backendURL: "http://localhost:8080",
-};
-if (process.env.NODE_ENV == "production") {
-  environment.backendURL = "https://api.concerto.dehondt.dev";
-}
-
-type Friend = {
-  userID: number;
-  username: string;
-  image: string;
-};
 
 export default function Friends() {
 
@@ -28,7 +17,7 @@ export default function Friends() {
     var key = 0;
     return response.map((friend) => {
       key += 1;
-      return <FriendCard key={key} source={friend.image} username={friend.username} />
+      return <FriendCard key={key} friend={friend} />
     })
   }
 
