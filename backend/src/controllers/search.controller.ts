@@ -130,5 +130,4 @@ export class SearchController extends BaseController {
 			res.status(400).json({succes: false, error: "No search value was provided!" });
 		}
 	}
-
 }

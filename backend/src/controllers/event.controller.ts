@@ -4,11 +4,11 @@ import * as database from '../models/Eventmodel';
 import { userCheckIn, userCheckOut, allCheckedInUsers, retrieveCheckIn, allCheckedInEvents, CheckedInUsers } from  '../models/Checkinmodel';
 import { Notification, NotificationObject, createNewNotification } from '../models/Notificationmodel';
 import { VenueModel } from '../models/Venuemodel';
-import { retrieveArtist, createArtist, RetrieveEvent, isFinished } from '../models/Eventmodel';
+import { retrieveArtist, createArtist, RetrieveEvent, isFinished, expiredEventTreshold, Artist} from '../models/Eventmodel';
 import {body, param, validationResult} from "express-validator"
 import {createMulter} from "../configs/multerConfig";
 import { WishListedEvents } from '../models/Wishlistmodel';
-import { GetAllFriends, RetrieveUser, UserModel } from '../models/Usermodel';
+import { GetAllFriends, RetrieveUser, } from '../models/Usermodel';
 import { getAllWishListed } from '../models/Wishlistmodel';
 import { Op } from 'sequelize';
 
@@ -212,8 +212,33 @@ export class EventController extends BaseController {
 			var wishlisted = await getAllWishListed(sessiondata.userID);
 			wishlisted = wishlisted.map((wishlisted) => { return wishlisted.Event.eventID});
 			const eventIds = checkIns.map((checkedInEvent) => checkedInEvent.eventID);
-			const events = await database.retrieveNewUnfinishedEvents(limit, offset, eventIds.concat(wishlisted));
-			res.status(200).json(events);
+			const extracted = database.extractFilters(req);
+			if (extracted[0].length == 0) {
+				const events = await database.retrieveNewUnfinishedEvents(limit, offset, eventIds.concat(wishlisted));
+				res.status(200).json(events);
+			} else {
+				const whereClause = database.createWhereClause(extracted[0],  extracted[1]);
+				whereClause['eventID'] = { [Op.notIn]: eventIds.concat(wishlisted)}
+				if (whereClause['dateAndTime'] == null) {
+					whereClause['dateAndTime'] = { [Op.gte]: expiredEventTreshold() }
+				}
+				console.log(whereClause);
+				const events = await database.EventModel.findAll({
+					limit: limit,
+					offset: offset,
+					include: [
+					  { model: Artist , attributes: {
+						exclude: ['createdAt', 'updatedAt']
+					  }},
+					  { model: VenueModel, attributes: {
+						exclude: ['createdAt', 'updatedAt']
+					  }}, { model: VenueModel, attributes: {
+						exclude: ['createdAt', 'updatedAt']
+					  }},
+					], where: whereClause
+				});
+				res.status(200).json(events);
+			}
 		} else {
 			const events = await database.retrieveUnfinishedEvents(limit, offset);
 			res.status(200).json(events);
