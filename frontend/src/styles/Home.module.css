@@ -497,13 +497,14 @@
     display: flex;
     flex-direction: column;
     grid-template-columns:auto;
-    grid-template-rows: [banner] 200px auto auto auto auto auto;
+    grid-template-rows: [banner] 200px auto auto auto auto auto auto;
     grid-template-areas:
       "banner banner"
       "description description"
       "location-artist location-artist"
       "timetable timetable"
       "invites invites"
+      "tickets tickets"
       "add-event add-event";
   }
   
@@ -559,6 +560,25 @@
     padding-top: 5%;
     padding-bottom: 5%;
   }
+
+
+.addEventPage .priceContainer {
+  background-color: #e8f7ee;
+  font-size: large;
+}
+
+.addEventPage .priceInput {
+  font-size: small;
+}
+
+.addEventPage .priceInput input {
+  font-size: small;
+  width: 40%;
+}
+
+.addEventPage .priceContainer .ticketURL {
+  font-size: small;
+}
 }
 
 .registerPage {
