@@ -69,6 +69,7 @@ export type Event = {
   checkedIn: boolean;
   Artist: Artist;
   Venue: Venue;
+  url: string;
 };
 
 export type Profile = {

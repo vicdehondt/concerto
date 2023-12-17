@@ -214,7 +214,7 @@ export default function Concert() {
               />}
             </div>
             <div className={styles.ticketsAndWishlist}>
-              <button className={styles.ticketsButton}>Buy tickets</button>
+              {concert && <Link href={concert.url} className={styles.ticketsButton}>Buy tickets</Link>}
               <div
                 className={styles.addToWishlist}
                 onClick={(event) => {
