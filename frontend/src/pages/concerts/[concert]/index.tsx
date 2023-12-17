@@ -12,6 +12,7 @@ import { Heart, Pencil } from "lucide-react";
 import Link from "next/link";
 import { Event } from "@/components/BackendTypes";
 import { environment } from "@/components/Environment";
+import dynamic from "next/dynamic";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -179,6 +180,15 @@ export default function Concert() {
     });
   }
 
+  function showMap() {
+    if (concert && concert?.Venue.venueID) {
+      const ConcertMap = dynamic(() => import("@/components/ConcertMap"), {
+        ssr: false,
+      });
+      return <ConcertMap concert={concert}/>;
+    }
+  }
+
   return (
     <>
       <Head>
@@ -239,6 +249,9 @@ export default function Concert() {
           </div>
           <div className={styles.friendInviteContainer}>
             <FriendInvites eventID={concert?.eventID} />
+          </div>
+          <div className={styles.map}>
+            {showMap()}
           </div>
         </div>
       </main>
