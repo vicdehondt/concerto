@@ -658,6 +658,35 @@
   background-color: #0B2027;
 }
 
+@media (max-width: 600px){
+
+  .registerPage {
+    margin: 0;
+    padding: 0;
+  }
+  
+  .registerPage .registerForm {
+    width: 90%;
+  }
+
+  .registerPage h1{
+    color: black;
+  }
+
+  .registerPage .validationMessages {
+    font-size: medium;
+  }
+
+  .registerPage .genreContainer {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .registerInput {
+    padding: 0px;
+  }
+}
+
 .loginPage {
   height: 100vh;
   background-color: #e8f7ee;
@@ -700,6 +729,13 @@
 .inputError {
   color: red;
   padding: 10px 0 0 0;
+}
+
+@media (max-width: 600px){
+  
+  .loginPage .loginForm {
+    width: 90%;
+  } 
 }
 
 .accountPage {
