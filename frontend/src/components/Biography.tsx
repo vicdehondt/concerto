@@ -6,7 +6,7 @@ function Biography({ source, username, description }: { source: string; username
 
   function showPicture(source: string) {
     if (source) {
-      return <Image src={source} width={170} height={170} alt="Profile picture of user." />;
+      return <Image style={{ objectFit: "cover" }} src={source} width={170} height={170} alt="Profile picture of user." />;
     }
     return <User fill={'black'} className={styles.userPicture} width={170} height={170} />;
   }

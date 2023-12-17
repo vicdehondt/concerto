@@ -285,7 +285,7 @@ function Navbar({ pictureSource }: { pictureSource: string }) {
     } else {
       return (
         <div className={styles.account} onClick={(event) => redirectClicked(event, "/account")}>
-          <Image src={pictureSource} width={56} height={56} alt="Profile picture" />
+          <Image src={profile.image} style={{ objectFit: "cover" }} width={56} height={56} alt="Profile picture" />
         </div>
       );
     }
