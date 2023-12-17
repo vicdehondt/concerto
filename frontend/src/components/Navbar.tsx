@@ -156,7 +156,7 @@ function Navbar({ pictureSource }: { pictureSource: string }) {
         mode: "cors",
         credentials: "include",
       });
-      setUserIsLoggedIn(true);
+      setUserIsLoggedIn(response.status === 200);
       return response.status === 200;
     } catch (error) {
       setUserIsLoggedIn(false);
