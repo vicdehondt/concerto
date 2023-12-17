@@ -23,53 +23,38 @@ export default function LocationPicker({ venueID, locationCallback, forwardedRef
       })
       .then((responseJSON) => {
         setVenueOptions(responseJSON);
+        responseJSON.forEach((venue: Venue) => {
+          if (venueID && venue.venueID == venueID) {
+            setDefaultVenue(venue);
+            locationCallback(venue);
+          }
+        });
       });
   }, []);
 
-  useEffect(() => {
-    venueOptions.forEach((venue: Venue) => {
-      if (venueID && venue.venueID == venueID) {
-        setDefaultVenue(venue);
-        locationCallback(venue);
-      }
-    })
-  }, [venueID, venueOptions, locationCallback]);
-
   function showVenueOptions() {
-    return venueOptions.map((venue: Venue) => {
-      if (defaultVenue && venue.venueID == defaultVenue.venueID) {
-        return (
-          <option id={venue.venueID} key={venue.venueID} value={venue.venueName} data-venue={JSON.stringify(venue)} selected>
-            {venue.venueName}
-          </option>
-        );
-      }
-      return (
-        <option id={venue.venueID} key={venue.venueID} value={venue.venueName} data-venue={JSON.stringify(venue)}>
-          {venue.venueName}
-        </option>
-      );
-    });
+    return venueOptions.map((venue: Venue) => (
+      <option key={venue.venueID} value={venue.venueName} data-venue={JSON.stringify(venue)}>
+        {venue.venueName}
+      </option>
+    ));
   }
 
   return (
     <div className={styles.locationPicker}>
       <select
-        name="venue"
         id="venue"
+        required
         ref={forwardedRef}
+        defaultValue={defaultVenue?.venueName || ''}
         onChange={(event) => {
-          const selectedOption =
-            event.target.options[event.target.selectedIndex].getAttribute("data-venue");
-          const selectedVenue =
-            selectedOption != null
-              ? JSON.parse(selectedOption)
-              : { venueID: "123", venueName: "Not selected" };
+          const selectedOption = event.target.options[event.target.selectedIndex].getAttribute("data-venue");
+          const selectedVenue = selectedOption != null ? JSON.parse(selectedOption) : { venueID: "123", venueName: "Not selected" };
           locationCallback(selectedVenue);
         }}
       >
-        {defaultVenue ? null : (
-          <option key="1" value="" hidden defaultValue="Choose venue">
+        {!defaultVenue && (
+          <option key="1" value="" hidden>
             Choose venue
           </option>
         )}
