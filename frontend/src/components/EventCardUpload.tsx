@@ -131,7 +131,7 @@ function EventCardUpload({ title, location, date, time, price, image, genre1, ge
   return (
     <div className={styles.eventCard}>
       <div className={styles.eventPicture}>
-        <input id='eventPicture' name='eventPicture' type="file" onChange={bannerImageChosen} />
+        <input id='eventPicture' name='eventPicture' type="file" accept="image/png, image/jpg, image/jpeg" onChange={bannerImageChosen} />
         <label htmlFor="eventPicture" className={styles.overlay}>{eventPictureSource.length == 0 ? "Upload image" : "Change image"}</label>
         {showEventPicture()}
       </div>

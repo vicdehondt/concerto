@@ -49,7 +49,7 @@ function BannerUpload({ title, banner, titleCallback }: BannerUploadProps) {
           )}
       	</div>
         <div className={styles.uploadBox}>
-          {banner ? (<input id='banner' name='banner' type="file" onChange={bannerImageChosen} />) : (<input id='banner' name='banner' type="file" required onChange={bannerImageChosen} />)}
+          {banner ? (<input id='banner' name='banner' type="file" accept="image/png, image/jpg, image/jpeg" onChange={bannerImageChosen} />) : (<input id='banner' name='banner' type="file" accept="image/png, image/jpg, image/jpeg" required onChange={bannerImageChosen} />)}
         </div>
       </div>
     </>
