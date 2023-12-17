@@ -561,24 +561,23 @@
     padding-bottom: 5%;
   }
 
+  .addEventPage .priceContainer {
+    background-color: #e8f7ee;
+    font-size: large;
+  }
 
-.addEventPage .priceContainer {
-  background-color: #e8f7ee;
-  font-size: large;
-}
+  .addEventPage .priceInput {
+    font-size: small;
+  }
 
-.addEventPage .priceInput {
-  font-size: small;
-}
+  .addEventPage .priceInput input {
+    font-size: small;
+    width: 40%;
+  }
 
-.addEventPage .priceInput input {
-  font-size: small;
-  width: 40%;
-}
-
-.addEventPage .priceContainer .ticketURL {
-  font-size: small;
-}
+  .addEventPage .priceContainer .ticketURL {
+    font-size: small;
+  }
 }
 
 .registerPage {
