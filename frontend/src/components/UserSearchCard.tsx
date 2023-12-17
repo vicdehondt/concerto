@@ -36,7 +36,7 @@ function UserSearchCard({ user }: UserSearchCardProps) {
 
   function showPicture() {
     if (user.image != null) {
-      return <Image style={{ objectFit: "cover" }} src={user.image} width={30} height={30} alt="Profile picture of the user." />;
+      return <Image style={{ objectFit: "cover" }} src={user.image} width={50} height={50} alt="Profile picture of the user." />;
     }
     return <LucidUser className={styles.userPicture} width={30} height={30} />;
   }
@@ -44,7 +44,7 @@ function UserSearchCard({ user }: UserSearchCardProps) {
   return (
     <div className={styles.cardContainer}>
       {user &&
-      <Link href={redirectURL(`/accounts/${user.userID}`)}>
+      <Link key={user.userID} href={redirectURL(`/accounts/${user.userID}`)}>
         {showPicture()}
         <div className={styles.name}>{user.username}</div>
       </Link>}
