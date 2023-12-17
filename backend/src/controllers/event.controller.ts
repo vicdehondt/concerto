@@ -63,7 +63,7 @@ export class EventController extends BaseController {
 			res.set('Access-Control-Allow-Credentials', 'true');
 			this.getEvent(req, res);
 		});
-		this.router.post('/:eventID', this.requireAuth, upload.fields([{ name: 'banner', maxCount: 1}, { name: 'eventPicture', maxCount: 1}]), [this.checkEventExists, this.checkUnfinished], this.verifyErrors, (req: express.Request, res: express.Response) => {
+		this.router.patch('/:eventID', this.requireAuth, upload.fields([{ name: 'banner', maxCount: 1}, { name: 'eventPicture', maxCount: 1}]), [this.checkEventExists, this.checkUnfinished], this.verifyErrors, (req: express.Request, res: express.Response) => {
 			res.set('Access-Control-Allow-Credentials', 'true');
 			this.editEvent(req, res);
 		});
