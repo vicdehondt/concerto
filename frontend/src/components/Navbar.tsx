@@ -259,6 +259,7 @@ function Navbar({ pictureSource }: { pictureSource: string }) {
     }).then((response) => {
       if (response.status == 200) {
         router.push("/");
+        router.reload();
       }
     });
   }
