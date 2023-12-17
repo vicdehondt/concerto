@@ -19,6 +19,7 @@ function Navbar() {
   const [notificationsHTML, setNotificationsHTML] = useState<ReactNode[]>([]);
   const [searchBoxVisible, setSearchBoxVisible] = useState(false);
   const [searchResultsHTML, setSearchResultsHTML] = useState<ReactNode[]>([]);
+  const [eventSearchHTML, setEventSearchHTML] = useState<ReactNode[]>([]);
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [profile, setProfile] = useState({ userID: 0, image: null });
   const [userIsLoggedIn, setUserIsLoggedIn] = useState(false);
@@ -322,7 +323,7 @@ function Navbar() {
         });
 
       fetch(
-        environment.backendURL + `/search/events` + `?title=${query}` + `&limit=2` + `&offset=0`,
+        environment.backendURL + `/search/events/filter` + `?title=${query}` + `&limit=2` + `&offset=0`,
         {
           mode: "cors",
           credentials: "include",
@@ -333,6 +334,7 @@ function Navbar() {
         })
         .then((responseJSON) => {
           console.log(responseJSON);
+          setEventSearchHTML(convertSearchResults(responseJSON));
         });
     } else {
       setSearchBoxVisible(false);
@@ -347,6 +349,7 @@ function Navbar() {
           <Searchbar type="long" onClick={(query: string) => searchBackend(query)} onChange={(query: string) => searchBackend(query)} />
           <div className={styles.searchBox} ref={searchRef}>
             {searchBoxVisible && searchResultsHTML}
+            {searchBoxVisible && eventSearchHTML}
           </div>
           <div className={styles.addEventButton}>
             <div className={styles.add} onClick={(event) => redirectClicked(event, "/add-event")}>
