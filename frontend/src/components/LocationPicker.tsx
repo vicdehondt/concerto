@@ -9,9 +9,13 @@ type LocationPickerProps = {
   forwardedRef?: ForwardedRef<HTMLSelectElement>;
 };
 
-export default function LocationPicker({ venueID, locationCallback, forwardedRef }: LocationPickerProps) {
+export default function LocationPicker({
+  venueID,
+  locationCallback,
+  forwardedRef,
+}: LocationPickerProps) {
   const [venueOptions, setVenueOptions] = useState([]);
-  const [defaultVenue, setDefaultVenue] = useState<Venue | null>(null);
+  const [defaultVenue, setDefaultVenue] = useState<string | null>(null);
 
   useEffect(() => {
     fetch(environment.backendURL + "/venues", {
@@ -25,7 +29,7 @@ export default function LocationPicker({ venueID, locationCallback, forwardedRef
         setVenueOptions(responseJSON);
         responseJSON.forEach((venue: Venue) => {
           if (venueID && venue.venueID == venueID) {
-            setDefaultVenue(venue);
+            setDefaultVenue(venue.venueName);
             locationCallback(venue);
           }
         });
@@ -46,15 +50,20 @@ export default function LocationPicker({ venueID, locationCallback, forwardedRef
         id="venue"
         required
         ref={forwardedRef}
-        defaultValue={defaultVenue?.venueName || ''}
+        value={defaultVenue || "Choose venue"}
         onChange={(event) => {
-          const selectedOption = event.target.options[event.target.selectedIndex].getAttribute("data-venue");
-          const selectedVenue = selectedOption != null ? JSON.parse(selectedOption) : { venueID: "123", venueName: "Not selected" };
+          const selectedOption =
+            event.target.options[event.target.selectedIndex].getAttribute("data-venue");
+          const selectedVenue =
+            selectedOption != null
+              ? JSON.parse(selectedOption)
+              : { venueID: "123", venueName: "Not selected" };
           locationCallback(selectedVenue);
+          setDefaultVenue(selectedVenue.venueName);
         }}
       >
         {!defaultVenue && (
-          <option key="1" value="" hidden>
+          <option key="1" value="Choose venue" hidden>
             Choose venue
           </option>
         )}
