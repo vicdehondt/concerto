@@ -661,8 +661,7 @@
 @media (max-width: 600px){
 
   .registerPage {
-    margin: 0;
-    padding: 0;
+    overflow-x: hidden;
   }
   
   .registerPage .registerForm {
@@ -680,10 +679,6 @@
   .registerPage .genreContainer {
     display: flex;
     flex-direction: column;
-  }
-
-  .registerInput {
-    padding: 0px;
   }
 }
 
@@ -894,6 +889,7 @@
   grid-area: review;
   margin: 5px 0;
 }
+
 .settingsPage {
   color: black;
   background-color: #e8f7ee;
@@ -930,6 +926,26 @@
 
 .settingValue {
   margin-left: 20px;
+}
+
+@media (max-width: 600px){
+  .settingsPage {
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+  }
+  
+  .settingsPage .settingContainer {
+    width: 90%;
+  }
+  
+  .personalSettingTitle {
+      font-size: large;
+  }
+  
+  .settingName {
+    font-size: medium;
+  }
 }
 
 .accountOverviewContainer {
@@ -1111,4 +1127,15 @@
 
 .mapPage .pageContent {
   overflow: auto;
+}
+
+@media (max-width: 600px) {
+  .mapPage {
+    grid-template-columns: auto;
+    grid-template-rows: 60px auto;
+    grid-template-areas:
+      "sidebar sidebar"
+      "page-content page-content";
+    width: 100%;
+  }
 }
