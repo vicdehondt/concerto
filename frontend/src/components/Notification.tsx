@@ -30,6 +30,21 @@ function Notification({ notification, removeNotification }: {notification: Notif
             setFrom(responseJSON);
           });
       }
+      if (notificationType === "friendrequestaccepted") {
+        fetch(environment.backendURL + `/users/${notification.NotificationObject.actor}`, {
+          mode: "cors",
+          credentials: "include",
+        })
+          .then((response) => {
+            if (response.status == 200) {
+              return response.json();
+            }
+            return null
+          })
+          .then((responseJSON) => {
+            setFrom(responseJSON);
+          });
+      }
       if (notificationType == "reviewEvent") {
         fetch(environment.backendURL + `/events/${notification.NotificationObject.typeID}`, {
           mode: "cors",
@@ -116,6 +131,15 @@ function Notification({ notification, removeNotification }: {notification: Notif
             <button onClick={(event) => acceptFriend()}>Accept</button>
             <button onClick={(event) => declineFriend()}>Decline</button>
           </div>
+        </div>
+      </>
+    )
+  }
+  if (notification.NotificationObject.notificationType == "friendrequestaccepted") {
+    return (
+      <>
+        <div key={notification.notificationID} className={styles.notificationContainer}>
+          <div className={styles.message}>{from.username} accepted your friend request!</div>
         </div>
       </>
     )

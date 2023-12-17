@@ -91,6 +91,7 @@ export type User = {
   privacyCheckedInEvents: string;
   privacyFriends: string;
   description: string;
+  friendship?: string;
 }
 
 export type Review = {

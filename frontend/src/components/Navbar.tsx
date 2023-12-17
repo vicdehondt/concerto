@@ -177,11 +177,21 @@ function Navbar({ pictureSource }: { pictureSource: string }) {
         ) as HTMLCollectionOf<HTMLElement>;
         if (notificationsVisible) {
           notificationBox[0].style.display = "none";
+          removeInfoNotifications();
         } else {
           notificationBox[0].style.display = "block";
         }
       } else {
         router.push(`/login?from=${router.asPath}`);
+      }
+    });
+  }
+
+  function removeInfoNotifications() {
+    notifications.forEach((notification) => {
+      if (notification.NotificationObject.notificationType === "friendrequestaccepted") {
+        console.log("Removing notification:", notification);
+        removeNotification(notification.notificationID);
       }
     });
   }
@@ -192,6 +202,7 @@ function Navbar({ pictureSource }: { pictureSource: string }) {
     ) as HTMLCollectionOf<HTMLElement>;
     setNotificationsVisible(false);
     notificationBox[0].style.display = "none";
+    removeInfoNotifications();
   }
 
   function closeSearchResults() {
