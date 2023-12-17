@@ -62,3 +62,7 @@
   cursor: pointer;
   font-weight: bold;
 }
+
+.locationFilter select {
+  width: 120px !important;
+}
