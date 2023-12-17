@@ -11,7 +11,7 @@ import EventSearchCard from "./EventSearchCard";
 import UserSearchCard from "./UserSearchCard";
 import { User, Event as EventType } from "./BackendTypes";
 
-function Navbar({ pictureSource }: { pictureSource: string }) {
+function Navbar() {
   const router = useRouter();
 
   const [notificationsVisible, setNotificationsVisible] = useState(false);
