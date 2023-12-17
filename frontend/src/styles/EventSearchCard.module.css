@@ -1,0 +1,26 @@
+.cardContainer a {
+  all: unset;
+  color: black;
+  display: flex;
+  align-items: center;
+  min-width: 300px;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.cardContainer a:hover {
+  cursor: pointer;
+  background-color: rgb(220, 220, 220);
+}
+
+.cardContainer img {
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  margin-right: 10px;
+}
+
+.name {
+  font-weight: bold;
+  font-size: large;
+}
