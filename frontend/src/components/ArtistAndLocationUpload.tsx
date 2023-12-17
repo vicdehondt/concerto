@@ -8,17 +8,16 @@ import { environment } from "./Environment";
 type ArtistAndLocationUploadProps = {
   locationCallback: (venue: Venue) => void;
   artistCallback: (artist: Artist) => void;
-  artistID?: string;
+  artist?: Artist;
   venueID?: string;
 };
 
 function ArtistAndLocationUpload({
   locationCallback,
   artistCallback,
-  artistID,
+  artist,
   venueID
 }: ArtistAndLocationUploadProps) {
-  const [selectedArtist, setSelectedArtist] = useState({ name: "" });
   const dummyResponse: APIResponse = {
     created: "",
     artists: [],
@@ -31,24 +30,6 @@ function ArtistAndLocationUpload({
 
   var lastRequest = new Date();
   const timeTreshold = 1001;
-
-  useEffect(() => {
-    if (artistID) {
-      fetch(environment.backendURL + `/artists/${artistID}`, {
-        mode: "cors",
-        credentials: "include",
-      })
-        .then((response) => {
-          return response.json();
-        })
-        .then((responseJSON) => {
-          if (responseJSON.name != null) {
-            setSelectedArtist(responseJSON);
-            artistCallback(responseJSON)
-          }
-        });
-    }
-  }, [artistID, artistCallback]);
 
   function handlechange(value: string) {
     const currentTime = new Date();
@@ -77,7 +58,6 @@ function ArtistAndLocationUpload({
             className={styles.artistCard}
             onClick={(event) => {
               artistCallback(artist);
-              setSelectedArtist(artist);
             }}
           >
             {artist.name}
@@ -93,7 +73,7 @@ function ArtistAndLocationUpload({
         <div className={styles.text}>Location:</div>
         <div className={styles.name}>
           {venueID ? (
-            <LocationPicker venueID={venueID} locationCallback={locationCallback} />
+            <LocationPicker venueID={venueID} locationCallback={(venue: Venue) => locationCallback(venue)} />
           ) : (
             <LocationPicker locationCallback={locationCallback} />
           )}
@@ -101,10 +81,10 @@ function ArtistAndLocationUpload({
         </div>
         <div className={styles.box}>
         <div className={styles.text}>Artist:</div>
-        <div className={styles.name}>{selectedArtist.name}</div>
+        {artist && <div className={styles.name}>{artist.name}</div>}
         </div>
         <div className={styles.searchArtists}>
-        <Searchbar type="thin" onClick={(event) => null} onChange={(string: string) => handlechange(string)} />
+          <Searchbar type="thin" onClick={(event) => null} onChange={(string: string) => handlechange(string)} />
         </div>
 
         <div className={styles.searchResults}>{showArtists(apiResponse.artists)}</div>

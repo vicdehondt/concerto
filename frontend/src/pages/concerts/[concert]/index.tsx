@@ -12,6 +12,7 @@ import { Heart, Pencil } from "lucide-react";
 import Link from "next/link";
 import { Event } from "@/components/BackendTypes";
 import { environment } from "@/components/Environment";
+import dynamic from "next/dynamic";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -44,32 +45,38 @@ export default function Concert() {
           return response.json();
         })
         .then((responseJSON) => {
-          setConcert(responseJSON);
-          setCheckedIn(responseJSON.checkedIn);
-          setInWishlist(responseJSON.wishlisted);
-          if (responseJSON.Artist.artistID) {
-            fetch(environment.backendURL + `/artists/${responseJSON.Artist.artistID}`, {
-              mode: "cors",
-              credentials: "include",
-            })
-              .then((response) => {
-                return response.json();
+          if (responseJSON.errors) {
+            if (responseJSON.errors[0].msg == "Event with that ID does not exist.") {
+              router.push("/404");
+            }
+          } else {
+            setConcert(responseJSON);
+            setCheckedIn(responseJSON.checkedIn);
+            setInWishlist(responseJSON.wishlisted);
+            if (responseJSON.Artist.artistID) {
+              fetch(environment.backendURL + `/artists/${responseJSON.Artist.artistID}`, {
+                mode: "cors",
+                credentials: "include",
               })
-              .then((responseJSON) => {
-                setArtistScore(responseJSON.Rating.score);
-              });
-          }
-          if (responseJSON.Venue.venueID) {
-            fetch(environment.backendURL + `/venues/${responseJSON.Venue.venueID}`, {
-              mode: "cors",
-              credentials: "include",
-            })
-              .then((response) => {
-                return response.json();
+                .then((response) => {
+                  return response.json();
+                })
+                .then((responseJSON) => {
+                  setArtistScore(responseJSON.Rating.score);
+                });
+            }
+            if (responseJSON.Venue.venueID) {
+              fetch(environment.backendURL + `/venues/${responseJSON.Venue.venueID}`, {
+                mode: "cors",
+                credentials: "include",
               })
-              .then((responseJSON) => {
-                setVenueScore(responseJSON.Rating.score);
-              });
+                .then((response) => {
+                  return response.json();
+                })
+                .then((responseJSON) => {
+                  setVenueScore(responseJSON.Rating.score);
+                });
+            }
           }
         });
       fetch(environment.backendURL + `/events/${id}/auth`, {
@@ -173,6 +180,15 @@ export default function Concert() {
     });
   }
 
+  function showMap() {
+    if (concert && concert?.Venue.venueID) {
+      const ConcertMap = dynamic(() => import("@/components/ConcertMap"), {
+        ssr: false,
+      });
+      return <ConcertMap concert={concert}/>;
+    }
+  }
+
   return (
     <>
       <Head>
@@ -198,7 +214,7 @@ export default function Concert() {
               />}
             </div>
             <div className={styles.ticketsAndWishlist}>
-              <button className={styles.ticketsButton}>Buy tickets</button>
+              {concert && <Link href={concert.url} className={styles.ticketsButton}>Buy tickets</Link>}
               <div
                 className={styles.addToWishlist}
                 onClick={(event) => {
@@ -233,6 +249,9 @@ export default function Concert() {
           </div>
           <div className={styles.friendInviteContainer}>
             <FriendInvites eventID={concert?.eventID} />
+          </div>
+          <div className={styles.map}>
+            {showMap()}
           </div>
         </div>
       </main>

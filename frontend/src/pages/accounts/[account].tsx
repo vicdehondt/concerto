@@ -11,16 +11,7 @@ import { environment } from "@/components/Environment";
 const inter = Inter({ subsets: ["latin"] });
 
 export default function Account() {
-  const [user, setUser] = useState({
-    username: "",
-    userID: 0,
-    mail: "",
-    image: "",
-    privacyAttendedEvents: "",
-    privacyCheckedInEvents: "",
-    privacyFriends: "",
-    description: "",
-  });
+  const [user, setUser] = useState<User | null>(null);
   const [checkedevents, setcheckedEvents] = useState([]);
   const [attendedevents, setAttendedEvents] = useState([]);
   const [checkedInPrivacy, setCheckedInPrivacy] = useState(true)
@@ -109,7 +100,7 @@ export default function Account() {
       <main className={`${styles.main} ${inter.className}`}>
         <div className={[styles.page, styles.accountPage].join(" ")}>
           <div className={styles.biographyContainer}>
-            <Biography source={user.image} username={user.username} description={user.description} />
+            {user && <Biography user={user} source={user.image} username={user.username} description={user.description} />}
           </div>
           <div className={styles.attendedEventsContainer}>
             {showCheckins(checkedevents)}

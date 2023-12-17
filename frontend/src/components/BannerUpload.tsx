@@ -29,11 +29,15 @@ function BannerUpload({ title, banner, titleCallback }: BannerUploadProps) {
 
   function showBanner() {
     if (bannerSource.length != 0) {
-      return <Image src={bannerSource}
-        className={styles.bannerImage}
-        style={{ objectFit: "cover" }}
-        fill={true}
-        alt="Banner of the concert" />
+      return (
+        <Image
+          src={bannerSource}
+          className={styles.bannerImage}
+          style={{ objectFit: "cover" }}
+          fill={true}
+          alt="Banner of the concert"
+        />
+      );
     }
   }
 
@@ -41,15 +45,49 @@ function BannerUpload({ title, banner, titleCallback }: BannerUploadProps) {
     <>
       <div className={styles.bannerContainer}>
         {showBanner()}
-				<div className={styles.titleContainer}>
+        <div className={styles.titleContainer}>
           {title ? (
-            <input type="text" name='title' id='title' maxLength={16} required placeholder="Title" defaultValue={title} onChange={(e) => titleCallback(e.target.value)} />
+            <input
+              type="text"
+              name="title"
+              id="title"
+              maxLength={16}
+              required
+              placeholder="Title"
+              defaultValue={title}
+              onChange={(e) => titleCallback(e.target.value)}
+            />
           ) : (
-            <input type="text" name='title' id='title' maxLength={16} required placeholder="Title" onChange={(e) => titleCallback(e.target.value)} />
+            <input
+              type="text"
+              name="title"
+              id="title"
+              maxLength={16}
+              required
+              placeholder="Title"
+              onChange={(e) => titleCallback(e.target.value)}
+            />
           )}
-      	</div>
+        </div>
         <div className={styles.uploadBox}>
-          {banner ? (<input id='banner' name='banner' type="file" onChange={bannerImageChosen} />) : (<input id='banner' name='banner' type="file" required onChange={bannerImageChosen} />)}
+          {banner ? (
+            <input
+              id="banner"
+              name="banner"
+              type="file"
+              accept="image/png, image/jpg, image/jpeg"
+              onChange={bannerImageChosen}
+            />
+          ) : (
+            <input
+              id="banner"
+              name="banner"
+              type="file"
+              accept="image/png, image/jpg, image/jpeg"
+              required
+              onChange={bannerImageChosen}
+            />
+          )}
         </div>
       </div>
     </>
