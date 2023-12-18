@@ -21,12 +21,12 @@ export class ProfileController extends BaseController {
 			(req: express.Request, res: express.Response) => {
                 this.getProfile(req, res);
 			});
-        this.router.post('/profilepicture', this.requireAuth,
+        this.router.post('/settings/personal/profilepicture', this.requireAuth,
 			upload.single("picture"), this.verifyErrors,
 			(req: express.Request, res: express.Response) => {
                 this.changeProfilePicture(req, res);
 			});
-        this.router.post('/description', this.requireAuth,
+        this.router.post('/settings/personal/description', this.requireAuth,
 			upload.none(),
             [
                 body("description").trim().notEmpty(),
