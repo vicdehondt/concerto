@@ -214,14 +214,6 @@ function SideBarContent({ type, filters, filterCallback }: SideBarProps) {
     </>
   ) : type == "friends" ? (
     <>
-      <div className={styles.title}>
-        Requests
-      </div>
-      <div className={styles.requestContainer}></div>
-      <div className={styles.title}>
-        Add friend
-      </div>
-      <div className={styles.addFriendContainer}></div>
     </>
   ) : (
     <div>Give right sidebar type</div>
