@@ -34,12 +34,33 @@ export class FriendController extends BaseController {
                 res.set('Access-Control-Allow-Credentials', 'true');
                 this.responseFriendRequest(req, res, true);
             });
+        this.router.delete('/:userid', this.requireAuth, this.checkUserExists,
+            upload.none(),
+            (req: express.Request, res: express.Response) => {
+                res.set('Access-Control-Allow-Credentials', 'true');
+                this.unfriend(req, res);
+            });
         this.router.post('/:userid/deny', this.requireAuth, this.checkUserExists,
             upload.none(),
             (req: express.Request, res: express.Response) => {
                 res.set('Access-Control-Allow-Credentials', 'true');
                 this.responseFriendRequest(req, res, false);
             });
+    }
+
+    async unfriend(req: express.Request, res: express.Response) {
+        try {
+            const friendship = await database.FindFriend(req.session.userID, req.params.userid);
+            if (friendship) {
+                await friendship.destroy();
+                res.status(200).json({success: true, message: "Removed this user from your friends."})
+            } else {
+                res.status(400).json({success: false, error: "You were no friends with this user."})
+            }
+        } catch (err) {
+            console.log("There was an error: ", err);
+			res.status(500).json({ success: false, error: "Internal server error."});
+        }
     }
 
     async getAllFriends(req: express.Request, res: express.Response){
