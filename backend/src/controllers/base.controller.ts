@@ -23,14 +23,18 @@ export abstract class BaseController {
 	}
 
     async checkUserExists(req: express.Request, res: express.Response, next) {
-		const userid = req.params.userid;
-		const user = await RetrieveUser('userID', userid);
-		if (user != null) {
-			req.body.user = user;
-			next();
-		} else {
-			res.status(400).json({ error: `The user with userID ${ userid } is not found.`});
-		}
+        try {
+            const userid = req.params.userid;
+            const user = await RetrieveUser('userID', userid);
+            if (user != null) {
+                req.body.user = user;
+                next();
+            } else {
+                res.status(400).json({ error: `The user with userID ${ userid } is not found.`});
+            }
+        } catch (err) {
+            res.status(500).json({success: false, error: "Internal server error"});
+        }
 	}
 
     verifyErrors(req: express.Request, res: express.Response, next) {
@@ -48,6 +52,6 @@ export abstract class BaseController {
             if (err) {
                 throw err;
             } console.log("File deleted succesfully.");
-        })
+        });
     }
 }

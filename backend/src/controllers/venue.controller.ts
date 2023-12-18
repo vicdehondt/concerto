@@ -102,73 +102,101 @@ export class VenueController extends BaseController {
   }
 
   async getAllVenues(req: express.Request, res: express.Response) {
-    console.log("Accepted request for all venues");
-    const venues = await VenueModel.findAll({
-      attributes: {
-        exclude: ["createdAt", "updatedAt"],
-      },
-    });
-    res.status(200).json(venues);
+    try {
+      console.log("Accepted request for all venues");
+      const venues = await VenueModel.findAll({
+        attributes: {
+          exclude: ["createdAt", "updatedAt"],
+        },
+      });
+      res.status(200).json(venues);
+    } catch (err) {
+      console.log("There was an error: ", err);
+			res.status(500).json({ success: false, error: "Internal server error."});
+    }
   }
 
   async getVenue(req: express.Request, res: express.Response) {
-    console.log("Received request to lookup venue information");
-    const venue = req.body.venue;
-    res.status(200).json(venue);
+    try {
+      console.log("Received request to lookup venue information");
+      const venue = req.body.venue;
+      res.status(200).json(venue);
+    } catch (err) {
+      console.log("There was an error: ", err);
+			res.status(500).json({ success: false, error: "Internal server error."});
+    }
   }
 
   async getReviews(req: express.Request, res: express.Response) {
-    const venue = req.body.venue;
-    const ratingID = venue.Rating.ratingID;
-    const result = await Review.findAll({
-      where: {
-        ratingID: ratingID,
-      },
-    });
-    res.status(200).json(result);
+    try {
+      const venue = req.body.venue;
+      const ratingID = venue.Rating.ratingID;
+      const result = await Review.findAll({
+        where: {
+          ratingID: ratingID,
+        },
+      });
+      res.status(200).json(result);
+    } catch (err) {
+      console.log("There was an error: ", err);
+			res.status(500).json({ success: false, error: "Internal server error."});
+    }
   }
 
   async reviewVenue(req: express.Request, res: express.Response) {
-    const venue = req.body.venue;
-    const sessiondata = req.session;
-    const { message, score, event } = req.body;
-    const checkedin = await retrieveCheckIn(sessiondata.userID, event);
-    if (checkedin == null) {
-      res.status(400).json({ success: false, error: "Not allowed to review this event." });
-    } else {
-      const rating = venue.Rating;
-      const result = await createReview(sessiondata.userID, rating, event.eventID, score, message);
-      if (result) {
-        res.status(200).json({ success: true, message: "Created a review for this venue." });
+    try {
+      const venue = req.body.venue;
+      const sessiondata = req.session;
+      const { message, score, event } = req.body;
+      const checkedin = await retrieveCheckIn(sessiondata.userID, event);
+      if (checkedin == null) {
+        res.status(400).json({ success: false, error: "Not allowed to review this event." });
       } else {
-        res
-          .status(400)
-          .json({ success: false, error: "Already reviewed this venue for this event." });
+        const rating = venue.Rating;
+        const result = await createReview(sessiondata.userID, rating, event.eventID, score, message);
+        if (result) {
+          res.status(200).json({ success: true, message: "Created a review for this venue." });
+        } else {
+          res.status(400).json({ success: false, error: "Already reviewed this venue for this event." });
+        }
       }
+    } catch (err) {
+      console.log("There was an error: ", err);
+			res.status(500).json({ success: false, error: "Internal server error."});
     }
   }
 
   async checkEventExists(req: express.Request, res: express.Response, next) {
-    await body("eventID").custom(async (eventID, { req }) => {
-      const event = await RetrieveEvent(eventID);
-      if (event != null) {
-        req.body.event = event;
-        return true;
-      } else {
-        throw new Error("Event with that ID does not exist");
-      }
-    })(req, res, next);
+    try {
+      await body("eventID").custom(async (eventID, { req }) => {
+        const event = await RetrieveEvent(eventID);
+        if (event != null) {
+          req.body.event = event;
+          return true;
+        } else {
+          throw new Error("Event with that ID does not exist");
+        }
+      })(req, res, next);
+    } catch (err) {
+      console.log("There was an error: ", err);
+			res.status(500).json({ success: false, error: "Internal server error."});
+    }
   }
 
   async checkVenueExists(req: express.Request, res: express.Response, next) {
-    await param("venueID").custom(async (venueID, { req }) => {
-      const venue = await retrieveVenue(venueID);
-      if (venue != null) {
-        req.body.venue = venue;
-        return true;
-      } else {
-        throw new Error("Venue with that ID does not exist");
-      }
-    })(req, res, next);
+    try {
+      await param("venueID").custom(async (venueID, { req }) => {
+        const venue = await retrieveVenue(venueID);
+        if (venue != null) {
+          req.body.venue = venue;
+          return true;
+        } else {
+          throw new Error("Venue with that ID does not exist");
+        }
+      })(req, res, next);
+    } catch (err) {
+      console.log("There was an error: ", err);
+			res.status(500).json({ success: false, error: "Internal server error."});
+    }
   }
 }
