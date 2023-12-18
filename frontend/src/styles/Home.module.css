@@ -937,6 +937,21 @@
   margin-left: 20px;
 }
 
+.saveButton {
+  color: white;
+  font-size: small;
+  font-weight: bold;
+  padding: 10px;
+  background-color: #0B2027;
+  border: 1px solid #0B2027;
+  border-radius: 10px;
+  box-shadow: 0px 2px 2px;
+}
+
+.saveButton:hover {
+  border: 2px solid #7180B9;
+}
+
 @media (max-width: 600px){
   .settingsPage {
     display: flex;

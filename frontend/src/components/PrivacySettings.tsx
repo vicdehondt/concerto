@@ -59,7 +59,7 @@ export default function PrivacySettings(userid: { userid: number}) {
         <PrivacySetting name={"Events you attended"} setting={"privacyAttendedEvents"} initial={privacySettings.privacyAttendedEvents} />
         <PrivacySetting name={"Upcoming events you have checked in"} setting={"privacyCheckedInEvents"} initial={privacySettings.privacyCheckedInEvents} />
         <PrivacySetting name={"Your friends"} setting={"privacyFriends"} initial={privacySettings.privacyFriends} />
-        <button className={styles.saveButton} type="submit">Save Settings</button>
+        <button className={styles.saveButton} type="submit">Save Privacy Settings</button>
       </form>
     )}
     </div>

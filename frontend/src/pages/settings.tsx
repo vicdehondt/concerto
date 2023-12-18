@@ -30,6 +30,14 @@ export default function Settings() {
     description: "",
   });
 
+  const handleMailChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setUser((prevUser) => ({ ...prevUser, mail: e.target.value }));
+  };
+
+  const handleDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setUser((prevUser) => ({ ...prevUser, description: e.target.value }));
+  };
+
   async function onSaveMail(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     var formData = new FormData(event.currentTarget);
@@ -42,12 +50,12 @@ export default function Settings() {
     });
   }
 
-  async function onSaveDiscription(event: FormEvent<HTMLFormElement>) {
+  async function onSaveDescription(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     var formData = new FormData(event.currentTarget);
     const form_values = Object.fromEntries(formData);
-    const response = await fetch(environment.backendURL + "/profile/settings/discription", {
-      method: "POST",
+    const response = await fetch(environment.backendURL + "/profile/settings/description", {
+      method: "PATCH",
       body: formData,
       mode: "cors",
       credentials: "include",
@@ -58,8 +66,8 @@ export default function Settings() {
     event.preventDefault();
     var formData = new FormData(event.currentTarget);
     const form_values = Object.fromEntries(formData);
-    const response = await fetch(environment.backendURL + "/profile/settings/profilePicture", {
-      method: "POST",
+    const response = await fetch(environment.backendURL + "/profile/settings/profilepicture", {
+      method: "PATCH",
       body: formData,
       mode: "cors",
       credentials: "include",
@@ -74,20 +82,44 @@ export default function Settings() {
             Personal information
           </div>
           <div className={styles.personalSetting}>
-            <div className={styles.settingName}>
-            Your e-mail:
-            </div>
-            <div className={styles.settingValue}>
-              {user.mail}
-            </div>
+            <form onSubmit={onSaveMail}>
+              <div className={styles.settingName}>
+                Your e-mail:
+              </div>
+              <div className={styles.settingValue}>
+                {user.mail}
+              </div>
+              <div className={styles.changeMailText}>
+                <textarea
+                  id="changeMail"
+                  name="changeMail"
+                  value={user.mail}
+                  rows={1}
+                  onChange={handleMailChange}
+                />
+              </div>
+              <button className={styles.saveButton} type="submit">Save mail</button>
+            </form>
           </div>
           <div className={styles.personalSetting}>
-            <div className={styles.settingName}>
-            Your biography:
-            </div>
-            <div className={styles.settingValue}>
-              {user.description}
-            </div>
+            <form onSubmit={onSaveDescription}>
+              <div className={styles.settingName}>
+                Your biography:
+              </div>
+              <div className={styles.settingValue}>
+                {user.description}
+              </div>
+              <div className={styles.changeDescriptionText}>
+                <textarea
+                  id="changeDescription"
+                  name="changeDescription"
+                  value={user.description}
+                  rows={1}
+                  onChange={handleDescriptionChange}
+                />
+              </div>
+              <button className={styles.saveButton} type="submit">Save biography</button>
+            </form>
           </div>
         </div>
       </>
