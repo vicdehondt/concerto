@@ -143,6 +143,11 @@ export class EventController extends BaseController {
 		}
 	}
 
+	async checkExists(model, id): Promise<Boolean> {
+		const result = await model.findByPk(id);
+		return result != null;
+	}
+
 	// changing the artist and venue still has to be done
 	async editEvent(req: express.Request, res: express.Response) {
 		try {
@@ -154,23 +159,46 @@ export class EventController extends BaseController {
 			} else {
 				const updateFields = ['description', 'main', 'doors', 'support', 'price', 'title', 'secondGenre', 'mainGenre', 'artistID', 'venueID', 'url'];
 				const imageFields = ['eventPicture', 'banner'];
+				let errormessage = '';
+				let errorExists = false;
 
-				updateFields.forEach(field => {
+				for (const field of updateFields) {
 					if (req.body[field]) {
-						event[field] = req.body[field];
+						if (field == 'artistID' || field == 'venueID') {
+							const id = req.body[field];
+							let exists;
+							if (field == 'artistID') {
+								exists = await this.checkExists(Artist, id);
+								errormessage = 'The artist could not be found in the database.';
+							} else {
+								exists = await this.checkExists(VenueModel, id);
+								errormessage = 'The venue could not be found in the database.';
+							}
+							if (!exists) {
+								errorExists = true;
+							} else {
+								event[field] = req.body[field];
+							}
+						} else {
+							event[field] = req.body[field];
+						}
 					}
-				});
+				}
 				imageFields.forEach(field => {
 					if (req.files[field]) {
-						console.log("Edititing the image of an event ", field);
 						const image = req.files[field]
 						const imagePath = "http://localhost:8080/events/" + image[0].filename;
 						event[field] = imagePath;
 						console.log(event[field]);
 					}
 				});
-				await event.save();
-				res.status(200).json({ success: true, message: "Event has been updated."});
+				if (errorExists) {
+					res.status(400).json({ success: false, error: errormessage + 'As a result no changes were made to the event!'});
+				} else {
+					await event.save();
+					console.log(event.venueID);
+					res.status(200).json({ success: true, message: "Event has been updated."});
+				}
 			}
 		} catch (err) {
 			console.log("There was an error: ", err);
