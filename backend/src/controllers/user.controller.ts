@@ -38,23 +38,6 @@ export class UserController extends BaseController {
 			});
     }
 
-	async deleteUser(req: express.Request, res: express.Response) {
-		try {
-			const sessiondata = req.session;
-			const loggedInUser = sessiondata.userID;
-			if (loggedInUser == req.params.userid) {
-				await database.DeleteUser(sessiondata.userID);
-				sessiondata.userID = null;
-				res.status(200).json({ success: true, message: "User successfully deleted."});
-			} else {
-				res.status(400).json({ success: false, error: "You do not have permission to delete this user!"});
-			}
-		} catch (err) {
-			console.log("There was an error: ", err);
-			res.status(500).json({ success: false, error: "Internal server error."});
-		}
-	}
-
 	async getUserInformation(req: express.Request, res: express.Response) {
 		try {
 			const sessiondata = req.session;
