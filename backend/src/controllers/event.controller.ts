@@ -169,6 +169,9 @@ export class EventController extends BaseController {
 							let exists;
 							if (field == 'artistID') {
 								exists = await this.checkExists(Artist, id);
+								if (!exists && await createArtist(id)) {
+									exists = true;
+								}
 								errormessage = 'The artist could not be found in the database.';
 							} else {
 								exists = await this.checkExists(VenueModel, id);
@@ -189,14 +192,12 @@ export class EventController extends BaseController {
 						const image = req.files[field]
 						const imagePath = "http://localhost:8080/events/" + image[0].filename;
 						event[field] = imagePath;
-						console.log(event[field]);
 					}
 				});
 				if (errorExists) {
 					res.status(400).json({ success: false, error: errormessage + 'As a result no changes were made to the event!'});
 				} else {
 					await event.save();
-					console.log(event.venueID);
 					res.status(200).json({ success: true, message: "Event has been updated."});
 				}
 			}
@@ -445,8 +446,6 @@ export class EventController extends BaseController {
 			res.status(500).json({ success: false, error: "Internal server error."});
 		}
     }
-
-
 
 	async checkEventExists(req: express.Request, res: express.Response, next) {
 		try {
