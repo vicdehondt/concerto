@@ -11,7 +11,7 @@ import EventSearchCard from "./EventSearchCard";
 import UserSearchCard from "./UserSearchCard";
 import { User, Event as EventType } from "./BackendTypes";
 
-function Navbar({ pictureSource }: { pictureSource: string }) {
+function Navbar() {
   const router = useRouter();
 
   const [notificationsVisible, setNotificationsVisible] = useState(false);
@@ -156,7 +156,7 @@ function Navbar({ pictureSource }: { pictureSource: string }) {
         mode: "cors",
         credentials: "include",
       });
-      setUserIsLoggedIn(true);
+      setUserIsLoggedIn(response.status === 200);
       return response.status === 200;
     } catch (error) {
       setUserIsLoggedIn(false);
@@ -177,11 +177,21 @@ function Navbar({ pictureSource }: { pictureSource: string }) {
         ) as HTMLCollectionOf<HTMLElement>;
         if (notificationsVisible) {
           notificationBox[0].style.display = "none";
+          removeInfoNotifications();
         } else {
           notificationBox[0].style.display = "block";
         }
       } else {
         router.push(`/login?from=${router.asPath}`);
+      }
+    });
+  }
+
+  function removeInfoNotifications() {
+    notifications.forEach((notification) => {
+      if (notification.NotificationObject.notificationType === "friendrequestaccepted") {
+        console.log("Removing notification:", notification);
+        removeNotification(notification.notificationID);
       }
     });
   }
@@ -192,6 +202,7 @@ function Navbar({ pictureSource }: { pictureSource: string }) {
     ) as HTMLCollectionOf<HTMLElement>;
     setNotificationsVisible(false);
     notificationBox[0].style.display = "none";
+    removeInfoNotifications();
   }
 
   function closeSearchResults() {
@@ -259,6 +270,7 @@ function Navbar({ pictureSource }: { pictureSource: string }) {
     }).then((response) => {
       if (response.status == 200) {
         router.push("/");
+        router.reload();
       }
     });
   }
@@ -284,8 +296,8 @@ function Navbar({ pictureSource }: { pictureSource: string }) {
       );
     } else {
       return (
-        <div className={styles.account} onClick={(event) => redirectClicked(event, "/account")}>
-          <Image src={pictureSource} width={56} height={56} alt="Profile picture" />
+        <div className={styles.account} onClick={(event) => redirectClicked(event, `/accounts/${profile.userID}`)}>
+          <Image src={profile.image} style={{ objectFit: "cover" }} width={56} height={56} alt="Profile picture" />
         </div>
       );
     }

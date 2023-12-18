@@ -40,7 +40,6 @@ export default function AddEvent() {
     var formData = new FormData(event.currentTarget);
     formData.append("dateAndTime", concatDateAndTime());
     formData.append("venueID", location.venueID);
-    console.log(selectedArtist);
     if (selectedArtist) {
       formData.append("artistID", selectedArtist.id);
     }

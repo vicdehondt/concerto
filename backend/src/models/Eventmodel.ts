@@ -1,4 +1,5 @@
 import { DataTypes, Op } from 'sequelize';
+import * as express from 'express';
 import {sequelize} from '../configs/sequelizeConfig'
 import { Rating } from './Ratingmodel';
 import { UserModel } from './Usermodel';
@@ -90,6 +91,10 @@ export const EventModel = sequelize.define('Event', {
     type: DataTypes.STRING,
     allowNull: false
   },
+  url: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
   eventPicture: {
     type: DataTypes.STRING,
     allowNull: false
@@ -177,7 +182,7 @@ export async function retrieveArtist(id) {
   }); return result;
 }
 
-export async function CreateEvent(userID, artistID, venueID, title, description, date, price, doors, main, support, genre1, genre2, bannerpath, eventPicturePath) {
+export async function CreateEvent(userID, artistID, venueID, title, description, date, price, doors, main, support, genre1, genre2, url, bannerpath, eventPicturePath) {
   try {
     const Event = await EventModel.create({
       artistID: artistID,
@@ -193,7 +198,8 @@ export async function CreateEvent(userID, artistID, venueID, title, description,
       support: support,
       baseGenre: genre1,
       secondGenre: genre2,
-      userID: userID
+      userID: userID,
+      url: url
     });
     return Event;
   } catch (error) {
@@ -225,7 +231,9 @@ export async function retrieveUnfinishedEvents(limit, offset): Promise<typeof Ev
       dateAndTime: {
         [Op.gte]: expiredEventTreshold(),
       }
-    }
+    }, order: [
+      ['dateAndTime', 'ASC'] // Sort by 'dateAndTime' in ascending order
+      ]
   });
   return events;
 }
@@ -251,7 +259,9 @@ export async function retrieveNewUnfinishedEvents(limit, offset, checkedInEvents
       eventID: {
         [Op.notIn]: checkedInEvents
       }
-    }
+    }, order: [
+      ['dateAndTime', 'ASC'] // Sort by 'dateAndTime' in ascending order
+      ]
   });
   return events;
 }
@@ -277,67 +287,59 @@ export async function RetrieveEvent(ID): Promise<typeof EventModel> {
   }
 }
 
-  //to limit the return if no filters are selected use the limit function from sqlite
-  export async function FilterEvents(filterfields,filtervalues){
-    try {
-      const whereClause = {};
-      const orConditions = [];
-      for (let i = 0; i < filterfields.length; i++) {
-        const field = filterfields[i];
-        const value = filtervalues[i];
-        // need to add the condition to the where clause
-        if(field == "maxpeople" || field == "price"){
-          whereClause[field] = {
-            [Op.between]: value.split('/'),
-          };
-        } else if (field == 'genre') {
-          if (Array.isArray(value)) {
-            orConditions.push({
-              baseGenre: {
-                [Op.in]: value,
-              },
-            });
-            orConditions.push({
-              secondGenre: {
-                [Op.in]: value,
-              },
-            });
-          } else {
-            orConditions.push({
-              baseGenre: value,
-            });
-            orConditions.push({
-              secondGenre: value,
-            });
-          }
-        } else {
-          whereClause[field] = value;
-        }
+export function createWhereClause(filterfields,filtervalues) {
+  const whereClause = {};
+  const orConditions = [];
+  for (let i = 0; i < filterfields.length; i++) {
+    const field = filterfields[i];
+    const value = filtervalues[i];
+    // need to add the condition to the where clause
+    if(field == "maxpeople" || field == "price"){
+      whereClause[field] = {
+        [Op.between]: value.split('/'),
+      };
+    } else if (field == 'date') {
+      const lowerDate = new Date(value);
+      lowerDate.setHours(0, 0, 0, 0);
+      const nextDay = new Date(lowerDate);
+      nextDay.setDate(lowerDate.getDate() + 1);
+      whereClause['dateAndTime'] = {
+        [Op.between]: [lowerDate, nextDay]
       }
-      if (orConditions.length > 0) {
-        whereClause[Op.or] = orConditions;
+    } else if (field == 'genre') {
+      if (Array.isArray(value)) {
+        orConditions.push({
+          baseGenre: {
+            [Op.in]: value,
+          },
+        });
+        orConditions.push({
+          secondGenre: {
+            [Op.in]: value,
+          },
+        });
+      } else {
+        orConditions.push({
+          baseGenre: value,
+        });
+        orConditions.push({
+          secondGenre: value,
+        });
       }
-      const Event = await EventModel.findAll({
-        attributes: ['eventID', 'title', 'eventPicture', 'dateAndTime', 'baseGenre', 'secondGenre', 'price', 'amountCheckedIn'],
-        include: [
-          { model: Artist , attributes: {
-            exclude: ['createdAt', 'updatedAt']
-          }},
-          { model: VenueModel, attributes: {
-            exclude: ['createdAt', 'updatedAt']
-          }},
-        ],
-        where: whereClause,
-      });
-      return Event;
-    } catch (error) {
-      console.error("There was an error filtering Events: ", error);
+    } else {
+      whereClause[field] = value;
     }
   }
+  if (orConditions.length > 0) {
+    whereClause[Op.or] = orConditions;
+  } return whereClause;
+}
 
-  export async function SearchEvents(searchvalue){
-    try {
-      const Events = await EventModel.findAll({
+//to limit the return if no filters are selected use the limit function from sqlite
+export async function FilterEvents(filterfields,filtervalues){
+  try {
+    const whereClause = createWhereClause(filterfields, filtervalues);
+    const Event = await EventModel.findAll({
       attributes: ['eventID', 'title', 'eventPicture', 'dateAndTime', 'baseGenre', 'secondGenre', 'price', 'amountCheckedIn'],
       include: [
         { model: Artist , attributes: {
@@ -347,21 +349,63 @@ export async function RetrieveEvent(ID): Promise<typeof EventModel> {
           exclude: ['createdAt', 'updatedAt']
         }},
       ],
-      where: {
-        title: { //for now only searching on title, need to add location...
-            [Op.like]: '%' + searchvalue + '%',
-          }
-        }
-      });
-      return Events;
-    } catch (error) {
-      console.error("There was an error finding an event: ", error);
-    }
+      where: whereClause,
+    });
+    return Event;
+  } catch (error) {
+    console.error("There was an error filtering Events: ", error);
   }
+}
 
-  export function isFinished(event): boolean {
-    const yesterday = new Date();
-    yesterday.setHours(yesterday.getHours() - 24);
-    return event.dateAndTime < yesterday;
+export async function SearchEvents(searchvalue){
+  try {
+    const Events = await EventModel.findAll({
+    attributes: ['eventID', 'title', 'eventPicture', 'dateAndTime', 'baseGenre', 'secondGenre', 'price', 'amountCheckedIn'],
+    include: [
+      { model: Artist , attributes: {
+        exclude: ['createdAt', 'updatedAt']
+      }},
+      { model: VenueModel, attributes: {
+        exclude: ['createdAt', 'updatedAt']
+      }},
+    ],
+    where: {
+      title: { //for now only searching on title, need to add location...
+          [Op.like]: '%' + searchvalue + '%',
+        }
+      }
+    });
+    return Events;
+  } catch (error) {
+    console.error("There was an error finding an event: ", error);
   }
+}
+
+export function isFinished(event): boolean {
+  const yesterday = new Date();
+  yesterday.setHours(yesterday.getHours() - 24);
+  return event.dateAndTime < yesterday;
+}
+
+export function extractFilters(req: express.Request) {
+  let filterfields: any[] = [];
+  let filtervalues: any[] = [];
+  if(req.query.price){
+    filterfields.push("price");
+    filtervalues.push(req.query.price);
+  }
+  if(req.query.venueID){
+    filterfields.push("venueID");
+    filtervalues.push(req.query.venueID);
+  }
+  if (req.query.genre) {
+    filterfields.push("genre");
+    filtervalues.push(req.query.genre);
+  }
+  if (req.query.date) {
+    filterfields.push("date");
+    filtervalues.push(req.query.date);
+  }
+  return [filterfields, filtervalues];
+}
 

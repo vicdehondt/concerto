@@ -67,6 +67,10 @@
   font-weight: bold;
 }
 
+.locationFilter select {
+  width: 120px !important;
+}
+
 @media (max-width: 600px) {
   .sidebar {
     color: black;
@@ -164,4 +168,3 @@
     cursor: pointer;
     font-weight: bold;
   }
-}

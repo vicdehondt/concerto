@@ -63,6 +63,17 @@ export class UserController extends BaseController {
 			const result = user.get({ plain: true});
 			delete result.password;
 			delete result.salt;
+			if (sessiondata.userID != userID) {
+				const friendship = await database.FindFriend(sessiondata.userID, userID);
+				if (friendship == null) {
+					result.friendship = 'none';
+				} else if (friendship.status == 'accepted'){
+					result.friendship = 'friends';
+				} else {
+					result.friendship = 'pending';
+					result.sender = friendship.senderID
+				}
+			}
 			if (sessiondata.userID == user.userID) {
 				res.status(200).json(result);
 			} else {

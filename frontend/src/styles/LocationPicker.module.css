@@ -1,7 +1,3 @@
-.locationPicker select {
-  width: 120px;
-}
-
 .locationPicker select:hover {
   cursor: pointer;
 }

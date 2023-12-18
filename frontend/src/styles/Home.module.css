@@ -92,16 +92,26 @@
   color: black;
   background-color: #e8f7ee;
   grid-template-columns: 45% auto;
-  grid-template-rows: [banner] 200px auto auto;
+  grid-template-rows: [banner] 200px auto auto auto;
   grid-template-areas:
     "banner banner"
     "description ratings"
-    "timetable invites";
+    "timetable invites"
+    "map map";
+  overflow: auto;
 }
 
 .concertPage .bannerContainer {
   grid-area: banner;
   position: relative;
+}
+
+.concertPage .map {
+  grid-area: map;
+  height: 500px;
+  margin: 50px;
+  border: 1px solid black;
+  box-shadow: 0px 1px 2px;
 }
 
 .concertPage .friendInviteContainer {

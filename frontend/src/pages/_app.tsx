@@ -52,7 +52,7 @@ export default function App({ Component, pageProps }: AppProps) {
       if(isMobile){
         return <HamburgerMenu pictureSource="/photos/Rombout.jpeg" />
       } else{
-        return <Navbar pictureSource="/photos/Rombout.jpeg" />
+        return <Navbar />
       }
     }
   }

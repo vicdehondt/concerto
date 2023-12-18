@@ -1,6 +1,6 @@
 import Image from "next/image";
 import styles from "@/styles/EventCardUpload.module.css";
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { genreOptions } from "./GenreOptions";
 
 function getMonth(month: number) {
@@ -41,9 +41,21 @@ type EventCardUploadProps = {
   image?: string;
   genre1?: string;
   genre2?: string;
+  edit?: boolean;
 };
 
-function EventCardUpload({ title, location, date, time, price, image, genre1, genre2 }: EventCardUploadProps) {
+function EventCardUpload({
+  title,
+  location,
+  date,
+  time,
+  price,
+  image,
+  genre1,
+  genre2,
+  edit,
+}: EventCardUploadProps) {
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (image && image != "string") {
@@ -74,56 +86,47 @@ function EventCardUpload({ title, location, date, time, price, image, genre1, ge
 
   function showEventPicture() {
     if (eventPictureSource.length != 0) {
-      return <Image src={eventPictureSource}
-        style={{ objectFit: "cover" }}
-        width={120}
-        height={120}
-        alt="Performer" />
+      return (
+        <Image
+          src={eventPictureSource}
+          style={{ objectFit: "cover" }}
+          width={120}
+          height={120}
+          alt="Performer"
+        />
+      );
     }
   }
 
   function options(genre: string) {
-    const chooseOption = <option key={"choose"} id="choose" hidden value="">Choose genre</option>;
-    if (genre == "") {
-      return [chooseOption, ...genreOptions];
-    }
-    return genreOptions.map((option) => {
-      if (option.props.value == genre) {
-        return (
-          <option key={option.props.id} id={option.props.id} value={option.props.value} selected>
-            {option.props.value}
-          </option>
-        );
-      }
-      return option;
-    });
+    const chooseOption = (
+      <option key={"choose"} id="choose" hidden value="">
+        Choose genre
+      </option>
+    );
+    const selectedValue = genre || "";
+    return [
+      chooseOption,
+      ...genreOptions.map((option) => (
+        <option key={option.props.id} id={option.props.id} value={option.props.value}>
+          {option.props.value}
+        </option>
+      )),
+    ];
   }
 
   function showSelection(name: string) {
-    if (name == "mainGenre")  {
-      if (genre1 && genre1.length != 0) {
-        return (
-          <select name="mainGenre" id="baseGenre">
-            {options(genre1)}
-          </select>
-        );
-      }
-      return (
-        <select name="mainGenre" id="baseGenre">
-          {options("")}
-        </select>
-      );
-    }
-    if (genre2 && genre2.length != 0) {
-      return (
-        <select name="secondGenre" id="secondGenre">
-          {options(genre2)}
-        </select>
-      );
-    }
+    const selectedGenre = name === "mainGenre" ? genre1 : genre2;
+    const validSelectedGenre = selectedGenre || "";
+
     return (
-      <select name="secondGenre" id="secondGenre">
-        {options("")}
+      <select
+        required
+        name={name}
+        id={name === "mainGenre" ? "baseGenre" : "secondGenre"}
+        defaultValue={validSelectedGenre}
+      >
+        {options(validSelectedGenre)}
       </select>
     );
   }
@@ -131,8 +134,32 @@ function EventCardUpload({ title, location, date, time, price, image, genre1, ge
   return (
     <div className={styles.eventCard}>
       <div className={styles.eventPicture}>
-        <input id='eventPicture' name='eventPicture' type="file" onChange={bannerImageChosen} />
-        <label htmlFor="eventPicture" className={styles.overlay}>{eventPictureSource.length == 0 ? "Upload image" : "Change image"}</label>
+        {edit ? (
+          <input
+            ref={fileInputRef}
+            id="eventPicture"
+            name="eventPicture"
+            type="file"
+            accept="image/png, image/jpg, image/jpeg"
+            onChange={bannerImageChosen}
+          />
+        ) : (
+          <input
+            ref={fileInputRef}
+            required
+            id="eventPicture"
+            name="eventPicture"
+            type="file"
+            accept="image/png, image/jpg, image/jpeg"
+            onChange={bannerImageChosen}
+          />
+        )}
+        <div
+          className={styles.overlay}
+          onClick={() => fileInputRef.current && fileInputRef.current.click()}
+        >
+          {eventPictureSource.length == 0 ? "Upload image" : "Change image"}
+        </div>
         {showEventPicture()}
       </div>
       <div className={styles.event}>
@@ -167,12 +194,8 @@ function EventCardUpload({ title, location, date, time, price, image, genre1, ge
       </div>
       <div className={styles.tags}>
         <div className={styles.divider}></div>
-        <div className={styles.tag}>
-          {showSelection("mainGenre")}
-        </div>
-        <div className={styles.tag}>
-          {showSelection("secondGenre")}
-        </div>
+        <div className={styles.tag}>{showSelection("mainGenre")}</div>
+        <div className={styles.tag}>{showSelection("secondGenre")}</div>
       </div>
     </div>
   );
