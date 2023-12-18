@@ -1,7 +1,7 @@
 import * as express from 'express';
 import { BaseController } from './base.controller';
 import * as database from '../models/Eventmodel';
-import { userCheckIn, userCheckOut, allCheckedInUsers, retrieveCheckIn, allCheckedInEvents, CheckedInUsers } from  '../models/Checkinmodel';
+import { userCheckIn, userCheckOut, retrieveCheckIn, allCheckedInEvents, CheckedInUsers } from  '../models/Checkinmodel';
 import { Notification, NotificationObject, createNewNotification } from '../models/Notificationmodel';
 import { VenueModel } from '../models/Venuemodel';
 import { retrieveArtist, createArtist, RetrieveEvent, isFinished, expiredEventTreshold, Artist} from '../models/Eventmodel';
@@ -74,10 +74,6 @@ export class EventController extends BaseController {
 		this.router.get('/:eventID/invitable', this.requireAuth,  upload.none(), [this.checkEventExists, this.checkUnfinished], this.verifyErrors, (req: express.Request, res: express.Response) => {
 			res.set('Access-Control-Allow-Credentials', 'true');
 			this.inviteAbleFriends(req, res);
-		});
-		this.router.get('/:eventID/checkins', this.requireAuth, [this.checkEventExists], this.verifyErrors, (req: express.Request, res: express.Response) => {
-			res.set('Access-Control-Allow-Credentials', 'true');
-			this.allCheckedIn(req, res);
 		});
 		this.router.post('/:eventID/invite', upload.none(),this.requireAuth, [this.checkEventExists, this.checkFriendExists, this.checkUnfinished], this.verifyErrors, (req: express.Request, res: express.Response) => {
 			res.set('Access-Control-Allow-Credentials', 'true');
@@ -393,19 +389,6 @@ export class EventController extends BaseController {
 			} else {
 				res.status(400).json({ success: false, error: "Unable to check out: You were not checked in for this event."});
 			}
-		} catch (err) {
-			console.log("There was an error: ", err);
-			res.status(500).json({ success: false, error: "Internal server error."});
-		}
-	}
-
-	async allCheckedIn(req: express.Request, res: express.Response) {
-		try {
-			console.log("Received request to get all checked in users");
-			const event = req.body.event;
-			const eventid = event.eventID;
-			const result = await allCheckedInUsers(eventid);
-			res.status(200).json(result);
 		} catch (err) {
 			console.log("There was an error: ", err);
 			res.status(500).json({ success: false, error: "Internal server error."});
