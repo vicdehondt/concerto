@@ -13,29 +13,76 @@ const inter = Inter({ subsets: ["latin"] });
 export default function Home() {
   const [events, setEvents] = useState([]);
   const [eventsHTML, setEventsHTML] = useState<ReactNode[]>([]);
-  const [filters, setFilters] = useState<Filter>({venueID: null, datetime: null, genre1: null, price: null});
-  const [thisWeek, setThisWeek] = useState(true);
-  const [searching, setSearching] = useState(false);
+  const [filters, setFilters] = useState<Filter>({
+    venueID: null,
+    date: null,
+    genre: null,
+    minPrice: null,
+    maxPrice: null,
+  });
+  const [sidebarSearching, setSidebarSearching] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [inThisWeek, setInThisWeek] = useState(true);
 
-
-  useEffect(() => {
-    if (filters.venueID != null || filters.datetime != null || filters.genre1 != null) {
-      let url = environment.backendURL + "/search/events/filter?";
+  function filterFetch(url: string) {
+    if (filters.venueID != null || filters.date != null) {
       for (const [key, value] of Object.entries(filters)) {
         if (value != null) {
           url += `&${key}=${value}`;
         }
       }
-      fetch(url, {
-        mode: "cors",
-        credentials: "include",
-      })
+    }
+    if (filters.genre != null) {
+      for (const genre of filters.genre) {
+        url += `&genre=${genre}`;
+      }
+    }
+    if (filters.minPrice != null && filters.maxPrice != null) {
+      url += `&price=${filters.minPrice}/${filters.maxPrice}`;
+    }
+    fetch(url, {
+      mode: "cors",
+      credentials: "include",
+    })
       .then((response) => {
         return response.json();
       })
       .then((responseJSON) => {
         setEvents(responseJSON);
       });
+  }
+
+  useEffect(() => {
+    if (sidebarSearching) {
+      let url = environment.backendURL + `/search/events/filter?title=${encodeURIComponent(searchQuery)}`;
+      filterFetch(url);
+    } else {
+      fetch(environment.backendURL + "/auth/status", {
+        mode: "cors",
+        credentials: "include",
+      }).then((response) => {
+        if (response.status == 200) {
+          let url = environment.backendURL + "/events?";
+          filterFetch(url);
+        } else {
+          let url = environment.backendURL + `/search/events/filter?`;
+          filterFetch(url);
+        }
+      });
+    }
+  }, [filters, searchQuery, sidebarSearching]);
+
+  useEffect(() => {
+    if (filters.date) {
+      const currentWeekday = (new Date().getDay() + 6) % 7;
+      const daysLeftInWeek = 7 - (currentWeekday + 1);
+      const selectedLower = filters.date < new Date();
+      const inThisWeek =
+        !selectedLower &&
+        filters.date <= new Date(new Date().setDate(new Date().getDate() + daysLeftInWeek));
+      setInThisWeek(inThisWeek);
+    } else {
+      setInThisWeek(true);
     }
   }, [filters]);
 
@@ -44,7 +91,7 @@ export default function Home() {
   }, [events]);
 
   useEffect(() => {
-    fetch(environment.backendURL + "/events", {
+    fetch(environment.backendURL + `/events?genre`, {
       mode: "cors",
       credentials: "include",
     })
@@ -58,23 +105,23 @@ export default function Home() {
 
   function convertEventsToHTML(events: Array<Event>) {
     const eventsArray = events.map((event: Event) => {
-        return (
-          <EventCard
-            key={event.eventID}
-            eventId={event.eventID}
-            title={event.title}
-            location={event.Venue.venueName}
-            amountAttending={event.amountCheckedIn}
-            dateAndTime={event.dateAndTime}
-            price={event.price}
-            image={event.eventPicture}
-            genre1={event.baseGenre}
-            genre2={event.secondGenre}
-          />
-        );
-      })
+      return (
+        <EventCard
+          key={event.eventID}
+          eventId={event.eventID}
+          title={event.title}
+          location={event.Venue.venueName}
+          amountAttending={event.amountCheckedIn}
+          dateAndTime={event.dateAndTime}
+          price={event.price}
+          image={event.eventPicture}
+          genre1={event.baseGenre}
+          genre2={event.secondGenre}
+        />
+      );
+    });
     setEventsHTML(eventsArray);
-  };
+  }
 
   return (
     <>
@@ -86,11 +133,27 @@ export default function Home() {
       </Head>
       <main className={`${styles.main} ${inter.className}`}>
         <div className={[styles.page, styles.homePage].join(" ")}>
-          <SideBar type="event" filters={filters} filterCallback={(filter: Filter) => setFilters(filter)} />
+          <SideBar
+            type="event"
+            filters={filters}
+            filterCallback={(filter: Filter) => setFilters(filter)}
+            searchCallback={(searching: boolean) => setSidebarSearching(searching)}
+            queryCallback={(query: string) => setSearchQuery(query)}
+          />
           <div className={styles.pageContent}>
             <div className={styles.headerBox}>
-              {thisWeek && <h1>Events this week you may like</h1>}
-              {searching && <h1>Results for: {"Hallo"}</h1>}
+              {!sidebarSearching && inThisWeek && <h1>Events this week you may like</h1>}
+              {!sidebarSearching && !inThisWeek && (
+                <h1>
+                  Events on{" "}
+                  {filters.date?.toLocaleString("en-US", {
+                    day: "numeric",
+                    month: "long",
+                    year: "numeric",
+                  })}
+                </h1>
+              )}
+              {sidebarSearching && <h1>Results for: {searchQuery}</h1>}
               <Link href="/map">Map View</Link>
             </div>
             <div className={styles.eventCardContainer}>{eventsHTML}</div>

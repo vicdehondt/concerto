@@ -306,6 +306,10 @@ export function createWhereClause(filterfields,filtervalues) {
       whereClause['dateAndTime'] = {
         [Op.between]: [lowerDate, nextDay]
       }
+    } else if (field == 'title') {
+      whereClause['title'] = {
+        [Op.like]: '%' + value + '%',
+      }
     } else if (field == 'genre') {
       if (Array.isArray(value)) {
         orConditions.push({
@@ -336,10 +340,12 @@ export function createWhereClause(filterfields,filtervalues) {
 }
 
 //to limit the return if no filters are selected use the limit function from sqlite
-export async function FilterEvents(filterfields,filtervalues){
+export async function FilterEvents(filterfields, filtervalues, limit, offset){
   try {
     const whereClause = createWhereClause(filterfields, filtervalues);
     const Event = await EventModel.findAll({
+      limit: limit,
+      offset: offset,
       attributes: ['eventID', 'title', 'eventPicture', 'dateAndTime', 'baseGenre', 'secondGenre', 'price', 'amountCheckedIn'],
       include: [
         { model: Artist , attributes: {
@@ -401,6 +407,10 @@ export function extractFilters(req: express.Request) {
   if (req.query.genre) {
     filterfields.push("genre");
     filtervalues.push(req.query.genre);
+  }
+  if (req.query.title) {
+    filterfields.push("title");
+    filtervalues.push(req.query.title);
   }
   if (req.query.date) {
     filterfields.push("date");

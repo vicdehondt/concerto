@@ -1,14 +1,13 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import styles from "@/styles/ArtistAndLocationUpload.module.css";
 import Searchbar from "./Searchbar";
 import LocationPicker from "./LocationPicker";
 import { Artist, Venue, APIResponse } from "./BackendTypes";
-import { environment } from "./Environment";
 
 type ArtistAndLocationUploadProps = {
   locationCallback: (venue: Venue) => void;
   artistCallback: (artist: Artist) => void;
-  artist?: Artist;
+  artist: Artist | null;
   venueID?: string;
 };
 
@@ -81,7 +80,7 @@ function ArtistAndLocationUpload({
         </div>
         <div className={styles.box}>
         <div className={styles.text}>Artist:</div>
-        {artist && <div className={styles.name}>{artist.name}</div>}
+        {artist && (<div className={styles.name}>{artist.name}</div>)}
         </div>
         <div className={styles.searchArtists}>
           <Searchbar type="thin" onClick={(event) => null} onChange={(string: string) => handlechange(string)} />

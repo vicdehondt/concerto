@@ -52,23 +52,28 @@ export class ArtistController extends BaseController {
     async getReviews(req: express.Request, res: express.Response) {
         const artist = req.body.artist;
         const ratingID = artist.Rating.ratingID;
-        const result = await Review.findAll({
-            where: {
-                ratingID: ratingID
-            }
-        });
-        res.status(200).json(result);
+        try {
+            const result = await Review.findAll({
+                where: {
+                    ratingID: ratingID
+                }
+            });
+            res.status(200).json(result);
+        } catch (err) {
+            console.log("An error occurred: ", err);
+            res.status(500).json({success: false, error: "Internal server error"});
+        }
     }
 
     async reviewArtist(req: express.Request, res: express.Response) {
         const sessiondata = req.session;
         const artist = req.body.artist;
         const {message, score, event} = req.body;
-        const checkedin = await retrieveCheckIn(sessiondata.userID, event);
-        if (checkedin == null) {
-            res.status(400).json({ success: false, error: "Not allowed to review this event."});
-        } else {
-            try {
+        try {
+            const checkedin = await retrieveCheckIn(sessiondata.userID, event);
+            if (checkedin == null) {
+                res.status(400).json({ success: false, error: "Not allowed to review this event."});
+            } else {
                 const rating = artist.Rating;
                 const result = await createReview(sessiondata.userID, rating, event.eventID, score, message);
                 if (result) {
@@ -76,24 +81,31 @@ export class ArtistController extends BaseController {
                 } else {
                     res.status(400).json({ success: false, error: "Already reviewed this artist for this event."});
                 }
-            } catch (error) {
-                res.status(400).json({success: false, error: "You are not allowed to review this event."});
             }
+        } catch (err) {
+            console.log("An error occurred: ", err);
+            res.status(500).json({success: false, error: "Internal server error"});
         }
     }
 
     async getAllArtists(req: express.Request, res: express.Response) {
         console.log("Accepted request for all artists")
-		const artists = await Artist.findAll({
-            attributes: {
-                exclude: ['createdAt', 'updatedAt'],
-          }});
-		res.status(200).json(artists);
+        try {
+            const artists = await Artist.findAll({
+                attributes: {
+                    exclude: ['createdAt', 'updatedAt'],
+              }});
+            res.status(200).json(artists);
+        } catch (err) {
+            console.log("An error occurred: ", err);
+            res.status(500).json({success: false, error: "Internal server error"});
+        }
     }
 
     async getArtist(req: express.Request, res: express.Response) {
         console.log("Received request to lookup artist information");
-        const artist = await retrieveArtist(req.params.artistID);
+        try {
+            const artist = await retrieveArtist(req.params.artistID);
         if (artist != null) {
            res.status(200).json(artist);
         } else {
@@ -103,6 +115,10 @@ export class ArtistController extends BaseController {
             } else {
                 res.status(400).json({ success: false, error: "This artist was not found in the database."});
             }
+        }
+        } catch (err) {
+            console.log("An error occurred: ", err);
+            res.status(500).json({success: false, error: "Internal server error"});
         }
     }
 

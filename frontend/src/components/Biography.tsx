@@ -2,7 +2,7 @@ import Image from "next/image";
 import { User as LucidUser } from 'lucide-react';
 import styles from "@/styles/Biography.module.css";
 import { useEffect, useState } from "react";
-import { User } from "@/components/BackendTypes";
+import { Profile, User } from "@/components/BackendTypes";
 import { environment } from "@/components/Environment";
 
 
@@ -15,6 +15,8 @@ type BiographyProps = {
 
 function Biography({ user, source, username, description }: BiographyProps) {
 
+  const [profile, setProfile] = useState<Profile | null>(null);
+
   const [requestSent, setRequestSent] = useState(user.friendship == "pending" || user.friendship == "accepted");
 
   function showPicture(source: string) {
@@ -23,6 +25,19 @@ function Biography({ user, source, username, description }: BiographyProps) {
     }
     return <LucidUser fill={'black'} className={styles.userPicture} width={170} height={170} />;
   }
+
+  useEffect(() => {
+    fetch(environment.backendURL + "/profile", {
+      mode: "cors",
+      credentials: "include",
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((responseJSON) => {
+        setProfile(responseJSON);
+      });
+  }, []);
 
   function inviteFriend() {
     const formData = new FormData();
@@ -36,6 +51,14 @@ function Biography({ user, source, username, description }: BiographyProps) {
       if (response.status == 200) {
         setRequestSent(true);
       }
+    });
+  }
+
+  function removeFriend() {
+    fetch(environment.backendURL + `/friends/${user.userID}`, {
+      method: "DELETE",
+      mode: "cors",
+      credentials: "include",
     });
   }
 
@@ -54,9 +77,14 @@ function Biography({ user, source, username, description }: BiographyProps) {
       );
     } else {
       return (
-        <div className={styles.friendMessage}>
-          Friends
-        </div>
+        <>
+          <div className={styles.friendMessage}>
+            Friends
+          </div>
+          <div className={styles.friendButton}>
+            <button className={styles.editButton} onClick={(event) => removeFriend()}>Unfriend</button>
+          </div>
+        </>
       );
     }
   }
@@ -71,7 +99,7 @@ function Biography({ user, source, username, description }: BiographyProps) {
           <div className={styles.username}>
             {username}
           </div>
-          {showFriendButton()}
+          {profile && profile.userID != user.userID && showFriendButton()}
         </div>
         <div className={styles.title}>
           Biography

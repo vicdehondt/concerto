@@ -11,6 +11,7 @@ import ArtistAndLocationUpload from "@/components/ArtistAndLocationUpload";
 import EventCardUpload from "@/components/EventCardUpload";
 import { Event, Venue, Artist } from "@/components/BackendTypes";
 import { environment } from "@/components/Environment";
+import { get } from "http";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -121,8 +122,8 @@ export default function EditEvent() {
       formData.delete("eventPicture");
     }
     if (selectedArtist) {
-      if (selectedArtist.artistID) {
-        formData.append("artistID", selectedArtist.artistID);
+      if (selectedArtist.id) {
+        formData.append("artistID", selectedArtist.id);
       }
     }
     clearSameFields(formData);
