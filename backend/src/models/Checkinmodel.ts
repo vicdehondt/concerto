@@ -4,6 +4,7 @@ import { UserModel } from './Usermodel';
 import { Artist, EventModel, expiredEventTreshold } from './Eventmodel';
 import { VenueModel } from './Venuemodel';
 
+// Table to store which users have checked in for each event.
 export const CheckedInUsers = sequelize.define('CheckedInUser', {
     checkinID: {
         type: DataTypes.INTEGER,
@@ -33,6 +34,7 @@ export const CheckedInUsers = sequelize.define('CheckedInUser', {
     }
 );
 
+// A many-to-many relationship is defined between the user and event tables
 UserModel.belongsToMany(EventModel, {
     through: CheckedInUsers,
     foreignKey: 'userID'
@@ -46,6 +48,7 @@ EventModel.belongsToMany(UserModel, {
 CheckedInUsers.belongsTo(UserModel, { foreignKey: 'userID' });
 CheckedInUsers.belongsTo(EventModel, { foreignKey: 'eventID' });
 
+// procedure which returns either a checkin instance or null
 export async function retrieveCheckIn(userID, event) {
     const result = await CheckedInUsers.findOne({
         where: {
@@ -73,6 +76,7 @@ export async function userCheckIn(userID, event): Promise<boolean> {
     }
 }
 
+// procedure which returns true if a user is able to check in for the event, and false if he was unable to
 export async function userCheckOut(userID, event): Promise<boolean> {
     const checkIn = await retrieveCheckIn(userID, event);
     if (checkIn != null) {
@@ -83,23 +87,6 @@ export async function userCheckOut(userID, event): Promise<boolean> {
     } else {
         return false;
     }
-}
-export async function allCheckedInUsers(eventid) {
-    const users = await CheckedInUsers.findAll({
-        attributes: ['userID'],
-        where: {
-            eventID: eventid,
-        },
-    });
-    const result = await Promise.all(users.map(async checkin => {
-        const user = await UserModel.findOne({
-            attributes: ['userID', 'username', 'image'],
-            where: {
-                userID: checkin.userID,
-            }
-        }); return user;
-    }));
-    return result;
 }
 
 export async function allCheckedInEvents(userID) {

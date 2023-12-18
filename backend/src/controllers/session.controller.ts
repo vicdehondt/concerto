@@ -81,39 +81,49 @@ export class SessionController extends BaseController {
     }
 
 	async loginUser(req: express.Request, res: express.Response) {
-        console.log("Received request to login.");
-		const sessiondata = req.session;
-		const result = validationResult(req);
-		if (sessiondata.userID != null) {
-			res.status(200).json({success: true, message: "You are already loggin in."})
-		} else if (result.isEmpty()){
-			const {username, password} = req.body;
-			const user = req.body.user;
-			bcrypt.compare(password, user.password, function (err, result) {
-				if (result == true) {
-					sessiondata.userID = user.userID;
-					res.status(200).json({success: true, message: "You are succesfully logged in."})
-				} else {
-					res.status(400).json({success: false, message: "The provided password is incorrect."})
-				}
-			});
-		} else {
-			res.status(400).json({sucess: false, errors: result.array()});
+		try {
+			console.log("Received request to login.");
+			const sessiondata = req.session;
+			const result = validationResult(req);
+			if (sessiondata.userID != null) {
+				res.status(200).json({success: true, message: "You are already loggin in."})
+			} else if (result.isEmpty()){
+				const {username, password} = req.body;
+				const user = req.body.user;
+				bcrypt.compare(password, user.password, function (err, result) {
+					if (result == true) {
+						sessiondata.userID = user.userID;
+						res.status(200).json({success: true, message: "You are succesfully logged in."})
+					} else {
+						res.status(400).json({success: false, message: "The provided password is incorrect."})
+					}
+				});
+			} else {
+				res.status(400).json({sucess: false, errors: result.array()});
+			}
+		} catch (err) {
+			console.log("There was an error: ", err);
+			res.status(500).json({ success: false, error: "Internal server error."});
 		}
 	}
 
     async registerUser(req: express.Request, res: express.Response): Promise<void> {
-        console.log("Received request to register user");
-		const result = validationResult(req);
-		if (result.isEmpty()){
-			bcrypt.hash(req.body.password, saltingRounds, async (err, hash) => {
-			database.sendMailVerification(req.body.username, req.body.mail);
-			const {username, mail, firstGenre, secondGenre } = req.body;
-			const user = await database.CreateUser(username, mail, firstGenre, secondGenre, hash, saltingRounds);
-			res.status(200).json({success: true, message: "User has been created!", userID: user.userID});
-			})
-		} else {
-			res.status(400).json({success: false, errors: result.array()});
+		try {
+			console.log("Received request to register user");
+			const result = validationResult(req);
+			if (result.isEmpty()){
+				bcrypt.hash(req.body.password, saltingRounds, async (err, hash) => {
+				database.sendMailVerification(req.body.username, req.body.mail);
+				const {username, mail, firstGenre, secondGenre } = req.body;
+				const user = await database.CreateUser(username, mail, firstGenre, secondGenre, hash, saltingRounds);
+				res.status(200).json({success: true, message: "User has been created!", userID: user.userID});
+				})
+			} else {
+				res.status(400).json({success: false, errors: result.array()});
+			}
+		} catch (err) {
+			console.log("There was an error: ", err);
+			res.status(500).json({ success: false, error: "Internal server error."});
 		}
     }
 

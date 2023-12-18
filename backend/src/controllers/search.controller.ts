@@ -2,7 +2,7 @@ import * as express from 'express';
 import { BaseController } from './base.controller';
 import * as database from '../models/Eventmodel';
 import * as userdatabase from '../models/Usermodel';
-import {body, param} from "express-validator"
+import { body } from "express-validator"
 import {createMulter} from "../configs/multerConfig";
 import { Op } from 'sequelize';
 
@@ -19,14 +19,6 @@ export class SearchController extends BaseController {
 	initializeRoutes(): void {
 		this.router.get('/events/filter',
 			upload.none(), [
-				// body("maxpeople").trim().custom(async value => {
-				// 	if(value){
-				// 		const rangeValues = value.split('/');
-				// 		if (rangeValues.length != 2 || Number.isInteger(rangeValues[0]) || Number.isInteger(rangeValues[1])) {
-				// 			throw Error('Invalid range format. Use two integers separated by a hyphen.');
-				// 		}
-				// 	}
-				// }),
 				body("price").trim().custom(async value => {
 					if(value){
 						const rangeValues = value.split('/');
@@ -69,7 +61,7 @@ export class SearchController extends BaseController {
 			if(events){
 				res.status(200).json(events);
 			}else{
-				res.status(400).json({succes: false, error: events});// something went wrong while retrieving the events
+				res.status(500).json({succes: false, error: events});// something went wrong while retrieving the events
 			}
 		}
 	}
