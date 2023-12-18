@@ -33,33 +33,48 @@ export class WishlistController extends BaseController {
     }
 
     async getWishlist(req: express.Request, res: express.Response) {
-        const sessiondata = req.session;
-        const userID = sessiondata.userID;
-        const result = await getAllWishListed(userID);
-        res.status(200).json(result);
+        try {
+            const sessiondata = req.session;
+            const userID = sessiondata.userID;
+            const result = await getAllWishListed(userID);
+            res.status(200).json(result);
+        } catch (err) {
+            console.log("There was an error: ", err);
+			res.status(500).json({ success: false, error: "Internal server error."});
+        }
     }
 
     async addWishlist(req: express.Request, res: express.Response) {
-        const sessiondata = req.session;
-        const userID = sessiondata.userID;
-        const { eventID } = req.body;
-        const result = await wishlistEvent(userID, eventID);
-        if (result) {
-            res.status(200).json({success: true, message: "Event has been wishlisted."});
-        } else {
-            res.status(400).json({success: false, error: "Event is already wishlisted."});
+        try {
+            const sessiondata = req.session;
+            const userID = sessiondata.userID;
+            const { eventID } = req.body;
+            const result = await wishlistEvent(userID, eventID);
+            if (result) {
+                res.status(200).json({success: true, message: "Event has been wishlisted."});
+            } else {
+                res.status(400).json({success: false, error: "Event is already wishlisted."});
+            }
+        } catch (err) {
+            console.log("There was an error: ", err);
+			res.status(500).json({ success: false, error: "Internal server error."});
         }
     }
 
     async deleteWishlist(req: express.Request, res: express.Response) {
-        const sessiondata = req.session;
-        const userID = sessiondata.userID;
-        const { eventID } = req.body;
-        const result = await removeWishlist(userID, eventID);
-        if (result) {
-            res.status(200).json({success: true, message: "Event has been removed from wishlist."});
-        } else {
-            res.status(200).json({success: false, error: "Event was not wishlisted."});
+        try {
+            const sessiondata = req.session;
+            const userID = sessiondata.userID;
+            const { eventID } = req.body;
+            const result = await removeWishlist(userID, eventID);
+            if (result) {
+                res.status(200).json({success: true, message: "Event has been removed from wishlist."});
+            } else {
+                res.status(200).json({success: false, error: "Event was not wishlisted."});
+            }
+        } catch (err) {
+            console.log("There was an error: ", err);
+			res.status(500).json({ success: false, error: "Internal server error."});
         }
     }
 }

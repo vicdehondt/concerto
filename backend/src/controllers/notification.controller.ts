@@ -68,36 +68,56 @@ export class NotificationController extends BaseController {
     }
 
 	async getNotifications(req: express.Request, res: express.Response) {
-		const sessiondata = req.session;
-		const result = await userNotifications(sessiondata.userID);
-		res.status(200).json(result);
+        try {
+            const sessiondata = req.session;
+            const result = await userNotifications(sessiondata.userID);
+            res.status(200).json(result);
+        } catch (err) {
+            console.log("There was an error: ", err);
+			res.status(500).json({ success: false, error: "Internal server error."});
+        }
 	}
 
     // everyone is able to modify notification atm
     async markNotificationAsRead(req: express.Request, res: express.Response) {
-        const notification = req.body.notification;
-        notification.status = 'seen';
-        await notification.save();
-        res.status(200).json({ success: true, message: 'The notification was marked as seen.' });
+        try {
+            const notification = req.body.notification;
+            notification.status = 'seen';
+            await notification.save();
+            res.status(200).json({ success: true, message: 'The notification was marked as seen.' });
+        } catch (err) {
+            console.log("There was an error: ", err);
+			res.status(500).json({ success: false, error: "Internal server error."});
+        }
     }
 
     async deleteNotification(req: express.Request, res: express.Response) {
-        const result = req.body.notification;
-        await result.destroy();
-        res.status(200).json({ success: true, message: 'The notification has been deleted.'});
+        try {
+            const result = req.body.notification;
+            await result.destroy();
+            res.status(200).json({ success: true, message: 'The notification has been deleted.'});
+        } catch (err) {
+            console.log("There was an error: ", err);
+			res.status(500).json({ success: false, error: "Internal server error."});
+        }
     }
 
     async notificationCheck(req: express.Request, res: express.Response, next) {
-        await param("notificationID").custom(async (id) => {
-            const notification = await Notification.findByPk(id);
-            if (notification == null) {
-                throw new Error("Notification with that ID does not exist.");
-            } else if (notification.receiver != req.session.userID) {
-                throw new Error("Notification does not belong to logged in user.");
-            } else {
-                req.body.notification = notification;
-                return true;
-            }
-        })(req, res, next);
+        try {
+            await param("notificationID").custom(async (id) => {
+                const notification = await Notification.findByPk(id);
+                if (notification == null) {
+                    throw new Error("Notification with that ID does not exist.");
+                } else if (notification.receiver != req.session.userID) {
+                    throw new Error("Notification does not belong to logged in user.");
+                } else {
+                    req.body.notification = notification;
+                    return true;
+                }
+            })(req, res, next);
+        } catch (err) {
+            console.log("There was an error: ", err);
+			res.status(500).json({ success: false, error: "Internal server error."});
+        }
     }
 }
