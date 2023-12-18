@@ -96,7 +96,7 @@ export default function AddEvent() {
             </div>
           </div>
           <div className={styles.artistAndLocationContainer}>
-            <ArtistAndLocationUpload locationCallback={(venue: Venue) => setLocation(venue)} artistCallback={(artist: Artist) => setSelectedArtist(artist)} />
+            <ArtistAndLocationUpload locationCallback={(venue: Venue) => setLocation(venue)} artist={selectedArtist} artistCallback={(artist: Artist) => setSelectedArtist(artist)} />
           </div>
           <div className={styles.priceContainer}>
             Tickets
