@@ -15,8 +15,18 @@
 }
 
 .saveButton {
-    display: flex;
-    justify-content: center;
+    color: white;
+    font-size: medium;
+    font-weight: bold;
+    padding: 10px;
+    background-color: #0B2027;
+    border: 1px solid #0B2027;
+    border-radius: 10px;
+    box-shadow: 0px 2px 2px;
+}
+
+.saveButton:hover {
+    border: 2px solid #7180B9;
 }
 
 @media (max-width: 600px){  

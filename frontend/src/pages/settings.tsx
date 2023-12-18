@@ -7,6 +7,7 @@ import Image from "next/image";
 import { User } from 'lucide-react';
 import ProfilePictureUpload from "@/components/ProfilePictureUpload";
 import { environment } from "@/components/Environment";
+import { FormEvent } from "react";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -28,6 +29,42 @@ export default function Settings() {
     privacyFriends: "",
     description: "",
   });
+
+  async function onSaveMail(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    var formData = new FormData(event.currentTarget);
+    const form_values = Object.fromEntries(formData);
+    const response = await fetch(environment.backendURL + "/profile/settings/mail", {
+      method: "POST",
+      body: formData,
+      mode: "cors",
+      credentials: "include",
+    });
+  }
+
+  async function onSaveDiscription(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    var formData = new FormData(event.currentTarget);
+    const form_values = Object.fromEntries(formData);
+    const response = await fetch(environment.backendURL + "/profile/settings/discription", {
+      method: "POST",
+      body: formData,
+      mode: "cors",
+      credentials: "include",
+    });
+  }
+
+  async function onSaveProfilePicture(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    var formData = new FormData(event.currentTarget);
+    const form_values = Object.fromEntries(formData);
+    const response = await fetch(environment.backendURL + "/profile/settings/profilePicture", {
+      method: "POST",
+      body: formData,
+      mode: "cors",
+      credentials: "include",
+    });
+  }
 
   function PersonalSettings() {
     return (
