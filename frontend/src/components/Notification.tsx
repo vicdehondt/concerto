@@ -93,7 +93,7 @@ function Notification({ notification, removeNotification }: {notification: Notif
   }, [notification]);
 
   useEffect(() => {
-    if (event?.checkedIn || ended(event)) {
+    if (notification.NotificationObject.notificationType == "friendrequestaccepted" && (event?.checkedIn || ended(event))) {
       removeNotification(notification.notificationID)
     }
   }, [event?.checkedIn, event, notification.notificationID, removeNotification]);
