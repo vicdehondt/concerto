@@ -71,7 +71,7 @@
 }
 
 .dropdownContent button {
-  color: red;
+  color: black;
 }
 
 .dropdownContent a:hover,
@@ -89,7 +89,7 @@
 }
 
 .dropdownContent button:hover {
-  background-color: red;
+  background-color: black;
   color: white;
   border-radius: 0 0 6px 6px;
 }
@@ -178,7 +178,7 @@
   padding: 10px;
 }
 .pofileDropdownContent button {
-  color: red;
+  color: black;
 }
 .pofileDropdownContent a:hover,
 .pofileDropdownContent button:hover {
@@ -193,7 +193,7 @@
   border-radius: 6px 6px 0 0;
 }
 .pofileDropdownContent button:hover {
-  background-color: red;
+  background-color: #0B2027;
   color: white;
   border-radius: 0 0 6px 6px;
 }

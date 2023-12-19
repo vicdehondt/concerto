@@ -5,26 +5,13 @@ import Link from "next/link";
 import Notification from "./Notification";
 import { useState, useEffect, useRef, ReactNode, useCallback } from "react";
 import { useRouter } from "next/router";
-import { X, User } from 'lucide-react';
+import { X, User as LucidUser } from "lucide-react";
+import { environment } from "./Environment";
+import EventSearchCard from "./EventSearchCard";
+import UserSearchCard from "./UserSearchCard";
+import { User, Event as EventType } from "./BackendTypes";
 
-type Profile = {
-    image: string;
-    username: string;
-    userID: number;
-    mail: string;
-    privacyAttendedEvents: string;
-    privacyCheckedInEvents: string;
-    privacyFriends: string;
-  }
-
-  const environment = {
-    backendURL: "http://localhost:8080",
-  };
-  if (process.env.NODE_ENV == "production") {
-    environment.backendURL = "https://api.concerto.dehondt.dev";
-  }
-
-const HamburgerMenu = ({pictureSource}: {pictureSource: string}) => {
+const HamburgerMenu = () => {
 
     const router = useRouter();
 
@@ -32,54 +19,41 @@ const HamburgerMenu = ({pictureSource}: {pictureSource: string}) => {
     const [notificationsVisible, setNotificationsVisible] = useState(false);
     const [notifications, setNotifications] = useState<Notification[]>([]);
     const [notificationsHTML, setNotificationsHTML] = useState<ReactNode[]>([]);
+    const [searchBoxVisible, setSearchBoxVisible] = useState(false);
+    const [searchResultsHTML, setSearchResultsHTML] = useState<ReactNode[]>([]);
+    const [eventSearchHTML, setEventSearchHTML] = useState<ReactNode[]>([]);
     const [dropdownVisible, setDropdownVisible] = useState(false);
-    const [profileDropdownVisible, setProfileDropdownVisible] = useState(false);
-    const [loggedIn, setLoggedIn] = useState(false);
     const [profile, setProfile] = useState({ userID: 0, image: null });
-
+    const [userIsLoggedIn, setUserIsLoggedIn] = useState(false);
+    const [profileDropdownVisible, setProfileDropdownVisible] = useState(false);
+  
     const notificationButtonRef = useRef<HTMLDivElement>(null);
     const notificationsRef = useRef<HTMLDivElement>(null);
+    const searchRef = useRef<HTMLDivElement>(null);
   
-    const convertNotifications = useCallback((notifications: Array<Notification>) => {
-      if (notifications.length === 0) {
-        return [<div key={0}>No notifications found.</div>];
+    const convertSearchResults = useCallback((results: Array<EventType | User>) => {
+      if (results.length === 0) {
+        return [<></>];
       }
   
-      return notifications.map((notification, index) => (
-        <div key={notification.notificationID}>
-          <Notification notification={notification} removeNotification={removeNotification} />
-        </div>
-      ));
-    }, []);
-  
-    useEffect(() => {
-      const eventSource = new EventSource(environment.backendURL + "/notifications/subscribe", {
-        withCredentials: true,
-      });
-  
-      eventSource.onopen = (event) => {
-        console.log("The connection has been established.", event);
-      };
-  
-      eventSource.onerror = (err) => {
-        console.error("EventSource failed:", err);
-      };
-  
-      eventSource.addEventListener("notification", async (event) => {
-        const eventData = JSON.parse(event.data);
-        if (eventData.NotificationObject.notificationType !== "friendrequestaccepted") {
-          const updatedNotifications = [...notifications, eventData];
-          setNotifications(updatedNotifications);
-          setNotificationsHTML(convertNotifications(updatedNotifications));
+      return results.map((result) => {
+        if ("eventID" in result) {
+          return (
+            <div key={result.eventID}>
+              <EventSearchCard event={result} />
+            </div>
+          );
+        } else if ("userID" in result) {
+          return (
+            <div key={result.userID}>
+              <UserSearchCard user={result} />
+            </div>
+          );
+        } else {
+          return [<></>];
         }
       });
-  
-      setNotificationsHTML(convertNotifications(notifications));
-  
-      return () => {
-        eventSource.close();
-      };
-    }, [notifications, convertNotifications]);
+    }, []);
   
     useEffect(() => {
       fetch(environment.backendURL + "/notifications", {
@@ -96,17 +70,6 @@ const HamburgerMenu = ({pictureSource}: {pictureSource: string}) => {
           setNotifications(responseJSON);
         });
   
-      fetch(environment.backendURL + "/auth/status", {
-        mode: "cors",
-        credentials: "include",
-      }).then((response) => {
-        if (response.status == 200) {
-          setLoggedIn(true);
-        } else if (response.status == 400) {
-          setLoggedIn(false);
-        }
-      });
-  
       fetch(environment.backendURL + "/profile", {
         mode: "cors",
         credentials: "include",
@@ -121,53 +84,21 @@ const HamburgerMenu = ({pictureSource}: {pictureSource: string}) => {
         .then((responseJSON) => {
           setProfile(responseJSON);
         });
+      fetch(environment.backendURL + "/auth/status", {
+        mode: "cors",
+        credentials: "include",
+      }).then((response) => {
+        if (response.status == 200) {
+          setUserIsLoggedIn(true);
+        } else if (response.status == 400) {
+          setUserIsLoggedIn(false);
+        }
+      });
     }, []);
   
-    useEffect(() => {
-      const handleOutSideClick = (event: Event) => {
-        if (
-          event.target != null &&
-          !notificationButtonRef.current?.contains(event.target as Node) &&
-          !notificationsRef.current?.contains(event.target as Node)
-        ) {
-          closeNotifications();
-        }
-      };
-      window.addEventListener("mousedown", handleOutSideClick);
-      return () => {
-        window.removeEventListener("mousedown", handleOutSideClick);
-      };
-    }, [notificationButtonRef, notificationsRef]);
-  
-    function toggleNotifications() {
-      if (loggedIn) {
-        setNotificationsVisible((val) => !val);
-        const notificationBox = document.getElementsByClassName(
-          styles.notificationsBox
-        ) as HTMLCollectionOf<HTMLElement>;
-        if (notificationsVisible) {
-          notificationBox[0].style.display = "none";
-        } else {
-          notificationBox[0].style.display = "block";
-        }
-      } else {
-        router.push(`/login?from=${router.asPath}`);
-      }
-    }
-  
-    function closeNotifications() {
-      const notificationBox = document.getElementsByClassName(
-        styles.notificationsBox
-      ) as HTMLCollectionOf<HTMLElement>;
-      setNotificationsVisible(false);
-      if (notificationBox && notificationBox.length > 0){
-      notificationBox[0].style.display = "none";
-      }
-    }
-  
-    const removeNotification = (notificationID: number) => {
+    const removeNotification = useCallback((notificationID: number) => {
       fetch(environment.backendURL + `/notifications/${notificationID}`, {
-        method: "POST",
+        method: "DELETE",
         mode: "cors",
         credentials: "include",
       })
@@ -189,13 +120,152 @@ const HamburgerMenu = ({pictureSource}: {pictureSource: string}) => {
           }
         })
         .catch((error) => console.error("Error removing notification:", error));
-    };
+    }, [setNotifications, setNotificationsHTML]);
   
-    function redirectURL(normalURL: string) {
-      if (loggedIn) {
+    const removeInfoNotifications = useCallback(() => {
+      notifications.forEach((notification) => {
+        if (notification.NotificationObject.notificationType === "friendrequestaccepted") {
+          console.log("Removing notification:", notification);
+          removeNotification(notification.notificationID);
+        }
+      });
+    }, [notifications, removeNotification]);
+  
+    const convertNotifications = useCallback((notifications: Array<Notification>) => {
+      if (notifications.length === 0) {
+        return [<div key={0}>No notifications found.</div>];
+      }
+  
+      return notifications.map((notification) => (
+        <div key={notification.notificationID}>
+          <Notification notification={notification} removeNotification={removeNotification} />
+        </div>
+      ));
+    }, [removeNotification]);
+  
+    const closeNotifications = useCallback(() => {
+      const notificationBox = document.getElementsByClassName(
+        styles.notificationsBox
+      ) as HTMLCollectionOf<HTMLElement>;
+      setNotificationsVisible(false);
+      if (notificationBox && notificationBox.length > 0){
+        notificationBox[0].style.display = "none";
+      }
+      removeInfoNotifications();
+    }, [removeInfoNotifications]);
+  
+    useEffect(() => {
+      setNotificationsHTML(convertNotifications(notifications));
+    }, [notifications, convertNotifications]);
+  
+    useEffect(() => {
+      const handleOutSideClick = (event: Event) => {
+        if (
+          event.target != null &&
+          !notificationButtonRef.current?.contains(event.target as Node) &&
+          !notificationsRef.current?.contains(event.target as Node)
+        ) {
+          closeNotifications();
+        }
+      };
+      window.addEventListener("mousedown", handleOutSideClick);
+      return () => {
+        window.removeEventListener("mousedown", handleOutSideClick);
+      };
+    }, [closeNotifications, notificationButtonRef, notificationsRef]);
+  
+    useEffect(() => {
+      const handleOutSideClick = (event: Event) => {
+        if (
+          event.target != null &&
+          !searchRef.current?.contains(event.target as Node)
+        ) {
+          closeSearchResults();
+        }
+      };
+      window.addEventListener("mousedown", handleOutSideClick);
+      return () => {
+        window.removeEventListener("mousedown", handleOutSideClick);
+      };
+    }, [searchRef]);
+  
+    useEffect(() => {
+      const searchBox = searchRef?.current;
+      if (searchBox) {
+        if (searchBoxVisible) {
+          searchBox.style.display = "block";
+        } else {
+          searchBox.style.display = "none";
+        }
+      }
+    }, [searchBoxVisible]);
+  
+    async function loggedIn() {
+      try {
+        const response = await fetch(environment.backendURL + "/auth/status", {
+          mode: "cors",
+          credentials: "include",
+        });
+        setUserIsLoggedIn(response.status === 200);
+        return response.status === 200;
+      } catch (error) {
+        setUserIsLoggedIn(false);
+        return false;
+      }
+    }
+  
+    function toggleNotifications() {
+      fetch(environment.backendURL + "/auth/status", {
+        mode: "cors",
+        credentials: "include",
+      }).then(async (response) => {
+        const userLoggedIn = await loggedIn();
+        if (userLoggedIn) {
+          setNotificationsVisible((val) => !val);
+          const notificationBox = document.getElementsByClassName(
+            styles.notificationsBox
+          ) as HTMLCollectionOf<HTMLElement>;
+          if (notificationsVisible) {
+            notificationBox[0].style.display = "none";
+            removeInfoNotifications();
+          } else {
+            notificationBox[0].style.display = "block";
+          }
+        } else {
+          router.push(`/login?from=${router.asPath}`);
+        }
+      });
+    }
+  
+    function closeSearchResults() {
+      const searchBox = searchRef?.current;
+      setSearchBoxVisible (false);
+      if (searchBox) {
+        searchBox.style.display = "none";
+      }
+    }
+  
+    async function redirectURL(normalURL: string) {
+      const userLoggedIn = await loggedIn();
+      if (userLoggedIn) {
         return normalURL;
       }
       return `/login?from=${encodeURIComponent(normalURL)}`;
+    }
+  
+    async function redirectClicked(event: React.MouseEvent<HTMLDivElement, MouseEvent>, url: string) {
+      event.preventDefault();
+      const newUrl = await redirectURL(url);
+      router.push(newUrl);
+    }
+  
+    async function redirectButtonClicked(
+      event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+      url: string
+    ) {
+      event.preventDefault();
+      const newUrl = await redirectURL(url);
+      router.push(newUrl);
     }
   
     function logOut() {
@@ -206,25 +276,72 @@ const HamburgerMenu = ({pictureSource}: {pictureSource: string}) => {
       }).then((response) => {
         if (response.status == 200) {
           router.push("/");
+          router.reload();
         }
       });
     }
-
+  
     function showAccountImage() {
       if (profile.userID == 0) {
         return (
-          <button className={styles.loginButton} onClick={(event) => router.push(redirectURL("/"))}>
+          <button
+            className={styles.loginButton}
+            onClick={(event) => redirectButtonClicked(event, "/")}
+          >
             Log In
           </button>
         );
       } else if (profile.image == null) {
         return (
-            <User className={styles.userImage} width={40} height={40} />
+          <div
+            className={styles.account}
+          >
+            <LucidUser className={styles.userImage} width={40} height={40} />
+          </div>
         );
       } else {
         return (
-            <Image src={pictureSource} width={56} height={56} alt="Profile picture" />
+          <div className={styles.account}>
+            <Image src={profile.image} style={{ objectFit: "cover" }} width={56} height={56} alt="Profile picture" />
+          </div>
         );
+      }
+    }
+  
+    function searchBackend(query: string) {
+      if (query.length !== 0) {
+        setSearchBoxVisible(true);
+        fetch(
+          environment.backendURL + `/search/users` + `?username=${query}` + `&limit=2` + `&offset=0`,
+          {
+            mode: "cors",
+            credentials: "include",
+          }
+        )
+          .then((response) => {
+            return response.json();
+          })
+          .then((responseJSON) => {
+            console.log(responseJSON);
+            setSearchResultsHTML(convertSearchResults(responseJSON));
+          });
+  
+        fetch(
+          environment.backendURL + `/search/events/filter` + `?title=${query}` + `&limit=2` + `&offset=0`,
+          {
+            mode: "cors",
+            credentials: "include",
+          }
+        )
+          .then((response) => {
+            return response.json();
+          })
+          .then((responseJSON) => {
+            console.log(responseJSON);
+            setEventSearchHTML(convertSearchResults(responseJSON));
+          });
+      } else {
+        setSearchBoxVisible(false);
       }
     }
 
@@ -243,10 +360,16 @@ const HamburgerMenu = ({pictureSource}: {pictureSource: string}) => {
                     {isOpen && (
                         <div className={styles.dropdownContent} onMouseEnter={() => {setDropdownVisible(true);}} onMouseLeave={() => {setDropdownVisible(false);}}>
                             <Link href="/">Concerto</Link>
-                            <Searchbar type="long" onChange={(event) => console.log("Not impmeneted yet")} />
-                            <Link href={redirectURL("/add-event")}>Add Event</Link>
-                            <Link href={redirectURL("/friends")}>Friends</Link>
-                            <Link href={redirectURL("/wishlist")}>Wishlist</Link>
+                            <Searchbar type="long" onClick={(query: string) => searchBackend(query)} onChange={(query: string) => searchBackend(query)} />
+                            <button onClick={(event) => redirectButtonClicked(event, "/add-event")}>
+                              Add Event
+                            </button>
+                            <button onClick={(event) => redirectButtonClicked(event, "/friends")}>
+                              Friends
+                            </button>
+                            <button onClick={(event) => redirectButtonClicked(event, "/wishlist")}>
+                              Wishlist
+                            </button>
                             <div className={styles.notifications} ref={notificationButtonRef}>
                               <button
                                 id="notifications"
@@ -277,9 +400,9 @@ const HamburgerMenu = ({pictureSource}: {pictureSource: string}) => {
               >
                 {showAccountImage()}
               </div>
-              {loggedIn && profileDropdownVisible && (
+              {userIsLoggedIn && profileDropdownVisible && (
                 <div
-                  className={styles.pofileDropdownContent}
+                className={styles.pofileDropdownContent}
                   onMouseEnter={() => {
                     setProfileDropdownVisible(true);
                   }}
@@ -287,14 +410,13 @@ const HamburgerMenu = ({pictureSource}: {pictureSource: string}) => {
                     setProfileDropdownVisible(false);
                   }}
                 >
-                  <Link href={redirectURL(`/accounts/${profile.userID}`)}> Show profile</Link>
+                  <button onClick={(event) => redirectButtonClicked(event, `/accounts/${profile.userID}`)}> Show profile </button>
                   <Link href="/settings">Settings</Link>
                   <button onClick={(event) => logOut()}>Log out</button>
                 </div>
               )}
-            </div>
+          </div>
         </nav>
-
     );
 };
 
