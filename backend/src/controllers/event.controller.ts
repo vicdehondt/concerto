@@ -50,14 +50,14 @@ export class EventController extends BaseController {
 					if  (this.isValidTimeFormat(value)) {
 						return true;
 					} else {
-						throw Error("The main field should have form `HH:MM:SS`.");
+						throw Error("The main field should have form `HH:MM`.");
 					}
 				}),
 				body("doors").trim().notEmpty().custom((value) => {
 					if (this.isValidTimeFormat(value)) {
 						return true;
 					} else {
-						throw Error("The doors field should have form `HH:MM:SS`.");
+						throw Error("The doors field should have form `HH:MM` .");
 					}
 				}),
 				body("price").trim().notEmpty(),
@@ -68,7 +68,7 @@ export class EventController extends BaseController {
 					if (this.isValidDate(value)) {
 						return true;
 					} else {
-						throw new Error('Date must be in the format YYYY-MM-DDTHH:MM:SS.');
+						throw new Error('Date must be in the format `YYYY-MM-DDTHH:MM` .');
 					}
 				}),
 				body("url").trim().notEmpty().custom(value => {
@@ -207,14 +207,14 @@ export class EventController extends BaseController {
 								event[field] = req.body[field];
 							} else {
 								errorExists = true;
-								errormessages.push('The doors/main/support field was not in the correct form HH:MM:SS.');
+								errormessages.push('The doors/main/support fields were not in the correct form HH:MM.');
 							}
 						} else if (field == 'dateAndTime') {
 							if (this.isValidDate(req.body[field])) {
 								event[field] = req.body[field];
 							} else {
 								errorExists = true;
-								errormessages.push('The dateAndTime field was not in the correct form YYYY-MM-DDTHH:MM:SS.');
+								errormessages.push('The dateAndTime field was not in the correct form YYYY-MM-DDTHH:MM.');
 							}
 						} else {
 							event[field] = req.body[field];
