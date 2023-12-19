@@ -98,11 +98,11 @@ function Biography({ user, source, username, description }: BiographyProps) {
     });
   }
 
-  function handleMouseEnter(event: Event) {
+  function handleMouseEnter() {
     setHovering(true);
   }
 
-  function handleMouseLeave(event: Event) {
+  function handleMouseLeave() {
     setHovering(false);
   }
 
@@ -119,7 +119,7 @@ function Biography({ user, source, username, description }: BiographyProps) {
       return (
         <>
           <div className={styles.buttonContainer}>
-            <button className={styles.friendButton} onClick={(event) => undoRequest()} onMouseEnter={(event) => handleMouseEnter(event)} onMouseLeave={(event) => handleMouseLeave(event)}>
+            <button className={styles.friendButton} onClick={(event) => undoRequest()} onMouseEnter={(event) => handleMouseEnter()} onMouseLeave={(event) => handleMouseLeave()}>
               {hovering ? "Undo request" : "Request sent!"}
             </button>
           </div>
