@@ -29,6 +29,7 @@ export default function EditEvent() {
   const [date, setDate] = useState(getFormattedDate(new Date()));
   const [price, setPrice] = useState(0);
   const [selectedArtist, setSelectedArtist] = useState<Artist | null>(null);
+  const [editError, setEditError] = useState<string | null>(null);
 
   const [concert, setConcert] = useState<Event | null>(null);
 
@@ -137,6 +138,8 @@ export default function EditEvent() {
       const data = await response.json();
       if (response.status == 200 && concert) {
         router.push(`/concerts/${concert?.eventID}`);
+      } else if (response.status == 400) {
+        setEditError(data.message);
       }
     }
   }
@@ -253,6 +256,7 @@ export default function EditEvent() {
             </div>
           </div>
           <div className={styles.addEventButton}>
+            {editError && <div className={styles.error}>{editError}</div>}
             <button className={styles.submitButton} type="submit">
               Save edited event
             </button>

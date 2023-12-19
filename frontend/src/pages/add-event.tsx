@@ -30,6 +30,7 @@ export default function AddEvent() {
   const [eventPictureError, setEventPictureError] = useState<string | null>(null);
   const [artistError, setArtistError] = useState<string | null>(null);
   const [venueError, setVenueError] = useState<string | null>(null);
+  const [addError, setAddError] = useState<string | null>(null);
 
   function concatDateAndTime() {
     const dateAndTime = date + "T" + time;
@@ -86,6 +87,8 @@ export default function AddEvent() {
       const data = await response.json();
       if (response.status == 200) {
         router.push("/");
+      } else if (response.status == 400 && data.message == "This event already exists so a new one could not be created.") {
+        setAddError("This event already exists, so a new one could not be created.");
       }
     }
   }
@@ -180,6 +183,7 @@ export default function AddEvent() {
             </div>
           </div>
           <div className={styles.addEventButton}>
+            {addError && <div className={styles.error}>{addError}</div>}
             <button className={styles.submitButton} type="submit">
               Add event!
             </button>
