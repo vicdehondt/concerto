@@ -28,6 +28,7 @@ export default function AddEvent() {
   const [location, setLocation] = useState({venueID: "123", venueName: "Not selected"});
   const [time, setTime] = useState("")
   const [date, setDate] = useState(getFormattedDate(new Date()))
+  const [price, setPrice] = useState("");
   const [selectedArtist, setSelectedArtist] = useState<Artist | null>(null)
 
   function concatDateAndTime() {
@@ -92,16 +93,16 @@ export default function AddEvent() {
               </div>
             </div>
             <div className={styles.cardPreview}>
-              <EventCardUpload title={title} location={location.venueName} date={date} time={time} price={20} />
+              <EventCardUpload title={title} location={location.venueName} date={date} time={time} price={price as unknown as number} />
             </div>
           </div>
           <div className={styles.artistAndLocationContainer}>
-            <ArtistAndLocationUpload locationCallback={(venue: Venue) => setLocation(venue)} artistCallback={(artist: Artist) => setSelectedArtist(artist)} />
+            <ArtistAndLocationUpload locationCallback={(venue: Venue) => setLocation(venue)} artist={selectedArtist} artistCallback={(artist: Artist) => setSelectedArtist(artist)} />
           </div>
           <div className={styles.priceContainer}>
             Tickets
             <div className={styles.priceInput}>
-              <input type="number" name="price" id="price" placeholder="Minimum price" required />
+              <input type="number" name="price" id="price" placeholder="Minimum price" onChange={(event) => setPrice(event.target.value)} required />
               EUR
             </div>
             <div className={styles.ticketURL}>

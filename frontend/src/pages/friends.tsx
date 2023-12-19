@@ -12,10 +12,22 @@ const inter = Inter({ subsets: ["latin"] });
 export default function Friends() {
 
   const [friends, setFriends] = useState([]);
+  const [search, setSearch] = useState("");
 
   function showFriends(response: Array<Friend>) {
     var key = 0;
     return response.map((friend) => {
+      key += 1;
+      return <FriendCard key={key} friend={friend} />
+    })
+  }
+
+  function showFilteredFriends(response: Array<Friend>) {
+    const filtered = response.filter((friend) => {
+      return friend.username.toLowerCase().includes(search.toLowerCase());
+    });
+    var key = 0;
+    return filtered.map((friend) => {
       key += 1;
       return <FriendCard key={key} friend={friend} />
     })
@@ -47,13 +59,14 @@ export default function Friends() {
       </Head>
       <main className={`${styles.main} ${inter.className}`}>
         <div className={[styles.page, styles.friendsPage].join(" ")}>
-          <SideBar type="friends" />
+          <SideBar type="friends" queryCallback={(string) => setSearch(string)} />
           <div className={styles.pageContent}>
             <div className={styles.headerBox}>
               <h1>Friends</h1>
             </div>
             <div className={styles.friendsContainer}>
-              {showFriends(friends)}
+              {(search == "") && showFriends(friends)}
+              {(search != "") && showFilteredFriends(friends)}
             </div>
           </div>
         </div>

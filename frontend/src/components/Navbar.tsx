@@ -19,6 +19,7 @@ function Navbar() {
   const [notificationsHTML, setNotificationsHTML] = useState<ReactNode[]>([]);
   const [searchBoxVisible, setSearchBoxVisible] = useState(false);
   const [searchResultsHTML, setSearchResultsHTML] = useState<ReactNode[]>([]);
+  const [eventSearchHTML, setEventSearchHTML] = useState<ReactNode[]>([]);
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [profile, setProfile] = useState({ userID: 0, image: null });
   const [userIsLoggedIn, setUserIsLoggedIn] = useState(false);
@@ -26,18 +27,6 @@ function Navbar() {
   const notificationButtonRef = useRef<HTMLDivElement>(null);
   const notificationsRef = useRef<HTMLDivElement>(null);
   const searchRef = useRef<HTMLDivElement>(null);
-
-  const convertNotifications = useCallback((notifications: Array<Notification>) => {
-    if (notifications.length === 0) {
-      return [<div key={0}>No notifications found.</div>];
-    }
-
-    return notifications.map((notification) => (
-      <div key={notification.notificationID}>
-        <Notification notification={notification} removeNotification={removeNotification} />
-      </div>
-    ));
-  }, []);
 
   const convertSearchResults = useCallback((results: Array<EventType | User>) => {
     if (results.length === 0) {
@@ -62,10 +51,6 @@ function Navbar() {
       }
     });
   }, []);
-
-  useEffect(() => {
-    setNotificationsHTML(convertNotifications(notifications));
-  }, [notifications, convertNotifications]);
 
   useEffect(() => {
     fetch(environment.backendURL + "/notifications", {
@@ -108,6 +93,66 @@ function Navbar() {
     });
   }, []);
 
+  const removeNotification = useCallback((notificationID: number) => {
+    fetch(environment.backendURL + `/notifications/${notificationID}`, {
+      method: "DELETE",
+      mode: "cors",
+      credentials: "include",
+    })
+      .then((response) => {
+        if (response.status === 200) {
+          setNotifications((prevNotifications) =>
+            prevNotifications.filter(
+              (notification: Notification) => notification.notificationID !== notificationID
+            )
+          );
+          setNotificationsHTML((prevNotificationsHTML) =>
+            prevNotificationsHTML.filter((notification: ReactNode) => {
+              const notificationWithKey = notification as { key?: number };
+              return notificationWithKey && notificationWithKey.key !== notificationID;
+            })
+          );
+        } else {
+          console.error("Error removing notification. Server response:", response);
+        }
+      })
+      .catch((error) => console.error("Error removing notification:", error));
+  }, [setNotifications, setNotificationsHTML]);
+
+  const removeInfoNotifications = useCallback(() => {
+    notifications.forEach((notification) => {
+      if (notification.NotificationObject.notificationType === "friendrequestaccepted") {
+        console.log("Removing notification:", notification);
+        removeNotification(notification.notificationID);
+      }
+    });
+  }, [notifications, removeNotification]);
+
+  const convertNotifications = useCallback((notifications: Array<Notification>) => {
+    if (notifications.length === 0) {
+      return [<div key={0}>No notifications found.</div>];
+    }
+
+    return notifications.map((notification) => (
+      <div key={notification.notificationID}>
+        <Notification notification={notification} removeNotification={removeNotification} />
+      </div>
+    ));
+  }, [removeNotification]);
+
+  const closeNotifications = useCallback(() => {
+    const notificationBox = document.getElementsByClassName(
+      styles.notificationsBox
+    ) as HTMLCollectionOf<HTMLElement>;
+    setNotificationsVisible(false);
+    notificationBox[0].style.display = "none";
+    removeInfoNotifications();
+  }, [removeInfoNotifications]);
+
+  useEffect(() => {
+    setNotificationsHTML(convertNotifications(notifications));
+  }, [notifications, convertNotifications]);
+
   useEffect(() => {
     const handleOutSideClick = (event: Event) => {
       if (
@@ -122,7 +167,7 @@ function Navbar() {
     return () => {
       window.removeEventListener("mousedown", handleOutSideClick);
     };
-  }, [notificationButtonRef, notificationsRef]);
+  }, [closeNotifications, notificationButtonRef, notificationsRef]);
 
   useEffect(() => {
     const handleOutSideClick = (event: Event) => {
@@ -187,24 +232,6 @@ function Navbar() {
     });
   }
 
-  function removeInfoNotifications() {
-    notifications.forEach((notification) => {
-      if (notification.NotificationObject.notificationType === "friendrequestaccepted") {
-        console.log("Removing notification:", notification);
-        removeNotification(notification.notificationID);
-      }
-    });
-  }
-
-  function closeNotifications() {
-    const notificationBox = document.getElementsByClassName(
-      styles.notificationsBox
-    ) as HTMLCollectionOf<HTMLElement>;
-    setNotificationsVisible(false);
-    notificationBox[0].style.display = "none";
-    removeInfoNotifications();
-  }
-
   function closeSearchResults() {
     const searchBox = searchRef?.current;
     setSearchBoxVisible (false);
@@ -212,32 +239,6 @@ function Navbar() {
       searchBox.style.display = "none";
     }
   }
-
-  const removeNotification = (notificationID: number) => {
-    fetch(environment.backendURL + `/notifications/${notificationID}`, {
-      method: "DELETE",
-      mode: "cors",
-      credentials: "include",
-    })
-      .then((response) => {
-        if (response.status === 200) {
-          setNotifications((prevNotifications) =>
-            prevNotifications.filter(
-              (notification: Notification) => notification.notificationID !== notificationID
-            )
-          );
-          setNotificationsHTML((prevNotificationsHTML) =>
-            prevNotificationsHTML.filter((notification: ReactNode) => {
-              const notificationWithKey = notification as { key?: number };
-              return notificationWithKey && notificationWithKey.key !== notificationID;
-            })
-          );
-        } else {
-          console.error("Error removing notification. Server response:", response);
-        }
-      })
-      .catch((error) => console.error("Error removing notification:", error));
-  };
 
   async function redirectURL(normalURL: string) {
     const userLoggedIn = await loggedIn();
@@ -322,7 +323,7 @@ function Navbar() {
         });
 
       fetch(
-        environment.backendURL + `/search/events` + `?title=${query}` + `&limit=2` + `&offset=0`,
+        environment.backendURL + `/search/events/filter` + `?title=${query}` + `&limit=2` + `&offset=0`,
         {
           mode: "cors",
           credentials: "include",
@@ -333,6 +334,7 @@ function Navbar() {
         })
         .then((responseJSON) => {
           console.log(responseJSON);
+          setEventSearchHTML(convertSearchResults(responseJSON));
         });
     } else {
       setSearchBoxVisible(false);
@@ -347,6 +349,7 @@ function Navbar() {
           <Searchbar type="long" onClick={(query: string) => searchBackend(query)} onChange={(query: string) => searchBackend(query)} />
           <div className={styles.searchBox} ref={searchRef}>
             {searchBoxVisible && searchResultsHTML}
+            {searchBoxVisible && eventSearchHTML}
           </div>
           <div className={styles.addEventButton}>
             <div className={styles.add} onClick={(event) => redirectClicked(event, "/add-event")}>

@@ -30,9 +30,10 @@ export type Notification = {
 
 export type Filter = {
   venueID: string | null;
-  datetime: Date | null;
-  genre1: string | null;
-  price: number | null;
+  date: Date | null;
+  genre: Array<string> | null;
+  minPrice: string | null;
+  maxPrice: string | null;
 };
 
 export type Rating = {
