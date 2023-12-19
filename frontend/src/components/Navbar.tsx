@@ -125,7 +125,6 @@ function Navbar() {
   const removeInfoNotifications = useCallback(() => {
     notifications.forEach((notification) => {
       if (notification.NotificationObject.notificationType === "friendrequestaccepted") {
-        console.log("Removing notification:", notification);
         removeNotification(notification.notificationID);
       }
     });
@@ -330,7 +329,6 @@ function Navbar() {
           return response.json();
         })
         .then((responseJSON) => {
-          console.log(responseJSON);
           setSearchResultsHTML(convertSearchResults(responseJSON));
         });
 
@@ -349,7 +347,6 @@ function Navbar() {
           return response.json();
         })
         .then((responseJSON) => {
-          console.log(responseJSON);
           setEventSearchHTML(convertSearchResults(responseJSON));
         });
     } else {

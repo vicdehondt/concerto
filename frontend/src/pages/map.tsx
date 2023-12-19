@@ -29,10 +29,6 @@ export default function Map() {
     return <VenueMap events={events} />;
   }
 
-  function errorFunction() {
-    console.log("Unable to retrieve your location.");
-  }
-
   function successFunction(position: GeolocationPosition) {
     setLocation([position.coords.latitude, position.coords.longitude]);
   }
@@ -94,7 +90,7 @@ export default function Map() {
       })
       .then((responseJSON) => {
         setEvents(responseJSON);
-        navigator.geolocation.getCurrentPosition(successFunction, errorFunction);
+        navigator.geolocation.getCurrentPosition(successFunction);
       });
   }, []);
 

@@ -66,7 +66,6 @@ export default function Settings() {
           return response.json();
         })
         .then((responseJSON) => {
-          console.log(responseJSON);
           setUser(responseJSON);
         });
   }, []);
