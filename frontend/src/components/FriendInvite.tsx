@@ -40,7 +40,7 @@ function FriendInvites({ eventID }: FriendInvitesProps) {
 
   return (
     <div className={styles.inviteContainer}>
-			{showFriends(friends)}
+			{friends && showFriends(friends)}
     </div>
   );
 }
