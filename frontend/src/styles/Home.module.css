@@ -210,6 +210,13 @@
     "add-event add-event";
 }
 
+.addEventPage .error {
+  color: red;
+  font-size: large;
+  font-weight: bold;
+  text-align: center;
+}
+
 .addEventPage .bannerContainer {
   grid-area: banner;
   position: relative;
@@ -335,6 +342,7 @@
   display: flex;
   justify-content: right;
   align-items: center;
+  flex-direction: column;
 }
 
 .addEventPage .title {

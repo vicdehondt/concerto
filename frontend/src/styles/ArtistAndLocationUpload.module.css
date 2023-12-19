@@ -56,3 +56,10 @@
   margin-top: 5px;
   width: fit-content;
 }
+
+.error {
+  color: red;
+  font-size: large;
+  font-weight: bold;
+  text-align: center;
+}

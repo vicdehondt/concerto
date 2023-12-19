@@ -22,36 +22,71 @@ function getFormattedDate(date: Date) {
 export default function AddEvent() {
   const router = useRouter();
   const [title, setTitle] = useState("");
-  const [location, setLocation] = useState({ venueID: "123", venueName: "Not selected" });
+  const [location, setLocation] = useState<Venue | null>(null);
   const [time, setTime] = useState("");
   const [date, setDate] = useState(getFormattedDate(new Date()));
   const [price, setPrice] = useState("");
   const [selectedArtist, setSelectedArtist] = useState<Artist | null>(null);
+  const [eventPictureError, setEventPictureError] = useState<string | null>(null);
+  const [artistError, setArtistError] = useState<string | null>(null);
+  const [venueError, setVenueError] = useState<string | null>(null);
 
   function concatDateAndTime() {
     const dateAndTime = date + "T" + time;
     return dateAndTime;
   }
 
+  function eventPictureChosen(form: FormData) {
+    const eventPicture: File = form.get("eventPicture") as File;
+    if (eventPicture.name == "") {
+      setEventPictureError("Event picture is required.");
+      return false
+    }
+    setEventPictureError(null);
+    return true;
+  }
+
+  function artistSelected() {
+    if (selectedArtist == null) {
+      setArtistError("Artist is required.");
+      return false;
+    }
+    setArtistError(null);
+    return true;
+  }
+
+  function venueSelected() {
+    if (location == null) {
+      setVenueError("Location is required.");
+      return false;
+    }
+    setVenueError(null);
+    return true;
+  }
+
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     var formData = new FormData(event.currentTarget);
-    formData.append("dateAndTime", concatDateAndTime());
-    formData.append("venueID", location.venueID);
-    if (selectedArtist) {
-      formData.append("artistID", selectedArtist.id);
-    }
-    const response = await fetch(environment.backendURL + "/events", {
-      method: "POST",
-      body: formData,
-      mode: "cors",
-      credentials: "include",
-    });
+    if (artistSelected() && eventPictureChosen(formData) && venueSelected()) {
+      formData.append("dateAndTime", concatDateAndTime());
+      if (location) {
+        formData.append("venueID", location.venueID);
+      }
+      if (selectedArtist) {
+        formData.append("artistID", selectedArtist.id);
+      }
+      const response = await fetch(environment.backendURL + "/events", {
+        method: "POST",
+        body: formData,
+        mode: "cors",
+        credentials: "include",
+      });
 
-    // Handle response if necessary
-    const data = await response.json();
-    if (response.status == 200) {
-      router.push("/");
+      // Handle response if necessary
+      const data = await response.json();
+      if (response.status == 200) {
+        router.push("/");
+      }
     }
   }
 
@@ -94,9 +129,10 @@ export default function AddEvent() {
               </div>
             </div>
             <div className={styles.cardPreview}>
+              {eventPictureError && <div className={styles.error}>{eventPictureError}</div>}
               <EventCardUpload
                 title={title}
-                location={location.venueName}
+                location={location}
                 date={date}
                 time={time}
                 price={price as unknown as number}
@@ -104,10 +140,15 @@ export default function AddEvent() {
             </div>
           </div>
           <div className={styles.artistAndLocationContainer}>
+            {venueError && <div className={styles.error}>{venueError}</div>}
             <ArtistAndLocationUpload
               locationCallback={(venue: Venue) => setLocation(venue)}
               artist={selectedArtist}
-              artistCallback={(artist: Artist) => setSelectedArtist(artist)}
+              artistCallback={(artist: Artist) => {
+                setArtistError(null);
+                setSelectedArtist(artist)
+              }}
+              error={artistError}
             />
           </div>
           <div className={styles.priceContainer}>

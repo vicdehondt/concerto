@@ -2,6 +2,7 @@ import Image from "next/image";
 import styles from "@/styles/EventCardUpload.module.css";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { genreOptions } from "./GenreOptions";
+import { Venue } from "./BackendTypes";
 
 function getMonth(month: number) {
   switch (month) {
@@ -34,7 +35,7 @@ function getMonth(month: number) {
 
 type EventCardUploadProps = {
   title: string;
-  location: string;
+  location: Venue | null;
   date: string;
   time: string;
   price: number;
@@ -134,26 +135,14 @@ function EventCardUpload({
   return (
     <div className={styles.eventCard}>
       <div className={styles.eventPicture}>
-        {edit ? (
-          <input
-            ref={fileInputRef}
-            id="eventPicture"
-            name="eventPicture"
-            type="file"
-            accept="image/png, image/jpg, image/jpeg"
-            onChange={bannerImageChosen}
-          />
-        ) : (
-          <input
-            ref={fileInputRef}
-            required
-            id="eventPicture"
-            name="eventPicture"
-            type="file"
-            accept="image/png, image/jpg, image/jpeg"
-            onChange={bannerImageChosen}
-          />
-        )}
+        <input
+          ref={fileInputRef}
+          id="eventPicture"
+          name="eventPicture"
+          type="file"
+          accept="image/png, image/jpg, image/jpeg"
+          onChange={bannerImageChosen}
+        />
         <div
           className={styles.overlay}
           onClick={() => fileInputRef.current && fileInputRef.current.click()}
@@ -166,7 +155,7 @@ function EventCardUpload({
         <div className={styles.performance}>{title}</div>
         <div className={styles.location}>
           <Image src="/icons/location.png" width={18} height={21} alt="" />
-          <div>{location}</div>
+          {location && <div>{location.venueName}</div>}
         </div>
       </div>
       <div className={styles.tickets}>
