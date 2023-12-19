@@ -365,15 +365,23 @@
 .addEventPage .priceContainer {
   grid-area: tickets;
   display: flex;
-  flex-direction: column;
   justify-content: right;
+}
+
+.addEventPage .priceBox {
+  margin-right: 22%;
+  width: fit-content;
   font-weight: bold;
   font-size: x-large;
+  display: flex;
+  flex-direction: column;
 }
 
 .addEventPage .priceInput {
+  display: flex;
   font-size: medium;
   font-weight: bold;
+  align-items: center;
 }
 
 .addEventPage .priceInput input {
@@ -382,9 +390,14 @@
   margin-right: 5px;
 }
 
-.addEventPage .priceContainer .ticketURL {
+.addEventPage .priceBox .ticketURL {
+  display: flex;
   font-size: medium;
   font-weight: normal;
+}
+
+.addEventPage .priceBox .ticketURL input {
+  margin-left: 5px;
 }
 
 .addEventPage .descriptionContainer {

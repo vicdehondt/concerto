@@ -11,8 +11,7 @@ type FriendInvitesProps = {
 
 function FriendInvites({ eventID }: FriendInvitesProps) {
 
-	const [friends, setFriends] = useState([]);
-	const [friendsHTML, setFriendsHTML] = useState([]);
+	const [friends, setFriends] = useState<Friend[]>([]);
 
 	function showFriends(friends: Array<Friend>) {
 		return friends.map((friend) => {
@@ -30,7 +29,10 @@ function FriendInvites({ eventID }: FriendInvitesProps) {
         credentials: "include",
       })
         .then((response) => {
-          return response.json();
+          if (response.status == 200) {
+            return response.json();
+          }
+          return [];
         })
         .then((responseJSON) => {
           setFriends(responseJSON);
