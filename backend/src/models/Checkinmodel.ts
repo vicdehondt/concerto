@@ -90,6 +90,10 @@ export async function userCheckOut(userID, event): Promise<boolean> {
 }
 
 export async function allCheckedInEvents(userID) {
+    return await checkinsFinder(userID, false);
+
+}
+async function checkinsFinder(userID, finished) {
     const checkins = await CheckedInUsers.findAll({
         attributes: ['eventID'],
         where: {
@@ -99,40 +103,31 @@ export async function allCheckedInEvents(userID) {
     const eventIDs = checkins.map(event => {
         return event.eventID
     });
+    const whereClause = {
+        eventID: {
+            [Op.in]: eventIDs,
+        }
+    }
+    if (finished) {
+        whereClause['dateAndTime'] = {
+            [Op.lt]: expiredEventTreshold()
+           }
+    } else {
+        whereClause['dateAndTime'] = {
+         [Op.gte]: expiredEventTreshold()
+        }
+    }
     const events = await EventModel.findAll({
-        attributes: ['eventID', 'eventPicture', 'title'],
+        attributes: ['eventID', 'eventPicture', 'title', 'dateAndTime'],
         include: [
             { model: Artist, attributes: ['artistID', 'name']},
             { model: VenueModel, attributes: ['venueID', 'venueName'] }
         ],
-        where: {
-            eventID: {
-                [Op.in]: eventIDs,
-            }, dateAndTime: {
-                [Op.gte]: expiredEventTreshold()
-            }
-        }
-    })
+        where: whereClause
+    });
     return events;
 }
 
 export async function allAttendedEvents(userID) {
-    const user = await UserModel.findByPk(userID, {
-        include: [{
-            model: EventModel,
-        }]
-    });
-    const events = await user.getEvents({
-        attributes: ['eventID', 'eventPicture', 'title'],
-        where: {
-            dateAndTime: {
-                [Op.lt]: expiredEventTreshold()
-            }
-        }
-    });
-    const cleanedEvents = events.map(event => {
-        const { CheckedInUser, ...eventWithoutCheckedInUser } = event.toJSON();
-        return eventWithoutCheckedInUser;
-    });
-    return cleanedEvents;
+    return await checkinsFinder(userID, true);
 }
