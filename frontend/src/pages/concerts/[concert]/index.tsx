@@ -242,8 +242,8 @@ export default function Concert() {
               {concert && <Rating
                 artistScore={artistScore}
                 venueScore={venueScore}
-                artist={concert.Artist.artistID}
-                venue={concert.Venue.venueID}
+                artist={concert.Artist}
+                venue={concert.Venue}
               />}
             </div>
           </div>

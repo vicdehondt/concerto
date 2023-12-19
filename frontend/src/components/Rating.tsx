@@ -1,8 +1,16 @@
 import styles from "@/styles/Rating.module.css";
 import { Star } from 'lucide-react';
 import Link from "next/link";
+import { Artist, Venue } from "./BackendTypes";
 
-function Rating({artistScore, venueScore, artist, venue}: {artistScore: number, venueScore: number, artist: string, venue: string}) {
+type RatingProps = {
+  artistScore: number,
+  venueScore: number,
+  artist: Artist,
+  venue: Venue
+}
+
+function Rating({artistScore, venueScore, artist, venue}: RatingProps) {
 
   function showScore(score: number) {
     if ((score != null) && (score > 0.5)) {
@@ -19,17 +27,17 @@ function Rating({artistScore, venueScore, artist, venue}: {artistScore: number, 
 
   return (
     <div className={styles.rateBox}>
-      <Link href={`/ratings/venues/${venue}`} className={styles.box}>
+      <Link href={`/ratings/venues/${venue.venueID}`} className={styles.box}>
         <div className={styles.text}>
-          Location
+          {venue.venueName}
         </div>
         <div className={styles.stars}>
           {showScore(venueScore)}
         </div>
       </Link>
-      <Link href={`/ratings/artists/${artist}`} className={styles.box}>
+      <Link href={`/ratings/artists/${artist.artistID}`} className={styles.box}>
         <div className={styles.text}>
-          Artist
+          {artist.name}
         </div>
         <div className={styles.stars}>
           {showScore(artistScore)}
