@@ -37,7 +37,7 @@ function Searchbar({ type, onClick, onChange }: SearchBarProps) {
             placeholder="Search..."
             onClick={(event) => {
               event.currentTarget.select();
-              onClick((event.target as HTMLInputElement).value)
+              onClick((event.target as HTMLInputElement).value);
             }}
             onChange={(event) => onChange(event.target.value)}
           />

@@ -30,7 +30,7 @@ export default function App({ Component, pageProps }: AppProps) {
   function NavbarIfNeeded() {
     const path = router.asPath;
     if (!path.includes("/login") && !path.includes("/register")) {
-      return <Navbar pictureSource="/photos/Rombout.jpeg" />
+      return <Navbar />
     }
   }
 

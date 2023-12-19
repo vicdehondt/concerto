@@ -50,7 +50,7 @@ function ProfilePictureUpload({ picture }: ProfilePictureUploadProps) {
       <div className={styles.bannerContainer}>
         {showBanner()}
         <div className={styles.uploadBox}>
-          {picture ? (<input id='picture' name='picture' type="file" onChange={ImageChosen} />) : (<input id='banner' name='banner' type="file" required onChange={ImageChosen} />)}
+          {picture ? (<input id='picture' name='picture' type="file" accept="image/png, image/jpg, image/jpeg" onChange={ImageChosen} />) : (<input id='banner' name='banner' type="file" accept="image/png, image/jpg, image/jpeg" required onChange={ImageChosen} />)}
         </div>
       </div>
     </>

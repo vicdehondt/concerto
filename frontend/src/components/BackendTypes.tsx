@@ -30,8 +30,10 @@ export type Notification = {
 
 export type Filter = {
   venueID: string | null;
-  datetime: Date | null;
-  genre1: string | null;
+  date: Date | null;
+  genre: Array<string> | null;
+  minPrice: string | null;
+  maxPrice: string | null;
 };
 
 export type Rating = {
@@ -40,6 +42,7 @@ export type Rating = {
 }
 
 export type Artist = {
+  id: string;
   artistID: string;
   name: string;
   type: string;
@@ -67,6 +70,7 @@ export type Event = {
   checkedIn: boolean;
   Artist: Artist;
   Venue: Venue;
+  url: string;
 };
 
 export type Profile = {
@@ -88,6 +92,7 @@ export type User = {
   privacyCheckedInEvents: string;
   privacyFriends: string;
   description: string;
+  friendship?: string;
 }
 
 export type Review = {
@@ -111,6 +116,7 @@ export type Error = {
   type: string;
   value: string;
   msg: string;
+  message: string;
 }
 
 export type Wish = {
