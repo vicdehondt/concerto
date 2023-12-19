@@ -45,13 +45,15 @@ function UserEvent({ event }: { event: Event}) {
         </div>
         <div className={styles.location}>
         <Image src="/icons/location.png" width={18} height={21} alt=""/>
-          <div> Location </div>
+          <div> 
+            {event.Venue.venueName}
+          </div>
         </div>
       </div>
       <div className={styles.dateContainer}>
         <Image src="/icons/date.png" width={35} height={35} alt="Date" />
         <div className={styles.date}>
-          6 December
+        {event.dateAndTime}
         </div>
       </div>
     </div>

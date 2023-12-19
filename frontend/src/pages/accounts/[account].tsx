@@ -76,6 +76,7 @@ export default function Account() {
   useEffect(() => {
     const id = router.query.account
     if (id) {
+      console.log("The userid is: ", id);
       fetch(environment.backendURL + "/users" + `/${id}`, {
         mode: "cors",
         credentials: "include",
@@ -85,6 +86,7 @@ export default function Account() {
         })
         .then((responseJSON) => {
           setUser(responseJSON);
+          console.log("The response is: ", responseJSON);
           requestCheckins(responseJSON);
           requestAttended(responseJSON);
         });

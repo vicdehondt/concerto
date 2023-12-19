@@ -16,8 +16,7 @@ export class UserController extends BaseController {
     }
 
     initializeRoutes(): void {
-		this.router.get('/:userID', this.requireAuth,
-			upload.none(),
+		this.router.get('/:userID', this.requireAuth, upload.none(), [ this.checkUserExists], this.verifyErrors,
 			(req: express.Request, res: express.Response) => {
 				this.getUserInformation(req, res);
 			});
@@ -41,14 +40,13 @@ export class UserController extends BaseController {
 	async getUserInformation(req: express.Request, res: express.Response) {
 		try {
 			const sessiondata = req.session;
-			const userID = req.body.user;
-			const user = await database.RetrieveUser("userID", userID);
+			const user = req.body.user;
 			if (user != null) {
 				const result = user.get({ plain: true});
 				delete result.password;
 				delete result.salt;
-				if (sessiondata.userID != userID) {
-					const friendship = await database.FindFriend(sessiondata.userID, userID);
+				if (sessiondata.userID != user.userID) {
+					const friendship = await database.FindFriend(sessiondata.userID, user.userID);
 					if (friendship == null) {
 						result.friendship = 'none';
 					} else if (friendship.status == 'accepted'){
