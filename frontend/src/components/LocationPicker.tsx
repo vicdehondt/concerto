@@ -34,7 +34,7 @@ export default function LocationPicker({
           }
         });
       });
-  }, []);
+  }, [locationCallback, venueID]);
 
   function showVenueOptions() {
     return venueOptions.map((venue: Venue) => (

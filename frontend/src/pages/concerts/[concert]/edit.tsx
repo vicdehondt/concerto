@@ -68,7 +68,7 @@ export default function EditEvent() {
         }
       });
     }
-  }, [router.query.concert]);
+  }, [router, router.query.concert]);
 
   function concatDateAndTime() {
     const dateAndTime = date + "T" + time;

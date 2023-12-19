@@ -37,35 +37,34 @@ export default function Map() {
     setLocation([position.coords.latitude, position.coords.longitude]);
   }
 
-  function filterFetch(url: string) {
-    if (filters.venueID != null || filters.date != null) {
-      for (const [key, value] of Object.entries(filters)) {
-        if (value != null) {
-          url += `&${key}=${value}`;
+  useEffect(() => {
+    function filterFetch(url: string) {
+      if (filters.venueID != null || filters.date != null) {
+        for (const [key, value] of Object.entries(filters)) {
+          if (value != null) {
+            url += `&${key}=${value}`;
+          }
         }
       }
-    }
-    if (filters.genre != null) {
-      for (const genre of filters.genre) {
-        url += `&genre=${genre}`;
+      if (filters.genre != null) {
+        for (const genre of filters.genre) {
+          url += `&genre=${genre}`;
+        }
       }
-    }
-    if (filters.minPrice != null && filters.maxPrice != null) {
-      url += `&price=${filters.minPrice}/${filters.maxPrice}`;
-    }
-    fetch(url, {
-      mode: "cors",
-      credentials: "include",
-    })
-      .then((response) => {
-        return response.json();
+      if (filters.minPrice != null && filters.maxPrice != null) {
+        url += `&price=${filters.minPrice}/${filters.maxPrice}`;
+      }
+      fetch(url, {
+        mode: "cors",
+        credentials: "include",
       })
-      .then((responseJSON) => {
-        setEvents(responseJSON);
-      });
-  }
-
-  useEffect(() => {
+        .then((response) => {
+          return response.json();
+        })
+        .then((responseJSON) => {
+          setEvents(responseJSON);
+        });
+    }
     if (sidebarSearching) {
       let url = environment.backendURL + `/search/events/filter?title=${encodeURIComponent(searchQuery)}`;
       filterFetch(url);

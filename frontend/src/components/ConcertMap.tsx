@@ -1,5 +1,5 @@
 import { MAPBOX_API_KEY } from '@/secrets/secrets';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import MapGL, { Source, Layer, NavigationControl, GeolocateControl, Marker } from 'react-map-gl';
 import "mapbox-gl/dist/mapbox-gl.css";
 import polyline from '@mapbox/polyline';
@@ -15,36 +15,38 @@ function ConcertMap({ concert }: ConcertMapProps) {
 
   const mapboxToken = MAPBOX_API_KEY; // Store your token securely
 
-  const getRoute = async (position: GeolocationPosition) => {
+  const getRoute = useCallback(async (position: GeolocationPosition) => {
     const start = [position.coords.longitude, position.coords.latitude];
     const end = [concert.Venue.longitude, concert.Venue.lattitude];
 
-    const query = await fetch(
-      `https://api.mapbox.com/directions/v5/mapbox/walking/${start.join(',')};${end.join(',')}?access_token=${MAPBOX_API_KEY}`
-    );
+    try {
+      const query = await fetch(
+        `https://api.mapbox.com/directions/v5/mapbox/walking/${start.join(',')};${end.join(',')}?access_token=${MAPBOX_API_KEY}`
+      );
 
-    const json = await query.json();
-  const data = json.routes[0];
+      const json = await query.json();
+      const data = json.routes[0];
 
-  // Decode polyline to get the array of coordinates
-  const coordinates = polyline.decode(data.geometry);
+      const coordinates = polyline.decode(data.geometry);
 
-  // Convert coordinates to a GeoJSON LineString
-  const routeGeoJSON = {
-    type: 'Feature',
-    properties: {},
-    geometry: {
-      type: 'LineString',
-      coordinates: coordinates.map(([lat, lng]) => [lng, lat])
+      const routeGeoJSON = {
+        type: 'Feature',
+        properties: {},
+        geometry: {
+          type: 'LineString',
+          coordinates: coordinates.map(([lat, lng]) => [lng, lat])
+        }
+      };
+
+      setRoute(routeGeoJSON);
+    } catch (error) {
+      console.error('Error fetching route:', error);
     }
-  };
-
-  setRoute(routeGeoJSON);
-  };
+  }, [concert.Venue.lattitude, concert.Venue.longitude]);
 
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(getRoute);
-  }, []);
+  }, [getRoute]);
 
   return (
     <MapGL
