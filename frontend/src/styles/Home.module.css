@@ -773,14 +773,24 @@
   grid-area: biography;
 }
 
-.attendedEventsContainer {
+.attendingEvents{
+  grid-area: attendingevents;
+  font-size: x-large;
+  font-weight: bold;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.attendingEvents .attendedEventsContainer {
   overflow: scroll;
   display: flex;
   flex-direction: column;
+  font-size: x-large;
+  font-weight: bold;
   width: 70%;
   height: 70%;
   margin-left: 25%;
-  grid-area: attendingevents;
   border-top-right-radius: 10px;
   border-bottom-left-radius: 10px;
   border-bottom-right-radius: 10px;
@@ -789,10 +799,20 @@
   box-shadow: 0 2px 2px;
 }
 
-.pastEventsContainer {
+.pastEvents{
+  grid-area: pastevents;
+  font-size: x-large;
+  font-weight: bold;
+  display: flex;
+  flex-direction: column;
+}
+
+.pastEvents .pastEventsContainer {
   overflow: scroll;
   display: flex;
   flex-direction: column;
+  font-size: x-large;
+  font-weight: bold;
   row-gap: 20px;
   margin-bottom: 20px;
   grid-area: pastevents;
@@ -965,6 +985,25 @@
   border: 2px solid #7180B9;
 }
 
+.changeBiographyContainer{
+  border-radius: 10px;
+  resize: none;
+  width: 100%;
+  background-color: lightgray;
+}
+
+.settingsInput{
+  padding: 5px;
+  color: white;
+  width: 100%;
+  margin: 10px;
+  border-radius: 20px;
+  font-size: large;
+  align-items: center;
+  text-align: center;
+  background-color: #0B2027;
+}
+
 @media (max-width: 600px){
   .settingsPage {
     display: flex;
@@ -973,6 +1012,7 @@
   }
   
   .settingsPage .settingContainer {
+    margin-top: 15%;
     width: 90%;
   }
   

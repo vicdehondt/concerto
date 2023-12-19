@@ -19,6 +19,7 @@ export default function Account() {
   const router = useRouter();
 
   function requestCheckins(user: User) {
+    console.log(user.userID);
     fetch(environment.backendURL + "/users" + `/${user.userID}/checkins`, {
       mode: "cors",
       credentials: "include",
@@ -102,11 +103,17 @@ export default function Account() {
           <div className={styles.biographyContainer}>
             {user && <Biography user={user} source={user.image} username={user.username} description={user.description} />}
           </div>
-          <div className={styles.attendedEventsContainer}>
-            {showCheckins(checkedevents)}
+          <div className={styles.attendingEvents}>
+            Attending Events:
+            <div className={styles.attendedEventsContainer}>
+              {showCheckins(checkedevents)}
+            </div>
           </div>
-          <div className={styles.pastEventsContainer}>
-          {showCheckins(attendedevents)}
+          <div className={styles.pastEvents}>
+            Past Events:
+            <div className={styles.pastEventsContainer}>
+              {showCheckins(attendedevents)}
+            </div>
           </div>
         </div>
       </main>

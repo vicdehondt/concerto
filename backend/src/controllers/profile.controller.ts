@@ -37,8 +37,8 @@ export class ProfileController extends BaseController {
         this.router.patch('/settings/personal/password', this.requireAuth,
 			upload.none(),
             [
-                body("oldPassword").trim().notEmpty(),
-                body("password").trim().isLength({ min: 6}).withMessage('New password must be at least 6 characters long.').matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/).withMessage('Password must include at least one lowercase letter, one uppercase letter, and one number.')
+               // body("oldPassword").trim().notEmpty(),
+                //body("password").trim().isLength({ min: 6}).withMessage('New password must be at least 6 characters long.').matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/).withMessage('Password must include at least one lowercase letter, one uppercase letter, and one number.')
             ], this.verifyErrors,
 			(req: express.Request, res: express.Response) => {
                 this.changePassword(req, res);
@@ -73,6 +73,8 @@ export class ProfileController extends BaseController {
         const saltingRounds = 12;
         try {
             const { oldPassword, newPassword } = req.body;
+            console.log(oldPassword);
+            console.log(newPassword);
             const user = await database.RetrieveUser('userID', req.session.userID);
             bcrypt.compare(oldPassword, user.password, function (err, result) {
                 console.log(result);

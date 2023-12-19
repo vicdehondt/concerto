@@ -287,7 +287,7 @@ const HamburgerMenu = ({pictureSource}: {pictureSource: string}) => {
                     setProfileDropdownVisible(false);
                   }}
                 >
-                  <Link href={redirectURL("/account")}> Show profile</Link>
+                  <Link href={redirectURL(`/accounts/${profile.userID}`)}> Show profile</Link>
                   <Link href="/settings">Settings</Link>
                   <button onClick={(event) => logOut()}>Log out</button>
                 </div>

@@ -1,6 +1,6 @@
 import Image from "next/image";
-import styles from "@/styles/ProfilePictureUpload.module.css";
-import { useState, ChangeEvent, useEffect } from "react";
+import styles from "@/styles/Home.module.css";
+import { useState, FormEvent, ChangeEvent, useEffect } from "react";
 import { User } from 'lucide-react';
 import { environment } from "@/components/Environment";
 
@@ -24,16 +24,26 @@ function ProfilePictureUpload({ picture }: ProfilePictureUploadProps) {
     if (file) {
         formData.append("picture", file);
     }
-    const response = await fetch(environment.backendURL + "/profile/profilepicture", {
-        method: "POST",
-        body: formData,
-        mode: "cors",
-        credentials: "include",
-      });
-
     if (file) {
       const source = URL.createObjectURL(file);
       setPictureSource(source);
+    }
+  }
+
+  async function onSaveProfilePicture(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    var formData = new FormData(event.currentTarget);
+    const form_values = Object.fromEntries(formData);
+    const response = await fetch(environment.backendURL + "/profile/settings/personal/profilepicture", {
+      method: "PATCH",
+      body: formData,
+      mode: "cors",
+      credentials: "include",
+    });
+    if (response.status == 200){
+      alert("Your profile picture has been changed.")
+    } else{
+      alert("Something went wrong while changing your profile picture.")
     }
   }
 
@@ -49,9 +59,10 @@ function ProfilePictureUpload({ picture }: ProfilePictureUploadProps) {
     <>
       <div className={styles.bannerContainer}>
         {showBanner()}
-        <div className={styles.uploadBox}>
-          {picture ? (<input id='picture' name='picture' type="file" accept="image/png, image/jpg, image/jpeg" onChange={ImageChosen} />) : (<input id='banner' name='banner' type="file" accept="image/png, image/jpg, image/jpeg" required onChange={ImageChosen} />)}
-        </div>
+        <form onSubmit={onSaveProfilePicture}>
+          {picture ? (<input id='picture' name='picture' type="file" accept="image/png, image/jpg, image/jpeg" onChange={ImageChosen} />) : (<input id='picture' name='picture' type="file" accept="image/png, image/jpg, image/jpeg" required onChange={ImageChosen} />)}
+          <button className={styles.saveButton} type="submit">Save</button>
+        </form>
       </div>
     </>
   );

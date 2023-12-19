@@ -16,22 +16,22 @@ export class UserController extends BaseController {
     }
 
     initializeRoutes(): void {
-		this.router.get('/:userid', this.requireAuth,
+		this.router.get('/:userID', this.requireAuth,
 			upload.none(),
 			(req: express.Request, res: express.Response) => {
 				this.getUserInformation(req, res);
 			});
-		this.router.get('/:userid/checkins', this.requireAuth, this.checkUserExists,
+		this.router.get('/:userID/checkins', this.requireAuth, this.checkUserExists,
 			upload.none(),
 			(req: express.Request, res: express.Response) => {
 				this.getCheckIns(req, res);
 			});
-		this.router.get('/:userid/attended', this.requireAuth, this.checkUserExists,
+		this.router.get('/:userID/attended', this.requireAuth, this.checkUserExists,
 			upload.none(),
 			(req: express.Request, res: express.Response) => {
 				this.getAttendedEvents(req, res);
 			});
-		this.router.get('/:userid/friends', this.requireAuth, this.checkUserExists,
+		this.router.get('/:userID/friends', this.requireAuth, this.checkUserExists,
 			upload.none(),
 			(req: express.Request, res: express.Response) => {
 				this.getFriends(req, res);
@@ -41,7 +41,7 @@ export class UserController extends BaseController {
 	async getUserInformation(req: express.Request, res: express.Response) {
 		try {
 			const sessiondata = req.session;
-			const userID = req.params.userid;
+			const userID = req.body.user;
 			const user = await database.RetrieveUser("userID", userID);
 			if (user != null) {
 				const result = user.get({ plain: true});

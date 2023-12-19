@@ -7,7 +7,7 @@ import Image from "next/image";
 import { User } from 'lucide-react';
 import ProfilePictureUpload from "@/components/ProfilePictureUpload";
 import { environment } from "@/components/Environment";
-import { FormEvent } from "react";
+import { ChangeEvent, FormEvent } from "react";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -19,6 +19,10 @@ function showPicture(source: string) {
 }
 
 export default function Settings() {
+  const [isLengthValid, setIsLengthValid] = useState(false);
+  const [isPasswordValid, setIsPasswordValid] = useState(false);
+  const [arePasswordsEqual, setArePasswordsEqual] = useState(false);
+
   const [user, setUser] = useState({
     username: "",
     userID: 0,
@@ -41,9 +45,10 @@ export default function Settings() {
   async function onSaveMail(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     var formData = new FormData(event.currentTarget);
+    console.log(formData);
     const form_values = Object.fromEntries(formData);
     const response = await fetch(environment.backendURL + "/profile/settings/personal/mail", {
-      method: "PATCH",
+      method: "POST",
       body: formData,
       mode: "cors",
       credentials: "include",
@@ -69,6 +74,24 @@ export default function Settings() {
       alert("Your biography has been changed.")
     } else{
       alert("Something went wrong while saving your biography.")
+    }
+  }
+
+  async function onSavePassword(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    var formData = new FormData(event.currentTarget);
+    console.log(formData);
+    const form_values = Object.fromEntries(formData);
+    const response = await fetch(environment.backendURL + "/profile/settings/personal/password", {
+      method: "PATCH",
+      body: formData,
+      mode: "cors",
+      credentials: "include",
+    });
+    if (response.status == 200){
+      alert("Your password has been changed.")
+    } else{
+      alert("Something went wrong while changing your password.")
     }
   }
 
@@ -100,15 +123,42 @@ export default function Settings() {
                 {user.mail}
               </div>
               <div className={styles.changeText}>
-                <textarea
+                <input className={styles.settingsInput}
+                  type="email"
                   id="mail"
                   name="mail"
-                  value={user.mail}
-                  rows={3}
-                  onChange={handleMailChange}
+                  placeholder="Change e-mail address"
                 />
               </div>
               <button className={styles.saveButton} type="submit">Save mail</button>
+            </form>
+          </div>
+          <div className={styles.personalSetting}>
+            <div className={styles.settingName}>
+            Change Password:
+            </div>
+            <form onSubmit={onSavePassword}>
+                <div className={styles.changeText}>
+                  <input
+                    className={styles.settingsInput}
+                    type="password"
+                    name="oldPassword"
+                    id="oldPassword"
+                    placeholder="Your old password"
+                    pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}"
+                  />
+                </div>
+                <div className={styles.changeText}>
+                  <input
+                    className={styles.settingsInput}
+                    type="password"
+                    name="newPassword"
+                    id="newPassword"
+                    placeholder="Your new password"
+                    pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}"
+                  />
+                </div>
+              <button className={styles.saveButton} type="submit">Save new password</button>
             </form>
           </div>
           <div className={styles.personalSetting}>
@@ -120,12 +170,11 @@ export default function Settings() {
                 {user.description}
               </div>
               <div className={styles.changeText}>
-                <textarea
+                <textarea className={styles.changeBiographyContainer}
                   id="description"
                   name="description"
-                  value={user.description}
                   rows={3}
-                  onChange={handleDescriptionChange}
+                  placeholder="Change your biography"
                 />
               </div>
               <button className={styles.saveButton} type="submit">Save biography</button>
@@ -145,7 +194,6 @@ export default function Settings() {
           return response.json();
         })
         .then((responseJSON) => {
-          console.log(responseJSON);
           setUser(responseJSON);
         });
   }, []);
