@@ -18,7 +18,6 @@ const inter = Inter({ subsets: ["latin"] });
 
 export default function Concert() {
   const router = useRouter();
-  const title = "Concerto | " + router.query.concert;
 
   const [concert, setConcert] = useState<Event | null>(null);
 
@@ -29,7 +28,7 @@ export default function Concert() {
   const [canEdit, setCanEdit] = useState(false);
 
   function showBanner() {
-    if (concert &&  concert?.eventID > 0) {
+    if (concert && concert?.eventID > 0) {
       return <Banner imageSource={concert?.banner} concertName={concert?.title} />;
     }
   }
@@ -185,7 +184,7 @@ export default function Concert() {
       const ConcertMap = dynamic(() => import("@/components/ConcertMap"), {
         ssr: false,
       });
-      return <ConcertMap concert={concert}/>;
+      return <ConcertMap concert={concert} />;
     }
   }
 
@@ -201,7 +200,7 @@ export default function Concert() {
   return (
     <>
       <Head>
-        <title>{title}</title>
+        <title>{"Concerto | " + (concert && concert.title)}</title>
         <meta name="description" content="Concert page." />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
@@ -213,31 +212,59 @@ export default function Concert() {
             <div className={styles.descriptionTitle}>Description</div>
             <div className={styles.descriptionText}>{concert?.description}</div>
           </div>
-          <div className={styles.programContainer}>
-            <div className={styles.programTitle}>Program</div>
-            <div className={styles.programText}>
-              {concert && <Timetable
-                doorTime={convertTime(concert.doors)}
-                supportTime={convertTime(concert.support)}
-                concertTime={convertTime(concert.main)}
-              />}
+          <div className={styles.timeAndDateContainer}>
+            <div className={styles.programContainer}>
+              <div className={styles.programTitle}>Program</div>
+              <div className={styles.programText}>
+                {concert && (
+                  <Timetable
+                    doorTime={convertTime(concert.doors)}
+                    supportTime={convertTime(concert.support)}
+                    concertTime={convertTime(concert.main)}
+                  />
+                )}
+              </div>
+              <div className={styles.ticketsAndWishlist}>
+                {concert && (
+                  <Link href={concert.url} className={styles.ticketsButton}>
+                    Buy tickets
+                  </Link>
+                )}
+                <div
+                  className={styles.addToWishlist}
+                  onClick={(event) => {
+                    if (inWishlist) {
+                      removeFromWishlist();
+                    } else {
+                      addToWishlist();
+                    }
+                  }}
+                >
+                  {showHeart()}
+                </div>
+              </div>
+              <form onSubmit={onSubmit}>{showCheckIn()}</form>
             </div>
-            <div className={styles.ticketsAndWishlist}>
-              {concert && <Link href={concert.url} className={styles.ticketsButton}>Buy tickets</Link>}
-              <div
-                className={styles.addToWishlist}
-                onClick={(event) => {
-                  if (inWishlist) {
-                    removeFromWishlist();
-                  } else {
-                    addToWishlist();
-                  }
-                }}
-              >
-                {showHeart()}
+            <div>
+              <div className={styles.dateContainer}>
+                <div className={styles.dateTitle}>Date</div>
+                <div className={styles.datePane}>
+                  {concert &&
+                    new Date(concert.dateAndTime).toLocaleString("en-US", {
+                      day: "numeric",
+                      month: "long",
+                      year: "numeric",
+                    })}
+                </div>
               </div>
             </div>
-            <form onSubmit={onSubmit}>{showCheckIn()}</form>
+            <div className={styles.priceContainer}>
+              Price
+              <div className={styles.priceBox}>
+                {concert && concert.price}
+                {" EUR"}
+              </div>
+            </div>
           </div>
           <div>
             <div className={styles.editBox}>
@@ -248,20 +275,18 @@ export default function Concert() {
               )}
             </div>
             <div className={styles.ratingContainer}>
-              {concert && <Rating
-                artistScore={artistScore}
-                venueScore={venueScore}
-                artist={concert.Artist}
-                venue={concert.Venue}
-              />}
+              {concert && (
+                <Rating
+                  artistScore={artistScore}
+                  venueScore={venueScore}
+                  artist={concert.Artist}
+                  venue={concert.Venue}
+                />
+              )}
             </div>
           </div>
-          <div className={styles.friendInviteContainer}>
-            {showFriendInvites()}
-          </div>
-          <div className={styles.map}>
-            {showMap()}
-          </div>
+          <div className={styles.friendInviteContainer}>{showFriendInvites()}</div>
+          <div className={styles.map}>{showMap()}</div>
         </div>
       </main>
     </>
