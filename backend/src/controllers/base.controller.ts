@@ -14,6 +14,28 @@ export abstract class BaseController {
 
     abstract initializeRoutes();
 
+    isValidTimeFormat(timeValue) {
+        return /^([01]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/.test(timeValue);
+    }
+
+    isValidDate(value) {
+        if (/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/.test(value)) {
+            const date = new Date(value);
+            return !isNaN(date.getTime())
+        } else {
+            return false;
+        }
+    }
+
+    isValidUrl(string) {
+        try {
+            new URL(string);
+            return true;
+        } catch (_) {
+            return false;
+        }
+    }
+
     requireAuth(req, res, next) {
 		if (req.session && (req.session.userID != null)){
 			next()

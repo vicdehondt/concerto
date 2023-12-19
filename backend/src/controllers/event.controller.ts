@@ -45,15 +45,40 @@ export class EventController extends BaseController {
 						throw new Error("No venue was found with this ID.");
 					}
 				}),
-				body("title").trim().notEmpty(),
-				body("description").trim().notEmpty(),
-				body("main").trim().notEmpty(),
-				body("doors").trim().notEmpty(),
+				body("title").isString().trim().notEmpty().isLength({ max: 16 }).withMessage('Title must be no more than 16 characters long.'),
+				body("description").trim().notEmpty().isLength({ max: 1000 }).withMessage('Description must be no more than 1000 characters long.'),
+				body("main").isString().trim().notEmpty().custom((value) => {
+					if  (this.isValidTimeFormat(value)) {
+						return true;
+					} else {
+						throw Error("The main field should have form `HH:MM:SS`.");
+					}
+				}),
+				body("doors").trim().notEmpty().custom((value) => {
+					if (this.isValidTimeFormat(value)) {
+						return true;
+					} else {
+						throw Error("The doors field should have form `HH:MM:SS`.");
+					}
+				}),
 				body("price").trim().notEmpty(),
 				body("mainGenre").trim().notEmpty(),
 				body("secondGenre").trim().notEmpty(),
-				body("dateAndTime").trim().notEmpty(),
-				body("url").trim().notEmpty(),
+				body("dateAndTime").trim().notEmpty().custom((value) => {
+					// Check if the date is in ISO 8601 format
+					if (this.isValidDate(value)) {
+						return true;
+					} else {
+						throw new Error('Date must be in the format YYYY-MM-DDTHH:MM:SS.');
+					}
+				}),
+				body("url").trim().notEmpty().custom(value => {
+					if (this.isValidUrl(value)) {
+						return true;
+					} else {
+						throw new Error("The url field is not a valid url.")
+					}
+				}),
 			],
 			(req: express.Request, res: express.Response) => {
 				res.set('Access-Control-Allow-Credentials', 'true');
@@ -153,9 +178,9 @@ export class EventController extends BaseController {
 			if (event.userID != sessiondata.userID) {
 				res.status(401).json({ success: true, error: "No permission to update this event."});
 			} else {
-				const updateFields = ['description', 'main', 'doors', 'support', 'price', 'title', 'secondGenre', 'mainGenre', 'artistID', 'venueID', 'url'];
+				const updateFields = ['description', 'main', 'doors', 'support', 'price', 'title', 'secondGenre', 'mainGenre', 'artistID', 'venueID', 'url', 'dateAndTime'];
 				const imageFields = ['eventPicture', 'banner'];
-				let errormessage = '';
+				let errormessages = [];
 				let errorExists = false;
 
 				for (const field of updateFields) {
@@ -168,15 +193,29 @@ export class EventController extends BaseController {
 								if (!exists && await createArtist(id)) {
 									exists = true;
 								}
-								errormessage = 'The artist could not be found in the database.';
+								errormessages.push('The artist could not be found in the database.');
 							} else {
 								exists = await this.checkExists(VenueModel, id);
-								errormessage = 'The venue could not be found in the database.';
+								errormessages.push('The venue could not be found in the database.');
 							}
 							if (!exists) {
 								errorExists = true;
 							} else {
 								event[field] = req.body[field];
+							}
+						} else if (field == 'support' || field == 'main' || field == 'doors') {
+							if (this.isValidTimeFormat(req.body[field])) {
+								event[field] = req.body[field];
+							} else {
+								errorExists = true;
+								errormessages.push('The doors/main/support field was not in the correct form HH:MM:SS.');
+							}
+						} else if (field == 'dateAndTime') {
+							if (this.isValidDate(req.body[field])) {
+								event[field] = req.body[field];
+							} else {
+								errorExists = true;
+								errormessages.push('The dateAndTime field was not in the correct form YYYY-MM-DDTHH:MM:SS.');
 							}
 						} else {
 							event[field] = req.body[field];
@@ -191,7 +230,7 @@ export class EventController extends BaseController {
 					}
 				});
 				if (errorExists) {
-					res.status(400).json({ success: false, error: errormessage + 'As a result no changes were made to the event!'});
+					res.status(400).json({ success: false, error: errormessages});
 				} else {
 					await event.save();
 					res.status(200).json({ success: true, message: "Event has been updated."});
