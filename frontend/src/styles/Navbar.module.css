@@ -32,6 +32,11 @@
   color: white;
 }
 
+.developersRedirect {
+  padding: 20px;
+  text-align: center;
+}
+
 .friendsRedirect:hover,
 .wishlistRedirect:hover {
   background-color: #7180B9;
