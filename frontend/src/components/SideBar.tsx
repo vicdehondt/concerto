@@ -239,6 +239,7 @@ function SideBar({ type, filters, filterCallback, searchCallback, queryCallback 
   const [isOpen, setIsOpen] = useState(false);
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [isFriendType, setFriendType] = useState(false);
 
   function search(query: string) {
     searchCallback && searchCallback(query.length > 0);
@@ -275,9 +276,11 @@ function SideBar({ type, filters, filterCallback, searchCallback, queryCallback 
       />
       </div>
       <div className={styles.sidebareMenu}>
-        <button className={`${styles.filterButton} ${isOpen ? styles.open : ''}`} onClick={() =>  setIsOpen(!isOpen)}>
+        {type !== "friends" && (
+          <button className={`${styles.filterButton} ${isOpen ? styles.open : ''}`} onClick={() => setIsOpen(!isOpen)}>
             Filters
-        </button>
+          </button>
+        )}
       <div className={styles.sidebarDropdown}>
       {isOpen && (
         <div className={styles.dropdownContent} onMouseEnter={() => {setDropdownVisible(true);}} onMouseLeave={() => {setDropdownVisible(false);}}>

@@ -361,9 +361,14 @@ const HamburgerMenu = () => {
                         <div className={styles.dropdownContent} onMouseEnter={() => {setDropdownVisible(true);}} onMouseLeave={() => {setDropdownVisible(false);}}>
                             <Link href="/">Concerto</Link>
                             <Searchbar type="long" onClick={(query: string) => searchBackend(query)} onChange={(query: string) => searchBackend(query)} />
+                            <div className={styles.searchBox} ref={searchRef}>
+                              {searchBoxVisible && searchResultsHTML}
+                              {searchBoxVisible && eventSearchHTML}
+                            </div>
                             <button onClick={(event) => redirectButtonClicked(event, "/add-event")}>
                               Add Event
                             </button>
+                            <Link className={styles.developersRedirect} href="/developers.html">Developers</Link>
                             <button onClick={(event) => redirectButtonClicked(event, "/friends")}>
                               Friends
                             </button>
