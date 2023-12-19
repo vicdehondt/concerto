@@ -296,7 +296,7 @@ const HamburgerMenu = () => {
           <div
             className={styles.account}
           >
-            <LucidUser className={styles.userImage} width={40} height={40} />
+            <LucidUser className={styles.userImage} width={40} height={40} color={"white"}/>
           </div>
         );
       } else {

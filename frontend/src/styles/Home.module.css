@@ -229,13 +229,15 @@
     display: flex;
     flex-direction: column;
     grid-template-columns: auto auto;
-    grid-template-rows: [banner] 200px auto auto auto auto;
+    grid-template-rows: [banner] 200px auto auto auto auto auto;
     grid-template-areas:
       "banner banner"
       "description description"
       "timetable timetable"
       "ratings ratings"
-      "invites invites";
+      "edit edit"
+      "invites invites"
+      "map map";
   }
 
   .concertPage .bannerContainer {
@@ -341,6 +343,24 @@
     margin: 15px;
     padding-top: 15px;
     cursor: pointer;
+  }
+
+  .concertPage .map {
+    grid-area: map;
+    height: 200px;
+    margin: 50px;
+    border: 1px solid black;
+    box-shadow: 0px 1px 2px;
+  }
+
+  .concertPage .editBox {
+    grid-area: edit;
+    display: flex;
+    justify-content: right;
+  }
+  
+  .concertPage .editBox a {
+    margin: 20px 20px 0 0;
   }
 }
 
@@ -930,6 +950,17 @@
 .artistPage .review {
   grid-area: review;
   margin: 5px 0;
+}
+
+@media (max-width: 600px){
+  .artistPage .artistName {
+    font-size: x-large;
+    margin-bottom: 20px;
+  }
+  
+  .artistPage .artistStar {
+    margin: 0 1px;
+  }
 }
 
 .settingsPage {
