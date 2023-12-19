@@ -3,7 +3,6 @@ import { BaseController } from './base.controller';
 import * as database from '../models/Usermodel';
 import { NotificationObject, createNewNotification } from '../models/Notificationmodel';
 import {createMulter} from "../configs/multerConfig"
-const fs = require('fs');
 
 const friendFilePath = './public/friends';
 
