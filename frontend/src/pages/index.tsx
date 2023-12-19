@@ -26,12 +26,11 @@ export default function Home() {
 
   useEffect(() => {
     function filterFetch(url: string) {
-      if (filters.venueID != null || filters.date != null) {
-        for (const [key, value] of Object.entries(filters)) {
-          if (value != null) {
-            url += `&${key}=${value}`;
-          }
-        }
+      if (filters.venueID != null) {
+        url += `&venueID=${filters.venueID}`;
+      }
+      if ((filters.date != null) && (filters.date as unknown as string != "Invalid Date")) {
+        url += `&date=${filters.date}`;
       }
       if (filters.genre != null) {
         for (const genre of filters.genre) {
