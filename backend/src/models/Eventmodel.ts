@@ -343,7 +343,10 @@ export function createWhereClause(filterfields,filtervalues) {
 export async function FilterEvents(filterfields, filtervalues, limit, offset){
   try {
     const whereClause = createWhereClause(filterfields, filtervalues);
-    const Event = await EventModel.findAll({
+    if (whereClause['dateAndTime'] == null) {
+      whereClause['dateAndTime'] = { [Op.gte]: expiredEventTreshold() }
+    }
+    const events = await EventModel.findAll({
       limit: limit,
       offset: offset,
       attributes: ['eventID', 'title', 'eventPicture', 'dateAndTime', 'baseGenre', 'secondGenre', 'price', 'amountCheckedIn'],
@@ -356,8 +359,11 @@ export async function FilterEvents(filterfields, filtervalues, limit, offset){
         }},
       ],
       where: whereClause,
+      order: [
+        ['dateAndTime', 'ASC'] // Sort by 'dateAndTime' in ascending order
+        ]
     });
-    return Event;
+    return events;
   } catch (error) {
     console.error("There was an error filtering Events: ", error);
   }
