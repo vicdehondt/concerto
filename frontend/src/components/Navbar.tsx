@@ -430,6 +430,7 @@ function Navbar() {
                 }}
               >
                 <Link href="/settings">Settings</Link>
+                <Link className={styles.developersButton} href="/developers">Developers</Link>
                 <button onClick={(event) => logOut()}>Log out</button>
               </div>
             )}
