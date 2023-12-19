@@ -53,6 +53,7 @@ function Navbar() {
   }, []);
 
   useEffect(() => {
+    console.log("hallo");
     fetch(environment.backendURL + "/notifications", {
       mode: "cors",
       credentials: "include",
@@ -334,7 +335,7 @@ function Navbar() {
 
       fetch(
         environment.backendURL +
-          `/search/events/filter` +
+          `/search/events` +
           `?title=${query}` +
           `&limit=2` +
           `&offset=0`,
