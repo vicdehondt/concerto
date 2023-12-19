@@ -100,7 +100,7 @@ export async function allCheckedInEvents(userID) {
         return event.eventID
     });
     const events = await EventModel.findAll({
-        attributes: ['eventID', 'eventPicture', 'title'],
+        attributes: ['eventID', 'eventPicture', 'title', 'dateAndTime'],
         include: [
             { model: Artist, attributes: ['artistID', 'name']},
             { model: VenueModel, attributes: ['venueID', 'venueName'] }
@@ -123,7 +123,11 @@ export async function allAttendedEvents(userID) {
         }]
     });
     const events = await user.getEvents({
-        attributes: ['eventID', 'eventPicture', 'title'],
+        attributes: ['eventID', 'eventPicture', 'title', 'dateAndTime'],
+        include: [
+            { model: Artist, attributes: ['artistID', 'name']},
+            { model: VenueModel, attributes: ['venueID', 'venueName'] }
+        ],
         where: {
             dateAndTime: {
                 [Op.lt]: expiredEventTreshold()

@@ -50,8 +50,12 @@
 }
 
 .description {
-    margin-top: 25px;
-    margin-left: 5%;
+    font-size: 14px;
+    font-weight: normal;
+    resize: none;
+    overflow-y: scroll;
+    height: 60%;
+    max-height: 60%;  
 }
 
 
