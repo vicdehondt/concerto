@@ -167,6 +167,7 @@ export default function EditEvent() {
                 id="description"
                 name="description"
                 defaultValue={concert?.description}
+                maxLength={1000}
                 rows={10}
                 required
               />

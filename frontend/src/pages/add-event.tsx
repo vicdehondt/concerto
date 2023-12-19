@@ -106,7 +106,7 @@ export default function AddEvent() {
           <div className={styles.descriptionContainer}>
             <div className={styles.descriptionTitle}>Description</div>
             <div className={styles.descriptionText}>
-              <textarea id="description" name="description" rows={10} required />
+              <textarea id="description" name="description" maxLength={1000} rows={10} required />
             </div>
           </div>
           <div className={styles.inputContainer}>
