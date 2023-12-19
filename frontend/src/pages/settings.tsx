@@ -73,7 +73,7 @@ export default function Settings() {
   return (
     <>
       <Head>
-        <title>Concerto | Account</title>
+        <title>Concerto | Settings</title>
         <meta name="description" content="Your Account." />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
