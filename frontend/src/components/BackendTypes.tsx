@@ -81,6 +81,8 @@ export type Profile = {
   privacyAttendedEvents: string;
   privacyCheckedInEvents: string;
   privacyFriends: string;
+  firstGenre: string;
+  secondGenre: string;
 };
 
 export type User = {

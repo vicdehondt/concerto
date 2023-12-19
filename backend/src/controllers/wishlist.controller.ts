@@ -1,6 +1,5 @@
 import * as express from 'express';
 import { BaseController } from './base.controller';
-import {body, validationResult} from "express-validator"
 import {createMulter} from "../configs/multerConfig";
 import { wishlistEvent, getAllWishListed, removeWishlist } from '../models/Wishlistmodel';
 

@@ -7,12 +7,16 @@ type LocationPickerProps = {
   venueID?: string;
   locationCallback: (venue: Venue) => void;
   forwardedRef?: ForwardedRef<HTMLSelectElement>;
+  clear?: boolean;
+  clearCallback?: (clear: boolean) => void;
 };
 
 export default function LocationPicker({
   venueID,
   locationCallback,
   forwardedRef,
+  clear,
+  clearCallback
 }: LocationPickerProps) {
   const [venueOptions, setVenueOptions] = useState([]);
   const [defaultVenue, setDefaultVenue] = useState<string | null>(null);
@@ -34,7 +38,21 @@ export default function LocationPicker({
           }
         });
       });
-  }, [locationCallback, venueID]);
+  }, [venueID]);
+
+  useEffect(() => {
+    if (selectedVenue) {
+      locationCallback(selectedVenue);
+    }
+  }, [selectedVenue]);
+
+  useEffect(() => {
+    if (clear && clearCallback) {
+      setSelectedVenue(null);
+      clearCallback(false);
+    }
+
+  }, [clear]);
 
   function showVenueOptions() {
     return venueOptions.map((venue: Venue) => (
@@ -50,7 +68,7 @@ export default function LocationPicker({
         id="venue"
         required
         ref={forwardedRef}
-        value={defaultVenue || "Choose venue"}
+        value={selectedVenue?.venueName || "Choose venue"}
         onChange={(event) => {
           const selectedOption =
             event.target.options[event.target.selectedIndex].getAttribute("data-venue");
@@ -58,8 +76,7 @@ export default function LocationPicker({
             selectedOption != null
               ? JSON.parse(selectedOption)
               : { venueID: "123", venueName: "Not selected" };
-          locationCallback(selectedVenue);
-          setDefaultVenue(selectedVenue.venueName);
+          setSelectedVenue(selectedVenue);
         }}
       >
         {!defaultVenue && (

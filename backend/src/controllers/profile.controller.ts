@@ -29,7 +29,7 @@ export class ProfileController extends BaseController {
         this.router.patch('/settings/personal/description', this.requireAuth,
 			upload.none(),
             [
-                body("description").trim().notEmpty(),
+                body("description").trim().notEmpty().isLength({ max: 400 }).withMessage('Biography must be no more than 400 characters long.'),
             ], this.verifyErrors,
 			(req: express.Request, res: express.Response) => {
                 this.changeDescription(req, res);

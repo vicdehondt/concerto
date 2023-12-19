@@ -3,7 +3,6 @@ import { BaseController } from './base.controller';
 import * as database from '../models/Usermodel';
 import {createMulter} from "../configs/multerConfig"
 import { allCheckedInEvents, allAttendedEvents } from "../models/Checkinmodel"
-const fs = require('fs');
 
 const userImagePath = './public/users';
 
@@ -16,7 +15,8 @@ export class UserController extends BaseController {
     }
 
     initializeRoutes(): void {
-		this.router.get('/:userID', this.requireAuth, upload.none(), [ this.checkUserExists], this.verifyErrors,
+		this.router.get('/:userID', this.requireAuth, this.checkUserExists,
+			upload.none(),
 			(req: express.Request, res: express.Response) => {
 				this.getUserInformation(req, res);
 			});

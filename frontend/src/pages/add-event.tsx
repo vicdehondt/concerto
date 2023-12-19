@@ -71,7 +71,7 @@ export default function AddEvent() {
           <div className={styles.descriptionContainer}>
             <div className={styles.descriptionTitle}>Description</div>
             <div className={styles.descriptionText}>
-              <textarea id="description" name="description" rows={10} required />
+              <textarea id="description" name="description" maxLength={1000} rows={10} required />
             </div>
           </div>
           <div className={styles.inputContainer}>
@@ -111,8 +111,8 @@ export default function AddEvent() {
             />
           </div>
           <div className={styles.priceContainer}>
+            Tickets
             <div className={styles.priceBox}>
-              Tickets
               <div className={styles.priceInput}>
                 <input
                   type="number"
@@ -130,6 +130,7 @@ export default function AddEvent() {
                   type="url"
                   name="url"
                   id="url"
+                  onClick={(event) => event.currentTarget.select()}
                   placeholder="https://example.com"
                   pattern="https://.*"
                   required
