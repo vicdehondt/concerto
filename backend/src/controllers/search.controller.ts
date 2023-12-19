@@ -17,7 +17,7 @@ export class SearchController extends BaseController {
 	}
 
 	initializeRoutes(): void {
-		this.router.get('/events/filter',
+		this.router.get('/events',
 			upload.none(), [
 				body("price").trim().custom(async value => {
 					if(value){
@@ -37,13 +37,6 @@ export class SearchController extends BaseController {
 				console.log("search request");
 				res.set('Access-Control-Allow-Credentials', 'true');
 				this.searchUsers(req, res);
-			});
-		this.router.get('/events',
-			upload.none(),
-			(req: express.Request, res: express.Response) => {
-				console.log("search request");
-				res.set('Access-Control-Allow-Credentials', 'true');
-				this.searchEvents(req, res);
 			});
     }
 
@@ -87,22 +80,5 @@ export class SearchController extends BaseController {
 			}
 		});
 		res.status(200).json(foundUsers);
-	}
-
-	async searchEvents(req: express.Request, res: express.Response): Promise<void> {
-		console.log("Accepted the incoming search request");
-		const searchValue = req.query.title;
-		const limit = req.query.limit;
-		const offset = req.query.offset;
-		if (searchValue) {
-			const events = await database.SearchEvents(searchValue);
-			if (events) {
-				res.status(200).json(events);
-			} else {
-				res.status(404).json({succes: false, error: "No event was found with this search value."})
-			}
-		} else {
-			res.status(400).json({succes: false, error: "No search value was provided!" });
-		}
 	}
 }

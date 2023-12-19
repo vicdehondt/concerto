@@ -369,30 +369,6 @@ export async function FilterEvents(filterfields, filtervalues, limit, offset){
   }
 }
 
-export async function SearchEvents(searchvalue){
-  try {
-    const Events = await EventModel.findAll({
-    attributes: ['eventID', 'title', 'eventPicture', 'dateAndTime', 'baseGenre', 'secondGenre', 'price', 'amountCheckedIn'],
-    include: [
-      { model: Artist , attributes: {
-        exclude: ['createdAt', 'updatedAt']
-      }},
-      { model: VenueModel, attributes: {
-        exclude: ['createdAt', 'updatedAt']
-      }},
-    ],
-    where: {
-      title: { //for now only searching on title, need to add location...
-          [Op.like]: '%' + searchvalue + '%',
-        }
-      }
-    });
-    return Events;
-  } catch (error) {
-    console.error("There was an error finding an event: ", error);
-  }
-}
-
 export function isFinished(event): boolean {
   const yesterday = new Date();
   yesterday.setHours(yesterday.getHours() - 24);
