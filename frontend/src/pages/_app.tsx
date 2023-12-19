@@ -20,8 +20,7 @@ export default function App({ Component, pageProps }: AppProps) {
         const notMapPage = !router.asPath.includes("/map");
         const notOnAllowedPages = notHomePage && notRegisterPage && notLoginPage && notMapPage
         if ((response.status == 400) && notOnAllowedPages) {
-          const from = router.query.from || '/';
-          router.push(`/login?from=${router.asPath}`);
+            router.push(`/`);
         }
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
