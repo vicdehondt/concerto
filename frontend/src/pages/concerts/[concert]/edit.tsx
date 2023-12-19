@@ -2,7 +2,6 @@ import Head from "next/head";
 import { Inter } from "next/font/google";
 import styles from "@/styles/Home.module.css";
 import { useRouter } from "next/router";
-import FriendInvites from "@/components/FriendInvite";
 import BannerUpload from "@/components/BannerUpload";
 import { useEffect, useState } from "react";
 import { FormEvent } from "react";
@@ -11,7 +10,6 @@ import ArtistAndLocationUpload from "@/components/ArtistAndLocationUpload";
 import EventCardUpload from "@/components/EventCardUpload";
 import { Event, Venue, Artist } from "@/components/BackendTypes";
 import { environment } from "@/components/Environment";
-import { get } from "http";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -226,34 +224,32 @@ export default function EditEvent() {
           </div>
           <div className={styles.priceContainer}>
             Tickets
-            <div className={styles.priceInput}>
-              {concert && (
+            <div className={styles.priceBox}>
+              <div className={styles.priceInput}>
                 <input
                   type="number"
                   name="price"
                   id="price"
-                  defaultValue={concert.price}
-                  onClick={(event) => event.currentTarget.select()}
+                  defaultValue={concert?.price}
                   placeholder="Minimum price"
+                  onChange={(event) => setPrice(event.target.value as unknown as number)}
                   required
                 />
-              )}
-              EUR
-            </div>
-            <div className={styles.ticketURL}>
-              Add site to buy tickets:
-              {concert && (
+                EUR
+              </div>
+              <div className={styles.ticketURL}>
+                Add site to buy tickets:
                 <input
                   type="url"
                   name="url"
                   id="url"
-                  defaultValue={concert.url}
-                  placeholder="https://example.com"
+                  defaultValue={concert?.url}
                   onClick={(event) => event.currentTarget.select()}
+                  placeholder="https://example.com"
                   pattern="https://.*"
                   required
                 />
-              )}
+              </div>
             </div>
           </div>
           <div className={styles.addEventButton}>

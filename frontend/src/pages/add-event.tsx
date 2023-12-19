@@ -152,8 +152,8 @@ export default function AddEvent() {
             />
           </div>
           <div className={styles.priceContainer}>
+            Tickets
             <div className={styles.priceBox}>
-              Tickets
               <div className={styles.priceInput}>
                 <input
                   type="number"
@@ -171,6 +171,7 @@ export default function AddEvent() {
                   type="url"
                   name="url"
                   id="url"
+                  onClick={(event) => event.currentTarget.select()}
                   placeholder="https://example.com"
                   pattern="https://.*"
                   required
