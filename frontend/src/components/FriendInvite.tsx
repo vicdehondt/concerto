@@ -29,7 +29,10 @@ function FriendInvites({ eventID }: FriendInvitesProps) {
         credentials: "include",
       })
         .then((response) => {
-          return response.json();
+          if (response.status == 200) {
+            return response.json();
+          }
+          return [];
         })
         .then((responseJSON) => {
           setFriends(responseJSON);

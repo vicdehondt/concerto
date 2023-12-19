@@ -71,8 +71,8 @@ function SideBarContent({ type, filters, filterCallback }: SideBarProps) {
 
   function setGenres(genres: Array<string>) {
     const filteredGenres = genres.filter((value, index, self) => {
-        return (self.indexOf(value) === index) && value != "";
-      });
+      return self.indexOf(value) === index && value != "";
+    });
     filters &&
       filterCallback &&
       filterCallback({
@@ -123,7 +123,7 @@ function SideBarContent({ type, filters, filterCallback }: SideBarProps) {
     return selectors.map((value, index) => {
       const uniqueKey = `selector-${index}-${Date.now()}`;
       return (
-        <div key={uniqueKey}>
+        <div className={styles.selectorContainer} key={uniqueKey}>
           <select
             className={styles.genreSelector}
             defaultValue={value}
@@ -176,36 +176,46 @@ function SideBarContent({ type, filters, filterCallback }: SideBarProps) {
         </div>
         <div className={styles.price}>
           Price
-          <input
-            ref={minPriceRangeRef}
-            type="number"
-            placeholder="Min."
-            min="0"
-            onChange={(event) => {
-              const minPrice = event.target.value;
-              if (minPrice !== "" && maxPrice != "" && (maxPrice as unknown as number) >= (minPrice as unknown as number)) {
-                setPrice(minPrice, maxPrice);
-              } else if (minPrice != "" && maxPrice == "") {
-                setPrice(minPrice, "99999");
-              }
-              setMinimumPrice(event.target.value)
-            }}
-          />
-          <input
-            ref={maxPriceRangeRef}
-            type="number"
-            placeholder="Max."
-            min="0"
-            onChange={(event) => {
-              const maxPrice = event.target.value;
-              if (minimumPrice !== "" && maxPrice != "" && (maxPrice as unknown as number) >= (minimumPrice as unknown as number)) {
-                setPrice(minimumPrice, maxPrice);
-              } else if (minimumPrice == "" && maxPrice != "") {
-                setPrice("0", maxPrice);
-              }
-              setMaxPrice(event.target.value);
-            }}
-          />
+          <div className={styles.priceRange}>
+            <input
+              ref={minPriceRangeRef}
+              type="number"
+              placeholder="Min."
+              min="0"
+              onChange={(event) => {
+                const minPrice = event.target.value;
+                if (
+                  minPrice !== "" &&
+                  maxPrice != "" &&
+                  (maxPrice as unknown as number) >= (minPrice as unknown as number)
+                ) {
+                  setPrice(minPrice, maxPrice);
+                } else if (minPrice != "" && maxPrice == "") {
+                  setPrice(minPrice, "99999");
+                }
+                setMinimumPrice(event.target.value);
+              }}
+            />
+            <input
+              ref={maxPriceRangeRef}
+              type="number"
+              placeholder="Max."
+              min="0"
+              onChange={(event) => {
+                const maxPrice = event.target.value;
+                if (
+                  minimumPrice !== "" &&
+                  maxPrice != "" &&
+                  (maxPrice as unknown as number) >= (minimumPrice as unknown as number)
+                ) {
+                  setPrice(minimumPrice, maxPrice);
+                } else if (minimumPrice == "" && maxPrice != "") {
+                  setPrice("0", maxPrice);
+                }
+                setMaxPrice(event.target.value);
+              }}
+            />
+          </div>
         </div>
       </div>
       <button className={styles.clearFilters} onClick={(event) => clearFilters()}>
@@ -213,8 +223,7 @@ function SideBarContent({ type, filters, filterCallback }: SideBarProps) {
       </button>
     </>
   ) : type == "friends" ? (
-    <>
-    </>
+    <></>
   ) : (
     <div>Give right sidebar type</div>
   );
@@ -228,11 +237,7 @@ function SideBar({ type, filters, filterCallback, searchCallback, queryCallback 
 
   return (
     <div className={styles.sidebar}>
-      <Searchbar
-        type="thick"
-        onClick={(string) => null}
-        onChange={(query) => search(query)}
-      />
+      <Searchbar type="thick" onClick={(string) => null} onChange={(query) => search(query)} />
       <SideBarContent
         type={type}
         filters={filters}

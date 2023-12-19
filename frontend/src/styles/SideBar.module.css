@@ -44,15 +44,21 @@
 .price input {
   padding-left: 2px;
   margin-left: 53px;
+  margin-bottom: 5px;
   width: 120px;
 }
 
 .clearFilters {
   all: unset;
   margin-left: 120px;
+  border: solid 1px rgb(170, 170, 170);
   padding: 5px 10px;
   cursor: pointer;
   border-radius: 10px;
+  background-color: #E8F7EE;
+}
+
+.clearFilters:hover {
   color: white;
   background-color: #0B2027;
 }
@@ -65,4 +71,57 @@
 
 .locationFilter select {
   width: 120px !important;
+}
+
+.genre {
+  display: flex;
+  flex-direction: row;
+}
+
+.selectors {
+  margin-left: 45px;
+  display: flex;
+  flex-direction: column;
+}
+
+.genre button {
+  all: unset;
+  cursor: pointer;
+  font-size: large;
+  font-weight: bold;
+  border: solid 1px rgb(170, 170, 170);
+  border-radius: 10px;
+  box-shadow: 1px 1px 1px;
+  padding: 0 40px 2px 40px;
+  background-color: #E8F7EE;
+  margin-top: 5px;
+  width: fit-content;
+}
+
+.genre button:hover {
+  background-color: #0B2027;
+  color: white;
+}
+
+.price {
+  display: flex;
+  flex-direction: row;
+}
+
+.priceRange {
+  display: flex;
+  flex-direction: column;
+
+}
+
+.selectorContainer button {
+  all: unset;
+  margin-left: 5px;
+  font-weight: bold;
+  border: solid 1px rgb(170, 170, 170);
+  border-radius: 5px;
+  background-color: #E8F7EE;
+  cursor: pointer;
+  box-shadow: 0px 1px 1px;
+  padding: 0px 10px;
 }

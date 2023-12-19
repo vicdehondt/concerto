@@ -189,6 +189,15 @@ export default function Concert() {
     }
   }
 
+  function showFriendInvites() {
+    if (concert && concert.eventID) {
+      if (new Date(concert.dateAndTime) < new Date()) {
+        return null;
+      }
+      return <FriendInvites eventID={concert.eventID} />;
+    }
+  }
+
   return (
     <>
       <Head>
@@ -242,13 +251,13 @@ export default function Concert() {
               {concert && <Rating
                 artistScore={artistScore}
                 venueScore={venueScore}
-                artist={concert.Artist.artistID}
-                venue={concert.Venue.venueID}
+                artist={concert.Artist}
+                venue={concert.Venue}
               />}
             </div>
           </div>
           <div className={styles.friendInviteContainer}>
-            <FriendInvites eventID={concert?.eventID} />
+            {showFriendInvites()}
           </div>
           <div className={styles.map}>
             {showMap()}
