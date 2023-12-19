@@ -15,11 +15,8 @@ import { environment } from "@/components/Environment";
 const inter = Inter({ subsets: ["latin"] });
 
 function getFormattedDate(date: Date) {
-  return [
-    date.getFullYear(),
-    date.getMonth() + 1, // getMonth starts at 0, so January is 00
-    date.getDate(),
-  ].join("-");
+  const isoDate = date.toISOString();
+  return isoDate.split("T")[0];
 }
 
 export default function AddEvent() {
