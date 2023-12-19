@@ -14,7 +14,8 @@ export default function Account() {
   const [user, setUser] = useState<User | null>(null);
   const [checkedevents, setcheckedEvents] = useState([]);
   const [attendedevents, setAttendedEvents] = useState([]);
-  const [checkedInPrivacy, setCheckedInPrivacy] = useState(true)
+  const [checkedInPrivacy, setCheckedInPrivacy] = useState(true);
+  const [profile, setProfile] = useState(false);
 
   const router = useRouter();
 
@@ -22,49 +23,49 @@ export default function Account() {
     fetch(environment.backendURL + "/users" + `/${user.userID}/checkins`, {
       mode: "cors",
       credentials: "include",
-  }).then((response) => {
-      if (response.status == 200) {
-        return response.json();
-      } else {
-        setCheckedInPrivacy(false);
-        return null;
-      }
-    }).then((responseJSON) => {
-      if (responseJSON != null) {
-        setcheckedEvents(responseJSON);
-      }
-    });
+    })
+      .then((response) => {
+        if (response.status == 200) {
+          return response.json();
+        } else {
+          setCheckedInPrivacy(false);
+          return null;
+        }
+      })
+      .then((responseJSON) => {
+        if (responseJSON != null) {
+          setcheckedEvents(responseJSON);
+        }
+      });
   }
 
   function requestAttended(user: User) {
     fetch(environment.backendURL + "/users" + `/${user.userID}/attended`, {
       mode: "cors",
       credentials: "include",
-  }).then((response) => {
-      if (response.status == 200) {
-        return response.json();
-      } else {
-        setCheckedInPrivacy(false);
-        return null;
-      }
-    }).then((responseJSON) => {
-      if (responseJSON != null) {
-        setAttendedEvents(responseJSON)
-      }
-    });
+    })
+      .then((response) => {
+        if (response.status == 200) {
+          return response.json();
+        } else {
+          setCheckedInPrivacy(false);
+          return null;
+        }
+      })
+      .then((responseJSON) => {
+        if (responseJSON != null) {
+          setAttendedEvents(responseJSON);
+        }
+      });
   }
 
   function showCheckins(response: Array<Event>) {
     if (!checkedInPrivacy) {
-      return (<div>
-        Not allowed to see this information.
-      </div>
-      )
-    }
-    else if (response.length > 0) {
+      return <div>Not allowed to see this information.</div>;
+    } else if (response.length > 0) {
       return response.map((event: Event) => (
         <div key={event.eventID}>
-          <UserEvent event={event}/>
+          <UserEvent event={event} />
         </div>
       ));
     } else {
@@ -73,7 +74,7 @@ export default function Account() {
   }
 
   useEffect(() => {
-    const id = router.query.account
+    const id = router.query.account;
     if (id) {
       fetch(environment.backendURL + "/users" + `/${id}`, {
         mode: "cors",
@@ -86,13 +87,23 @@ export default function Account() {
           setUser(responseJSON);
           requestCheckins(responseJSON);
           requestAttended(responseJSON);
+          fetch(environment.backendURL + "/profile", {
+            mode: "cors",
+            credentials: "include",
+          })
+            .then((response) => {
+              return response.json();
+            })
+            .then((responseJSON) => {
+              setProfile(responseJSON.userID == id);
+            });
         });
     }
   }, [router.query.account]);
   return (
     <>
       <Head>
-        <title>Concerto | Account</title>
+        <title>Concerto | {profile ? "Profile" : "Profile of " + user?.username}</title>
         <meta name="description" content="Your Account." />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
@@ -100,14 +111,17 @@ export default function Account() {
       <main className={`${styles.main} ${inter.className}`}>
         <div className={[styles.page, styles.accountPage].join(" ")}>
           <div className={styles.biographyContainer}>
-            {user && <Biography user={user} source={user.image} username={user.username} description={user.description} />}
+            {user && (
+              <Biography
+                user={user}
+                source={user.image}
+                username={user.username}
+                description={user.description}
+              />
+            )}
           </div>
-          <div className={styles.attendedEventsContainer}>
-            {showCheckins(checkedevents)}
-          </div>
-          <div className={styles.pastEventsContainer}>
-          {showCheckins(attendedevents)}
-          </div>
+          <div className={styles.attendedEventsContainer}>{showCheckins(checkedevents)}</div>
+          <div className={styles.pastEventsContainer}>{showCheckins(attendedevents)}</div>
         </div>
       </main>
     </>
