@@ -27,6 +27,11 @@ export default function PrivacySettings(userid: { userid: number}) {
       mode: "cors",
       credentials: "include",
     });
+    if (response.status == 200){
+      alert("Your privacy settings have been changed.")
+    } else{
+      alert("Something went wrong while saving your privacy settings.")
+    }
   }
 
   useEffect(() => {

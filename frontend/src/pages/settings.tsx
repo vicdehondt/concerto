@@ -42,31 +42,41 @@ export default function Settings() {
     event.preventDefault();
     var formData = new FormData(event.currentTarget);
     const form_values = Object.fromEntries(formData);
-    const response = await fetch(environment.backendURL + "/profile/settings/mail", {
-      method: "POST",
+    const response = await fetch(environment.backendURL + "/profile/settings/personal/mail", {
+      method: "PATCH",
       body: formData,
       mode: "cors",
       credentials: "include",
     });
+    if (response.status == 200){
+      alert("Your mail has been changed.")
+    } else{
+      alert("Something went wrong while saving your mail.")
+    }
   }
 
   async function onSaveDescription(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     var formData = new FormData(event.currentTarget);
     const form_values = Object.fromEntries(formData);
-    const response = await fetch(environment.backendURL + "/profile/settings/description", {
+    const response = await fetch(environment.backendURL + "/profile/settings/personal/description", {
       method: "PATCH",
       body: formData,
       mode: "cors",
       credentials: "include",
     });
+    if (response.status == 200){
+      alert("Your biography has been changed.")
+    } else{
+      alert("Something went wrong while saving your biography.")
+    }
   }
 
   async function onSaveProfilePicture(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     var formData = new FormData(event.currentTarget);
     const form_values = Object.fromEntries(formData);
-    const response = await fetch(environment.backendURL + "/profile/settings/profilepicture", {
+    const response = await fetch(environment.backendURL + "/profile/settings/personal/profilepicture", {
       method: "PATCH",
       body: formData,
       mode: "cors",
@@ -89,12 +99,12 @@ export default function Settings() {
               <div className={styles.settingValue}>
                 {user.mail}
               </div>
-              <div className={styles.changeMailText}>
+              <div className={styles.changeText}>
                 <textarea
-                  id="changeMail"
-                  name="changeMail"
+                  id="mail"
+                  name="mail"
                   value={user.mail}
-                  rows={1}
+                  rows={3}
                   onChange={handleMailChange}
                 />
               </div>
@@ -109,12 +119,12 @@ export default function Settings() {
               <div className={styles.settingValue}>
                 {user.description}
               </div>
-              <div className={styles.changeDescriptionText}>
+              <div className={styles.changeText}>
                 <textarea
-                  id="changeDescription"
-                  name="changeDescription"
+                  id="description"
+                  name="description"
                   value={user.description}
-                  rows={1}
+                  rows={3}
                   onChange={handleDescriptionChange}
                 />
               </div>
