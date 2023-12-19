@@ -11,8 +11,7 @@ type FriendInvitesProps = {
 
 function FriendInvites({ eventID }: FriendInvitesProps) {
 
-	const [friends, setFriends] = useState([]);
-	const [friendsHTML, setFriendsHTML] = useState([]);
+	const [friends, setFriends] = useState<Friend[]>([]);
 
 	function showFriends(friends: Array<Friend>) {
 		return friends.map((friend) => {
