@@ -1,10 +1,9 @@
 import * as express from 'express';
 import { BaseController } from './base.controller';
-import * as database from '../models/Eventmodel';
 import { userCheckIn, userCheckOut, retrieveCheckIn, allCheckedInEvents, CheckedInUsers } from  '../models/Checkinmodel';
 import { Notification, NotificationObject, createNewNotification } from '../models/Notificationmodel';
 import { VenueModel } from '../models/Venuemodel';
-import { retrieveArtist, createArtist, RetrieveEvent, isFinished, expiredEventTreshold, Artist} from '../models/Eventmodel';
+import { retrieveArtist, createArtist, RetrieveEvent, isFinished, expiredEventTreshold, Artist, extractFilters, retrieveNewUnfinishedEvents, createWhereClause, EventModel, CreateEvent, retrieveUnfinishedEvents } from '../models/Eventmodel';
 import {body, param, validationResult} from "express-validator"
 import {createMulter} from "../configs/multerConfig";
 import { WishListedEvents } from '../models/Wishlistmodel';
@@ -293,17 +292,17 @@ export class EventController extends BaseController {
 				var wishlisted = await getAllWishListed(sessiondata.userID);
 				wishlisted = wishlisted.map((wishlisted) => { return wishlisted.Event.eventID});
 				const eventIds = checkIns.map((checkedInEvent) => checkedInEvent.eventID);
-				const extracted = database.extractFilters(req);
+				const extracted = extractFilters(req);
 				if (extracted[0].length == 0) {
-					const events = await database.retrieveNewUnfinishedEvents(limit, offset, eventIds.concat(wishlisted));
+					const events = await retrieveNewUnfinishedEvents(limit, offset, eventIds.concat(wishlisted));
 					res.status(200).json(events);
 				} else {
-					const whereClause = database.createWhereClause(extracted[0],  extracted[1]);
+					const whereClause = createWhereClause(extracted[0],  extracted[1]);
 					whereClause['eventID'] = { [Op.notIn]: eventIds.concat(wishlisted)}
 					if (whereClause['dateAndTime'] == null) {
 						whereClause['dateAndTime'] = { [Op.gte]: expiredEventTreshold() }
 					}
-					const events = await database.EventModel.findAll({
+					const events = await EventModel.findAll({
 						limit: limit,
 						offset: offset,
 						attributes: {
@@ -326,7 +325,7 @@ export class EventController extends BaseController {
 					res.status(200).json(events);
 				}
 			} else {
-				const events = await database.retrieveUnfinishedEvents(limit, offset);
+				const events = await retrieveUnfinishedEvents(limit, offset);
 				res.status(200).json(events);
 			}
 		} catch (err) {
@@ -369,7 +368,7 @@ export class EventController extends BaseController {
 				const sessiondata = req.session;
 				const {artistID, venueID, title, description, dateAndTime, price, doors, main, support, mainGenre, secondGenre, url} = req.body;
 				const suppliedDate = new Date(dateAndTime);
-				const event = await database.EventModel.findOne({
+				const event = await EventModel.findOne({
 					where: {
 						artistID: artistID,
 						venueID: venueID,
@@ -383,7 +382,7 @@ export class EventController extends BaseController {
 				} else {
 					const bannerPath = "http://localhost:8080/events/" + bannerpictures[0].filename;
 					const eventPicturePath = "http://localhost:8080/events/" + eventPictures[0].filename;
-					const result = await database.CreateEvent(sessiondata.userID, artistID, venueID, title, description, dateAndTime, price, doors, main, support, mainGenre, secondGenre, url, bannerPath, eventPicturePath);
+					const result = await CreateEvent(sessiondata.userID, artistID, venueID, title, description, dateAndTime, price, doors, main, support, mainGenre, secondGenre, url, bannerPath, eventPicturePath);
 					res.status(200).json({ success: true, eventID: result.eventID, message: 'Event created successfully.' });
 				}
 			} else {
