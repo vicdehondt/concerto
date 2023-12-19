@@ -24,7 +24,7 @@ export abstract class BaseController {
 
     async checkUserExists(req: express.Request, res: express.Response, next) {
         try {
-            const userid = req.params.userid;
+            const userid = req.params.userID;
             const user = await RetrieveUser('userID', userid);
             if (user != null) {
                 req.body.user = user;
