@@ -1,33 +1,18 @@
-import { useState } from "react";
-import styles from "../styles/Rating.module.css";
+import styles from "@/styles/Rating.module.css";
 import { Star } from 'lucide-react';
+import Link from "next/link";
+import { Artist, Venue } from "./BackendTypes";
 
-function Rating({score}: {score: number}) {
+type RatingProps = {
+  artistScore: number,
+  venueScore: number,
+  artist: Artist,
+  venue: Venue
+}
 
-  const [locationStars, setLocationStars] = useState(Array.from({ length: 5 }).map((_, index) => (
-    <Star key={index} onClick={() => locationStarClicked(index)} size={35} />
-  )));
+function Rating({artistScore, venueScore, artist, venue}: RatingProps) {
 
-  const [artistStars, setArtistStars] = useState(Array.from({ length: 5 }).map((_, index) => (
-    <Star key={index} onClick={() => artistStarClicked(index)} size={35} />
-  )));
-
-  function locationStarClicked(index: number) {
-    const newArray = Array.from({ length: 5 }).map((_, i) => (
-      <Star key={i} onClick={() => locationStarClicked(i)} size={35} fill={i <= index ? "yellow" : "none"} />
-    ));
-    setLocationStars(newArray);
-  }
-
-  function artistStarClicked(index: number) {
-    const newArray = Array.from({ length: 5 }).map((_, i) => (
-      <Star key={i} onClick={() => artistStarClicked(i)} size={35} fill={i <= index ? "yellow" : "none"} />
-    ));
-    setArtistStars(newArray);
-  }
-
-  function showScore() {
-    console.log(score);
+  function showScore(score: number) {
     if ((score != null) && (score > 0.5)) {
       const roundedScore = Math.round(score);
       return (Array.from({ length: 5 }).map((_, i) => (
@@ -42,23 +27,22 @@ function Rating({score}: {score: number}) {
 
   return (
     <div className={styles.rateBox}>
-      <div className={styles.box}>
+      <Link href={`/ratings/venues/${venue.venueID}`} className={styles.box}>
         <div className={styles.text}>
-          Location
-        </div>
-        <div className={styles.stars}> {/*Moet form worden */}
-          {locationStars}
-        </div>
-      </div>
-      <div className={styles.box}>
-        <div className={styles.text}>
-          Artist
+          {venue.venueName}
         </div>
         <div className={styles.stars}>
-          {showScore()}
-          {/* {artistStars} */}
+          {showScore(venueScore)}
         </div>
-      </div>
+      </Link>
+      <Link href={`/ratings/artists/${artist.artistID}`} className={styles.box}>
+        <div className={styles.text}>
+          {artist.name}
+        </div>
+        <div className={styles.stars}>
+          {showScore(artistScore)}
+        </div>
+      </Link>
     </div>
   )
 }

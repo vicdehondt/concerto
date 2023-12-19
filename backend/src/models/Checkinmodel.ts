@@ -1,9 +1,11 @@
 import { DataTypes, Op } from 'sequelize';
 import {sequelize} from '../configs/sequelizeConfig'
-import { RetrieveUser, UserModel } from './Usermodel';
-import { EventModel } from './Eventmodel';
+import { UserModel } from './Usermodel';
+import { Artist, EventModel, expiredEventTreshold } from './Eventmodel';
+import { VenueModel } from './Venuemodel';
 
-const CheckedInUsers = sequelize.define('CheckedInUser', {
+// Table to store which users have checked in for each event.
+export const CheckedInUsers = sequelize.define('CheckedInUser', {
     checkinID: {
         type: DataTypes.INTEGER,
         primaryKey: true,
@@ -32,26 +34,26 @@ const CheckedInUsers = sequelize.define('CheckedInUser', {
     }
 );
 
+// A many-to-many relationship is defined between the user and event tables
 UserModel.belongsToMany(EventModel, {
     through: CheckedInUsers,
-    onDelete: 'CASCADE',
     foreignKey: 'userID'
 });
 
 EventModel.belongsToMany(UserModel, {
     through: CheckedInUsers,
-    onDelete: 'CASCADE',
     foreignKey: 'eventID'
 });
 
 CheckedInUsers.belongsTo(UserModel, { foreignKey: 'userID' });
 CheckedInUsers.belongsTo(EventModel, { foreignKey: 'eventID' });
 
-export async function retrieveCheckIn(user, event) {
+// procedure which returns either a checkin instance or null
+export async function retrieveCheckIn(userID, event) {
     const result = await CheckedInUsers.findOne({
         where: {
             [Op.and]: [
-                { userID: user },
+                { userID: userID },
                 { eventID: event.eventID }
             ]
         }
@@ -66,7 +68,7 @@ export async function userCheckIn(userID, event): Promise<boolean> {
             userID: userID,
             eventID: event.eventID
         });
-        event.checkedIn = event.checkedIn + 1;
+        event.amountCheckedIn = event.amountCheckedIn + 1;
         await event.save();
         return true;
     } else {
@@ -74,47 +76,58 @@ export async function userCheckIn(userID, event): Promise<boolean> {
     }
 }
 
+// procedure which returns true if a user is able to check in for the event, and false if he was unable to
 export async function userCheckOut(userID, event): Promise<boolean> {
-    const checkIn = await retrieveCheckIn(userID, event.eventID);
+    const checkIn = await retrieveCheckIn(userID, event);
     if (checkIn != null) {
         await checkIn.destroy();
-        event.checkedIn = event.checkedIn - 1;
+        event.amountCheckedIn = event.amountCheckedIn - 1;
         await event.save();
         return true;
     } else {
         return false;
     }
-}
-export async function allCheckedInUsers(eventid) {
-    const users = await CheckedInUsers.findAll({
-        attributes: ['userID'],
-        where: {
-            eventID: eventid,
-        },
-    });
-    const result = await Promise.all(users.map(async checkin => {
-        const user = await UserModel.findOne({
-            attributes: ['userID', 'username', 'image'],
-            where: {
-                userID: checkin.userID,
-            }
-        }); return user;
-    }));
-    return result;
 }
 
 export async function allCheckedInEvents(userID) {
-    const user = await UserModel.findByPk(userID, {
-        include: [{
-            model: EventModel,
-        }]
+    return await checkinsFinder(userID, false);
+
+}
+async function checkinsFinder(userID, finished) {
+    const checkins = await CheckedInUsers.findAll({
+        attributes: ['eventID'],
+        where: {
+            userID: userID
+        }
     });
-    const events = await user.getEvents({
-        attributes: ['eventID', 'eventPicture', 'title'],
+    const eventIDs = checkins.map(event => {
+        return event.eventID
     });
-    const cleanedEvents = events.map(event => {
-        const { CheckedInUser, ...eventWithoutCheckedInUser } = event.toJSON();
-        return eventWithoutCheckedInUser;
+    const whereClause = {
+        eventID: {
+            [Op.in]: eventIDs,
+        }
+    }
+    if (finished) {
+        whereClause['dateAndTime'] = {
+            [Op.lt]: expiredEventTreshold()
+           }
+    } else {
+        whereClause['dateAndTime'] = {
+         [Op.gte]: expiredEventTreshold()
+        }
+    }
+    const events = await EventModel.findAll({
+        attributes: ['eventID', 'eventPicture', 'title', 'dateAndTime'],
+        include: [
+            { model: Artist, attributes: ['artistID', 'name']},
+            { model: VenueModel, attributes: ['venueID', 'venueName'] }
+        ],
+        where: whereClause
     });
-    return cleanedEvents;
+    return events;
+}
+
+export async function allAttendedEvents(userID) {
+    return await checkinsFinder(userID, true);
 }

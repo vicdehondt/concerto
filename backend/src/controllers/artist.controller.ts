@@ -1,9 +1,10 @@
 import * as express from 'express';
 import { BaseController } from './base.controller';
-import {body, validationResult} from "express-validator"
+import {body, param } from "express-validator"
 import {createMulter} from "../configs/multerConfig";
-import { Artist, EventModel, retrieveArtist, createArtist } from '../models/Eventmodel';
-import { Rating, Review, createReview } from '../models/Ratingmodel';
+import { Artist, retrieveArtist, createArtist, RetrieveEvent } from '../models/Eventmodel';
+import { Review, createReview } from '../models/Ratingmodel';
+import { retrieveCheckIn } from '../models/Checkinmodel';
 
 const eventImagePath = './public/artists';
 
@@ -21,12 +22,22 @@ export class ArtistController extends BaseController {
                 res.set('Access-Control-Allow-Credentials', 'true');
                 this.getArtist(req, res);
             });
-        this.router.get('/:artistID/reviews', upload.none(),
+        this.router.get('/:artistID/reviews', upload.none(), [this.checkArtistExists], this.verifyErrors,
             (req: express.Request, res: express.Response) => {
                 res.set('Access-Control-Allow-Credentials', 'true');
                 this.getReviews(req, res);
             });
-        this.router.post('/:artistID/reviews', this.requireAuth, upload.none(),
+        this.router.post('/:artistID/reviews', this.requireAuth, upload.none(), [this.checkArtistExists], this.verifyErrors,
+        [
+            body("eventID").trim().notEmpty().custom(async (value, {req}) => {
+                const event = await RetrieveEvent(value)
+                if (event != null) {
+                    req.body.event = event;
+                } else {
+                    throw new Error("This event does not exist.");
+                }
+            }),
+        ],
             (req: express.Request, res: express.Response) => {
                 res.set('Access-Control-Allow-Credentials', 'true');
                 this.reviewArtist(req, res);
@@ -39,56 +50,62 @@ export class ArtistController extends BaseController {
     }
 
     async getReviews(req: express.Request, res: express.Response) {
-        const artistID = req.params.artistID;
-        const artist = await Artist.findByPk(artistID);
-        if (artist != null) {
-            const ratingID = artist.ratingID;
+        const artist = req.body.artist;
+        const ratingID = artist.Rating.ratingID;
+        try {
             const result = await Review.findAll({
                 where: {
                     ratingID: ratingID
                 }
             });
             res.status(200).json(result);
-        } else {
-            res.status(400).json({ success: false, error: "Artist not found in database"});
+        } catch (err) {
+            console.log("An error occurred: ", err);
+            res.status(500).json({success: false, error: "Internal server error"});
         }
     }
 
     async reviewArtist(req: express.Request, res: express.Response) {
         const sessiondata = req.session;
-        const artistID = req.params.artistID;
-        const artist = await Artist.findByPk(artistID);
-        if (artist != null) {
-            const {message, score, eventID} = req.body;
-            const event = await EventModel.findByPk(eventID);
-            if (event == null) {
-                res.status(400).json({ success: false, error: "Event not found in database"});
+        const artist = req.body.artist;
+        const {message, score, event} = req.body;
+        try {
+            const checkedin = await retrieveCheckIn(sessiondata.userID, event);
+            if (checkedin == null) {
+                res.status(400).json({ success: false, error: "Not allowed to review this event."});
             } else {
-                const rating = await Rating.findByPk(artist.ratingID);
-                const result = await createReview(sessiondata.userID, rating, eventID, score, message);
+                const rating = artist.Rating;
+                const result = await createReview(sessiondata.userID, rating, event.eventID, score, message);
                 if (result) {
-                    res.status(200).json({ success: true, message: "Created a review for this artist"});
+                    res.status(200).json({ success: true, message: "Created a review for this artist."});
                 } else {
-                    res.status(400).json({ success: false, error: "Already reviewed this artist for this event"});
+                    res.status(400).json({ success: false, error: "Already reviewed this artist for this event."});
                 }
             }
-        } else {
-            res.status(400).json({ success: false, error: "Artist not found in database"});
+        } catch (err) {
+            console.log("An error occurred: ", err);
+            res.status(500).json({success: false, error: "Internal server error"});
         }
     }
 
     async getAllArtists(req: express.Request, res: express.Response) {
         console.log("Accepted request for all artists")
-		const artists = await Artist.findAll({
-            attributes: {
-                exclude: ['createdAt', 'updatedAt'],
-          }});
-		res.status(200).json(artists);
+        try {
+            const artists = await Artist.findAll({
+                attributes: {
+                    exclude: ['createdAt', 'updatedAt'],
+              }});
+            res.status(200).json(artists);
+        } catch (err) {
+            console.log("An error occurred: ", err);
+            res.status(500).json({success: false, error: "Internal server error"});
+        }
     }
 
     async getArtist(req: express.Request, res: express.Response) {
         console.log("Received request to lookup artist information");
-        const artist = await retrieveArtist(req.params.artistID);
+        try {
+            const artist = await retrieveArtist(req.params.artistID);
         if (artist != null) {
            res.status(200).json(artist);
         } else {
@@ -96,8 +113,24 @@ export class ArtistController extends BaseController {
                 const result = await retrieveArtist(req.params.artistID);
                 res.status(200).json(result);
             } else {
-                res.status(400).json({ success: false, error: "There was an error adding an artist"});
+                res.status(400).json({ success: false, error: "This artist was not found in the database."});
             }
         }
+        } catch (err) {
+            console.log("An error occurred: ", err);
+            res.status(500).json({success: false, error: "Internal server error"});
+        }
+    }
+
+    async checkArtistExists(req: express.Request, res: express.Response, next) {
+        await param("artistID").custom(async (artistID, { req }) => {
+            const artist = await retrieveArtist(artistID);
+            if (artist != null) {
+                req.body.artist = artist;
+                return true;
+            } else {
+                throw new Error("Artist with that ID does not exist.");
+            }
+        })(req, res, next);
     }
 }

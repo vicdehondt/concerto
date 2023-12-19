@@ -1,11 +1,11 @@
 .eventCard {
   min-width: 1090px;
   display: grid;
-  grid-template-columns: [photo] 120px [event] 1fr [tickets] 100px [info] 238px [wishlist] 30px;
+  grid-template-columns: [photo] 120px [event] 1fr [tickets] 100px [info] 238px;
   grid-template-rows: [card] 70px [tags] auto;
   grid-template-areas:
-    "photo event tickets info wishlist"
-    "photo tags tags tags tags";
+    "photo event tickets info"
+    "photo tags tags tags";
   column-gap: 20px;
   margin: 0 20px;
   box-shadow: 0 2px 3px;
@@ -24,6 +24,7 @@
 }
 
 .event {
+  cursor: pointer;
   grid-area: event;
 }
 
@@ -100,10 +101,6 @@
 .price .photo img {
   border-radius: 0;
   width: 20px;
-}
-
-.addToWishlist img {
-  width: 28px;
 }
 
 .tags {

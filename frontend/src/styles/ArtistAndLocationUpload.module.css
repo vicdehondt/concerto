@@ -1,7 +1,5 @@
 .container {
   width: 480px;
-  margin: 15px;
-  padding: 0 15px;
   display: flex;
   flex-direction: column;
 }
@@ -24,6 +22,10 @@
   float: right;
   font-size: x-large;
   font-weight: bold;
+}
+
+.name:hover {
+  cursor: pointer;
 }
 
 .name select {
@@ -53,4 +55,11 @@
   overflow: scroll;
   margin-top: 5px;
   width: fit-content;
+}
+
+.error {
+  color: red;
+  font-size: large;
+  font-weight: bold;
+  text-align: center;
 }

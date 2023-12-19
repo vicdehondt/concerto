@@ -23,6 +23,7 @@
 .titleContainer {
   background-color: rgb(233, 233, 233);
   position: relative;
+  opacity: 70%;
 
 }
 
@@ -32,4 +33,11 @@
   color: black;
   font-size: 60px;
   font-weight: 900;
+}
+
+.titleContainer .concertTitle {
+  color: black;
+  font-size: 60px;
+  font-weight: 900;
+  margin: 10px 30px;
 }

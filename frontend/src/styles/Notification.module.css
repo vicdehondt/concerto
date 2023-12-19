@@ -31,3 +31,20 @@
 .buttonBox button:hover {
   background-color: #7180B9;
 }
+
+.eventMessage {
+  font-weight: bold;
+}
+
+.notificationContainer a {
+  all: unset;
+}
+
+.notificationContainer a:hover {
+  all: unset;
+}
+
+.notificationContainer:hover {
+  background-color: rgb(217, 217, 217);
+  cursor: pointer;
+}

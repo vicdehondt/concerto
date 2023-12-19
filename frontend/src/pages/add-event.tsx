@@ -6,76 +6,90 @@ import FriendInvites from "@/components/FriendInvite";
 import BannerUpload from "@/components/BannerUpload";
 import { useState } from "react";
 import { FormEvent } from "react";
-import Rating from '@/components/Rating'
 import TimetableUpload from "@/components/TimetableUpload";
 import ArtistAndLocationUpload from "@/components/ArtistAndLocationUpload";
 import EventCardUpload from "@/components/EventCardUpload";
+import { Artist, Venue } from "@/components/BackendTypes";
+import { environment } from "@/components/Environment";
 
 const inter = Inter({ subsets: ["latin"] });
 
-const environment = {
-  backendURL: "http://localhost:8080",
-};
-if (process.env.NODE_ENV == "production") {
-  environment.backendURL = "https://api.concerto.dehondt.dev";
-}
-
-type Artist = {
-  id: string;
-  type: string;
-  name: string;
-};
-
-type Venue = {
-  venueID: string;
-  venueName: string;
-  longitude: number;
-  latitude: number;
-  ratingID: number;
-};
-
 function getFormattedDate(date: Date) {
-  return (
-    [date.getFullYear(),
-    date.getMonth() + 1, // getMonth starts at 0, so January is 00
-    date.getDate()].join("-")
-  );
+  const isoDate = date.toISOString();
+  return isoDate.split("T")[0];
 }
 
 export default function AddEvent() {
   const router = useRouter();
   const [title, setTitle] = useState("");
-  const [location, setLocation] = useState({venueID: "123", venueName: "Not selected"});
-  const [time, setTime] = useState("")
-  const [date, setDate] = useState(getFormattedDate(new Date()))
-  const [selectedArtist, setSelectedArtist] = useState({name: "", id: ""})
+  const [location, setLocation] = useState<Venue | null>(null);
+  const [time, setTime] = useState("");
+  const [date, setDate] = useState(getFormattedDate(new Date()));
+  const [price, setPrice] = useState("");
+  const [selectedArtist, setSelectedArtist] = useState<Artist | null>(null);
+  const [eventPictureError, setEventPictureError] = useState<string | null>(null);
+  const [artistError, setArtistError] = useState<string | null>(null);
+  const [venueError, setVenueError] = useState<string | null>(null);
+  const [addError, setAddError] = useState<string | null>(null);
 
   function concatDateAndTime() {
     const dateAndTime = date + "T" + time;
     return dateAndTime;
   }
 
+  function eventPictureChosen(form: FormData) {
+    const eventPicture: File = form.get("eventPicture") as File;
+    if (eventPicture.name == "") {
+      setEventPictureError("Event picture is required.");
+      return false
+    }
+    setEventPictureError(null);
+    return true;
+  }
+
+  function artistSelected() {
+    if (selectedArtist == null) {
+      setArtistError("Artist is required.");
+      return false;
+    }
+    setArtistError(null);
+    return true;
+  }
+
+  function venueSelected() {
+    if (location == null) {
+      setVenueError("Location is required.");
+      return false;
+    }
+    setVenueError(null);
+    return true;
+  }
+
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     var formData = new FormData(event.currentTarget);
-    formData.append("dateAndTime", concatDateAndTime());
-    formData.append("price", "20");
-    formData.append("artistID", selectedArtist.id);
-    formData.append("venueID", location.venueID);
-    const form_values = Object.fromEntries(formData);
-    console.log(form_values);
-    const response = await fetch(environment.backendURL + "/events", {
-      method: "POST",
-      body: formData,
-      mode: "cors",
-      credentials: "include",
-    });
+    if (artistSelected() && eventPictureChosen(formData) && venueSelected()) {
+      formData.append("dateAndTime", concatDateAndTime());
+      if (location) {
+        formData.append("venueID", location.venueID);
+      }
+      if (selectedArtist) {
+        formData.append("artistID", selectedArtist.id);
+      }
+      const response = await fetch(environment.backendURL + "/events", {
+        method: "POST",
+        body: formData,
+        mode: "cors",
+        credentials: "include",
+      });
 
-    // Handle response if necessary
-    const data = await response.json();
-    if (response.status == 200) {
-      console.log(response);
-      router.push("/")
+      // Handle response if necessary
+      const data = await response.json();
+      if (response.status == 200) {
+        router.push("/");
+      } else if (response.status == 400 && data.message == "This event already exists so a new one could not be created.") {
+        setAddError("This event already exists, so a new one could not be created.");
+      }
     }
   }
 
@@ -95,11 +109,11 @@ export default function AddEvent() {
           <div className={styles.descriptionContainer}>
             <div className={styles.descriptionTitle}>Description</div>
             <div className={styles.descriptionText}>
-              <textarea id="description" name="description" rows={10} required />
+              <textarea id="description" name="description" maxLength={1000} rows={10} required />
             </div>
           </div>
           <div className={styles.inputContainer}>
-            <div className={styles.programAndDateContainer} >
+            <div className={styles.programAndDateContainer}>
               <div className={styles.programContainer}>
                 <div className={styles.programTitle}>Program</div>
                 <div className={styles.programText}>
@@ -109,22 +123,70 @@ export default function AddEvent() {
               <div className={styles.dateContainer}>
                 <div className={styles.dateTitle}>Pick a date!</div>
                 <div className={styles.datePane}>
-                  <input type="date" defaultValue={date} onChange={(event) => setDate(getFormattedDate(new Date(event.target.value)))} required />
+                  <input
+                    type="date"
+                    onChange={(event) => setDate(getFormattedDate(new Date(event.target.value)))}
+                    required
+                  />
                 </div>
               </div>
             </div>
             <div className={styles.cardPreview}>
-              <EventCardUpload title={title} location={location.venueName} date={date} time={time} price={20} image="/public/photos/Rombout.jpeg" />
+              {eventPictureError && <div className={styles.error}>{eventPictureError}</div>}
+              <EventCardUpload
+                title={title}
+                location={location}
+                date={date}
+                time={time}
+                price={price as unknown as number}
+              />
             </div>
           </div>
           <div className={styles.artistAndLocationContainer}>
-            <ArtistAndLocationUpload locationCallback={(venue: Venue) => setLocation(venue)} artistCallback={(artist: Artist) => setSelectedArtist(artist)} />
+            {venueError && <div className={styles.error}>{venueError}</div>}
+            <ArtistAndLocationUpload
+              locationCallback={(venue: Venue) => setLocation(venue)}
+              artist={selectedArtist}
+              artistCallback={(artist: Artist) => {
+                setArtistError(null);
+                setSelectedArtist(artist)
+              }}
+              error={artistError}
+            />
           </div>
-          <div className={styles.friendInviteContainer}>
-            <FriendInvites />
+          <div className={styles.priceContainer}>
+            Tickets
+            <div className={styles.priceBox}>
+              <div className={styles.priceInput}>
+                <input
+                  type="number"
+                  name="price"
+                  id="price"
+                  placeholder="Minimum price"
+                  onChange={(event) => setPrice(event.target.value)}
+                  required
+                />
+                EUR
+              </div>
+              <div className={styles.ticketURL}>
+                Add site to buy tickets:
+                <input
+                  type="url"
+                  name="url"
+                  id="url"
+                  onClick={(event) => event.currentTarget.select()}
+                  placeholder="https://example.com"
+                  pattern="https://.*"
+                  required
+                />
+              </div>
+            </div>
           </div>
           <div className={styles.addEventButton}>
-            <button className={styles.submitButton} type="submit">Add event!</button>
+            {addError && <div className={styles.error}>{addError}</div>}
+            <button className={styles.submitButton} type="submit">
+              Add event!
+            </button>
           </div>
         </form>
       </main>

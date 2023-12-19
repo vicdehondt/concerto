@@ -18,10 +18,29 @@
 }
 
 .leftTopics a,
-.rightTopics a {
+.add {
   height: 60px;
   padding: 20px;
   text-align: center;
+}
+
+.friendsRedirect,
+.wishlistRedirect {
+  height: 60px;
+  padding: 20px;
+  text-align: center;
+  color: white;
+}
+
+.developersRedirect {
+  padding: 20px;
+  text-align: center;
+}
+
+.friendsRedirect:hover,
+.wishlistRedirect:hover {
+  background-color: #7180B9;
+  cursor: pointer;
 }
 
 .notificationButton {
@@ -59,6 +78,20 @@
   box-shadow: 1px 1px 2px;
 }
 
+.searchBox {
+  display: none;
+  position: absolute;
+  background-color: white;
+  z-index: 1000;
+  bottom: 0;
+  left: 110px;
+  transform: translateY(98%);
+  padding: 5px;
+  border: 0px;
+  border-radius: 6px;
+  box-shadow: 1px 1px 2px;
+}
+
 .closeNotifications {
   background: none;
 	border: none;
@@ -68,25 +101,90 @@
   text-align: right;
 }
 
+.profilePicture {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 .profilePicture  img{
   border-radius: 50%;
 }
 
-.profilePicture a {
+.account {
   display: flex;
   padding: 0 20px;
   align-items: center;
+  color: white;
+}
+
+.account:hover {
+  cursor: pointer;
 }
 
 .profilePicture a:hover {
   background-color: #0B2027;
 }
 
+.accountDropdown {
+  height: 100%;
+}
+
+.dropdownContent {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  background-color: white;
+  z-index: 1000;
+  bottom: 0;
+  right: 10px;
+  transform: translateY(98%);
+  width: fit-content;
+  border: 0px;
+  border-radius: 6px;
+  box-shadow: 1px 1px 2px;
+  text-align: center;
+}
+
+.dropdownContent a,
+.dropdownContent button {
+  all: unset;
+  padding: 10px;
+}
+
+.dropdownContent button {
+  color: red;
+}
+
+.dropdownContent a:hover,
+.dropdownContent button:hover {
+  all: unset;
+  cursor: pointer;
+  padding: 10px;
+  border: 0px;
+}
+
+.dropdownContent a:hover {
+  background-color: #0B2027;
+  color: white;
+  border-radius: 6px 6px 0 0;
+}
+
+.dropdownContent button:hover {
+  background-color: red;
+  color: white;
+  border-radius: 0 0 6px 6px;
+}
+
+.dropdownContent .developersButton:hover {
+  border-radius: unset;
+}
+
 .addEventButton {
   padding: 20px;
 }
 
-.addEventButton a {
+.addEventButton .add {
   width: 40px;
   height: 40px;
   top: 10px;
@@ -100,8 +198,24 @@
   border-radius: 50%;
 }
 
-.addEventButton a:hover {
+.addEventButton .add:hover {
   color: white;
+  cursor: pointer;
   background-color: #7180B9;
   border: 5px solid #7180B9;
+}
+
+.userImage {
+  margin: 0 8px;
+}
+
+.loginButton {
+  all: unset;
+  color: white;
+  padding: 20px;
+}
+
+.loginButton:hover {
+  cursor: pointer;
+  font-weight: bold;
 }

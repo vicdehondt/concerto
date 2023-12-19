@@ -1,103 +1,149 @@
 import Head from "next/head";
 import { Inter } from "next/font/google";
 import styles from "@/styles/Home.module.css";
-import Navbar from "../components/Navbar";
-import EventCard from "../components/EventCard";
-import SideBar from "../components/SideBar";
-import { Nav } from "react-bootstrap";
-import type { InferGetServerSidePropsType, GetServerSideProps } from "next";
+import EventCard from "@/components/EventCard";
+import SideBar from "@/components/SideBar";
 import { ReactNode, useEffect, useState } from "react";
+import Link from "next/link";
+import { Event, Filter, Profile } from "@/components/BackendTypes";
+import { environment } from "@/components/Environment";
+import isEqual from "lodash/isEqual";
 
 const inter = Inter({ subsets: ["latin"] });
 
-const environment = {
-  backendURL: "http://localhost:8080",
-};
-if (process.env.NODE_ENV == "production") {
-  environment.backendURL = "https://api.concerto.dehondt.dev";
-}
-
-type Event = {
-  eventID: number;
-  title: string;
-  description: string;
-  checkedIn: number;
-  dateAndTime: string;
-  support: string;
-  doors: string;
-  main: string;
-  baseGenre: string;
-  secondGenre: string;
-  price: number;
-  banner: string;
-  eventPicture: string;
-  artistID: string;
-  venueID: string;
-};
-
 export default function Home() {
-  const [loggedIn, setLoggedIn] = useState(false);
   const [events, setEvents] = useState([]);
   const [eventsHTML, setEventsHTML] = useState<ReactNode[]>([]);
+  const [filters, setFilters] = useState<Filter>({
+    venueID: null,
+    date: null,
+    genre: null,
+    minPrice: null,
+    maxPrice: null,
+  });
+  const [sidebarSearching, setSidebarSearching] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [inThisWeek, setInThisWeek] = useState(true);
 
   useEffect(() => {
-    const fetchData = async () => {
-      const eventsArray = await Promise.all(
-        events.map(async (event: Event) => {
-          const response = await fetch(
-            environment.backendURL + `/venues/${event.venueID}`,
-            {
+    function filterFetch(url: string) {
+      if (filters.venueID != null) {
+        url += `&venueID=${filters.venueID}`;
+      }
+      if ((filters.date != null) && (filters.date as unknown as string != "Invalid Date")) {
+        url += `&date=${filters.date}`;
+      }
+      if (filters.genre != null) {
+        for (const genre of filters.genre) {
+          url += `&genre=${genre}`;
+        }
+      }
+      if (filters.minPrice != null && filters.maxPrice != null) {
+        url += `&price=${filters.minPrice}/${filters.maxPrice}`;
+      }
+      fetch(url, {
+        mode: "cors",
+        credentials: "include",
+      })
+        .then((response) => {
+          return response.json();
+        })
+        .then((responseJSON) => {
+          setEvents(responseJSON);
+        });
+    }
+    if (sidebarSearching) {
+      let url = environment.backendURL + `/search/events?title=${encodeURIComponent(searchQuery)}`;
+      filterFetch(url);
+    } else {
+      fetch(environment.backendURL + "/auth/status", {
+        mode: "cors",
+        credentials: "include",
+      }).then((response) => {
+        if (response.status == 200) {
+          const noFilters = {
+            venueID: null,
+            date: null,
+            genre: null,
+            minPrice: null,
+            maxPrice: null
+          };
+          if (isEqual(filters, noFilters)) {
+            fetch(environment.backendURL + "/profile", {
               mode: "cors",
               credentials: "include",
-            }
-          );
-          const jsonResponse = await response.json();
-          return (
-            <EventCard
-              loggedIn={loggedIn}
-              key={event.eventID}
-              eventId={event.eventID}
-              title={event.title}
-              location={jsonResponse.venueName}
-              amountAttending={event.checkedIn}
-              dateAndTime={event.dateAndTime}
-              price={event.price}
-              image={event.eventPicture}
-              genre1={event.baseGenre}
-              genre2={event.secondGenre}
-            />
-          );
-        })
-      );
-
-      setEventsHTML(eventsArray);
-    };
-    fetchData();
-  }, [events, loggedIn]);
-
-  useEffect(() => {
-    fetch(environment.backendURL + "/events", {
-      mode: "cors",
-      credentials: "include",
-    })
-      .then((response) => {
-        return response.json();
-      })
-      .then((responseJSON) => {
-        setEvents(responseJSON);
-      });
-    fetch(environment.backendURL + "/auth/status", {
-      mode: "cors",
-      credentials: "include",
-    })
-      .then((response) => {
-        if (response.status == 200) {
-          setLoggedIn(true)
-        } else if (response.status == 400) {
-          setLoggedIn(false)
+            })
+            .then((response) => {
+              if (response.status == 200) {
+                return response.json();
+              }
+            })
+            .then((responseJSON: Profile) => {
+              let url = environment.backendURL + `/events?genre=${responseJSON.firstGenre}&genre=${responseJSON.secondGenre}`;
+              filterFetch(url);
+            });
+          } else {
+            let url = environment.backendURL + `/events?`;
+            filterFetch(url);
+          }
+        } else {
+          let url = environment.backendURL + `/search/events?`;
+          filterFetch(url);
         }
       });
-  }, []);
+    }
+  }, [filters, searchQuery, sidebarSearching]);
+
+  useEffect(() => {
+    if (filters.date) {
+      const currentWeekday = (new Date().getDay() + 6) % 7;
+      const daysLeftInWeek = 7 - (currentWeekday + 1);
+      const selectedLower = filters.date < new Date();
+      const inThisWeek =
+        !selectedLower &&
+        filters.date <= new Date(new Date().setDate(new Date().getDate() + daysLeftInWeek));
+      setInThisWeek(inThisWeek);
+    } else {
+      setInThisWeek(true);
+    }
+  }, [filters]);
+
+  useEffect(() => {
+    convertEventsToHTML(events);
+  }, [events]);
+
+  // useEffect(() => {
+  //   fetch(environment.backendURL + `/events?genre`, {
+  //     mode: "cors",
+  //     credentials: "include",
+  //   })
+  //     .then((response) => {
+  //       return response.json();
+  //     })
+  //     .then((responseJSON) => {
+  //       setEvents(responseJSON);
+  //     });
+  // }, []);
+
+  function convertEventsToHTML(events: Array<Event>) {
+    const eventsArray = events.map((event: Event) => {
+      return (
+        <EventCard
+          key={event.eventID}
+          eventId={event.eventID}
+          title={event.title}
+          location={event.Venue.venueName}
+          amountAttending={event.amountCheckedIn}
+          dateAndTime={event.dateAndTime}
+          price={event.price}
+          image={event.eventPicture}
+          genre1={event.baseGenre}
+          genre2={event.secondGenre}
+        />
+      );
+    });
+    setEventsHTML(eventsArray);
+  }
 
   return (
     <>
@@ -109,14 +155,30 @@ export default function Home() {
       </Head>
       <main className={`${styles.main} ${inter.className}`}>
         <div className={[styles.page, styles.homePage].join(" ")}>
-          <SideBar type="event" />
+          <SideBar
+            type="event"
+            filters={filters}
+            filterCallback={(filter: Filter) => setFilters(filter)}
+            searchCallback={(searching: boolean) => setSidebarSearching(searching)}
+            queryCallback={(query: string) => setSearchQuery(query)}
+          />
           <div className={styles.pageContent}>
-            <div className={styles.title}>
-              <h1>Events this week you may like</h1>
+            <div className={styles.headerBox}>
+              {!sidebarSearching && inThisWeek && <h1>Events this week you may like</h1>}
+              {!sidebarSearching && !inThisWeek && (
+                <h1>
+                  Events on{" "}
+                  {filters.date?.toLocaleString("en-US", {
+                    day: "numeric",
+                    month: "long",
+                    year: "numeric",
+                  })}
+                </h1>
+              )}
+              {sidebarSearching && <h1>Results for: {searchQuery}</h1>}
+              <Link href="/map">Map View</Link>
             </div>
-            <div className={styles.eventCardContainer}>
-              {eventsHTML}
-            </div>
+            <div className={styles.eventCardContainer}>{eventsHTML}</div>
           </div>
         </div>
       </main>

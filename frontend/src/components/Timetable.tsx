@@ -1,13 +1,13 @@
-import styles from "../styles/Timetable.module.css";
+import styles from "@/styles/Timetable.module.css";
 
 function Timetable({
   doorTime,
   supportTime,
   concertTime,
 }: {
-  doorTime: string;
-  supportTime: string;
-  concertTime: string;
+  doorTime: string | null;
+  supportTime: string | null;
+  concertTime: string | null;
 }) {
 
   function showSupportTime() {

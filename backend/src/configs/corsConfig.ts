@@ -5,16 +5,16 @@ export const environment = {
     domain: "localhost",
 }
 if (process.env.NODE_ENV == "production") {
-    environment.frontendURL = "http://concerto.dehondt.dev"
+    environment.frontendURL = "https://concerto.dehondt.dev"
     environment.domain = "concerto.dehondt.dev"
 }
 const corsOptions = {
     // https://www.npmjs.com/package/cors
     origin: environment.frontendURL,
-    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-    preflightContinue: false,
-    credential: "include",
-    optionsSuccessStatus: 204
+    optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
+    methods: ['GET', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'Authorization'],
+    credentials: true
 }
 
 export function getCorsConfiguration() {

@@ -1,7 +1,6 @@
-import { DataTypes, Op } from 'sequelize';
+import { DataTypes } from 'sequelize';
 import {sequelize} from '../configs/sequelizeConfig'
 import { UserModel } from './Usermodel';
-import { newNotification, notificationEmitter } from '../configs/emitterConfig';
 
 export const NotificationObject = sequelize.define('NotificationObject', {
     ID: {
@@ -11,7 +10,7 @@ export const NotificationObject = sequelize.define('NotificationObject', {
         autoIncrement: true
     },
     notificationType: {
-        type: DataTypes.ENUM('friendrequestreceived', 'friendrequestaccepted', 'eventInviteReceived'),
+        type: DataTypes.ENUM('friendrequestreceived', 'friendrequestaccepted', 'eventInviteReceived', 'reviewEvent'),
         allowNull: false,
     },
     actor: {
@@ -53,16 +52,6 @@ export async function createNewNotification(objectID, receiverID) {
         receiver: receiverID,
         objectID: objectID
     });
-    const improved_result = await Notification.findByPk(result.notificationID, {
-        attributes: {
-            exclude: ['createdAt', 'updatedAt']
-        },
-        include: {
-                model: NotificationObject,
-                attributes: ['notificationType', 'actor', 'typeID']
-        }
-    });
-    notificationEmitter.emit(newNotification, JSON.stringify(improved_result));
 }
 
 export async function userNotifications(userid) {
@@ -81,35 +70,12 @@ export async function userNotifications(userid) {
     return result;
 }
 
-export async function notificationSeen(id) {
-    const result = await Notification.findByPk(id);
-    if (result != null) {
-        result.status = 'seen';
-        result.save();
-        return true;
-    } else {
-        return false
-    }
-}
-
 export const deleteNotificationReply = {
     SUCCES: 0,
     UNFOUND: 1,
     ILLEGAL: 2,
 }
-export async function deleteNotification(userid, notificationid) {
-    const notification = await Notification.findByPk(notificationid);
-    if (notification != null) {
-        if (notification.receiver == userid) {
-            await notification.destroy();
-            return deleteNotificationReply.SUCCES;
-        } else {
-            return deleteNotificationReply.ILLEGAL;
-        }
-    } else {
-        return deleteNotificationReply.UNFOUND;
-    }
-}
+
 UserModel.hasMany(NotificationObject, {
     foreignKey: 'actor'
 });

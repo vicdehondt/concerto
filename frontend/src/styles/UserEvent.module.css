@@ -1,0 +1,48 @@
+.eventCard {
+    margin: 10px;
+    border-radius: 15px;
+    display: grid;
+    grid-template-columns: [picture] 20% [event] 50% [date] auto;
+    grid-template-areas:
+    "picture event date";
+    border: 2px solid black;
+    background-color: white;
+}
+
+.eventPicture {
+    grid-area: picture;
+}
+
+.eventPicture img {
+    border-radius: 50%;
+    margin-left: 25%;
+}
+
+.information {
+    grid-area: event;
+}
+
+.title {
+    font-size: x-large;
+    font-weight: bold;
+}
+
+.location {
+    margin-top: 22px;
+    display: flex;
+    font-size: large;
+    font-weight: bold;
+}
+
+.dateContainer {
+    margin-top: 7px;
+    display: flex;
+    flex-direction: row;
+    grid-area: date;
+}
+
+.date {
+    font-size: medium;
+    font-weight: bold;
+    margin-left: 10px;
+}

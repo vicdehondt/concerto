@@ -1,9 +1,21 @@
 import Image from "next/image";
-import styles from "../styles/BannerUpload.module.css";
-import { useState, ChangeEvent } from "react";
+import styles from "@/styles/BannerUpload.module.css";
+import { useState, ChangeEvent, useEffect } from "react";
 
-function BannerUpload({ titleCallback }: { titleCallback: (string: string) => void }) {
+type BannerUploadProps = {
+  banner?: string;
+  title?: string;
+  titleCallback: (string: string) => void;
+};
+
+function BannerUpload({ title, banner, titleCallback }: BannerUploadProps) {
   const [bannerSource, setBannerSource] = useState("");
+
+  useEffect(() => {
+    if (banner) {
+      setBannerSource(banner);
+    }
+  }, [banner]);
 
   function bannerImageChosen(event: ChangeEvent<HTMLInputElement>) {
     const fileInput = event.target as HTMLInputElement;
@@ -17,11 +29,15 @@ function BannerUpload({ titleCallback }: { titleCallback: (string: string) => vo
 
   function showBanner() {
     if (bannerSource.length != 0) {
-      return <Image src={bannerSource}
-        className={styles.bannerImage}
-        style={{ objectFit: "cover" }}
-        fill={true}
-        alt="Banner of the concert" />
+      return (
+        <Image
+          src={bannerSource}
+          className={styles.bannerImage}
+          style={{ objectFit: "cover" }}
+          fill={true}
+          alt="Banner of the concert"
+        />
+      );
     }
   }
 
@@ -29,11 +45,49 @@ function BannerUpload({ titleCallback }: { titleCallback: (string: string) => vo
     <>
       <div className={styles.bannerContainer}>
         {showBanner()}
-				<div className={styles.titleContainer}>
-          <input type="text" name='title' id='title' maxLength={16} required placeholder="Title" onChange={(e) => titleCallback(e.target.value)} />
-      	</div>
+        <div className={styles.titleContainer}>
+          {title ? (
+            <input
+              type="text"
+              name="title"
+              id="title"
+              maxLength={16}
+              required
+              placeholder="Title"
+              defaultValue={title}
+              onChange={(e) => titleCallback(e.target.value)}
+            />
+          ) : (
+            <input
+              type="text"
+              name="title"
+              id="title"
+              maxLength={16}
+              required
+              placeholder="Title"
+              onChange={(e) => titleCallback(e.target.value)}
+            />
+          )}
+        </div>
         <div className={styles.uploadBox}>
-          <input id='banner' name='banner' type="file" required onChange={bannerImageChosen} />
+          {banner ? (
+            <input
+              id="banner"
+              name="banner"
+              type="file"
+              accept="image/png, image/jpg, image/jpeg"
+              onChange={bannerImageChosen}
+            />
+          ) : (
+            <input
+              id="banner"
+              name="banner"
+              type="file"
+              accept="image/png, image/jpg, image/jpeg"
+              required
+              onChange={bannerImageChosen}
+            />
+          )}
         </div>
       </div>
     </>
