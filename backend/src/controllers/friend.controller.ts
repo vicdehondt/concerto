@@ -1,9 +1,8 @@
 import * as express from 'express';
 import { BaseController } from './base.controller';
 import * as database from '../models/Usermodel';
-import { NotificationObject, createNewNotification } from '../models/Notificationmodel';
+import { NotificationObject, createNewNotification, Notification } from '../models/Notificationmodel';
 import {createMulter} from "../configs/multerConfig"
-const fs = require('fs');
 
 const friendFilePath = './public/friends';
 
@@ -60,6 +59,21 @@ export class FriendController extends BaseController {
             if (friendship) {
                 if (friendship.status == 'pending') {
                     await friendship.destroy();
+                    const notification = await Notification.findOne({
+                        include: {
+                            model: NotificationObject,
+                            where: {
+                                notificationType: 'friendrequestreceived',
+                                actor: req.session.userID,
+                            }
+                        },
+                        where: {
+                            receiver: req.params.userID
+                        }
+                    });
+                    if (notification) {
+                        await notification.destroy();
+                    }
                     res.status(200).json({success: true, message: "Removed friend request."});
                 } else {
                     res.status(400).json({ success: false, error: "You are already friends, there is no request anymore."});
