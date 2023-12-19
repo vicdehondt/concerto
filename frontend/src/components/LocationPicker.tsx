@@ -16,6 +16,7 @@ export default function LocationPicker({
 }: LocationPickerProps) {
   const [venueOptions, setVenueOptions] = useState([]);
   const [defaultVenue, setDefaultVenue] = useState<string | null>(null);
+  const [selectedVenue, setSelectedVenue] = useState<Venue | null>(null);
 
   useEffect(() => {
     fetch(environment.backendURL + "/venues", {
@@ -27,14 +28,19 @@ export default function LocationPicker({
       })
       .then((responseJSON) => {
         setVenueOptions(responseJSON);
-        responseJSON.forEach((venue: Venue) => {
-          if (venueID && venue.venueID == venueID) {
-            setDefaultVenue(venue.venueName);
-            locationCallback(venue);
-          }
-        });
+        const selectedVenue = responseJSON.find((venue: Venue) => venueID && venue.venueID === venueID);
+        if (selectedVenue) {
+          setDefaultVenue(selectedVenue.venueName);
+          setSelectedVenue(selectedVenue);
+        }
       });
-  }, [locationCallback, venueID]);
+  }, [venueID]);
+
+  useEffect(() => {
+    if (selectedVenue) {
+      locationCallback(selectedVenue);
+    }
+  }, [selectedVenue, locationCallback]);
 
   function showVenueOptions() {
     return venueOptions.map((venue: Venue) => (
@@ -58,7 +64,7 @@ export default function LocationPicker({
             selectedOption != null
               ? JSON.parse(selectedOption)
               : { venueID: "123", venueName: "Not selected" };
-          locationCallback(selectedVenue);
+          setSelectedVenue(selectedVenue);
           setDefaultVenue(selectedVenue.venueName);
         }}
       >
