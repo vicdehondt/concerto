@@ -25,7 +25,7 @@
 
 .pageContent {
   color: black;
-  overflow: scroll;
+  overflow: auto;
   grid-area: page-content;
   background-color: #e8f7ee;
 }
