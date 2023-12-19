@@ -25,7 +25,7 @@
 
 .pageContent {
   color: black;
-  overflow: scroll;
+  overflow: auto;
   grid-area: page-content;
   background-color: #e8f7ee;
 }
@@ -119,10 +119,36 @@
   width: 100%;
 }
 
+.concertPage .timeAndDateContainer {
+  grid-area: timetable;
+  display: flex;
+  flex-direction: row;
+}
+
+.concertPage .dateContainer {
+  width: fit-content;
+  margin: 15px;
+}
+
+.concertPage .dateTitle {
+  font-size: xx-large;
+  font-weight: bold;
+}
+
+.concertPage .datePane {
+  margin-top: 5px;
+  font-size: x-large;
+  font-weight: bold;
+  border: 3px solid black;
+	border-radius: 5px;
+	background-color: white;
+	padding: 20px;
+	box-shadow: 0px 3px 3px grey;
+}
+
 .concertPage .programContainer {
   margin-top: 15px;
   margin-left: 15px;
-  grid-area: timetable;
 }
 
 .concertPage .programTitle {
@@ -142,6 +168,30 @@
   display: flex;
   justify-content: right;
   align-items: center;
+}
+
+.concertPage .priceContainer {
+  grid-area: tickets;
+  margin: 15px;
+  display: flex;
+  flex-direction: column;
+  font-weight: bold;
+  font-size: xx-large;
+}
+
+.concertPage .priceBox {
+  width: fit-content;
+  height: fit-content;
+  font-weight: bold;
+  font-size: x-large;
+  display: flex;
+  flex-direction: row;
+  margin-top: 5px;
+  border: 3px solid black;
+	border-radius: 5px;
+	background-color: white;
+	padding: 20px;
+	box-shadow: 0px 3px 3px grey;
 }
 
 .concertPage .title {
@@ -210,6 +260,13 @@
     "add-event add-event";
 }
 
+.addEventPage .error {
+  color: red;
+  font-size: large;
+  font-weight: bold;
+  text-align: center;
+}
+
 .addEventPage .bannerContainer {
   grid-area: banner;
   position: relative;
@@ -219,16 +276,25 @@
 .addEventPage .priceContainer {
   grid-area: tickets;
   display: flex;
-  justify-content: right;
+  flex-direction: column;
+  font-weight: bold;
+  font-size: xx-large;
 }
 
 .addEventPage .priceBox {
   margin-right: 22%;
   width: fit-content;
+  height: fit-content;
   font-weight: bold;
   font-size: x-large;
   display: flex;
   flex-direction: column;
+  margin-top: 5px;
+  border: 3px solid black;
+	border-radius: 5px;
+	background-color: white;
+	padding: 20px;
+	box-shadow: 0px 3px 3px grey;
 }
 
 .addEventPage .priceInput {
@@ -335,6 +401,7 @@
   display: flex;
   justify-content: right;
   align-items: center;
+  flex-direction: column;
 }
 
 .addEventPage .title {
@@ -351,7 +418,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-direction: column;
   background-color: #e8f7ee;
+}
+
+.addEventPage .error {
+  margin-bottom: 10px;
 }
 
 .addEventPage .submitButton {

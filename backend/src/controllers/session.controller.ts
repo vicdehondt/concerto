@@ -4,7 +4,6 @@ import * as database from '../models/Usermodel';
 import {body, validationResult} from "express-validator"
 import {createMulter} from "../configs/multerConfig"
 import * as bcrypt from "bcrypt";
-const fs = require('fs');
 
 const sessionFilePath = './public/sessions';
 

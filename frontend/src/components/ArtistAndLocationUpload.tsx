@@ -9,13 +9,15 @@ type ArtistAndLocationUploadProps = {
   artistCallback: (artist: Artist) => void;
   artist: Artist | null;
   venueID?: string;
+  error?: string | null;
 };
 
 function ArtistAndLocationUpload({
   locationCallback,
   artistCallback,
   artist,
-  venueID
+  venueID,
+  error,
 }: ArtistAndLocationUploadProps) {
   const dummyResponse: APIResponse = {
     created: "",
@@ -72,22 +74,30 @@ function ArtistAndLocationUpload({
         <div className={styles.text}>Location:</div>
         <div className={styles.name}>
           {venueID ? (
-            <LocationPicker venueID={venueID} locationCallback={(venue: Venue) => locationCallback(venue)} />
+            <LocationPicker
+              venueID={venueID}
+              locationCallback={(venue: Venue) => locationCallback(venue)}
+            />
           ) : (
             <LocationPicker locationCallback={locationCallback} />
           )}
         </div>
-        </div>
-        <div className={styles.box}>
+      </div>
+      <div className={styles.box}>
         <div className={styles.text}>Artist:</div>
-        {artist && (<div className={styles.name}>{artist.name}</div>)}
-        </div>
-        <div className={styles.searchArtists}>
-          <Searchbar type="thin" onClick={(event) => null} onChange={(string: string) => handlechange(string)} />
-        </div>
+        {error && <div className={styles.error}>{error}</div>}
+        {artist && <div className={styles.name}>{artist.name}</div>}
+      </div>
+      <div className={styles.searchArtists}>
+        <Searchbar
+          type="thin"
+          onClick={(event) => null}
+          onChange={(string: string) => handlechange(string)}
+        />
+      </div>
 
-        <div className={styles.searchResults}>{showArtists(apiResponse.artists)}</div>
-        </div>
+      <div className={styles.searchResults}>{showArtists(apiResponse.artists)}</div>
+    </div>
   );
 }
 

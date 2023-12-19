@@ -1,10 +1,9 @@
 import Image from "next/image";
-import { User as LucidUser } from 'lucide-react';
+import { User as LucidUser } from "lucide-react";
 import styles from "@/styles/Biography.module.css";
 import { useEffect, useState } from "react";
 import { Profile, User } from "@/components/BackendTypes";
 import { environment } from "@/components/Environment";
-
 
 type BiographyProps = {
   user: User;
@@ -13,17 +12,36 @@ type BiographyProps = {
   description: string;
 };
 
+type Friendship = "none" | "pending" | "accepted";
+
 function Biography({ user, source, username, description }: BiographyProps) {
-
   const [profile, setProfile] = useState<Profile | null>(null);
+  const [friendship, setFriendship] = useState<Friendship>("none");
+  const [hovering, setHovering] = useState(false);
 
-  const [requestSent, setRequestSent] = useState(user.friendship == "pending" || user.friendship == "accepted");
+  const [requestSent, setRequestSent] = useState(
+    user.friendship == "pending" || user.friendship == "accepted"
+  );
+
+  useEffect(() => {
+    if (user && typeof user.friendship === "string") {
+      setFriendship(user.friendship as Friendship);
+    }
+  }, [user]);
 
   function showPicture(source: string) {
     if (source) {
-      return <Image style={{ objectFit: "cover" }} src={source} width={170} height={170} alt="Profile picture of user." />;
+      return (
+        <Image
+          style={{ objectFit: "cover" }}
+          src={source}
+          width={170}
+          height={170}
+          alt="Profile picture of user."
+        />
+      );
     }
-    return <LucidUser fill={'black'} className={styles.userPicture} width={170} height={170} />;
+    return <LucidUser fill={"black"} className={styles.userPicture} width={170} height={170} />;
   }
 
   useEffect(() => {
@@ -50,6 +68,7 @@ function Biography({ user, source, username, description }: BiographyProps) {
     }).then((response) => {
       if (response.status == 200) {
         setRequestSent(true);
+        setFriendship("pending");
       }
     });
   }
@@ -59,30 +78,61 @@ function Biography({ user, source, username, description }: BiographyProps) {
       method: "DELETE",
       mode: "cors",
       credentials: "include",
+    }).then((response) => {
+      if (response.status == 200) {
+        setFriendship("none");
+      }
     });
   }
 
+  function undoRequest() {
+    fetch(environment.backendURL + `/friends/${user.userID}/request`, {
+      method: "DELETE",
+      mode: "cors",
+      credentials: "include",
+    }).then((response) => {
+      if (response.status == 200) {
+        setRequestSent(false);
+        setFriendship("none");
+      }
+    });
+  }
+
+  function handleMouseEnter() {
+    setHovering(true);
+  }
+
+  function handleMouseLeave() {
+    setHovering(false);
+  }
+
   function showFriendButton() {
-    if (user.friendship == "none") {
+    if (friendship == "none") {
       return (
-        <div className={styles.friendButton}>
-          <button className={styles.editButton} onClick={(event) => inviteFriend()}>Add friend</button>
+        <div className={styles.buttonContainer}>
+          <button className={styles.friendButton} onClick={(event) => inviteFriend()}>
+            Add friend
+          </button>
         </div>
       );
-    } else if (user.friendship == "pending" || requestSent) {
+    } else if (friendship == "pending") {
       return (
-        <div className={styles.friendMessage}>
-          Request sent!
-        </div>
+        <>
+          <div className={styles.buttonContainer}>
+            <button className={styles.friendButton} onClick={(event) => undoRequest()} onMouseEnter={(event) => handleMouseEnter()} onMouseLeave={(event) => handleMouseLeave()}>
+              {hovering ? "Undo request" : "Request sent!"}
+            </button>
+          </div>
+        </>
       );
     } else {
       return (
         <>
-          <div className={styles.friendMessage}>
-            Friends
-          </div>
-          <div className={styles.friendButton}>
-            <button className={styles.editButton} onClick={(event) => removeFriend()}>Unfriend</button>
+          <div className={styles.friendMessage}>Friends</div>
+          <div className={styles.buttonContainer}>
+            <button className={styles.friendButton} onClick={(event) => removeFriend()}>
+              Unfriend
+            </button>
           </div>
         </>
       );
@@ -93,20 +143,12 @@ function Biography({ user, source, username, description }: BiographyProps) {
     <>
       <div className={styles.biographyContainer}>
         <div className={styles.pictureAndName}>
-          <div className={styles.profilePicture}>
-            {showPicture(source)}
-          </div>
-          <div className={styles.username}>
-            {username}
-          </div>
+          <div className={styles.profilePicture}>{showPicture(source)}</div>
+          <div className={styles.username}>{username}</div>
           {profile && profile.userID != user.userID && showFriendButton()}
         </div>
-        <div className={styles.title}>
-          Biography
-        </div>
-        <div className={styles.description}>
-          {description}
-        </div>
+        <div className={styles.title}>Biography</div>
+        <div className={styles.description}>{description}</div>
       </div>
     </>
   );

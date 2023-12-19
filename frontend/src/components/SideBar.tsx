@@ -31,6 +31,7 @@ function SideBarContent({ type, filters, filterCallback }: SideBarProps) {
   const [selectors, setSelectors] = useState<Array<string>>([""]);
   const [minimumPrice, setMinimumPrice] = useState<string>("");
   const [maxPrice, setMaxPrice] = useState<string>("");
+  const [clearLocationPicker, setClearLocationPicker] = useState<boolean>(false);
 
   function setLocation(venue: Venue) {
     filters &&
@@ -96,6 +97,7 @@ function SideBarContent({ type, filters, filterCallback }: SideBarProps) {
     }
     if (locationPickerRef.current) {
       locationPickerRef.current.value = "Choose venue";
+      setClearLocationPicker(true);
     }
     setSelectors([""]);
     filterCallback &&
@@ -154,6 +156,8 @@ function SideBarContent({ type, filters, filterCallback }: SideBarProps) {
           <LocationPicker
             locationCallback={(venue: Venue) => setLocation(venue)}
             forwardedRef={locationPickerRef}
+            clear={clearLocationPicker}
+            clearCallback={(clear: boolean) => setClearLocationPicker(clear)}
           />
         </div>
         <div className={styles.date}>

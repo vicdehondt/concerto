@@ -30,7 +30,7 @@ function Navbar() {
 
   const convertSearchResults = useCallback((results: Array<EventType | User>) => {
     if (results.length === 0) {
-      return [<></>];
+      return [];
     }
 
     return results.map((result) => {
@@ -47,7 +47,7 @@ function Navbar() {
           </div>
         );
       } else {
-        return [<></>];
+        return [];
       }
     });
   }, []);
@@ -93,52 +93,57 @@ function Navbar() {
     });
   }, []);
 
-  const removeNotification = useCallback((notificationID: number) => {
-    fetch(environment.backendURL + `/notifications/${notificationID}`, {
-      method: "DELETE",
-      mode: "cors",
-      credentials: "include",
-    })
-      .then((response) => {
-        if (response.status === 200) {
-          setNotifications((prevNotifications) =>
-            prevNotifications.filter(
-              (notification: Notification) => notification.notificationID !== notificationID
-            )
-          );
-          setNotificationsHTML((prevNotificationsHTML) =>
-            prevNotificationsHTML.filter((notification: ReactNode) => {
-              const notificationWithKey = notification as { key?: number };
-              return notificationWithKey && notificationWithKey.key !== notificationID;
-            })
-          );
-        } else {
-          console.error("Error removing notification. Server response:", response);
-        }
+  const removeNotification = useCallback(
+    (notificationID: number) => {
+      fetch(environment.backendURL + `/notifications/${notificationID}`, {
+        method: "DELETE",
+        mode: "cors",
+        credentials: "include",
       })
-      .catch((error) => console.error("Error removing notification:", error));
-  }, [setNotifications, setNotificationsHTML]);
+        .then((response) => {
+          if (response.status === 200) {
+            setNotifications((prevNotifications) =>
+              prevNotifications.filter(
+                (notification: Notification) => notification.notificationID !== notificationID
+              )
+            );
+            setNotificationsHTML((prevNotificationsHTML) =>
+              prevNotificationsHTML.filter((notification: ReactNode) => {
+                const notificationWithKey = notification as { key?: number };
+                return notificationWithKey && notificationWithKey.key !== notificationID;
+              })
+            );
+          } else {
+            console.error("Error removing notification. Server response:", response);
+          }
+        })
+        .catch((error) => console.error("Error removing notification:", error));
+    },
+    [setNotifications, setNotificationsHTML]
+  );
 
   const removeInfoNotifications = useCallback(() => {
     notifications.forEach((notification) => {
       if (notification.NotificationObject.notificationType === "friendrequestaccepted") {
-        console.log("Removing notification:", notification);
         removeNotification(notification.notificationID);
       }
     });
   }, [notifications, removeNotification]);
 
-  const convertNotifications = useCallback((notifications: Array<Notification>) => {
-    if (notifications.length === 0) {
-      return [<div key={0}>No notifications found.</div>];
-    }
+  const convertNotifications = useCallback(
+    (notifications: Array<Notification>) => {
+      if (notifications.length === 0) {
+        return [<div key={0}>No notifications found.</div>];
+      }
 
-    return notifications.map((notification) => (
-      <div key={notification.notificationID}>
-        <Notification notification={notification} removeNotification={removeNotification} />
-      </div>
-    ));
-  }, [removeNotification]);
+      return notifications.map((notification) => (
+        <div key={notification.notificationID}>
+          <Notification notification={notification} removeNotification={removeNotification} />
+        </div>
+      ));
+    },
+    [removeNotification]
+  );
 
   const closeNotifications = useCallback(() => {
     const notificationBox = document.getElementsByClassName(
@@ -171,10 +176,7 @@ function Navbar() {
 
   useEffect(() => {
     const handleOutSideClick = (event: Event) => {
-      if (
-        event.target != null &&
-        !searchRef.current?.contains(event.target as Node)
-      ) {
+      if (event.target != null && !searchRef.current?.contains(event.target as Node)) {
         closeSearchResults();
       }
     };
@@ -234,7 +236,7 @@ function Navbar() {
 
   function closeSearchResults() {
     const searchBox = searchRef?.current;
-    setSearchBoxVisible (false);
+    setSearchBoxVisible(false);
     if (searchBox) {
       searchBox.style.display = "none";
     }
@@ -297,8 +299,17 @@ function Navbar() {
       );
     } else {
       return (
-        <div className={styles.account} onClick={(event) => redirectClicked(event, `/accounts/${profile.userID}`)}>
-          <Image src={profile.image} style={{ objectFit: "cover" }} width={56} height={56} alt="Profile picture" />
+        <div
+          className={styles.account}
+          onClick={(event) => redirectClicked(event, `/accounts/${profile.userID}`)}
+        >
+          <Image
+            src={profile.image}
+            style={{ objectFit: "cover" }}
+            width={56}
+            height={56}
+            alt="Profile picture"
+          />
         </div>
       );
     }
@@ -318,12 +329,15 @@ function Navbar() {
           return response.json();
         })
         .then((responseJSON) => {
-          console.log(responseJSON);
           setSearchResultsHTML(convertSearchResults(responseJSON));
         });
 
       fetch(
-        environment.backendURL + `/search/events/filter` + `?title=${query}` + `&limit=2` + `&offset=0`,
+        environment.backendURL +
+          `/search/events/filter` +
+          `?title=${query}` +
+          `&limit=2` +
+          `&offset=0`,
         {
           mode: "cors",
           credentials: "include",
@@ -333,7 +347,6 @@ function Navbar() {
           return response.json();
         })
         .then((responseJSON) => {
-          console.log(responseJSON);
           setEventSearchHTML(convertSearchResults(responseJSON));
         });
     } else {
@@ -346,11 +359,17 @@ function Navbar() {
       <nav className={styles.navbar}>
         <div className={styles.leftTopics}>
           <Link href="/">Concerto</Link>
-          <Searchbar type="long" onClick={(query: string) => searchBackend(query)} onChange={(query: string) => searchBackend(query)} />
-          <div className={styles.searchBox} ref={searchRef}>
-            {searchBoxVisible && searchResultsHTML}
-            {searchBoxVisible && eventSearchHTML}
-          </div>
+          <Searchbar
+            type="long"
+            onClick={(query: string) => searchBackend(query)}
+            onChange={(query: string) => searchBackend(query)}
+          />
+          {(searchResultsHTML.length > 0 || eventSearchHTML.length > 0) && (
+            <div className={styles.searchBox} ref={searchRef}>
+              {searchBoxVisible && searchResultsHTML}
+              {searchBoxVisible && eventSearchHTML}
+            </div>
+          )}
           <div className={styles.addEventButton}>
             <div className={styles.add} onClick={(event) => redirectClicked(event, "/add-event")}>
               +
@@ -358,6 +377,7 @@ function Navbar() {
           </div>
         </div>
         <div className={styles.rightTopics}>
+          <Link className={styles.developersRedirect} href="/developers.html">Developers</Link>
           <div
             className={styles.friendsRedirect}
             onClick={(event) => redirectClicked(event, "/friends")}

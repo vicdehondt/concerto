@@ -1,9 +1,8 @@
 import * as express from 'express';
 import { BaseController } from './base.controller';
 import * as database from '../models/Usermodel';
-import { NotificationObject, createNewNotification } from '../models/Notificationmodel';
+import { NotificationObject, createNewNotification, Notification } from '../models/Notificationmodel';
 import {createMulter} from "../configs/multerConfig"
-const fs = require('fs');
 
 const friendFilePath = './public/friends';
 
@@ -28,19 +27,25 @@ export class FriendController extends BaseController {
                 res.set('Access-Control-Allow-Credentials', 'true');
                 this.sendFriendRequest(req, res);
             });
-        this.router.post('/:userid/accept', this.requireAuth, this.checkUserExists,
+        this.router.delete('/:userID/request', this.requireAuth, this.checkUserExists,
+            upload.none(),
+            (req: express.Request, res: express.Response) => {
+                res.set('Access-Control-Allow-Credentials', 'true');
+                this.undoRequest(req, res);
+            });
+        this.router.post('/:userID/accept', this.requireAuth, this.checkUserExists,
             upload.none(),
             (req: express.Request, res: express.Response) => {
                 res.set('Access-Control-Allow-Credentials', 'true');
                 this.responseFriendRequest(req, res, true);
             });
-        this.router.delete('/:userid', this.requireAuth, this.checkUserExists,
+        this.router.delete('/:userID', this.requireAuth, this.checkUserExists,
             upload.none(),
             (req: express.Request, res: express.Response) => {
                 res.set('Access-Control-Allow-Credentials', 'true');
                 this.unfriend(req, res);
             });
-        this.router.post('/:userid/deny', this.requireAuth, this.checkUserExists,
+        this.router.post('/:userID/deny', this.requireAuth, this.checkUserExists,
             upload.none(),
             (req: express.Request, res: express.Response) => {
                 res.set('Access-Control-Allow-Credentials', 'true');
@@ -48,9 +53,43 @@ export class FriendController extends BaseController {
             });
     }
 
+    async undoRequest(req: express.Request, res: express.Response) {
+        try {
+            const friendship = await database.FindFriend(req.session.userID, req.params.userID);
+            if (friendship) {
+                if (friendship.status == 'pending') {
+                    await friendship.destroy();
+                    const notification = await Notification.findOne({
+                        include: {
+                            model: NotificationObject,
+                            where: {
+                                notificationType: 'friendrequestreceived',
+                                actor: req.session.userID,
+                            }
+                        },
+                        where: {
+                            receiver: req.params.userID
+                        }
+                    });
+                    if (notification) {
+                        await notification.destroy();
+                    }
+                    res.status(200).json({success: true, message: "Removed friend request."});
+                } else {
+                    res.status(400).json({ success: false, error: "You are already friends, there is no request anymore."});
+                }
+            } else {
+                res.status(400).json({ success: false, error: "Unable to remove request as you did not have a friend request"});
+            }
+        } catch (err) {
+            console.log("There was an error: ", err);
+			res.status(500).json({ success: false, error: "Internal server error."});
+        }
+    }
+
     async unfriend(req: express.Request, res: express.Response) {
         try {
-            const friendship = await database.FindFriend(req.session.userID, req.params.userid);
+            const friendship = await database.FindFriend(req.session.userID, req.params.userID);
             if (friendship) {
                 await friendship.destroy();
                 res.status(200).json({success: true, message: "Removed this user from your friends."})

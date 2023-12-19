@@ -32,6 +32,11 @@
   color: white;
 }
 
+.developersRedirect {
+  padding: 20px;
+  text-align: center;
+}
+
 .friendsRedirect:hover,
 .wishlistRedirect:hover {
   background-color: #7180B9;
@@ -138,6 +143,7 @@
   border: 0px;
   border-radius: 6px;
   box-shadow: 1px 1px 2px;
+  text-align: center;
 }
 
 .dropdownContent a,
@@ -168,6 +174,10 @@
   background-color: red;
   color: white;
   border-radius: 0 0 6px 6px;
+}
+
+.dropdownContent .developersButton:hover {
+  border-radius: unset;
 }
 
 .addEventButton {
