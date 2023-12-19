@@ -86,7 +86,7 @@ export default function Concert() {
         setCanEdit(response.status == 200);
       });
     }
-  }, [router.query.concert]);
+  }, [router, router.query.concert]);
 
   function convertTime(time: string) {
     if (time !== null) {

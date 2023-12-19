@@ -68,8 +68,8 @@ export default function VenueMap({ events }: VenueMapProps) {
             <div>
               <strong>Venue:</strong> {venueEvent.events[0].Venue.venueName}
               <div className={styles.eventcardContainer}>
-                {venueEvent.events.map((event) => {
-                  return <EventMarker event={event}/>;
+                {venueEvent.events.map((event, i) => {
+                  return <EventMarker key={event.eventID} event={event}/>;
                 })}
               </div>
             </div>
