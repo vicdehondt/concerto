@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import { Event } from "./BackendTypes";
 import { environment } from "./Environment";
 import Link from "next/link";
+import styles from "@/styles/EventMarker.module.css";
 
 export default function EventMarker({ event }: { event: Event }) {
   const router = useRouter();
@@ -34,23 +35,23 @@ export default function EventMarker({ event }: { event: Event }) {
   }
 
   return (
-    <div>
-      <div>
-        <Image
-          style={{ objectFit: "cover" }}
-          src={event.eventPicture}
-          width={50}
-          height={50}
-          alt="Picture of the event"
-        />
-      </div>
-      <div>
-        {event.title}
-        {new Date(event.dateAndTime).toLocaleString("en-US", {
-          day: "numeric",
-          month: "long",
-          year: "numeric",
-        })}
+    <div className={styles.markerContainer}>
+      <Image
+        style={{ objectFit: "cover" }}
+        src={event.eventPicture}
+        width={50}
+        height={50}
+        alt="Picture of the event"
+      />
+      <div className={styles.infoContainer}>
+        <p>{event.title}</p>
+        <p>
+          {new Date(event.dateAndTime).toLocaleString("en-US", {
+            day: "numeric",
+            month: "long",
+            year: "numeric",
+          })}
+        </p>
         <Link href={`/concerts/${event.eventID}`}>Go to event</Link>
       </div>
     </div>

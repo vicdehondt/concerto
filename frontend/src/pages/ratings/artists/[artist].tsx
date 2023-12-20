@@ -7,6 +7,7 @@ import { Star, User } from "lucide-react";
 import Image from "next/image";
 import { Review, Artist } from "@/components/BackendTypes";
 import { environment } from "@/components/Environment";
+import Link from "next/link";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -41,9 +42,9 @@ export default function Artist() {
                 {showImage(review.image, 40)}
               </div>
               <div className={styles.infoBox}>
-                <div className={styles.user}>
+                <Link href={`/accounts/${review.userID}`} className={styles.user}>
                   {review.username}
-                </div>
+                </Link>
                 <div className={styles.created}>
                   {getCreated(review.createdAt)}
                 </div>
