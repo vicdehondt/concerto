@@ -207,7 +207,7 @@ export default function EditEvent() {
                   genre2={concert?.secondGenre}
                   image={concert?.eventPicture}
                   title={title}
-                  location={location}
+                  location={location.venueName}
                   date={date}
                   time={time}
                   price={price}

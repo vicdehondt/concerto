@@ -20,6 +20,7 @@ export default function Account() {
   const router = useRouter();
 
   function requestCheckins(user: User) {
+    console.log(user.userID);
     fetch(environment.backendURL + "/users" + `/${user.userID}/checkins`, {
       mode: "cors",
       credentials: "include",
@@ -76,6 +77,7 @@ export default function Account() {
   useEffect(() => {
     const id = router.query.account;
     if (id) {
+      console.log("The userid is: ", id);
       fetch(environment.backendURL + "/users" + `/${id}`, {
         mode: "cors",
         credentials: "include",
@@ -85,6 +87,7 @@ export default function Account() {
         })
         .then((responseJSON) => {
           setUser(responseJSON);
+          console.log("The response is: ", responseJSON);
           requestCheckins(responseJSON);
           requestAttended(responseJSON);
           fetch(environment.backendURL + "/profile", {
@@ -111,14 +114,19 @@ export default function Account() {
       <main className={`${styles.main} ${inter.className}`}>
         <div className={[styles.page, styles.accountPage].join(" ")}>
           <div className={styles.biographyContainer}>
-            {user && (
-              <Biography
-                user={user}
-                source={user.image}
-                username={user.username}
-                description={user.description}
-              />
-            )}
+            {user && <Biography user={user} source={user.image} username={user.username} description={user.description} />}
+          </div>
+          <div className={styles.attendingEvents}>
+            Attending Events:
+            <div className={styles.attendedEventsContainer}>
+              {showCheckins(checkedevents)}
+            </div>
+          </div>
+          <div className={styles.pastEvents}>
+            Past Events:
+            <div className={styles.pastEventsContainer}>
+              {showCheckins(attendedevents)}
+            </div>
           </div>
           <div className={styles.attendedEventsContainer}>{showCheckins(checkedevents)}</div>
           <div className={styles.pastEventsContainer}>{showCheckins(attendedevents)}</div>

@@ -22,7 +22,7 @@ function getFormattedDate(date: Date) {
 export default function AddEvent() {
   const router = useRouter();
   const [title, setTitle] = useState("");
-  const [location, setLocation] = useState<Venue | null>(null);
+  const [location, setLocation] = useState({ venueID: "123", venueName: "Not selected" });
   const [time, setTime] = useState("");
   const [date, setDate] = useState(getFormattedDate(new Date()));
   const [price, setPrice] = useState("");
@@ -37,51 +37,20 @@ export default function AddEvent() {
     return dateAndTime;
   }
 
-  function eventPictureChosen(form: FormData) {
-    const eventPicture: File = form.get("eventPicture") as File;
-    if (eventPicture.name == "") {
-      setEventPictureError("Event picture is required.");
-      return false
-    }
-    setEventPictureError(null);
-    return true;
-  }
-
-  function artistSelected() {
-    if (selectedArtist == null) {
-      setArtistError("Artist is required.");
-      return false;
-    }
-    setArtistError(null);
-    return true;
-  }
-
-  function venueSelected() {
-    if (location == null) {
-      setVenueError("Location is required.");
-      return false;
-    }
-    setVenueError(null);
-    return true;
-  }
-
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     var formData = new FormData(event.currentTarget);
-    if (artistSelected() && eventPictureChosen(formData) && venueSelected()) {
-      formData.append("dateAndTime", concatDateAndTime());
-      if (location) {
-        formData.append("venueID", location.venueID);
-      }
-      if (selectedArtist) {
-        formData.append("artistID", selectedArtist.id);
-      }
-      const response = await fetch(environment.backendURL + "/events", {
-        method: "POST",
-        body: formData,
-        mode: "cors",
-        credentials: "include",
-      });
+    formData.append("dateAndTime", concatDateAndTime());
+    formData.append("venueID", location.venueID);
+    if (selectedArtist) {
+      formData.append("artistID", selectedArtist.id);
+    }
+    const response = await fetch(environment.backendURL + "/events", {
+      method: "POST",
+      body: formData,
+      mode: "cors",
+      credentials: "include",
+    });
 
       // Handle response if necessary
       const data = await response.json();
@@ -132,10 +101,9 @@ export default function AddEvent() {
               </div>
             </div>
             <div className={styles.cardPreview}>
-              {eventPictureError && <div className={styles.error}>{eventPictureError}</div>}
               <EventCardUpload
                 title={title}
-                location={location}
+                location={location.venueName}
                 date={date}
                 time={time}
                 price={price as unknown as number}
@@ -143,15 +111,10 @@ export default function AddEvent() {
             </div>
           </div>
           <div className={styles.artistAndLocationContainer}>
-            {venueError && <div className={styles.error}>{venueError}</div>}
             <ArtistAndLocationUpload
               locationCallback={(venue: Venue) => setLocation(venue)}
               artist={selectedArtist}
-              artistCallback={(artist: Artist) => {
-                setArtistError(null);
-                setSelectedArtist(artist)
-              }}
-              error={artistError}
+              artistCallback={(artist: Artist) => setSelectedArtist(artist)}
             />
           </div>
           <div className={styles.priceContainer}>
