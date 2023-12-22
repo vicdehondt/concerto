@@ -75,8 +75,7 @@ export class UserController extends BaseController {
 		try {
 			const sessiondata = req.session;
 			const user = req.body.user;
-			const privacy = retrievePrivacySetting(user)
-			console.log(privacy)
+			const privacy = retrievePrivacySetting(user);
 			if (user.userID == sessiondata.userID) {
 				const result = await retrieveDataFunction(user.userID);
 				console.log("Requesting your own information.")
@@ -118,7 +117,7 @@ export class UserController extends BaseController {
 	}
 
 	async getAttendedEvents(req: express.Request, res: express.Response) {
-		this.getUserRelations(req, res, user => { return user.privacyCheckedInEvents}, async userid => {
+		this.getUserRelations(req, res, user => { return user.privacyAttendedEvents}, async userid => {
 			return await allAttendedEvents(userid);
 		});
 	}
