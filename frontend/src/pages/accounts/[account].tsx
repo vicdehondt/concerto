@@ -20,6 +20,7 @@ export default function Account() {
 
   const router = useRouter();
 
+  //get all event a user is checked in for
   async function requestCheckins(user: User) {
     try {
       const response = await fetch(environment.backendURL + "/users" + `/${user.userID}/checkins`, {
@@ -37,6 +38,7 @@ export default function Account() {
     }
   }
 
+  //get all events a user attended
   async function requestAttended(user: User) {
     try {
       const response = await fetch(environment.backendURL + "/users" + `/${user.userID}/attended`, {
@@ -55,6 +57,7 @@ export default function Account() {
     }
   }
 
+  //show all events a user can see that he is/was checked in for
   function showCheckins(response: Array<Event>) {
     if (!checkedInPrivacy) {
       return <div>Not allowed to see this information.</div>;
