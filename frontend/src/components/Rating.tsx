@@ -12,6 +12,9 @@ type RatingProps = {
 
 function Rating({artistScore, venueScore, artist, venue}: RatingProps) {
 
+  // Show a score as a number of stars.
+  // The score goes from 1 - 5. If no score exists yet, the stars are empty.
+  // Back-end uses floats for scores, so we round up the score to the nearest integer.
   function showScore(score: number) {
     if ((score != null) && (score > 0.5)) {
       const roundedScore = Math.round(score);

@@ -29,6 +29,8 @@ function Navbar() {
   const notificationsRef = useRef<HTMLDivElement>(null);
   const searchRef = useRef<HTMLDivElement>(null);
 
+  // Convert the search results from the back-end to HTML.
+  // It can be a user or an event.
   function convertSearchResults(results: Array<EventType | User>) {
     console.log("results: ", results);
 
@@ -36,6 +38,7 @@ function Navbar() {
       return [];
     }
 
+    // The results are always an array with a length of 2.
     return results.map((result) => {
       console.log("eventID in result: ", "eventID" in result);
       if ("eventID" in result) {
@@ -56,6 +59,7 @@ function Navbar() {
     });
   }
 
+  // Fetch the notifications and profile upon initialising.
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
@@ -108,6 +112,8 @@ function Navbar() {
     loggedIn();
   }, []);
 
+  // Remove a notification from the back-end and the front-end.
+  // The notificationID is used to identify the notification.
   const removeNotification = useCallback(
     (notificationID: number) => {
       const fetchNotifications = async () => {
@@ -141,6 +147,7 @@ function Navbar() {
     [setNotifications, setNotificationsHTML]
   );
 
+  // When the notifications are opened and close, remove the notifications that are info notifications.
   const removeInfoNotifications = useCallback(() => {
     notifications.forEach((notification) => {
       if (notification.NotificationObject.notificationType === "friendrequestaccepted") {
@@ -161,6 +168,8 @@ function Navbar() {
     ));
   }, [removeNotification]);
 
+  // Close the notifications box by updating the CSS.
+  // Remove info notifications on close.
   const closeNotifications = useCallback(() => {
     const notificationBox = document.getElementsByClassName(
       styles.notificationsBox
@@ -170,10 +179,12 @@ function Navbar() {
     removeInfoNotifications();
   }, [removeInfoNotifications]);
 
+  // Convert the notifications to HTML when the notifications change.
   useEffect(() => {
     setNotificationsHTML(convertNotifications(notifications));
   }, [notifications, convertNotifications]);
 
+  // Close the notifications box when the user clicks outside of the box.
   useEffect(() => {
     const handleOutSideClick = (event: Event) => {
       if (
@@ -190,6 +201,7 @@ function Navbar() {
     };
   }, [closeNotifications, notificationButtonRef, notificationsRef]);
 
+  // Close the search box when the user clicks outside of the box.
   useEffect(() => {
     const handleOutSideClick = (event: Event) => {
       if (
@@ -205,6 +217,7 @@ function Navbar() {
     };
   }, [searchRef]);
 
+  // Show or hide the search box by updating the CSS depending on the searchBoxVisible state.
   useEffect(() => {
     console.log("Changed: ", searchBoxVisible);
     const searchBox = searchRef?.current;
@@ -217,6 +230,7 @@ function Navbar() {
     }
   }, [searchBoxVisible]);
 
+  // Check if the user is logged in.
   async function loggedIn() {
     try {
       const response = await fetch(environment.backendURL + "/auth/status", {
@@ -256,6 +270,8 @@ function Navbar() {
     }
   }
 
+  // Redirect the user to the login page if they are not logged in.
+  // Otherwise, the user is redirected to the normalURL.
   async function redirectURL(normalURL: string) {
     const userLoggedIn = await loggedIn();
     if (userLoggedIn) {
@@ -296,6 +312,9 @@ function Navbar() {
     }
   }
 
+  // Show the profile picture if the user is logged in.
+  // If the user has not set a profile picture, show the default profile picture (a user icon).
+  // Otherwise, show the login button.
   function showAccountImage() {
     if (profile) {
       if (profile.image) {
@@ -335,6 +354,7 @@ function Navbar() {
     }
   }
 
+  // Search the backend for users and events based on the given query.
   async function searchBackend(query: string) {
     if (query.length !== 0) {
       setSearchBoxVisible(true);

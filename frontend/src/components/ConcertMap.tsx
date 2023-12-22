@@ -9,6 +9,12 @@ type ConcertMapProps = {
   concert: Event;
 };
 
+// The MapBox map that shows the route and the venue.
+// Information from here: https://docs.mapbox.com/help/getting-started/directions/
+// here: https://www.mapbox.com/install/javascript/bundler-install/
+// and here: https://docs.mapbox.com/api/navigation/directions/
+
+// It uses the packages mapbox and react-map-gl.
 function ConcertMap({ concert }: ConcertMapProps) {
 
   const [route, setRoute] = useState<any>(null);
@@ -44,6 +50,7 @@ function ConcertMap({ concert }: ConcertMapProps) {
     }
   }, [concert.Venue.lattitude, concert.Venue.longitude]);
 
+  // Use geolocation to get the current position of the user, if possible.
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(getRoute);
   }, [getRoute]);

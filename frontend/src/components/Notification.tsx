@@ -13,6 +13,8 @@ function Notification({ notification, removeNotification }: {notification: Notif
   const [from, setFrom] = useState<User | null>();
   const [event, setEvent] = useState<Event | null>(null);
 
+  // Fetch the user that sent the notification.
+  // Fetch the event that the notification is about.
   useEffect(() => {
 
     if (notification) {
@@ -63,12 +65,14 @@ function Notification({ notification, removeNotification }: {notification: Notif
     }
   }, [notification]);
 
+  // If the notification is about a friend request, remove the notification when the request is accepted.
   useEffect(() => {
     if (notification.NotificationObject.notificationType == "friendrequestaccepted" && (event?.checkedIn || ended(event))) {
       removeNotification(notification.notificationID)
     }
   }, [event?.checkedIn, event, notification.notificationID, removeNotification]);
 
+  // If the notification is about an event, remove the notification when the event is checked in or has ended.
   function ended(event: Event | null) {
     if (event) {
       return (new Date(event.dateAndTime) < new Date());

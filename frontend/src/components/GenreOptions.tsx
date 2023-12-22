@@ -1,3 +1,5 @@
+// The genre options are fixed. There are no other genre possibilities.
+
 export const genreOptions = [
     <option key={"Afrobeat"} id="Afrobeat" value="Afrobeat">Afrobeat</option>,
     <option key={"Afropop"} id="Afropop" value="Afropop">Afropop</option>,

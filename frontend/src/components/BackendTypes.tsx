@@ -1,4 +1,6 @@
 
+// All the types used in components or pages.
+
 export type APIResponse = {
   created: string;
   artists: Array<Artist>;

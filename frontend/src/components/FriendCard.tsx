@@ -8,8 +8,10 @@ type FriendCardProps = {
   friend: Friend;
 }
 
+// Shows a card of a friend to be placed in a list of friends.
 function FriendCard({ friend }: FriendCardProps) {
 
+  // If a user has an image, show it. Otherwise, show a user icon.
   function showPicture() {
     if (friend.image != null) {
       return <Image src={friend.image} width={170} height={170} alt="Profile picture of user." />;

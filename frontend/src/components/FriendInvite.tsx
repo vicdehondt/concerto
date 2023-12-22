@@ -11,6 +11,7 @@ type FriendInvitesProps = {
 	eventID: number | undefined;
 }
 
+// This component is used to show a list of friends that can be invited to an event.
 function FriendInvites({ eventID }: FriendInvitesProps) {
 
   const router = useRouter();
@@ -25,6 +26,9 @@ function FriendInvites({ eventID }: FriendInvitesProps) {
 		})
 	}
 
+  // Fetch the friends that can be invited to an event.
+  // This is done by fetching the friends of the user that are not already invited to the event.
+  // Save them in a useState variable.
   useEffect(() => {
     if (eventID) {
       const fetchEvents = async () => {
@@ -44,6 +48,7 @@ function FriendInvites({ eventID }: FriendInvitesProps) {
           handleFetchError(error, router);
         }
       };
+      fetchEvents();
     }
   }, [eventID]);
 

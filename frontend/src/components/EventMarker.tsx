@@ -6,6 +6,7 @@ import Link from "next/link";
 import styles from "@/styles/EventMarker.module.css";
 import { handleFetchError } from "./ErrorHandler";
 
+// Shows a card of an event to be placed in a popupo of a marker on the map.
 export default function EventMarker({ event }: { event: Event }) {
   const router = useRouter();
 
@@ -22,6 +23,8 @@ export default function EventMarker({ event }: { event: Event }) {
     }
   }
 
+  // Redirects the user to the login page if they are not logged in.
+  // Otherwise, the user is redirected to the normalURL.
   async function redirectURL(normalURL: string) {
     const userLoggedIn = await loggedIn();
     if (userLoggedIn) {

@@ -8,8 +8,11 @@ type EventSearchCardProps = {
   loggedIn: boolean;
 };
 
+// Shows a card of an event to be placed in a list of search results.
 function EventSearchCard({ event, loggedIn }: EventSearchCardProps) {
 
+  // Redirects the user to the login page if they are not logged in.
+  // Otherwise, the user is redirected to the normalURL.
   function redirectURL(normalURL: string) {
     if (loggedIn) {
       return normalURL;

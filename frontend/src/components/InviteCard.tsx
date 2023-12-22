@@ -4,7 +4,6 @@ import { Friend } from "./BackendTypes";
 import { User } from "lucide-react";
 import { environment } from "./Environment";
 import { useState } from "react";
-import { set } from "lodash";
 import { handleFetchError } from "./ErrorHandler";
 import { useRouter } from "next/router";
 
@@ -13,10 +12,12 @@ type InviteCardProps = {
   eventID: number;
 };
 
+// This component is used to show a friend that can be invited to an event.
 function InviteCard({ eventID, friend }: InviteCardProps) {
   const router = useRouter();
   const [invited, setInvited] = useState(false);
 
+  // If a user has an image, show it. Otherwise, show a user icon.
   function showPicture() {
     if (friend.image != null) {
       return <Image src={friend.image} width={100} height={100} alt="Profile picture of friend" />;
@@ -24,6 +25,7 @@ function InviteCard({ eventID, friend }: InviteCardProps) {
     return <User className={styles.userPicture} width={100} height={100} />;
   }
 
+  // Invite a friend to an event by sending a POST request with a form data body that holds the userID.
   async function inviteFriend() {
     const formData = new FormData();
     formData.append("userID", String(friend.userID));

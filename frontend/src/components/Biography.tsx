@@ -26,12 +26,14 @@ function Biography({ user, source, username, description }: BiographyProps) {
     user.friendship == "pending" || user.friendship == "accepted"
   );
 
+  // Set the friendship relation when initialising.
   useEffect(() => {
     if (user && typeof user.friendship === "string") {
       setFriendship(user.friendship as Friendship);
     }
   }, [user]);
 
+  // If a user has an image, show it. Otherwise, show a user icon.
   function showPicture(source: string) {
     if (source) {
       return (
@@ -47,6 +49,7 @@ function Biography({ user, source, username, description }: BiographyProps) {
     return <LucidUser fill={"black"} className={styles.userPicture} width={170} height={170} />;
   }
 
+  // Fetch the profile and hold in a useState variable upon initialising.
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -66,6 +69,8 @@ function Biography({ user, source, username, description }: BiographyProps) {
     fetchProfile();
   }, []);
 
+  // When the invite button is clicked, try to send a POST request to the backend.
+  // When successful, update the friendsip relation to pending.
   function inviteFriend() {
     const formData = new FormData();
     formData.append("receiverID", String(user.userID));
@@ -89,6 +94,8 @@ function Biography({ user, source, username, description }: BiographyProps) {
     fetchFriends();
   }
 
+  // When the remove button is clicked, try to send a DELETE request to the backend.
+  // When successful, update the friendsip relation to none.
   async function removeFriend() {
     try {
       const response = await fetch(environment.backendURL + `/friends/${user.userID}`, {
@@ -105,6 +112,9 @@ function Biography({ user, source, username, description }: BiographyProps) {
     }
   }
 
+  // When the user has already requested a friendship, but wants to undo that, the user can by clicking the undo button.
+  // We try to send a DELETE request on the friend-request to the backend.
+  // When successful, update the friendsip relation to none.
   async function undoRequest() {
     try {
       const response = await fetch(environment.backendURL + `/friends/${user.userID}/request`, {
@@ -122,10 +132,12 @@ function Biography({ user, source, username, description }: BiographyProps) {
     }
   }
 
+  // Show other buttons based on the hovering.
   function handleMouseEnter() {
     setHovering(true);
   }
 
+  // Show other buttons based on the hovering.
   function handleMouseLeave() {
     setHovering(false);
   }

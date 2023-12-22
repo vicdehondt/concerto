@@ -1,7 +1,13 @@
 import Image from "next/image";
 import styles from "@/styles/Banner.module.css";
 
-function Banner({ imageSource, concertName }: { imageSource: string; concertName: string }) {
+type BannerProps = {
+  imageSource: string;
+  concertName: string;
+}
+
+// Show a banner with the title of a concert and the image of the concert.
+function Banner({ imageSource, concertName }: BannerProps) {
   return (
     <>
       <div className={styles.bannerContainer}>

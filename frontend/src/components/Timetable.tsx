@@ -10,6 +10,7 @@ function Timetable({
   concertTime: string | null;
 }) {
 
+  // Show the support act time if it exists.
   function showSupportTime() {
     if (supportTime != null) {
       return (

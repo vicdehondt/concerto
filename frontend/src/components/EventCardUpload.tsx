@@ -3,6 +3,7 @@ import styles from "@/styles/EventCardUpload.module.css";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { genreOptions } from "./GenreOptions";
 
+// I could not find a way to get the month name from a Date object, so I made this function.
 function getMonth(month: number) {
   switch (month) {
     case 0:
@@ -44,6 +45,7 @@ type EventCardUploadProps = {
   edit?: boolean;
 };
 
+// Looks the same as an event card, but allows choosing and uploading to show the user how the concert would look on the home page.
 function EventCardUpload({
   title,
   location,
@@ -56,10 +58,11 @@ function EventCardUpload({
   edit,
 }: EventCardUploadProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [eventPictureSource, setEventPictureSource] = useState("");
 
   useEffect(() => {
     if (image && image != "string") {
-      seteventPictureSource(image);
+      setEventPictureSource(image);
     }
   }, [image]);
 
@@ -72,15 +75,14 @@ function EventCardUpload({
     return [[month, day].join(" "), year].join(", ");
   }
 
-  const [eventPictureSource, seteventPictureSource] = useState("");
-
-  function bannerImageChosen(event: ChangeEvent<HTMLInputElement>) {
+  // When the user chooses a picture, the useState is set to the source of the picture.
+  function eventPictureChosen(event: ChangeEvent<HTMLInputElement>) {
     const fileInput = event.target as HTMLInputElement;
     const file = fileInput.files && fileInput.files[0];
 
     if (file) {
       const source = URL.createObjectURL(file);
-      seteventPictureSource(source);
+      setEventPictureSource(source);
     }
   }
 
@@ -98,13 +100,14 @@ function EventCardUpload({
     }
   }
 
-  function options(genre: string) {
+  // Show the options for the genre selection.
+  // When the user is editing, the current genre is selected.
+  function options() {
     const chooseOption = (
       <option key={"choose"} id="choose" hidden value="">
         Choose genre
       </option>
     );
-    const selectedValue = genre || "";
     return [
       chooseOption,
       ...genreOptions.map((option) => (
@@ -126,7 +129,7 @@ function EventCardUpload({
         id={name === "mainGenre" ? "baseGenre" : "secondGenre"}
         defaultValue={validSelectedGenre}
       >
-        {options(validSelectedGenre)}
+        {options()}
       </select>
     );
   }
@@ -141,7 +144,7 @@ function EventCardUpload({
             name="eventPicture"
             type="file"
             accept="image/png, image/jpg, image/jpeg"
-            onChange={bannerImageChosen}
+            onChange={eventPictureChosen}
           />
         ) : (
           <input
@@ -151,7 +154,7 @@ function EventCardUpload({
             name="eventPicture"
             type="file"
             accept="image/png, image/jpg, image/jpeg"
-            onChange={bannerImageChosen}
+            onChange={eventPictureChosen}
           />
         )}
         <div
