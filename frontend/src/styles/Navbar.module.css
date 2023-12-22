@@ -143,19 +143,15 @@
   border: 0px;
   border-radius: 6px;
   box-shadow: 1px 1px 2px;
-  text-align: center;
 }
-
 .dropdownContent a,
 .dropdownContent button {
   all: unset;
   padding: 10px;
 }
-
 .dropdownContent button {
   color: red;
 }
-
 .dropdownContent a:hover,
 .dropdownContent button:hover {
   all: unset;
@@ -163,21 +159,15 @@
   padding: 10px;
   border: 0px;
 }
-
 .dropdownContent a:hover {
   background-color: #0B2027;
   color: white;
   border-radius: 6px 6px 0 0;
 }
-
 .dropdownContent button:hover {
   background-color: red;
   color: white;
   border-radius: 0 0 6px 6px;
-}
-
-.dropdownContent .developersButton:hover {
-  border-radius: unset;
 }
 
 .addEventButton {
@@ -208,13 +198,11 @@
 .userImage {
   margin: 0 8px;
 }
-
 .loginButton {
   all: unset;
   color: white;
   padding: 20px;
 }
-
 .loginButton:hover {
   cursor: pointer;
   font-weight: bold;

@@ -1,0 +1,199 @@
+.hamburgerMenu {
+  position: fixed;
+  z-index: 1000;
+  width: 100%;
+  height: 60px;
+  overflow: visible;
+  background-color: #0B2027;
+}
+
+.hamburgerMenu a{
+  color: white;
+}
+
+.links{
+  height: 60px;
+  display: flex;
+  align-items: center;
+  overflow: visible;
+}
+
+.profilePicture  img{
+  border-radius: 50%;
+}
+
+.profilePicture a {
+  display: flex;
+  padding: 0 20px;
+  align-items: center;
+  position: fixed;
+  top: 0px;
+  right: 0px;
+}
+
+.loginButton {
+  all: unset;
+  color: white;
+  padding: 20px;
+  position: fixed;
+  top: 0px;
+  right: 0px;
+}
+
+.loginButton:hover {
+  cursor: pointer;
+  font-weight: bold;
+}
+
+
+.dropdownContent {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  background-color: beige;
+  color: black;
+  z-index: 1000;
+  bottom: 0;
+  padding: 0;
+  transform: translateY(98%);
+  width: fit-content;
+  height: fit-content;
+  border: 0px;
+  border-radius: 6px;
+  box-shadow: 1px 1px 2px;
+  opacity: 0.9;
+}
+
+.dropdownContent a,
+.dropdownContent button {
+  all: unset;
+  padding: 10px;
+}
+
+.dropdownContent button {
+  color: black;
+}
+
+.dropdownContent a:hover,
+.dropdownContent button:hover {
+  all: unset;
+  cursor: pointer;
+  padding: 10px;
+  border: 0px;
+}
+
+.dropdownContent a:hover {
+  background-color: #0B2027;
+  color: white;
+  border-radius: 6px 6px 0 0;
+}
+
+.dropdownContent button:hover {
+  background-color: black;
+  color: white;
+  border-radius: 0 0 6px 6px;
+}
+
+.button .bar {
+  width: 25px;
+  height: 3px;
+  background-color: white;
+  margin: 5px 0;
+  transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+}
+
+.open .bar:nth-child(1) {
+  transform: translateY(8px) rotate(-45deg);
+}
+
+.open .bar:nth-child(2) {
+  opacity: 0;
+}
+
+.open .bar:nth-child(3) {
+  transform: translateY(-8px) rotate(45deg);
+}
+
+.notificationButton {
+  background: none;
+	color: white;
+	border: none;
+	font: inherit;
+	cursor: pointer;
+  height: 60px;
+  padding: 20px;
+  text-align: center;
+}
+
+.notificationButton:hover {
+  background-color: #7180B9;
+}
+
+.notifications {
+  position: relative;
+}
+
+.notificationsBox {
+  display: none;
+  position: absolute;
+  background-color: white;
+  z-index: 1000;
+  bottom: 0;
+  right: 10px;
+  transform: translateY(98%);
+  width: fit-content;
+  padding: 5px;
+  border: 0px;
+  border-radius: 6px;
+  box-shadow: 1px 1px 2px;
+}
+
+.closeNotifications {
+  background: none;
+	border: none;
+	font: inherit;
+	cursor: pointer;
+  width: 250px;
+  text-align: right;
+}
+
+.pofileDropdownContent {
+  display: flex;
+  color: black;
+  flex-direction: column;
+  position: absolute;
+  background-color: white;
+  z-index: 2000;
+  top: -55px;
+  right: 10px;
+  transform: translateY(98%);
+  width: fit-content;
+  border: 0px;
+  border-radius: 6px;
+  box-shadow: 1px 1px 2px;
+}
+.pofileDropdownContent a,
+.pofileDropdownContent button {
+  all: unset;
+  padding: 10px;
+}
+.pofileDropdownContent button {
+  color: black;
+}
+.pofileDropdownContent a:hover,
+.pofileDropdownContent button:hover {
+  all: unset;
+  cursor: pointer;
+  padding: 10px;
+  border: 0px;
+}
+.pofileDropdownContent a:hover {
+  background-color: #0B2027;
+  color: white;
+  border-radius: 6px 6px 0 0;
+}
+.pofileDropdownContent button:hover {
+  background-color: #0B2027;
+  color: white;
+  border-radius: 0 0 6px 6px;
+}

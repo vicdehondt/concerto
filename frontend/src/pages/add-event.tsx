@@ -23,7 +23,7 @@ function getFormattedDate(date: Date) {
 export default function AddEvent() {
   const router = useRouter();
   const [title, setTitle] = useState("");
-  const [location, setLocation] = useState<Venue | null>(null);
+  const [location, setLocation] = useState({ venueID: "123", venueName: "Not selected" });
   const [time, setTime] = useState("");
   const [date, setDate] = useState(getFormattedDate(new Date()));
   const [price, setPrice] = useState("");
@@ -136,10 +136,9 @@ export default function AddEvent() {
               </div>
             </div>
             <div className={styles.cardPreview}>
-              {eventPictureError && <div className={styles.error}>{eventPictureError}</div>}
               <EventCardUpload
                 title={title}
-                location={location}
+                location={location.venueName}
                 date={date}
                 time={time}
                 price={price as unknown as number}
@@ -147,15 +146,10 @@ export default function AddEvent() {
             </div>
           </div>
           <div className={styles.artistAndLocationContainer}>
-            {venueError && <div className={styles.error}>{venueError}</div>}
             <ArtistAndLocationUpload
               locationCallback={(venue: Venue) => setLocation(venue)}
               artist={selectedArtist}
-              artistCallback={(artist: Artist) => {
-                setArtistError(null);
-                setSelectedArtist(artist)
-              }}
-              error={artistError}
+              artistCallback={(artist: Artist) => setSelectedArtist(artist)}
             />
           </div>
           <div className={styles.priceContainer}>

@@ -68,7 +68,7 @@ export default function Friends() {
         <div className={[styles.page, styles.friendsPage].join(" ")}>
           <SideBar type="friends" queryCallback={(string) => setSearch(string)} />
           <div className={styles.pageContent}>
-            <div className={styles.title}>
+            <div className={styles.headerBox}>
               <h1>Friends</h1>
             </div>
             <div className={styles.friendsContainer}>

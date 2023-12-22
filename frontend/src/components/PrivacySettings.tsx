@@ -19,12 +19,18 @@ export default function PrivacySettings(userid: { userid: number}) {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
     try {
-      fetch(environment.backendURL + "/profile/settings/privacy", {
+      const response = await fetch(environment.backendURL + "/profile/settings/privacy", {
         method: "POST",
         body: formData,
         mode: "cors",
         credentials: "include",
       });
+
+      if (response.ok){
+        alert("Your privacy settings have been changed.")
+      } else{
+        alert("Something went wrong while saving your privacy settings.")
+      }
     } catch (error) {
       handleFetchError(error, router);
     }
@@ -66,11 +72,7 @@ export default function PrivacySettings(userid: { userid: number}) {
         <PrivacySetting name={"Events you attended"} setting={"privacyAttendedEvents"} initial={privacySettings.privacyAttendedEvents} />
         <PrivacySetting name={"Upcoming events you have checked in"} setting={"privacyCheckedInEvents"} initial={privacySettings.privacyCheckedInEvents} />
         <PrivacySetting name={"Your friends"} setting={"privacyFriends"} initial={privacySettings.privacyFriends} />
-        <div className={styles.saveButton} >
-          <button type="submit">
-            Save settings
-          </button>
-        </div>
+        <button className={styles.saveButton} type="submit">Save Privacy Settings</button>
       </form>
     )}
     </div>

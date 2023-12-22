@@ -10,6 +10,16 @@
     "sidebar page-content";
 }
 
+@media (max-width: 600px) {
+  .homePage{
+    grid-template-columns: auto;
+    grid-template-rows: 60px auto;
+    grid-template-areas:
+    "sidebar sidebar"
+    "page-content page-content";
+  }
+}
+
 .friendsPage {
   grid-template-columns: 350px auto;
   grid-template-areas:
@@ -28,6 +38,15 @@
   overflow: auto;
   grid-area: page-content;
   background-color: #e8f7ee;
+}
+@media (max-width: 600px){
+  .friendsPage{
+    grid-template-columns: auto;
+    grid-template-rows: 60px auto;
+    grid-template-areas:
+    "sidebar sidebar"
+    "page-content page-content";
+  }
 }
 
 .title {
@@ -54,6 +73,12 @@
 
 .headerBox h1 {
   padding: 20px;
+}
+
+@media (max-width: 600px) {
+  .headerBox h1{
+    font-size: 15px;
+  }
 }
 
 .eventCardContainer {
@@ -248,6 +273,147 @@
   margin: 20px 20px 0 0;
 }
 
+@media (max-width: 600px){
+  .concertPage {
+    color: black;
+    display: flex;
+    flex-direction: column;
+    grid-template-columns: auto auto;
+    grid-template-rows: [banner] 200px auto auto auto auto auto;
+    grid-template-areas:
+      "banner banner"
+      "description description"
+      "timetable timetable"
+      "ratings ratings"
+      "edit edit"
+      "invites invites"
+      "map map";
+  }
+
+  .concertPage .bannerContainer {
+    grid-area: banner;
+    position: relative;
+  }
+  
+  .concertPage .friendInviteContainer {
+    grid-area: invites;
+    background-color: #e8f7ee;
+    display: flex;
+    justify-content: right;
+  }
+  
+  .concertPage .descriptionContainer {
+    margin-top: 15px;
+    margin-left: 15px;
+    grid-area: description;
+  }
+  
+  .concertPage .descriptionContainer .descriptionTitle {
+    font-size: large;
+    font-weight: bold;
+  }
+  
+  .concertPage .descriptionContainer .descriptionText {
+    white-space: pre;
+    margin-top: 5px;
+    font-size: medium;
+    font-weight: 400;
+    text-wrap: wrap;
+  }
+  
+  .concertPage .descriptionText textarea {
+    resize: none;
+    width: 100%;
+  }
+  
+  .concertPage .programContainer {
+    background-color: #e8f7ee;
+    margin-top: 15px;
+    margin-left: 15px;
+    grid-area: timetable;
+  }
+  
+  .concertPage .programTitle {
+    font-size: large;
+    font-weight: bold;
+  }
+  
+  .concertPage .programText {
+    white-space: pre;
+    margin-top: 5px;
+    font-size: medium;
+    font-weight: 400;
+  }
+  
+  .concertPage .ratingContainer {
+    grid-area: ratings;
+    background-color: #e8f7ee;
+    display: flex;
+    justify-content: right;
+    align-items: center;
+  }
+  
+  .concertPage .title {
+    padding: 20px;
+  }
+  
+  .concertPage .ticketsAndWishlist {
+    display: flex;
+    align-items: center;
+    height: 74px;
+  }
+  
+  .concertPage .ticketsButton {
+    color: white;
+    background-color: black;
+    font-size: large;
+    font-weight: bold;
+    padding: 15px;
+    margin-top: 15px;
+    margin-bottom: 15px;
+    border: 1px solid black;
+    border-radius: 15px;
+    cursor: pointer;
+    box-shadow: 0px 3px 3px grey;
+  }
+  
+  .concertPage .checkinButton {
+    all: unset;
+    cursor: pointer;
+    color: white;
+    background-color: black;
+    font-size: large;
+    font-weight: bold;
+    border: 1px solid black;
+    border-radius: 15px;
+    box-shadow: 0 3px 3px grey;
+  }
+  
+  .concertPage .addToWishlist {
+    margin: 15px;
+    padding-top: 15px;
+    cursor: pointer;
+  }
+
+  .concertPage .map {
+    grid-area: map;
+    height: 200px;
+    margin: 50px;
+    border: 1px solid black;
+    box-shadow: 0px 1px 2px;
+  }
+
+  .concertPage .editBox {
+    grid-area: edit;
+    display: flex;
+    justify-content: right;
+  }
+  
+  .concertPage .editBox a {
+    margin: 20px 20px 0 0;
+  }
+}
+
 .addEventPage {
   color: black;
   background-color: #e8f7ee;
@@ -258,13 +424,6 @@
     "description location-artist"
     "timetable tickets"
     "add-event add-event";
-}
-
-.addEventPage .error {
-  color: red;
-  font-size: large;
-  font-weight: bold;
-  text-align: center;
 }
 
 .addEventPage .bannerContainer {
@@ -401,7 +560,6 @@
   display: flex;
   justify-content: right;
   align-items: center;
-  flex-direction: column;
 }
 
 .addEventPage .title {
@@ -439,6 +597,94 @@
 
 .addEventPage .submitButton:hover {
   border: 1px solid #7180B9;
+}
+
+@media (max-width: 600px){
+  .addEventPage {
+    display: flex;
+    flex-direction: column;
+    grid-template-columns:auto;
+    grid-template-rows: [banner] 200px auto auto auto auto auto auto;
+    grid-template-areas:
+      "banner banner"
+      "description description"
+      "location-artist location-artist"
+      "timetable timetable"
+      "invites invites"
+      "tickets tickets"
+      "add-event add-event";
+  }
+  
+  .addEventPage .bannerContainer {
+    font-size: small;
+    height: fit-content;
+    align-items: center;
+  }
+
+  .addEventPage .friendInviteContainer {
+    background-color: #e8f7ee;
+  }
+  
+  .addEventPage .descriptionContainer {
+    margin-right: 15px;
+    align-items: center;
+  }
+  
+  .addEventPage .descriptionContainer .descriptionTitle {
+    font-size: large;
+  }
+  
+  .addEventPage .inputContainer {
+    background-color: #e8f7ee;
+  }
+  
+  .addEventPage .programAndDateContainer {
+    flex-direction: column;
+  }
+  
+  .addEventPage .programTitle {
+    font-size: large;
+  }
+  
+  .addEventPage .programText {
+    font-size: small;
+  }
+  
+  .addEventPage .dateTitle {
+    font-size: large;
+  }
+  
+  .addEventPage .datePane {
+    font-size: large;
+  }
+  
+  .addEventPage .artistAndLocationContainer {
+    background-color: #e8f7ee;
+    flex-direction: column;
+  }
+  
+  .addEventPage .cardPreview {
+    padding-top: 5%;
+    padding-bottom: 5%;
+  }
+
+  .addEventPage .priceContainer {
+    background-color: #e8f7ee;
+    font-size: large;
+  }
+
+  .addEventPage .priceInput {
+    font-size: small;
+  }
+
+  .addEventPage .priceInput input {
+    font-size: small;
+    width: 40%;
+  }
+
+  .addEventPage .priceContainer .ticketURL {
+    font-size: small;
+  }
 }
 
 .registerPage {
@@ -518,6 +764,30 @@
   background-color: #0B2027;
 }
 
+@media (max-width: 600px){
+
+  .registerPage {
+    overflow-x: hidden;
+  }
+  
+  .registerPage .registerForm {
+    width: 90%;
+  }
+
+  .registerPage h1{
+    color: black;
+  }
+
+  .registerPage .validationMessages {
+    font-size: medium;
+  }
+
+  .registerPage .genreContainer {
+    display: flex;
+    flex-direction: column;
+  }
+}
+
 .loginPage {
   height: 100vh;
   background-color: #e8f7ee;
@@ -562,6 +832,13 @@
   padding: 10px 0 0 0;
 }
 
+@media (max-width: 600px){
+  
+  .loginPage .loginForm {
+    width: 90%;
+  } 
+}
+
 .accountPage {
   color: black;
   height: 100vh;
@@ -580,14 +857,24 @@
   grid-area: biography;
 }
 
-.attendedEventsContainer {
+.attendingEvents{
+  grid-area: attendingevents;
+  font-size: x-large;
+  font-weight: bold;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.attendingEvents .attendedEventsContainer {
   overflow: scroll;
   display: flex;
   flex-direction: column;
+  font-size: x-large;
+  font-weight: bold;
   width: 70%;
   height: 70%;
   margin-left: 25%;
-  grid-area: attendingevents;
   border-top-right-radius: 10px;
   border-bottom-left-radius: 10px;
   border-bottom-right-radius: 10px;
@@ -596,10 +883,20 @@
   box-shadow: 0 2px 2px;
 }
 
-.pastEventsContainer {
+.pastEvents{
+  grid-area: pastevents;
+  font-size: x-large;
+  font-weight: bold;
+  display: flex;
+  flex-direction: column;
+}
+
+.pastEvents .pastEventsContainer {
   overflow: scroll;
   display: flex;
   flex-direction: column;
+  font-size: x-large;
+  font-weight: bold;
   row-gap: 20px;
   margin-bottom: 20px;
   grid-area: pastevents;
@@ -612,6 +909,83 @@
   border-bottom-left-radius: 10px;
   border-bottom-right-radius: 10px;
   box-shadow: 0 2px 2px;
+}
+
+@media (max-width: 600px){
+  .accountPage {
+    color: black;
+    height: 100vh;
+    display: grid;
+    background-color: #e8f7ee;
+    overflow-x: hidden;
+    grid-template-columns: auto;
+    grid-template-rows: 100% auto auto;
+    grid-template-areas:
+    "biography biography"
+    "attendingevents attendingevents"
+    "pastevents pastevents";
+  }
+  
+  .biographyContainer {
+    margin-top: 1%;
+    border-radius: 10px;
+    grid-area: biography;
+  }
+  
+  .attendingEvents{
+    grid-area: attendingevents;
+    font-size: x-large;
+    font-weight: bold;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .attendingEvents .attendedEventsContainer {
+    overflow: scroll;
+    display: flex;
+    flex-direction: column;
+    font-size: x-large;
+    font-weight: bold;
+    margin: 0;
+    padding: 0;
+    row-gap: 20px;
+    margin-bottom: 20px;
+    margin-top: -150px;
+    width: 100%;
+    min-height: 50%;
+    height: fit-content;
+    border-top-right-radius: 10px;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    box-shadow: 0 2px 2px;
+  }
+  
+  .pastEvents{
+    grid-area: pastevents;
+    font-size: x-large;
+    font-weight: bold;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .pastEvents .pastEventsContainer {
+    overflow: scroll;
+    display: flex;
+    flex-direction: column;
+    font-size: x-large;
+    font-weight: bold;
+    row-gap: 20px;
+    margin-bottom: 20px;
+    grid-area: pastevents;
+    border: 4px solid black;
+    width: 100%;
+    height: fit-content;
+    background-color: white;
+    border-top-right-radius: 10px;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    box-shadow: 0 2px 2px;
+  }
 }
 
 .artistPage {
@@ -718,6 +1092,18 @@
   grid-area: review;
   margin: 5px 0;
 }
+
+@media (max-width: 600px){
+  .artistPage .artistName {
+    font-size: x-large;
+    margin-bottom: 20px;
+  }
+  
+  .artistPage .artistStar {
+    margin: 0 1px;
+  }
+}
+
 .settingsPage {
   color: black;
   background-color: #e8f7ee;
@@ -754,6 +1140,61 @@
 
 .settingValue {
   margin-left: 20px;
+}
+
+.saveButton {
+  color: white;
+  font-size: small;
+  font-weight: bold;
+  padding: 10px;
+  background-color: #0B2027;
+  border: 1px solid #0B2027;
+  border-radius: 10px;
+  box-shadow: 0px 2px 2px;
+}
+
+.saveButton:hover {
+  border: 2px solid #7180B9;
+}
+
+.changeBiographyContainer{
+  border-radius: 10px;
+  resize: none;
+  width: 100%;
+  background-color: lightgray;
+}
+
+.settingsInput{
+  padding: 5px;
+  color: white;
+  width: 100%;
+  margin: 10px;
+  border-radius: 20px;
+  font-size: large;
+  align-items: center;
+  text-align: center;
+  background-color: #0B2027;
+}
+
+@media (max-width: 600px){
+  .settingsPage {
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+  }
+  
+  .settingsPage .settingContainer {
+    margin-top: 15%;
+    width: 90%;
+  }
+  
+  .personalSettingTitle {
+      font-size: large;
+  }
+  
+  .settingName {
+    font-size: medium;
+  }
 }
 
 .accountOverviewContainer {
@@ -804,12 +1245,30 @@
   border: solid black 0;
   border-radius: 8px;
   box-shadow: 1px 2px 2px;
-  margin: 0 10% 20px 10%;
-  padding: 15px 0 15px 0;
+  padding: 15px 0;
 }
 
 .wishlistPage .wishContainer >* {
-  margin: 15px 20px 15px 20px;
+  margin: 15px 20px;
+}
+
+@media (max-width: 600px){
+  .wishlistPage{
+    justify-content: center;
+    align-items: center;
+    overflow-y: visible;
+  }
+
+  .wishlistPage .wishContainer {
+    flex: 1;
+    min-width: fit-content;
+    background-color: white;
+    border: solid black 0;
+    border-radius: 8px;
+    box-shadow: 1px 2px 2px;
+    margin: 0 10% 20px 10%;
+    padding: 15px 0 15px 0;
+  }
 }
 
 .settingsPage {
@@ -917,4 +1376,15 @@
 
 .mapPage .pageContent {
   overflow: auto;
+}
+
+@media (max-width: 600px) {
+  .mapPage {
+    grid-template-columns: auto;
+    grid-template-rows: 60px auto;
+    grid-template-areas:
+      "sidebar sidebar"
+      "page-content page-content";
+    width: 100%;
+  }
 }

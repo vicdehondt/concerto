@@ -51,7 +51,7 @@ function Navbar() {
           </div>
         );
       } else {
-        return [];
+        return [<></>];
       }
     });
   }
@@ -149,20 +149,17 @@ function Navbar() {
     });
   }, [notifications, removeNotification]);
 
-  const convertNotifications = useCallback(
-    (notifications: Array<Notification>) => {
-      if (notifications.length === 0) {
-        return [<div key={0}>No notifications found.</div>];
-      }
+  const convertNotifications = useCallback((notifications: Array<Notification>) => {
+    if (notifications.length === 0) {
+      return [<div key={0}>No notifications found.</div>];
+    }
 
-      return notifications.map((notification) => (
-        <div key={notification.notificationID}>
-          <Notification notification={notification} removeNotification={removeNotification} />
-        </div>
-      ));
-    },
-    [removeNotification]
-  );
+    return notifications.map((notification) => (
+      <div key={notification.notificationID}>
+        <Notification notification={notification} removeNotification={removeNotification} />
+      </div>
+    ));
+  }, [removeNotification]);
 
   const closeNotifications = useCallback(() => {
     const notificationBox = document.getElementsByClassName(
@@ -195,7 +192,10 @@ function Navbar() {
 
   useEffect(() => {
     const handleOutSideClick = (event: Event) => {
-      if (event.target != null && !searchRef.current?.contains(event.target as Node)) {
+      if (
+        event.target != null &&
+        !searchRef.current?.contains(event.target as Node)
+      ) {
         closeSearchResults();
       }
     };
@@ -250,7 +250,7 @@ function Navbar() {
 
   function closeSearchResults() {
     const searchBox = searchRef?.current;
-    setSearchBoxVisible(false);
+    setSearchBoxVisible (false);
     if (searchBox) {
       searchBox.style.display = "none";
     }
@@ -388,17 +388,11 @@ function Navbar() {
       <nav className={styles.navbar}>
         <div className={styles.leftTopics}>
           <Link href="/">Concerto</Link>
-          <Searchbar
-            type="long"
-            onClick={(query: string) => searchBackend(query)}
-            onChange={(query: string) => searchBackend(query)}
-          />
-          {(searchResultsHTML.length > 0 || eventSearchHTML.length > 0) && (
-            <div className={styles.searchBox} ref={searchRef}>
-              {searchBoxVisible && searchResultsHTML}
-              {searchBoxVisible && eventSearchHTML}
-            </div>
-          )}
+          <Searchbar type="long" onClick={(query: string) => searchBackend(query)} onChange={(query: string) => searchBackend(query)} />
+          <div className={styles.searchBox} ref={searchRef}>
+            {searchBoxVisible && searchResultsHTML}
+            {searchBoxVisible && eventSearchHTML}
+          </div>
           <div className={styles.addEventButton}>
             <div className={styles.add} onClick={(event) => redirectClicked(event, "/add-event")}>
               +
