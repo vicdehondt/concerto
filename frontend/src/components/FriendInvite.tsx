@@ -8,23 +8,22 @@ import { handleFetchError } from "./ErrorHandler";
 import { useRouter } from "next/router";
 
 type FriendInvitesProps = {
-	eventID: number | undefined;
-}
+  eventID: number | undefined;
+};
 
 // This component is used to show a list of friends that can be invited to an event.
 function FriendInvites({ eventID }: FriendInvitesProps) {
-
   const router = useRouter();
-	const [friends, setFriends] = useState<Friend[]>([]);
+  const [friends, setFriends] = useState<Friend[]>([]);
 
-	function showFriends(friends: Array<Friend>) {
-		return friends.map((friend) => {
-			if (friend && eventID) {
-				return <InviteCard key={friend.userID} eventID={eventID} friend={friend} />
-			}
-			return null;
-		})
-	}
+  function showFriends(friends: Array<Friend>) {
+    return friends.map((friend) => {
+      if (friend && eventID) {
+        return <InviteCard key={friend.userID} eventID={eventID} friend={friend} />;
+      }
+      return null;
+    });
+  }
 
   // Fetch the friends that can be invited to an event.
   // This is done by fetching the friends of the user that are not already invited to the event.
@@ -33,10 +32,13 @@ function FriendInvites({ eventID }: FriendInvitesProps) {
     if (eventID) {
       const fetchEvents = async () => {
         try {
-          const response = await fetch(environment.backendURL + "/events" + `/${eventID}` + "/invitable", {
-            mode: "cors",
-            credentials: "include",
-          });
+          const response = await fetch(
+            environment.backendURL + "/events" + `/${eventID}` + "/invitable",
+            {
+              mode: "cors",
+              credentials: "include",
+            }
+          );
 
           if (response.ok) {
             const data = await response.json();
@@ -52,11 +54,7 @@ function FriendInvites({ eventID }: FriendInvitesProps) {
     }
   }, [eventID]);
 
-  return (
-    <div className={styles.inviteContainer}>
-			{friends && showFriends(friends)}
-    </div>
-  );
+  return <div className={styles.inviteContainer}>{friends && showFriends(friends)}</div>;
 }
 
 export default FriendInvites;

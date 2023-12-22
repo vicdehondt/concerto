@@ -21,7 +21,7 @@ export default function LocationPicker({
   locationCallback,
   forwardedRef,
   clear,
-  clearCallback
+  clearCallback,
 }: LocationPickerProps) {
   const [venueOptions, setVenueOptions] = useState([]);
   const [defaultVenue, setDefaultVenue] = useState<string | null>(null);
@@ -38,7 +38,9 @@ export default function LocationPicker({
       })
       .then((responseJSON) => {
         setVenueOptions(responseJSON);
-        const selectedVenue = responseJSON.find((venue: Venue) => venueID && venue.venueID === venueID);
+        const selectedVenue = responseJSON.find(
+          (venue: Venue) => venueID && venue.venueID === venueID
+        );
         if (selectedVenue) {
           setDefaultVenue(selectedVenue.venueName);
           setSelectedVenue(selectedVenue);
@@ -63,7 +65,6 @@ export default function LocationPicker({
       setSelectedVenue(null);
       clearCallback(false);
     }
-
   }, [clear]);
 
   function showVenueOptions() {

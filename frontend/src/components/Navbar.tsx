@@ -74,7 +74,8 @@ function Navbar() {
           setNotifications([]);
         }
       } catch (error) {
-        handleFetchError(error, router);      }
+        handleFetchError(error, router);
+      }
     };
 
     const fetchProfile = async () => {
@@ -91,7 +92,8 @@ function Navbar() {
           setProfile(null);
         }
       } catch (error) {
-        handleFetchError(error, router);      }
+        handleFetchError(error, router);
+      }
     };
 
     const loggedIn = async () => {
@@ -104,7 +106,8 @@ function Navbar() {
 
         setUserIsLoggedIn(response.ok);
       } catch (error) {
-        handleFetchError(error, router);      }
+        handleFetchError(error, router);
+      }
     };
 
     fetchNotifications();
@@ -118,24 +121,27 @@ function Navbar() {
     (notificationID: number) => {
       const fetchNotifications = async () => {
         try {
-          const response = await fetch(environment.backendURL + `/notifications/${notificationID}`, {
-            method: "DELETE",
-            mode: "cors",
-            credentials: "include",
-          });
+          const response = await fetch(
+            environment.backendURL + `/notifications/${notificationID}`,
+            {
+              method: "DELETE",
+              mode: "cors",
+              credentials: "include",
+            }
+          );
 
           if (response.ok) {
             setNotifications((prevNotifications) =>
-                prevNotifications.filter(
-                  (notification: Notification) => notification.notificationID !== notificationID
-                )
-              );
-              setNotificationsHTML((prevNotificationsHTML) =>
-                prevNotificationsHTML.filter((notification: ReactNode) => {
-                  const notificationWithKey = notification as { key?: number };
-                  return notificationWithKey && notificationWithKey.key !== notificationID;
-                })
-              );
+              prevNotifications.filter(
+                (notification: Notification) => notification.notificationID !== notificationID
+              )
+            );
+            setNotificationsHTML((prevNotificationsHTML) =>
+              prevNotificationsHTML.filter((notification: ReactNode) => {
+                const notificationWithKey = notification as { key?: number };
+                return notificationWithKey && notificationWithKey.key !== notificationID;
+              })
+            );
           }
         } catch (error) {
           handleFetchError(error, router);
@@ -156,17 +162,20 @@ function Navbar() {
     });
   }, [notifications, removeNotification]);
 
-  const convertNotifications = useCallback((notifications: Array<Notification>) => {
-    if (notifications.length === 0) {
-      return [<div key={0}>No notifications found.</div>];
-    }
+  const convertNotifications = useCallback(
+    (notifications: Array<Notification>) => {
+      if (notifications.length === 0) {
+        return [<div key={0}>No notifications found.</div>];
+      }
 
-    return notifications.map((notification) => (
-      <div key={notification.notificationID}>
-        <Notification notification={notification} removeNotification={removeNotification} />
-      </div>
-    ));
-  }, [removeNotification]);
+      return notifications.map((notification) => (
+        <div key={notification.notificationID}>
+          <Notification notification={notification} removeNotification={removeNotification} />
+        </div>
+      ));
+    },
+    [removeNotification]
+  );
 
   // Close the notifications box by updating the CSS.
   // Remove info notifications on close.
@@ -204,10 +213,7 @@ function Navbar() {
   // Close the search box when the user clicks outside of the box.
   useEffect(() => {
     const handleOutSideClick = (event: Event) => {
-      if (
-        event.target != null &&
-        !searchRef.current?.contains(event.target as Node)
-      ) {
+      if (event.target != null && !searchRef.current?.contains(event.target as Node)) {
         closeSearchResults();
       }
     };
@@ -264,7 +270,7 @@ function Navbar() {
 
   function closeSearchResults() {
     const searchBox = searchRef?.current;
-    setSearchBoxVisible (false);
+    setSearchBoxVisible(false);
     if (searchBox) {
       searchBox.style.display = "none";
     }
@@ -408,7 +414,11 @@ function Navbar() {
       <nav className={styles.navbar}>
         <div className={styles.leftTopics}>
           <Link href="/">Concerto</Link>
-          <Searchbar type="long" onClick={(query: string) => searchBackend(query)} onChange={(query: string) => searchBackend(query)} />
+          <Searchbar
+            type="long"
+            onClick={(query: string) => searchBackend(query)}
+            onChange={(query: string) => searchBackend(query)}
+          />
           <div className={styles.searchBox} ref={searchRef}>
             {searchBoxVisible && searchResultsHTML}
             {searchBoxVisible && eventSearchHTML}

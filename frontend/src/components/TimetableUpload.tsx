@@ -14,7 +14,16 @@ function TimetableUpload({ mainTime, supportTime, time, setTime }: TimetableUplo
   // Show the support act time if it exists.
   function showSupport() {
     if (supportTime) {
-      return <input type="time" className={styles.time} name="support" id="support" defaultValue={supportTime} required />;
+      return (
+        <input
+          type="time"
+          className={styles.time}
+          name="support"
+          id="support"
+          defaultValue={supportTime}
+          required
+        />
+      );
     }
     if (support) {
       return <input type="time" className={styles.time} name="support" id="support" required />;
@@ -67,12 +76,7 @@ function TimetableUpload({ mainTime, supportTime, time, setTime }: TimetableUplo
             required
           />
         ) : (
-          <input
-            type="time"
-            className={styles.time}
-            name="main"
-            id="main"
-            required />
+          <input type="time" className={styles.time} name="main" id="main" required />
         )}
       </div>
     </div>

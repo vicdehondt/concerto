@@ -9,7 +9,6 @@ function Timetable({
   supportTime: string | null;
   concertTime: string | null;
 }) {
-
   // Show the support act time if it exists.
   function showSupportTime() {
     if (supportTime != null) {
@@ -18,7 +17,7 @@ function Timetable({
           <div className={styles.text}>Support act:</div>
           <div className={styles.time}>{supportTime}</div>
         </div>
-      )
+      );
     }
   }
 

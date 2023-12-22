@@ -2,7 +2,6 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 import { Event } from "./BackendTypes";
 import { environment } from "./Environment";
-import Link from "next/link";
 import styles from "@/styles/EventMarker.module.css";
 import { handleFetchError } from "./ErrorHandler";
 
@@ -33,7 +32,10 @@ export default function EventMarker({ event }: { event: Event }) {
     return `/login?from=${encodeURIComponent(normalURL)}`;
   }
 
-  async function redirectClicked(event: React.MouseEvent<HTMLButtonElement, MouseEvent>, url: string) {
+  async function redirectClicked(
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    url: string
+  ) {
     event.preventDefault();
     const newUrl = await redirectURL(url);
     router.push(newUrl);
@@ -57,7 +59,9 @@ export default function EventMarker({ event }: { event: Event }) {
             year: "numeric",
           })}
         </p>
-        <button onClick={(clickEvent) => redirectClicked(clickEvent, `/concerts/${event.eventID}`)}>Go to event</button>
+        <button onClick={(clickEvent) => redirectClicked(clickEvent, `/concerts/${event.eventID}`)}>
+          Go to event
+        </button>
       </div>
     </div>
   );

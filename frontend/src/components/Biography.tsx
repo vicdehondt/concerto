@@ -155,7 +155,12 @@ function Biography({ user, source, username, description }: BiographyProps) {
       return (
         <>
           <div className={styles.buttonContainer}>
-            <button className={styles.friendButton} onClick={(event) => undoRequest()} onMouseEnter={(event) => handleMouseEnter()} onMouseLeave={(event) => handleMouseLeave()}>
+            <button
+              className={styles.friendButton}
+              onClick={(event) => undoRequest()}
+              onMouseEnter={(event) => handleMouseEnter()}
+              onMouseLeave={(event) => handleMouseLeave()}
+            >
               {hovering ? "Undo request" : "Request sent!"}
             </button>
           </div>

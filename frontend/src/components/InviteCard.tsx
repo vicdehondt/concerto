@@ -48,11 +48,13 @@ function InviteCard({ eventID, friend }: InviteCardProps) {
       <div className={styles.pictureContainer}>{showPicture()}</div>
       <div className={styles.profileNameContainer}>{friend.username}</div>
       <div className={styles.inviteButtonContainer}>
-				{invited ? <div className={styles.invited}>Invited!</div> : (
-					<button className={styles.inviteButton} onClick={(event) => inviteFriend()}>
-						Invite
-					</button>
-				)}
+        {invited ? (
+          <div className={styles.invited}>Invited!</div>
+        ) : (
+          <button className={styles.inviteButton} onClick={(event) => inviteFriend()}>
+            Invite
+          </button>
+        )}
       </div>
     </div>
   );
