@@ -1,0 +1,39 @@
+.markerContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  box-shadow: 0px 2px 2px;
+  border-radius: 5px;
+  min-width: 200px;
+}
+
+.markerContainer img {
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  margin: 5px;
+}
+
+.infoContainer {
+  display: flex;
+  flex-direction: column;
+  margin-left: 5px;
+}
+
+.infoContainer p {
+  all: unset !important;
+}
+
+.infoContainer button {
+  all: unset;
+  cursor: pointer;
+  color: white;
+  background-color: #0B2027;
+  width: fit-content;
+  padding: 0 5px;
+  border-radius: 5px;
+}
+
+.infoContainer button:hover {
+  background-color: #7180B9;
+}

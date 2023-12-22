@@ -3,10 +3,54 @@ import styles from "@/styles/UserEvent.module.css";
 import { useRouter } from "next/router";
 import { Event } from "./BackendTypes";
 import { environment } from "./Environment";
+import { handleFetchError } from "./ErrorHandler";
 
 function UserEvent({ event }: { event: Event}) {
 
+  function getMonth(month: number) {
+    switch (month) {
+      case 0:
+        return "January";
+      case 1:
+        return "February";
+      case 2:
+        return "March";
+      case 3:
+        return "April";
+      case 4:
+        return "May";
+      case 5:
+        return "June";
+      case 6:
+        return "July";
+      case 7:
+        return "August";
+      case 8:
+        return "September";
+      case 9:
+        return "October";
+      case 10:
+        return "November";
+      case 11:
+        return "December";
+    }
+  }
+
   const router = useRouter();
+
+  const convertedDateAndTime: Array<string> = convertDateAndTime(event.dateAndTime);
+  const date = convertedDateAndTime[0];
+  const time = convertedDateAndTime[1];
+
+  function convertDateAndTime(dateAndTime: string) {
+    const convertedDateAndTime = new Date(dateAndTime);
+    const year = convertedDateAndTime.getFullYear();
+    const month = getMonth(convertedDateAndTime.getMonth());
+    const day = convertedDateAndTime.getDate();
+    const date = [[month, day].join(" "), year].join(", ");
+    const time = convertedDateAndTime.toLocaleTimeString('default', { hour: '2-digit', minute: '2-digit' });
+    return [date, time];
+  }
 
   async function loggedIn() {
     try {
@@ -14,12 +58,12 @@ function UserEvent({ event }: { event: Event}) {
         mode: "cors",
         credentials: "include",
       });
-      return response.status === 200;
+      return response.ok;
     } catch (error) {
-      return false;
+      handleFetchError(error, router);
     }
   }
-
+  
 	async function redirectURL(normalURL: string) {
     const userLoggedIn = await loggedIn();
     if (userLoggedIn) {
@@ -45,13 +89,20 @@ function UserEvent({ event }: { event: Event}) {
         </div>
         <div className={styles.location}>
         <Image src="/icons/location.png" width={18} height={21} alt=""/>
-          <div> Location </div>
+          <div> 
+            {event.Venue.venueName}
+          </div>
         </div>
       </div>
       <div className={styles.dateContainer}>
         <Image src="/icons/date.png" width={35} height={35} alt="Date" />
-        <div className={styles.date}>
-          6 December
+        <div className={styles.dateAndTimeContainer}>
+          <div className={styles.date}>
+            {date}
+          </div>
+          <div className={styles.time}>
+            {time}
+          </div>
         </div>
       </div>
     </div>

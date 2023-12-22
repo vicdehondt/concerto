@@ -9,7 +9,8 @@ import { X, User as LucidUser } from "lucide-react";
 import { environment } from "./Environment";
 import EventSearchCard from "./EventSearchCard";
 import UserSearchCard from "./UserSearchCard";
-import { User, Event as EventType } from "./BackendTypes";
+import { User, Event as EventType, Profile } from "./BackendTypes";
+import { handleFetchError } from "./ErrorHandler";
 
 function Navbar() {
   const router = useRouter();
@@ -21,104 +22,121 @@ function Navbar() {
   const [searchResultsHTML, setSearchResultsHTML] = useState<ReactNode[]>([]);
   const [eventSearchHTML, setEventSearchHTML] = useState<ReactNode[]>([]);
   const [dropdownVisible, setDropdownVisible] = useState(false);
-  const [profile, setProfile] = useState({ userID: 0, image: null });
+  const [profile, setProfile] = useState<Profile | null>(null);
   const [userIsLoggedIn, setUserIsLoggedIn] = useState(false);
 
   const notificationButtonRef = useRef<HTMLDivElement>(null);
   const notificationsRef = useRef<HTMLDivElement>(null);
   const searchRef = useRef<HTMLDivElement>(null);
 
-  const convertSearchResults = useCallback((results: Array<EventType | User>) => {
-    if (results.length === 0) {
+  function convertSearchResults(results: Array<EventType | User>) {
+    console.log("results: ", results);
+
+    if (results.length == 0) {
       return [];
     }
 
     return results.map((result) => {
+      console.log("eventID in result: ", "eventID" in result);
       if ("eventID" in result) {
         return (
           <div key={result.eventID}>
-            <EventSearchCard event={result} />
+            <EventSearchCard event={result} loggedIn={userIsLoggedIn} />
           </div>
         );
       } else if ("userID" in result) {
         return (
           <div key={result.userID}>
-            <UserSearchCard user={result} />
+            <UserSearchCard user={result} loggedIn={userIsLoggedIn} />
           </div>
         );
       } else {
-        return [];
+        return [<></>];
       }
     });
-  }, []);
+  }
 
   useEffect(() => {
-    console.log("hallo");
-    fetch(environment.backendURL + "/notifications", {
-      mode: "cors",
-      credentials: "include",
-    })
-      .then((response) => {
-        if (response.status == 200) {
-          return response.json();
-        }
-        return [];
-      })
-      .then((responseJSON) => {
-        setNotifications(responseJSON);
-      });
-
-    fetch(environment.backendURL + "/profile", {
-      mode: "cors",
-      credentials: "include",
-    })
-      .then((response) => {
-        if (response.status == 200) {
-          return response.json();
+    const fetchNotifications = async () => {
+      try {
+        const response = await fetch(environment.backendURL + "/notifications", {
+          mode: "cors",
+          credentials: "include",
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setNotifications(data);
         } else {
-          return { userID: 0, image: null };
+          setNotifications([]);
         }
-      })
-      .then((responseJSON) => {
-        setProfile(responseJSON);
-      });
-    fetch(environment.backendURL + "/auth/status", {
-      mode: "cors",
-      credentials: "include",
-    }).then((response) => {
-      if (response.status == 200) {
-        setUserIsLoggedIn(true);
-      } else if (response.status == 400) {
-        setUserIsLoggedIn(false);
-      }
-    });
+      } catch (error) {
+        handleFetchError(error, router);      }
+    };
+
+    const fetchProfile = async () => {
+      try {
+        const response = await fetch(environment.backendURL + "/profile", {
+          mode: "cors",
+          credentials: "include",
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setProfile(data);
+        } else {
+          setProfile(null);
+        }
+      } catch (error) {
+        handleFetchError(error, router);      }
+    };
+
+    const loggedIn = async () => {
+      console.log("test");
+      try {
+        const response = await fetch(environment.backendURL + "/auth/status", {
+          mode: "cors",
+          credentials: "include",
+        });
+
+        setUserIsLoggedIn(response.ok);
+      } catch (error) {
+        handleFetchError(error, router);      }
+    };
+
+    fetchNotifications();
+    fetchProfile();
+    loggedIn();
   }, []);
 
   const removeNotification = useCallback(
     (notificationID: number) => {
-      fetch(environment.backendURL + `/notifications/${notificationID}`, {
-        method: "DELETE",
-        mode: "cors",
-        credentials: "include",
-      })
-        .then((response) => {
-          if (response.status === 200) {
+      const fetchNotifications = async () => {
+        try {
+          const response = await fetch(environment.backendURL + `/notifications/${notificationID}`, {
+            method: "DELETE",
+            mode: "cors",
+            credentials: "include",
+          });
+
+          if (response.ok) {
             setNotifications((prevNotifications) =>
-              prevNotifications.filter(
-                (notification: Notification) => notification.notificationID !== notificationID
-              )
-            );
-            setNotificationsHTML((prevNotificationsHTML) =>
-              prevNotificationsHTML.filter((notification: ReactNode) => {
-                const notificationWithKey = notification as { key?: number };
-                return notificationWithKey && notificationWithKey.key !== notificationID;
-              })
-            );
-          } else {
-            console.error("Error removing notification. Server response:", response);
+                prevNotifications.filter(
+                  (notification: Notification) => notification.notificationID !== notificationID
+                )
+              );
+              setNotificationsHTML((prevNotificationsHTML) =>
+                prevNotificationsHTML.filter((notification: ReactNode) => {
+                  const notificationWithKey = notification as { key?: number };
+                  return notificationWithKey && notificationWithKey.key !== notificationID;
+                })
+              );
           }
-        })
-        .catch((error) => console.error("Error removing notification:", error));
+        } catch (error) {
+          handleFetchError(error, router);
+        }
+      };
+
+      fetchNotifications();
     },
     [setNotifications, setNotificationsHTML]
   );
@@ -131,20 +149,17 @@ function Navbar() {
     });
   }, [notifications, removeNotification]);
 
-  const convertNotifications = useCallback(
-    (notifications: Array<Notification>) => {
-      if (notifications.length === 0) {
-        return [<div key={0}>No notifications found.</div>];
-      }
+  const convertNotifications = useCallback((notifications: Array<Notification>) => {
+    if (notifications.length === 0) {
+      return [<div key={0}>No notifications found.</div>];
+    }
 
-      return notifications.map((notification) => (
-        <div key={notification.notificationID}>
-          <Notification notification={notification} removeNotification={removeNotification} />
-        </div>
-      ));
-    },
-    [removeNotification]
-  );
+    return notifications.map((notification) => (
+      <div key={notification.notificationID}>
+        <Notification notification={notification} removeNotification={removeNotification} />
+      </div>
+    ));
+  }, [removeNotification]);
 
   const closeNotifications = useCallback(() => {
     const notificationBox = document.getElementsByClassName(
@@ -177,7 +192,10 @@ function Navbar() {
 
   useEffect(() => {
     const handleOutSideClick = (event: Event) => {
-      if (event.target != null && !searchRef.current?.contains(event.target as Node)) {
+      if (
+        event.target != null &&
+        !searchRef.current?.contains(event.target as Node)
+      ) {
         closeSearchResults();
       }
     };
@@ -188,6 +206,7 @@ function Navbar() {
   }, [searchRef]);
 
   useEffect(() => {
+    console.log("Changed: ", searchBoxVisible);
     const searchBox = searchRef?.current;
     if (searchBox) {
       if (searchBoxVisible) {
@@ -204,40 +223,34 @@ function Navbar() {
         mode: "cors",
         credentials: "include",
       });
-      setUserIsLoggedIn(response.status === 200);
-      return response.status === 200;
+      setUserIsLoggedIn(response.status == 200);
+      return response.status == 200;
     } catch (error) {
-      setUserIsLoggedIn(false);
-      return false;
+      handleFetchError(error, router);
     }
   }
 
-  function toggleNotifications() {
-    fetch(environment.backendURL + "/auth/status", {
-      mode: "cors",
-      credentials: "include",
-    }).then(async (response) => {
-      const userLoggedIn = await loggedIn();
-      if (userLoggedIn) {
-        setNotificationsVisible((val) => !val);
-        const notificationBox = document.getElementsByClassName(
-          styles.notificationsBox
-        ) as HTMLCollectionOf<HTMLElement>;
-        if (notificationsVisible) {
-          notificationBox[0].style.display = "none";
-          removeInfoNotifications();
-        } else {
-          notificationBox[0].style.display = "block";
-        }
+  async function toggleNotifications() {
+    const userLoggedIn = await loggedIn();
+    if (userLoggedIn) {
+      setNotificationsVisible((val) => !val);
+      const notificationBox = document.getElementsByClassName(
+        styles.notificationsBox
+      ) as HTMLCollectionOf<HTMLElement>;
+      if (notificationsVisible) {
+        notificationBox[0].style.display = "none";
+        removeInfoNotifications();
       } else {
-        router.push(`/login?from=${router.asPath}`);
+        notificationBox[0].style.display = "block";
       }
-    });
+    } else {
+      router.push(`/login?from=${encodeURIComponent(router.asPath)}`);
+    }
   }
 
   function closeSearchResults() {
     const searchBox = searchRef?.current;
-    setSearchBoxVisible(false);
+    setSearchBoxVisible (false);
     if (searchBox) {
       searchBox.style.display = "none";
     }
@@ -266,90 +279,105 @@ function Navbar() {
     router.push(newUrl);
   }
 
-  function logOut() {
-    fetch(environment.backendURL + "/logout", {
-      method: "POST",
-      mode: "cors",
-      credentials: "include",
-    }).then((response) => {
-      if (response.status == 200) {
+  async function logOut() {
+    try {
+      const response = await fetch(environment.backendURL + "/logout", {
+        method: "POST",
+        mode: "cors",
+        credentials: "include",
+      });
+
+      if (response.ok) {
+        setUserIsLoggedIn(false);
         router.push("/");
-        router.reload();
       }
-    });
+    } catch (error) {
+      handleFetchError(error, router);
+    }
   }
 
   function showAccountImage() {
-    if (profile.userID == 0) {
+    if (profile) {
+      if (profile.image) {
+        return (
+          <div
+            className={styles.account}
+            onClick={(event) => redirectClicked(event, `/accounts/${profile.userID}`)}
+          >
+            <Image
+              src={profile.image}
+              style={{ objectFit: "cover" }}
+              width={56}
+              height={56}
+              alt="Profile picture"
+            />
+          </div>
+        );
+      } else {
+        return (
+          <div
+            className={styles.account}
+            onClick={(event) => redirectClicked(event, `/accounts/${profile.userID}`)}
+          >
+            <LucidUser className={styles.userImage} width={40} height={40} />
+          </div>
+        );
+      }
+    } else {
       return (
         <button
           className={styles.loginButton}
-          onClick={(event) => redirectButtonClicked(event, "/")}
+          onClick={(event) => redirectButtonClicked(event, router.asPath)}
         >
           Log In
         </button>
       );
-    } else if (profile.image == null) {
-      return (
-        <div
-          className={styles.account}
-          onClick={(event) => redirectClicked(event, `/accounts/${profile.userID}`)}
-        >
-          <LucidUser className={styles.userImage} width={40} height={40} />
-        </div>
-      );
-    } else {
-      return (
-        <div
-          className={styles.account}
-          onClick={(event) => redirectClicked(event, `/accounts/${profile.userID}`)}
-        >
-          <Image
-            src={profile.image}
-            style={{ objectFit: "cover" }}
-            width={56}
-            height={56}
-            alt="Profile picture"
-          />
-        </div>
-      );
     }
   }
 
-  function searchBackend(query: string) {
+  async function searchBackend(query: string) {
     if (query.length !== 0) {
       setSearchBoxVisible(true);
-      fetch(
-        environment.backendURL + `/search/users` + `?username=${query}` + `&limit=2` + `&offset=0`,
-        {
-          mode: "cors",
-          credentials: "include",
-        }
-      )
-        .then((response) => {
-          return response.json();
-        })
-        .then((responseJSON) => {
-          setSearchResultsHTML(convertSearchResults(responseJSON));
-        });
+      try {
+        const response = await fetch(
+          environment.backendURL +
+            `/search/users` +
+            `?username=${query}` +
+            `&limit=2` +
+            `&offset=0`,
+          {
+            mode: "cors",
+            credentials: "include",
+          }
+        );
 
-      fetch(
-        environment.backendURL +
-          `/search/events` +
-          `?title=${query}` +
-          `&limit=2` +
-          `&offset=0`,
-        {
-          mode: "cors",
-          credentials: "include",
+        if (response.ok) {
+          const data = await response.json();
+          console.log("response: ", data);
+          const convertedResults = convertSearchResults(data);
+          setSearchResultsHTML(convertedResults);
+          console.log(convertedResults);
         }
-      )
-        .then((response) => {
-          return response.json();
-        })
-        .then((responseJSON) => {
-          setEventSearchHTML(convertSearchResults(responseJSON));
-        });
+      } catch (error) {
+        handleFetchError(error, router);
+      }
+
+      try {
+        const response = await fetch(
+          environment.backendURL + `/search/events` + `?title=${query}` + `&limit=2` + `&offset=0`,
+          {
+            mode: "cors",
+            credentials: "include",
+          }
+        );
+
+        if (response.ok) {
+          const data = await response.json();
+          setEventSearchHTML(convertSearchResults(data));
+        }
+      } catch (error) {
+        handleFetchError(error, router);
+      }
     } else {
       setSearchBoxVisible(false);
     }
@@ -360,17 +388,11 @@ function Navbar() {
       <nav className={styles.navbar}>
         <div className={styles.leftTopics}>
           <Link href="/">Concerto</Link>
-          <Searchbar
-            type="long"
-            onClick={(query: string) => searchBackend(query)}
-            onChange={(query: string) => searchBackend(query)}
-          />
-          {(searchResultsHTML.length > 0 || eventSearchHTML.length > 0) && (
-            <div className={styles.searchBox} ref={searchRef}>
-              {searchBoxVisible && searchResultsHTML}
-              {searchBoxVisible && eventSearchHTML}
-            </div>
-          )}
+          <Searchbar type="long" onClick={(query: string) => searchBackend(query)} onChange={(query: string) => searchBackend(query)} />
+          <div className={styles.searchBox} ref={searchRef}>
+            {searchBoxVisible && searchResultsHTML}
+            {searchBoxVisible && eventSearchHTML}
+          </div>
           <div className={styles.addEventButton}>
             <div className={styles.add} onClick={(event) => redirectClicked(event, "/add-event")}>
               +
@@ -378,7 +400,9 @@ function Navbar() {
           </div>
         </div>
         <div className={styles.rightTopics}>
-          <Link className={styles.developersRedirect} href="/developers.html">Developers</Link>
+          <Link className={styles.developersRedirect} href="/developers.html">
+            Developers
+          </Link>
           <div
             className={styles.friendsRedirect}
             onClick={(event) => redirectClicked(event, "/friends")}

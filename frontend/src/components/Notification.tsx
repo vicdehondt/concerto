@@ -1,13 +1,16 @@
 import styles from "@/styles/Notification.module.css";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { Event } from "./BackendTypes";
+import { Event, User } from "./BackendTypes";
 import { environment } from "./Environment";
 import { Notification } from "./BackendTypes";
+import { handleFetchError } from "./ErrorHandler";
+import { useRouter } from "next/router";
 
 function Notification({ notification, removeNotification }: {notification: Notification, removeNotification: (number: number) => void}) {
 
-  const [from, setFrom] = useState({username: "Loading..."});
+  const router = useRouter();
+  const [from, setFrom] = useState<User | null>();
   const [event, setEvent] = useState<Event | null>(null);
 
   useEffect(() => {
@@ -15,79 +18,47 @@ function Notification({ notification, removeNotification }: {notification: Notif
     if (notification) {
       const notificationType = notification.NotificationObject.notificationType;
 
-      if (notificationType == "friendrequestreceived") {
-        fetch(environment.backendURL + `/users/${notification.NotificationObject.actor}`, {
-          mode: "cors",
-          credentials: "include",
-        })
-          .then((response) => {
-            if (response.status == 200) {
-              return response.json();
-            }
-            return null
-          })
-          .then((responseJSON) => {
-            setFrom(responseJSON);
-          });
-      }
-      if (notificationType === "friendrequestaccepted") {
-        fetch(environment.backendURL + `/users/${notification.NotificationObject.actor}`, {
-          mode: "cors",
-          credentials: "include",
-        })
-          .then((response) => {
-            if (response.status == 200) {
-              return response.json();
-            }
-            return null
-          })
-          .then((responseJSON) => {
-            setFrom(responseJSON);
-          });
-      }
-      if (notificationType == "reviewEvent") {
-        fetch(environment.backendURL + `/events/${notification.NotificationObject.typeID}`, {
-          mode: "cors",
-          credentials: "include",
-        })
-          .then((response) => {
-            if (response.status == 200) {
-              return response.json();
-            }
-            return null
-          })
-          .then((responseJSON) => {
-            setEvent(responseJSON);
-          });
-      }
-      if (notificationType === "eventInviteReceived") {
-        fetch(environment.backendURL + `/users/${notification.NotificationObject.actor}`, {
-          mode: "cors",
-          credentials: "include",
-        })
-          .then((response) => {
-            if (response.status == 200) {
-              return response.json();
-            }
-            return null
-          })
-          .then((responseJSON) => {
-            setFrom(responseJSON);
+      const fetchUser = async () => {
+        try {
+          const response = await fetch(environment.backendURL + `/users/${notification.NotificationObject.actor}`, {
+            mode: "cors",
+            credentials: "include",
           });
 
-        fetch(environment.backendURL + `/events/${notification.NotificationObject.typeID}`, {
-          mode: "cors",
-          credentials: "include",
-        })
-          .then((response) => {
-            if (response.status == 200) {
-              return response.json();
-            }
-            return null
-          })
-          .then((responseJSON) => {
-            setEvent(responseJSON);
+          if (response.ok) {
+            const data = await response.json();
+            setFrom(data);
+          } else {
+            setFrom(null);
+          }
+        } catch (error) {
+          handleFetchError(error, router);
+        }
+      };
+
+      const fetchEvent = async () => {
+        try {
+          const response = await fetch(environment.backendURL + `/events/${notification.NotificationObject.typeID}`, {
+            mode: "cors",
+            credentials: "include",
           });
+
+          if (response.ok) {
+            const data = await response.json();
+            setEvent(data);
+          } else {
+            setEvent(null);
+          }
+        } catch (error) {
+          handleFetchError(error, router);
+        }
+      };
+
+      if (notificationType == "friendrequestreceived" || notificationType === "friendrequestaccepted" || notificationType === "eventInviteReceived") {
+        fetchUser();
+      }
+      if (notificationType == "reviewEvent" || notificationType === "eventInviteReceived") {
+        fetchEvent();
       }
     }
   }, [notification]);
@@ -106,27 +77,35 @@ function Notification({ notification, removeNotification }: {notification: Notif
   }
 
   function acceptFriend() {
-    fetch(environment.backendURL + `/friends/${notification.NotificationObject.actor}/accept`, {
-      method: 'POST',
-      mode: "cors",
-      credentials: "include",
-    });
-    removeNotification(notification.notificationID)
+    try {
+      fetch(environment.backendURL + `/friends/${notification.NotificationObject.actor}/accept`, {
+        method: 'POST',
+        mode: "cors",
+        credentials: "include",
+      });
+      removeNotification(notification.notificationID)
+    } catch (error) {
+      handleFetchError(error, router);
+    }
   }
 
   function declineFriend() {
-    fetch(environment.backendURL + `/friends/${notification.NotificationObject.actor}/deny`, {
-      method: 'POST',
-      mode: "cors",
-      credentials: "include",
-    });
+    try {
+      fetch(environment.backendURL + `/friends/${notification.NotificationObject.actor}/deny`, {
+        method: 'POST',
+        mode: "cors",
+        credentials: "include",
+      });
+    } catch (error) {
+      handleFetchError(error, router);
+    }
   }
 
   if (notification.NotificationObject.notificationType == "friendrequestreceived") {
     return (
       <>
         <div key={notification.notificationID} className={styles.notificationContainer}>
-          <div className={styles.message}>{from.username} wants to be your friend.</div>
+          <div className={styles.message}>{from && from.username} wants to be your friend.</div>
           <div className={styles.buttonBox}>
             <button onClick={(event) => acceptFriend()}>Accept</button>
             <button onClick={(event) => declineFriend()}>Decline</button>
@@ -139,7 +118,7 @@ function Notification({ notification, removeNotification }: {notification: Notif
     return (
       <>
         <div key={notification.notificationID} className={styles.notificationContainer}>
-          <div className={styles.message}>{from.username} accepted your friend request!</div>
+          <div className={styles.message}>{from && from.username} accepted your friend request!</div>
         </div>
       </>
     )
@@ -161,7 +140,7 @@ function Notification({ notification, removeNotification }: {notification: Notif
       <>
         <div key={notification.notificationID} className={styles.notificationContainer}>
           <Link className={styles.message} href={`/concerts/${event?.eventID}`}>
-            <div className={styles.eventMessage}> {from.username} invited you to {event?.title}.</div>
+            <div className={styles.eventMessage}> {from && from.username} invited you to {event?.title}.</div>
             <div className={styles.rateMessage}>Click to see the event.</div>
           </Link>
         </div>

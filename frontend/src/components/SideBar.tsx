@@ -1,8 +1,10 @@
 import styles from "@/styles/SideBar.module.css";
 import Searchbar from "./Searchbar";
+import { FUNCTIONS_CONFIG_MANIFEST } from "next/dist/shared/lib/constants";
+import React, {useState, useEffect} from 'react';
 import LocationPicker from "@/components/LocationPicker";
 import { Filter, Venue } from "./BackendTypes";
-import { useRef, useState } from "react";
+import { useRef} from "react";
 import { genreOptions } from "./GenreOptions";
 
 type SideBarProps = {
@@ -234,19 +236,59 @@ function SideBarContent({ type, filters, filterCallback }: SideBarProps) {
 }
 
 function SideBar({ type, filters, filterCallback, searchCallback, queryCallback }: SideBarProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [dropdownVisible, setDropdownVisible] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const [isFriendType, setFriendType] = useState(false);
+
   function search(query: string) {
     searchCallback && searchCallback(query.length > 0);
     queryCallback && queryCallback(query);
   }
 
+  useEffect(() => {
+    const handleResize = () => {
+      // Use requestAnimationFrame for smoother performance
+      requestAnimationFrame(() => {
+        setIsOpen(window.innerWidth > 600);
+      });
+    };
+
+    // Initial check
+    handleResize();
+
+    // Add event listener for window resize
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
   return (
+    
     <div className={styles.sidebar}>
-      <Searchbar type="thick" onClick={(string) => null} onChange={(query) => search(query)} />
-      <SideBarContent
-        type={type}
-        filters={filters}
-        filterCallback={(filter: Filter) => filterCallback && filterCallback(filter)}
+      <div className={styles.searchbar}>
+      <Searchbar
+        type="thick"
+        onClick={(string) => null}
+        onChange={(query) => search(query)}
       />
+      </div>
+      <div className={styles.sidebareMenu}>
+        {type !== "friends" && (
+          <button className={`${styles.filterButton} ${isOpen ? styles.open : ''}`} onClick={() => setIsOpen(!isOpen)}>
+            Filters
+          </button>
+        )}
+      <div className={styles.sidebarDropdown}>
+      {isOpen && (
+        <div className={styles.dropdownContent} onMouseEnter={() => {setDropdownVisible(true);}} onMouseLeave={() => {setDropdownVisible(false);}}>
+           <SideBarContent type={type} filters={filters} filterCallback={(filter: Filter) => filterCallback && filterCallback(filter)} />
+        </div>
+      )}
+      </div>
+      </div>
     </div>
   );
 }

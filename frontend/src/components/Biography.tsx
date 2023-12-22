@@ -4,6 +4,8 @@ import styles from "@/styles/Biography.module.css";
 import { useEffect, useState } from "react";
 import { Profile, User } from "@/components/BackendTypes";
 import { environment } from "@/components/Environment";
+import { handleFetchError } from "./ErrorHandler";
+import { useRouter } from "next/router";
 
 type BiographyProps = {
   user: User;
@@ -15,6 +17,7 @@ type BiographyProps = {
 type Friendship = "none" | "pending" | "accepted";
 
 function Biography({ user, source, username, description }: BiographyProps) {
+  const router = useRouter();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [friendship, setFriendship] = useState<Friendship>("none");
   const [hovering, setHovering] = useState(false);
@@ -45,57 +48,78 @@ function Biography({ user, source, username, description }: BiographyProps) {
   }
 
   useEffect(() => {
-    fetch(environment.backendURL + "/profile", {
-      mode: "cors",
-      credentials: "include",
-    })
-      .then((response) => {
-        return response.json();
-      })
-      .then((responseJSON) => {
-        setProfile(responseJSON);
-      });
+    const fetchProfile = async () => {
+      try {
+        const response = await fetch(environment.backendURL + "/profile", {
+          mode: "cors",
+          credentials: "include",
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setProfile(data);
+        }
+      } catch (error) {
+        handleFetchError(error, router);
+      }
+    };
+    fetchProfile();
   }, []);
 
   function inviteFriend() {
     const formData = new FormData();
     formData.append("receiverID", String(user.userID));
-    fetch(environment.backendURL + "/friends", {
-      method: "POST",
-      mode: "cors",
-      credentials: "include",
-      body: formData,
-    }).then((response) => {
-      if (response.status == 200) {
-        setRequestSent(true);
-        setFriendship("pending");
+    const fetchFriends = async () => {
+      try {
+        const response = await fetch(environment.backendURL + "/friends", {
+          method: "POST",
+          mode: "cors",
+          credentials: "include",
+          body: formData,
+        });
+
+        if (response.ok) {
+          setRequestSent(true);
+          setFriendship("pending");
+        }
+      } catch (error) {
+        handleFetchError(error, router);
       }
-    });
+    };
+    fetchFriends();
   }
 
-  function removeFriend() {
-    fetch(environment.backendURL + `/friends/${user.userID}`, {
-      method: "DELETE",
-      mode: "cors",
-      credentials: "include",
-    }).then((response) => {
-      if (response.status == 200) {
+  async function removeFriend() {
+    try {
+      const response = await fetch(environment.backendURL + `/friends/${user.userID}`, {
+        method: "DELETE",
+        mode: "cors",
+        credentials: "include",
+      });
+
+      if (response.ok) {
         setFriendship("none");
       }
-    });
+    } catch (error) {
+      handleFetchError(error, router);
+    }
   }
 
-  function undoRequest() {
-    fetch(environment.backendURL + `/friends/${user.userID}/request`, {
-      method: "DELETE",
-      mode: "cors",
-      credentials: "include",
-    }).then((response) => {
-      if (response.status == 200) {
+  async function undoRequest() {
+    try {
+      const response = await fetch(environment.backendURL + `/friends/${user.userID}/request`, {
+        method: "DELETE",
+        mode: "cors",
+        credentials: "include",
+      });
+
+      if (response.ok) {
         setRequestSent(false);
         setFriendship("none");
       }
-    });
+    } catch (error) {
+      handleFetchError(error, router);
+    }
   }
 
   function handleMouseEnter() {

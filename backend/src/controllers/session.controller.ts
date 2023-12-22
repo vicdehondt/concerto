@@ -137,7 +137,7 @@ export class SessionController extends BaseController {
 		if (sessiondata.userID != null) {
 			res.status(200).json();
 		} else {
-			res.status(400).json();
+			res.status(401).json();
 		}
 	}
 }

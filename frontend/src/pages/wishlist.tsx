@@ -5,28 +5,36 @@ import { ReactNode, useEffect, useState } from "react";
 import EventCard from "@/components/EventCard";
 import { Event, Wish } from "@/components/BackendTypes";
 import { environment } from "@/components/Environment";
+import { handleFetchError } from "@/components/ErrorHandler";
+import { useRouter } from "next/router";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export default function Wishlist() {
 
+  const router = useRouter();
   const [events, setEvents] = useState<Event[]>([]);
   const [eventsHTML, setEventsHTML] = useState<ReactNode[]>([]);
 
   useEffect(() => {
-    fetch(environment.backendURL + "/wishlist", {
-      mode: "cors",
-      credentials: "include",
-    })
-      .then((response) => {
-        if (response.status == 200) {
-          return response.json();
+    const fetchWishlist = async () => {
+      try {
+        const response = await fetch(environment.backendURL + "/wishlist", {
+          mode: "cors",
+          credentials: "include",
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setEvents(getEvents(data));
+        } else {
+          setEvents([]);
         }
-        return [];
-      })
-      .then((responseJSON) => {
-        setEvents(getEvents(responseJSON));
-      });
+      } catch (error) {
+        handleFetchError(error, router);
+      }
+    };
+    fetchWishlist();
   }, []);
 
   function getEvents(wishes: Array<Wish>) {

@@ -6,11 +6,14 @@ import FriendCard from "@/components/FriendCard";
 import { useEffect, useState } from "react";
 import { Friend } from "@/components/BackendTypes";
 import { environment } from "@/components/Environment";
+import { handleFetchError } from "@/components/ErrorHandler";
+import { useRouter } from "next/router";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export default function Friends() {
 
+  const router = useRouter();
   const [friends, setFriends] = useState([]);
   const [search, setSearch] = useState("");
 
@@ -34,19 +37,23 @@ export default function Friends() {
   }
 
   useEffect(() => {
-    fetch(environment.backendURL + "/friends", {
-      mode: "cors",
-      credentials: "include",
-    })
-      .then((response) => {
-        if (response.status == 200) {
-          return response.json();
+    const fetchFriends = async () => {
+      try {
+        const response = await fetch(environment.backendURL + "/friends", {
+          mode: "cors",
+          credentials: "include",
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setFriends(data);
+        } else {
+          setFriends([]);
         }
-        return [];
-      })
-      .then((responseJSON) => {
-        setFriends(responseJSON);
-      });
+      } catch (error) {
+        handleFetchError(error, router);
+      }
+    };
+    fetchFriends();
   }, []);
 
   return (
@@ -61,7 +68,7 @@ export default function Friends() {
         <div className={[styles.page, styles.friendsPage].join(" ")}>
           <SideBar type="friends" queryCallback={(string) => setSearch(string)} />
           <div className={styles.pageContent}>
-            <div className={styles.title}>
+            <div className={styles.headerBox}>
               <h1>Friends</h1>
             </div>
             <div className={styles.friendsContainer}>

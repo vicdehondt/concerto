@@ -11,6 +11,7 @@ import ArtistAndLocationUpload from "@/components/ArtistAndLocationUpload";
 import EventCardUpload from "@/components/EventCardUpload";
 import { Artist, Venue } from "@/components/BackendTypes";
 import { environment } from "@/components/Environment";
+import { handleFetchError } from "@/components/ErrorHandler";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -22,7 +23,7 @@ function getFormattedDate(date: Date) {
 export default function AddEvent() {
   const router = useRouter();
   const [title, setTitle] = useState("");
-  const [location, setLocation] = useState<Venue | null>(null);
+  const [location, setLocation] = useState({ venueID: "123", venueName: "Not selected" });
   const [time, setTime] = useState("");
   const [date, setDate] = useState(getFormattedDate(new Date()));
   const [price, setPrice] = useState("");
@@ -76,19 +77,22 @@ export default function AddEvent() {
       if (selectedArtist) {
         formData.append("artistID", selectedArtist.id);
       }
-      const response = await fetch(environment.backendURL + "/events", {
-        method: "POST",
-        body: formData,
-        mode: "cors",
-        credentials: "include",
-      });
+      try {
+        const response = await fetch(environment.backendURL + "/events", {
+          method: "POST",
+          body: formData,
+          mode: "cors",
+          credentials: "include",
+        });
 
-      // Handle response if necessary
-      const data = await response.json();
-      if (response.status == 200) {
-        router.push("/");
-      } else if (response.status == 400 && data.message == "This event already exists so a new one could not be created.") {
-        setAddError("This event already exists, so a new one could not be created.");
+        const data = await response.json();
+        if (!response.ok && data.message == "This event already exists so a new one could not be created.") {
+          setAddError("This event already exists, so a new one could not be created.");
+        } else {
+          router.push("/");
+        }
+      } catch (error) {
+        handleFetchError(error, router);
       }
     }
   }
@@ -132,10 +136,9 @@ export default function AddEvent() {
               </div>
             </div>
             <div className={styles.cardPreview}>
-              {eventPictureError && <div className={styles.error}>{eventPictureError}</div>}
               <EventCardUpload
                 title={title}
-                location={location}
+                location={location.venueName}
                 date={date}
                 time={time}
                 price={price as unknown as number}
@@ -143,15 +146,10 @@ export default function AddEvent() {
             </div>
           </div>
           <div className={styles.artistAndLocationContainer}>
-            {venueError && <div className={styles.error}>{venueError}</div>}
             <ArtistAndLocationUpload
               locationCallback={(venue: Venue) => setLocation(venue)}
               artist={selectedArtist}
-              artistCallback={(artist: Artist) => {
-                setArtistError(null);
-                setSelectedArtist(artist)
-              }}
-              error={artistError}
+              artistCallback={(artist: Artist) => setSelectedArtist(artist)}
             />
           </div>
           <div className={styles.priceContainer}>

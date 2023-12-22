@@ -7,10 +7,12 @@ import { Star, User } from "lucide-react";
 import Image from "next/image";
 import { Review, Venue } from "@/components/BackendTypes";
 import { environment } from "@/components/Environment";
+import Link from "next/link";
+import { handleFetchError } from "@/components/ErrorHandler";
 
 const inter = Inter({ subsets: ["latin"] });
 
-type ReviewWithUserInfo = Review & { username: string, image: string };
+type ReviewWithUserInfo = Review & { username: string; image: string };
 
 export default function Venue() {
   const router = useRouter();
@@ -31,96 +33,94 @@ export default function Venue() {
     return result;
   }, []);
 
-  const convertReviews = useCallback((reviews: ReviewWithUserInfo[]) => {
-    return reviews.map((review) => {
-      if (review.message != null) {
+  const convertReviews = useCallback(
+    (reviews: ReviewWithUserInfo[]) => {
+      return reviews.map((review) => {
+        if (review.message != null) {
+          return (
+            <div key={review.reviewID} className={styles.reviewContainer}>
+              <div className={styles.reviewHeader}>
+                <div className={styles.imageBox}>{showImage(review.image, 40)}</div>
+                <div className={styles.infoBox}>
+                  <div className={styles.user}>{review.username}</div>
+                  <div className={styles.created}>{getCreated(review.createdAt)}</div>
+                </div>
+              </div>
+              <div className={styles.score}>{showScore(review.score, 25, styles.userStars)}</div>
+              <div className={styles.review}>{review.message}</div>
+            </div>
+          );
+        }
         return (
           <div key={review.reviewID} className={styles.reviewContainer}>
-            <div className={styles.reviewHeader}>
-              <div className={styles.imageBox}>
-                {showImage(review.image, 40)}
-              </div>
+            <div className={styles.reviewHeaderNoBorder}>
+              <div className={styles.imageBox}>{showImage(review.image, 40)}</div>
               <div className={styles.infoBox}>
-                <div className={styles.user}>
+                <Link href={`/accounts/${review.userID}`} className={styles.user}>
                   {review.username}
-                </div>
-                <div className={styles.created}>
-                  {getCreated(review.createdAt)}
-                </div>
+                </Link>
+                <div className={styles.created}>{getCreated(review.createdAt)}</div>
               </div>
             </div>
-            <div className={styles.score}>
-                {showScore(review.score, 25, styles.userStars)}
-              </div>
-            <div className={styles.review}>
-              {review.message}
+            <div className={styles.scoreNoBorder}>
+              {showScore(review.score, 25, styles.userStars)}
             </div>
           </div>
         );
-      }
-      return (
-        <div key={review.reviewID} className={styles.reviewContainer}>
-          <div className={styles.reviewHeaderNoBorder}>
-            <div className={styles.imageBox}>
-              {showImage(review.image, 40)}
-            </div>
-            <div className={styles.infoBox}>
-              <div className={styles.user}>
-              {review.username}
-              </div>
-              <div className={styles.created}>
-                {getCreated(review.createdAt)}
-              </div>
-            </div>
-          </div>
-          <div className={styles.scoreNoBorder}>
-              {showScore(review.score, 25, styles.userStars)}
-            </div>
-        </div>
-      );
-    });
-  }, [getCreated]);
+      });
+    },
+    [getCreated]
+  );
 
   useEffect(() => {
+
+
     const fetchData = async () => {
       try {
-        const [artistResponse, reviewsResponse] = await Promise.all([
-          fetch(environment.backendURL + `/venues/${router.query.venue}`, {
-            mode: "cors",
-            credentials: "include",
-          }),
-          fetch(environment.backendURL + `/venues/${router.query.venue}/reviews`, {
-            mode: "cors",
-            credentials: "include",
-          }),
-        ]);
+        const venueResponse = await fetch(environment.backendURL + `/venues/${router.query.venue}`, {
+          mode: "cors",
+          credentials: "include",
+        });
 
-        if (artistResponse.status === 200) {
-          const artistData = await artistResponse.json();
-          setVenue(artistData);
+        if (venueResponse.ok) {
+          const venueData = await venueResponse.json();
+          setVenue(venueData);
         }
+      } catch (error) {
+        handleFetchError(error, router);
+      }
 
-        if (reviewsResponse.status === 200) {
+      try {
+        const reviewsResponse = await fetch(environment.backendURL + `/venues/${router.query.venue}/reviews`, {
+          mode: "cors",
+          credentials: "include",
+        });
+
+        if (reviewsResponse.ok) {
           const reviewsData = await reviewsResponse.json();
           const reviewsWithUsernames = await Promise.all(
             reviewsData.map(async (review: Review) => {
-              const userResponse = await fetch(environment.backendURL + `/users/${review.userID}`, {
-                mode: "cors",
-                credentials: "include",
-              });
+              try {
+                const userResponse = await fetch(environment.backendURL + `/users/${review.userID}`, {
+                  mode: "cors",
+                  credentials: "include",
+                });
 
-              if (userResponse.status === 200) {
-                const userData = await userResponse.json();
-                return { ...review, username: userData?.username, image: userData?.image ?? null };
+                if (userResponse.ok) {
+                  const userData = await userResponse.json();
+                  return { ...review, username: userData?.username, image: userData?.image ?? null };
+                }
+                return { ...review, username: 'Unknown User', image: null };
+              } catch (error) {
+                handleFetchError(error, router);
               }
-              return { ...review, username: 'Unknown User', image: null };
             })
           );
           setReviews(reviewsWithUsernames);
           setReviewsHTML(convertReviews(reviewsWithUsernames))
         }
       } catch (error) {
-        console.error('Error fetching data:', error);
+        handleFetchError(error, router);
       }
     };
 
@@ -129,16 +129,21 @@ export default function Venue() {
     }
   }, [router.isReady, router.query.artist, convertReviews, router.query.venue]);
 
-  function showScore(score: number, size: number, styleClass: string ) {
-    if ((score != null) && (score > 0.5)) {
+  function showScore(score: number, size: number, styleClass: string) {
+    if (score != null && score > 0.5) {
       const roundedScore = Math.round(score);
-      return (Array.from({ length: 5 }).map((_, i) => (
-        <Star className={styleClass} key={i} size={size} fill={i <= (roundedScore - 1) ? "yellow" : "none"} />
-      )));
+      return Array.from({ length: 5 }).map((_, i) => (
+        <Star
+          className={styleClass}
+          key={i}
+          size={size}
+          fill={i <= roundedScore - 1 ? "yellow" : "none"}
+        />
+      ));
     } else {
-      return (Array.from({ length: 5 }).map((_, i) => (
+      return Array.from({ length: 5 }).map((_, i) => (
         <Star className={styleClass} key={i} size={size} fill={"none"} />
-      )));
+      ));
     }
   }
 
@@ -173,10 +178,16 @@ export default function Venue() {
 
   function showImage(imageSource: string, size: number) {
     if (imageSource == null) {
-      return (<User width={size} height={size} />);
+      return <User width={size} height={size} />;
     }
     return (
-      <Image src={imageSource} style={{objectFit:"cover"}} width={size} height={size} alt="User profile picture" />
+      <Image
+        src={imageSource}
+        style={{ objectFit: "cover" }}
+        width={size}
+        height={size}
+        alt="User profile picture"
+      />
     );
   }
 
@@ -191,14 +202,12 @@ export default function Venue() {
       <main className={`${styles.main} ${inter.className}`}>
         <div className={[styles.page, styles.artistPage].join(" ")}>
           <div className={styles.pageHeader}>
-            {venue && (<div className={styles.artistName}>{venue.venueName}</div>)}
+            {venue && <div className={styles.artistName}>{venue.venueName}</div>}
             <div className={styles.starsBox}>
               {venue && showScore(venue.Rating.score, 70, styles.artistStar)}
             </div>
           </div>
-          <div className={styles.reviewBox}>
-            {reviewsHTML}
-          </div>
+          <div className={styles.reviewBox}>{reviewsHTML}</div>
         </div>
       </main>
     </>

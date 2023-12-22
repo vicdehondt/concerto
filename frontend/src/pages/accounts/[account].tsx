@@ -7,6 +7,7 @@ import Biography from "@/components/Biography";
 import UserEvent from "@/components/UserEvent";
 import { Event, User } from "@/components/BackendTypes";
 import { environment } from "@/components/Environment";
+import { handleFetchError } from "@/components/ErrorHandler";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -19,44 +20,40 @@ export default function Account() {
 
   const router = useRouter();
 
-  function requestCheckins(user: User) {
-    fetch(environment.backendURL + "/users" + `/${user.userID}/checkins`, {
-      mode: "cors",
-      credentials: "include",
-    })
-      .then((response) => {
-        if (response.status == 200) {
-          return response.json();
-        } else {
-          setCheckedInPrivacy(false);
-          return null;
-        }
-      })
-      .then((responseJSON) => {
-        if (responseJSON != null) {
-          setcheckedEvents(responseJSON);
-        }
+  async function requestCheckins(user: User) {
+    try {
+      const response = await fetch(environment.backendURL + "/users" + `/${user.userID}/checkins`, {
+        mode: "cors",
+        credentials: "include",
       });
+      if (response.ok) {
+        const data = await response.json();
+        setcheckedEvents(data);
+      } else {
+        setCheckedInPrivacy(false);
+      }
+    } catch (error) {
+      handleFetchError(error, router);
+    }
   }
 
-  function requestAttended(user: User) {
-    fetch(environment.backendURL + "/users" + `/${user.userID}/attended`, {
-      mode: "cors",
-      credentials: "include",
-    })
-      .then((response) => {
-        if (response.status == 200) {
-          return response.json();
-        } else {
-          setCheckedInPrivacy(false);
-          return null;
-        }
-      })
-      .then((responseJSON) => {
-        if (responseJSON != null) {
-          setAttendedEvents(responseJSON);
-        }
+  async function requestAttended(user: User) {
+    try {
+      const response = await fetch(environment.backendURL + "/users" + `/${user.userID}/attended`, {
+        mode: "cors",
+        credentials: "include",
       });
+
+      if (response.ok) {
+        const data = await response.json();
+        setAttendedEvents(data);
+      } else {
+        setCheckedInPrivacy(false);
+      }
+
+    } catch (error) {
+      handleFetchError(error, router);
+    }
   }
 
   function showCheckins(response: Array<Event>) {
@@ -75,29 +72,42 @@ export default function Account() {
 
   useEffect(() => {
     const id = router.query.account;
-    if (id) {
-      fetch(environment.backendURL + "/users" + `/${id}`, {
-        mode: "cors",
-        credentials: "include",
-      })
-        .then((response) => {
-          return response.json();
-        })
-        .then((responseJSON) => {
-          setUser(responseJSON);
-          requestCheckins(responseJSON);
-          requestAttended(responseJSON);
-          fetch(environment.backendURL + "/profile", {
-            mode: "cors",
-            credentials: "include",
-          })
-            .then((response) => {
-              return response.json();
-            })
-            .then((responseJSON) => {
-              setProfile(responseJSON.userID == id);
-            });
+    const fetchUser = async () => {
+      try {
+        const response = await fetch(environment.backendURL + "/users" + `/${id}`, {
+          mode: "cors",
+          credentials: "include",
         });
+
+        if (response.ok) {
+          const data = await response.json();
+          setUser(data);
+          requestCheckins(data);
+          requestAttended(data);
+          fetchProfile();
+        }
+      } catch (error) {
+        handleFetchError(error, router);
+      }
+    };
+
+    const fetchProfile = async () => {
+      try {
+        const response = await fetch(environment.backendURL + "/profile", {
+          mode: "cors",
+          credentials: "include",
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setProfile(data.userID == id);
+        }
+      } catch (error) {
+        handleFetchError(error, router);
+      }
+    };
+    if (id) {
+      fetchUser();
     }
   }, [router.query.account]);
   return (
@@ -111,14 +121,19 @@ export default function Account() {
       <main className={`${styles.main} ${inter.className}`}>
         <div className={[styles.page, styles.accountPage].join(" ")}>
           <div className={styles.biographyContainer}>
-            {user && (
-              <Biography
-                user={user}
-                source={user.image}
-                username={user.username}
-                description={user.description}
-              />
-            )}
+            {user && <Biography user={user} source={user.image} username={user.username} description={user.description} />}
+          </div>
+          <div className={styles.attendingEvents}>
+            Attending Events:
+            <div className={styles.attendedEventsContainer}>
+              {showCheckins(checkedevents)}
+            </div>
+          </div>
+          <div className={styles.pastEvents}>
+            Past Events:
+            <div className={styles.pastEventsContainer}>
+              {showCheckins(attendedevents)}
+            </div>
           </div>
           <div className={styles.attendedEventsContainer}>{showCheckins(checkedevents)}</div>
           <div className={styles.pastEventsContainer}>{showCheckins(attendedevents)}</div>

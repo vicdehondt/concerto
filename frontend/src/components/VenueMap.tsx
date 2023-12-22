@@ -1,14 +1,12 @@
-import styles from "@/styles/VenueMap.module.css"
-import { MapContainer, Marker, TileLayer, Popup } from "react-leaflet"
+import styles from "@/styles/VenueMap.module.css";
+import { MapContainer, Marker, TileLayer, Popup } from "react-leaflet";
 import { useEffect, useState } from "react";
-import EventMarker from "@/components/EventMarker"
-import "leaflet/dist/leaflet.css"
-import "leaflet-defaulticon-compatibility"
-import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css"
-import { APIKEY}  from "@/secrets/secrets";
+import EventMarker from "@/components/EventMarker";
+import "leaflet/dist/leaflet.css";
+import "leaflet-defaulticon-compatibility";
+import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
+import { APIKEY } from "@/secrets/secrets";
 import { Venue, Event } from "./BackendTypes";
-import { environment } from "./Environment";
-
 
 type VenueMapProps = {
   events: Array<Event>;
@@ -17,16 +15,19 @@ type VenueMapProps = {
 type VenueEventArray = {
   venue: Venue;
   events: Array<Event>;
-}
+};
 
 export default function VenueMap({ events }: VenueMapProps) {
-
   const [sortedEvents, setSortedEvents] = useState<Array<VenueEventArray>>([]);
 
   useEffect(() => {
     const sortedEvents: Array<VenueEventArray> = [];
     events.forEach((event) => {
-      if (sortedEvents.some((venueEvent: VenueEventArray) => venueEvent.venue.venueID === event.Venue.venueID)) {
+      if (
+        sortedEvents.some(
+          (venueEvent: VenueEventArray) => venueEvent.venue.venueID === event.Venue.venueID
+        )
+      ) {
         sortedEvents.forEach((venueEvent: VenueEventArray) => {
           if (venueEvent.venue.venueID === event.Venue.venueID) {
             venueEvent.events.push(event);
@@ -39,58 +40,48 @@ export default function VenueMap({ events }: VenueMapProps) {
     setSortedEvents(sortedEvents);
   }, [events]);
 
-  // function showMarkers() {
-  //   return events.map((event) => {
-  //     return (
-  //       <Marker
-  //         key={event.eventID} // Ensure each marker has a unique key
-  //         position={[event.Venue.lattitude, event.Venue.longitude]}
-  //         >
-  //         <Popup>
-  //           <div>
-  //             <strong>Venue:</strong> {event.Venue.venueName}
-  //             <EventMarker event={event}/>
-  //           </div>
-  //         </Popup>
-  //       </Marker>
-  //     )
-  //   });
-  // }
-
   function showMarkers() {
     return sortedEvents.map((venueEvent: VenueEventArray) => {
       return (
         <Marker
           key={venueEvent.venue.venueID} // Ensure each marker has a unique key
           position={[venueEvent.venue.lattitude, venueEvent.venue.longitude]}
-          >
-          <Popup>
-            <div>
-              <strong>Venue:</strong> {venueEvent.events[0].Venue.venueName}
-              <div className={styles.eventcardContainer}>
-                {venueEvent.events.map((event, i) => {
-                  return <EventMarker key={event.eventID} event={event}/>;
-                })}
+        >
+          <div className={styles.popupBox}>
+            <Popup>
+              <div>
+                <strong>Venue:</strong> {venueEvent.events[0].Venue.venueName}
+                <div className={styles.eventcardContainer}>
+                  {venueEvent.events.map((event, i) => {
+                    return <EventMarker key={event.eventID} event={event} />;
+                  })}
+                </div>
               </div>
-            </div>
-          </Popup>
+            </Popup>
+          </div>
         </Marker>
-      )
+      );
     });
   }
 
-  return <MapContainer
-            style={{ height: '100%', zIndex: 5 }}
-            center={[50.85, 4.35]}
-            zoom={12}
-            minZoom={3}
-            maxZoom={19}
-            maxBounds={[[-85.06, -180], [85.06, 180]]}
-            scrollWheelZoom={true}>
-            <TileLayer
-                attribution='&copy; <a href="https://stadiamaps.com/" target="_blank">Stadia Maps</a>, &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/about" target="_blank">OpenStreetMap</a> contributors'
-                url={`https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png?api_key=${APIKEY}`}
-            />
-            {showMarkers()}
+  return (
+    <MapContainer
+      style={{ height: "100%", zIndex: 5 }}
+      center={[50.85, 4.35]}
+      zoom={12}
+      minZoom={3}
+      maxZoom={19}
+      maxBounds={[
+        [-85.06, -180],
+        [85.06, 180],
+      ]}
+      scrollWheelZoom={true}
+    >
+      <TileLayer
+        attribution='&copy; <a href="https://stadiamaps.com/" target="_blank">Stadia Maps</a>, &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/about" target="_blank">OpenStreetMap</a> contributors'
+        url={`https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png?api_key=${APIKEY}`}
+      />
+      {showMarkers()}
     </MapContainer>
+  );
 }

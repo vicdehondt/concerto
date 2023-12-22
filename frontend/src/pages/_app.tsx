@@ -1,42 +1,72 @@
-import '@/styles/globals.css'
-import type { AppProps } from 'next/app'
+import "@/styles/globals.css";
+import type { AppProps } from "next/app";
 import Navbar from "@/components/Navbar";
+import HamburgerMenu from '@/components/HamburgerMenu';
 import { useRouter } from "next/router";
-import { useEffect } from 'react';
+import { useEffect, useState} from 'react';
 import { environment } from "@/components/Environment";
+import { handleFetchError } from "@/components/ErrorHandler";
 
 export default function App({ Component, pageProps }: AppProps) {
   const router = useRouter();
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    fetch(environment.backendURL + "/auth/status", {
-      mode: "cors",
-      credentials: "include",
-    })
-      .then((response) => {
+    const handleResize = () => {
+      // Use requestAnimationFrame for smoother performance
+      requestAnimationFrame(() => {
+        setIsMobile(window.innerWidth <= 850);
+      });
+    };
+
+    // Initial check
+    handleResize();
+
+    // Add event listener for window resize
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
+  useEffect(() => {
+    const loggedIn = async () => {
+      try {
+        const response = await fetch(environment.backendURL + "/auth/status", {
+          mode: "cors",
+          credentials: "include",
+        });
         const notHomePage = router.asPath != "/";
         const notRegisterPage = !router.asPath.includes("/register");
         const notLoginPage = !router.asPath.includes("/login");
         const notMapPage = !router.asPath.includes("/map");
-        const notOnAllowedPages = notHomePage && notRegisterPage && notLoginPage && notMapPage
-        if ((response.status == 400) && notOnAllowedPages) {
-            router.push(`/`);
+        const notOnAllowedPages = notHomePage && notRegisterPage && notLoginPage && notMapPage;
+        if (!response.ok && notOnAllowedPages) {
+          router.push(`/map`);
         }
-      });
+      } catch (error) {
+        handleFetchError(error, router);
+      }
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, []);
 
-  function NavbarIfNeeded() {
+  function NavbarOrHamburgerIfNeeded() {
     const path = router.asPath;
     if (!path.includes("/login") && !path.includes("/register")) {
-      return <Navbar />
+      if(isMobile){
+        return <HamburgerMenu />
+      } else{
+        return <Navbar />
+      }
     }
   }
 
-  return(
+  return (
     <>
-      <NavbarIfNeeded />
+      <NavbarOrHamburgerIfNeeded />
       <Component {...pageProps} />
     </>
-  )
+  );
 }
