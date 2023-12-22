@@ -8,6 +8,8 @@ const userImagePath = './public/users';
 
 const upload = createMulter(userImagePath);
 
+// This controller is used to handle all requests to the /users endpoint.
+// It allows to retrieve information about a user, such as their friends, checkins and attended events.
 export class UserController extends BaseController {
 
     constructor() {
@@ -43,9 +45,9 @@ export class UserController extends BaseController {
 			const user = req.body.user;
 			if (user != null) {
 				const result = user.get({ plain: true});
-				delete result.password;
-				delete result.salt;
-				if (sessiondata.userID != user.userID) {
+				delete result.password; // Remove password from the result.
+				delete result.salt; // Remove salt from the result.
+				if (sessiondata.userID != user.userID) { // If you are requesting information from a different user than yourself.
 					const friendship = await database.FindFriend(sessiondata.userID, user.userID);
 					if (friendship == null) {
 						result.friendship = 'none';
@@ -56,7 +58,7 @@ export class UserController extends BaseController {
 						result.sender = friendship.senderID
 					}
 				}
-				if (sessiondata.userID == user.userID) {
+				if (sessiondata.userID == user.userID) { // Requesting information from yourself.
 					res.status(200).json(result);
 				} else {
 					delete result.mail;
@@ -76,12 +78,14 @@ export class UserController extends BaseController {
 			const sessiondata = req.session;
 			const user = req.body.user;
 			const privacy = retrievePrivacySetting(user);
+			console.log("Privacy setting: ", privacy);
 			if (user.userID == sessiondata.userID) {
 				const result = await retrieveDataFunction(user.userID);
 				console.log("Requesting your own information.")
 				res.status(200).json(result);
 			}
 			else if (privacy == 'private') {
+				console.log("This information is private.");
 				res.status(401).json({ error: database.privacyErrorMsg});
 			} else {
 				const result = await retrieveDataFunction(user.userID);

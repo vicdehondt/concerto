@@ -16,6 +16,7 @@ export default function Account() {
   const [checkedevents, setcheckedEvents] = useState([]);
   const [attendedevents, setAttendedEvents] = useState([]);
   const [checkedInPrivacy, setCheckedInPrivacy] = useState(true);
+  const [pastEventPrivacy, setPastPrivacy] = useState(true);
   const [profile, setProfile] = useState(false);
 
   const router = useRouter();
@@ -48,15 +49,15 @@ export default function Account() {
         const data = await response.json();
         setAttendedEvents(data);
       } else {
-        setCheckedInPrivacy(false);
+        setPastPrivacy(false);
       }
     } catch (error) {
       handleFetchError(error, router);
     }
   }
 
-  function showCheckins(response: Array<Event>) {
-    if (!checkedInPrivacy) {
+  function showCheckins(response: Array<Event>, privacySetting: Boolean) {
+    if (!privacySetting) {
       return <div>Not allowed to see this information.</div>;
     } else if (response.length > 0) {
       return response.map((event: Event) => (
@@ -131,11 +132,11 @@ export default function Account() {
           </div>
           <div className={styles.attendingEvents}>
             Attending Events:
-            <div className={styles.attendedEventsContainer}>{showCheckins(checkedevents)}</div>
+            <div className={styles.attendedEventsContainer}>{showCheckins(checkedevents, checkedInPrivacy)}</div>
           </div>
           <div className={styles.pastEvents}>
             Past Events:
-            <div className={styles.pastEventsContainer}>{showCheckins(attendedevents)}</div>
+            <div className={styles.pastEventsContainer}>{showCheckins(attendedevents, pastEventPrivacy)}</div>
           </div>
         </div>
       </main>

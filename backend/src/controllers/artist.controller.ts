@@ -10,6 +10,8 @@ const eventImagePath = './public/artists';
 
 const upload = createMulter(eventImagePath);
 
+// This controller is used to handle all requests to the /users endpoint.
+// Retrieving information about an artist (ex. reviews) or posting a review.
 export class ArtistController extends BaseController {
 
 	constructor() {
@@ -51,11 +53,11 @@ export class ArtistController extends BaseController {
 
     async getReviews(req: express.Request, res: express.Response) {
         const artist = req.body.artist;
-        const ratingID = artist.Rating.ratingID;
+        const ratingID = artist.Rating.ratingID; // Each artist is associated with a rating object.
         try {
             const result = await Review.findAll({
                 where: {
-                    ratingID: ratingID
+                    ratingID: ratingID // Get all reviews which belong to that rating object.
                 }
             });
             res.status(200).json(result);
@@ -70,7 +72,7 @@ export class ArtistController extends BaseController {
         const artist = req.body.artist;
         const {message, score, event} = req.body;
         try {
-            const checkedin = await retrieveCheckIn(sessiondata.userID, event);
+            const checkedin = await retrieveCheckIn(sessiondata.userID, event); // the user has to be checked in to the event to review the artist.
             if (checkedin == null) {
                 res.status(400).json({ success: false, error: "Not allowed to review this event."});
             } else {
@@ -122,6 +124,7 @@ export class ArtistController extends BaseController {
         }
     }
 
+    // validator used to check if an artist with the given ID exists.
     async checkArtistExists(req: express.Request, res: express.Response, next) {
         await param("artistID").custom(async (artistID, { req }) => {
             const artist = await retrieveArtist(artistID);

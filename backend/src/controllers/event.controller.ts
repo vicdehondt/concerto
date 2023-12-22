@@ -15,6 +15,8 @@ const eventImagePath = './public/events';
 
 const upload = createMulter(eventImagePath);
 
+// This ciontroller is used to handle all requests to the /events endpoint.
+// It allows to retrieve information about an event, create an event, edit an event, check in for an event, invite friends for an event.
 export class EventController extends BaseController {
 
 	constructor() {
@@ -116,7 +118,6 @@ export class EventController extends BaseController {
 	async inviteAbleFriends(req: express.Request, res: express.Response) {
 		try {
 			const friends = await GetAllFriends(req.session.userID);
-			console.log(req.param.eventID);
 			const filteredFriends = await Promise.all(friends.map(async friend => {
 				const hasNotification = await Notification.findOne({
 					where: {
@@ -280,6 +281,9 @@ export class EventController extends BaseController {
 		}
 	}
 
+	// If a not logged in user requests all events, the events that are finished are not returned.
+	// If a logged in user requests all events without events, only unfisnished events are returned which are new for the user. This means they are not wishlisted or checked in for.
+	// If a logged in user request all events with filters, all unfinished events are returned, including ones that are wishlisted or checked in for.
 	async getAllEvents(req: express.Request, res: express.Response) {
 		try {
 			console.log("Accepted request for all events");
@@ -319,7 +323,7 @@ export class EventController extends BaseController {
 						}},
 						], where: whereClause,
 						order: [
-							['dateAndTime', 'ASC'] // Sort by 'dateAndTime' in ascending order
+							['dateAndTime', 'ASC']
 						]
 					});
 					res.status(200).json(events);
@@ -346,7 +350,7 @@ export class EventController extends BaseController {
 				}
 			});
 			const checkedIn = await retrieveCheckIn(sessiondata.userID, event) != null;
-			const eventWithWishlist = {
+			const eventWithWishlist = { // Add the wishlisted and checkedIn fields to the event object
 				...event.toJSON(),
 				wishlisted: wishlisted !== null,
 				checkedIn: checkedIn,
@@ -375,7 +379,7 @@ export class EventController extends BaseController {
 						dateAndTime: suppliedDate
 					}
 				});
-				if (event) {
+				if (event) { // Delete the received images
 					this.DeleteFile(eventImagePath, bannerpictures[0]);
 					this.DeleteFile(eventImagePath, eventPictures[0]);
 					res.status(400).json({ success: false, message: 'This event already exists so a new one could not be created.'});
@@ -386,7 +390,7 @@ export class EventController extends BaseController {
 					res.status(200).json({ success: true, eventID: result.eventID, message: 'Event created successfully.' });
 				}
 			} else {
-				if (bannerpictures) {
+				if (bannerpictures) { // Delete the received images
 					this.DeleteFile(eventImagePath, bannerpictures[0]);
 				} if (eventPictures) {
 					this.DeleteFile(eventImagePath, eventPictures[0]);
@@ -433,6 +437,7 @@ export class EventController extends BaseController {
 		}
 	}
 
+	// validator used to check if a friend with the given ID exists.
 	async checkFriendExists(req: express.Request, res: express.Response, next) {
 		try {
 			await body("userID").trim().notEmpty().custom(async (userID) => {
@@ -449,6 +454,7 @@ export class EventController extends BaseController {
 		}
 	}
 
+	// validator used to check if the event is not finished yet.
 	async checkUnfinished(req: express.Request, res: express.Response, next) {
 		try {
 			await body("event").custom((event) => {
@@ -468,6 +474,7 @@ export class EventController extends BaseController {
 		}
     }
 
+	// validator used to check if an event with the given ID exists.
 	async checkEventExists(req: express.Request, res: express.Response, next) {
 		try {
 			await param("eventID").custom(async (eventID, { req }) => {

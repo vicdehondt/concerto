@@ -2,7 +2,7 @@ import { DataTypes, Op } from 'sequelize';
 import {sequelize} from '../configs/sequelizeConfig'
 import { Rating } from './Ratingmodel';
 
-//events belong to venue
+
 export const VenueModel = sequelize.define('Venue', {
   venueID: {
     type: DataTypes.UUID,

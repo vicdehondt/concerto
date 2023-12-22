@@ -11,6 +11,7 @@ const upload = createMulter(sessionFilePath)
 
 const saltingRounds = 12;
 
+// This controller is used to handle all requests to the /session endpoint.
 export class SessionController extends BaseController {
 
     constructor() {
@@ -132,6 +133,7 @@ export class SessionController extends BaseController {
 		res.status(200).json({success: true, message: "You are succesfully logged out."})
 	}
 
+	// Route to check if the user is logged in.
 	checkAuthentication(req, res) {
 		const sessiondata = req.session;
 		if (sessiondata.userID != null) {
