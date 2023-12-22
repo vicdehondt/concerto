@@ -21,6 +21,7 @@ export default function Account() {
 
   const router = useRouter();
 
+  //get all event a user is checked in for
   async function requestCheckins(user: User) {
     try {
       const response = await fetch(environment.backendURL + "/users" + `/${user.userID}/checkins`, {
@@ -38,6 +39,7 @@ export default function Account() {
     }
   }
 
+  //get all events a user attended
   async function requestAttended(user: User) {
     try {
       const response = await fetch(environment.backendURL + "/users" + `/${user.userID}/attended`, {

@@ -16,6 +16,7 @@ export default function Settings() {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
 
+  //Changing the mail address of a user
   async function onSaveMail(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     var formData = new FormData(event.currentTarget);
@@ -32,6 +33,7 @@ export default function Settings() {
     }
   }
 
+  //Changing the biography of a user
   async function onSaveDescription(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     var formData = new FormData(event.currentTarget);
@@ -52,6 +54,7 @@ export default function Settings() {
     }
   }
 
+  //Changing the password of a user
   async function onSavePassword(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     var formData = new FormData(event.currentTarget);
@@ -82,7 +85,7 @@ export default function Settings() {
               <div className={styles.changeText}>
                 <input
                   className={styles.settingsInput}
-                  type="email"
+                  type="email" // the input has to be a valid mail adress
                   id="mail"
                   name="mail"
                   placeholder="Change e-mail address"
@@ -103,7 +106,7 @@ export default function Settings() {
                   name="oldPassword"
                   id="oldPassword"
                   placeholder="Your old password"
-                  pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}"
+                  pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}"//password has to fulfill the requirements
                 />
               </div>
               <div className={styles.changeText}>
@@ -113,7 +116,7 @@ export default function Settings() {
                   name="newPassword"
                   id="newPassword"
                   placeholder="Your new password"
-                  pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}"
+                  pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}"//password has to fulfill the requirements
                 />
               </div>
               <button className={styles.saveButton} type="submit">

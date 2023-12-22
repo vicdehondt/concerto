@@ -10,7 +10,7 @@ import { environment } from "./Environment";
 import EventSearchCard from "./EventSearchCard";
 import UserSearchCard from "./UserSearchCard";
 import { User, Event as EventType } from "./BackendTypes";
-
+//the Hamburger menu is used for mobile devices.
 const HamburgerMenu = () => {
   const router = useRouter();
 
@@ -30,11 +30,14 @@ const HamburgerMenu = () => {
   const notificationsRef = useRef<HTMLDivElement>(null);
   const searchRef = useRef<HTMLDivElement>(null);
 
+  // Convert the search results from the back-end to HTML.
+  // It can be a user or an event.
   const convertSearchResults = useCallback((results: Array<EventType | User>) => {
     if (results.length === 0) {
       return [<></>];
     }
 
+    // The results are always an array with a length of 2.
     return results.map((result) => {
       if ("eventID" in result) {
         return (
@@ -95,6 +98,8 @@ const HamburgerMenu = () => {
     });
   }, []);
 
+  // Remove a notification from the back-end and the front-end.
+  // The notificationID is used to identify the notification.
   const removeNotification = useCallback(
     (notificationID: number) => {
       fetch(environment.backendURL + `/notifications/${notificationID}`, {
@@ -124,6 +129,7 @@ const HamburgerMenu = () => {
     [setNotifications, setNotificationsHTML]
   );
 
+  // When the notifications are opened and close, remove the notifications that are info notifications.
   const removeInfoNotifications = useCallback(() => {
     notifications.forEach((notification) => {
       if (notification.NotificationObject.notificationType === "friendrequestaccepted") {
@@ -148,6 +154,8 @@ const HamburgerMenu = () => {
     [removeNotification]
   );
 
+  // Close the notifications box by updating the CSS.
+  // Remove info notifications on close.
   const closeNotifications = useCallback(() => {
     const notificationBox = document.getElementsByClassName(
       styles.notificationsBox
@@ -159,10 +167,12 @@ const HamburgerMenu = () => {
     removeInfoNotifications();
   }, [removeInfoNotifications]);
 
+  // Convert the notifications to HTML when the notifications change.
   useEffect(() => {
     setNotificationsHTML(convertNotifications(notifications));
   }, [notifications, convertNotifications]);
 
+  // Close the notifications box when the user clicks outside of the box.
   useEffect(() => {
     const handleOutSideClick = (event: Event) => {
       if (
@@ -179,6 +189,7 @@ const HamburgerMenu = () => {
     };
   }, [closeNotifications, notificationButtonRef, notificationsRef]);
 
+  // Close the search box when the user clicks outside of the box.
   useEffect(() => {
     const handleOutSideClick = (event: Event) => {
       if (event.target != null && !searchRef.current?.contains(event.target as Node)) {
@@ -191,6 +202,7 @@ const HamburgerMenu = () => {
     };
   }, [searchRef]);
 
+  // Show or hide the search box by updating the CSS depending on the searchBoxVisible state.
   useEffect(() => {
     const searchBox = searchRef?.current;
     if (searchBox) {
@@ -202,6 +214,7 @@ const HamburgerMenu = () => {
     }
   }, [searchBoxVisible]);
 
+  // Check if the user is logged in.
   async function loggedIn() {
     try {
       const response = await fetch(environment.backendURL + "/auth/status", {
@@ -247,6 +260,8 @@ const HamburgerMenu = () => {
     }
   }
 
+  // Redirect the user to the login page if they are not logged in.
+  // Otherwise, the user is redirected to the normalURL.
   async function redirectURL(normalURL: string) {
     const userLoggedIn = await loggedIn();
     if (userLoggedIn) {
@@ -283,6 +298,9 @@ const HamburgerMenu = () => {
     });
   }
 
+  // Show the profile picture if the user is logged in.
+  // If the user has not set a profile picture, show the default profile picture (a user icon).
+  // Otherwise, show the login button.
   function showAccountImage() {
     if (profile.userID == 0) {
       return (
@@ -314,6 +332,7 @@ const HamburgerMenu = () => {
     }
   }
 
+  // Search the backend for users and events based on the given query.
   function searchBackend(query: string) {
     if (query.length !== 0) {
       setSearchBoxVisible(true);
