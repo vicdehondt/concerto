@@ -4,6 +4,7 @@ import { Event } from "./BackendTypes";
 import { environment } from "./Environment";
 import Link from "next/link";
 import styles from "@/styles/EventMarker.module.css";
+import { handleFetchError } from "./ErrorHandler";
 
 export default function EventMarker({ event }: { event: Event }) {
   const router = useRouter();
@@ -14,9 +15,10 @@ export default function EventMarker({ event }: { event: Event }) {
         mode: "cors",
         credentials: "include",
       });
-      return response.status === 200;
+
+      return response.ok;
     } catch (error) {
-      return false;
+      handleFetchError(error, router);
     }
   }
 
@@ -28,7 +30,7 @@ export default function EventMarker({ event }: { event: Event }) {
     return `/login?from=${encodeURIComponent(normalURL)}`;
   }
 
-  async function redirectClicked(event: React.MouseEvent<HTMLDivElement, MouseEvent>, url: string) {
+  async function redirectClicked(event: React.MouseEvent<HTMLButtonElement, MouseEvent>, url: string) {
     event.preventDefault();
     const newUrl = await redirectURL(url);
     router.push(newUrl);
@@ -52,7 +54,7 @@ export default function EventMarker({ event }: { event: Event }) {
             year: "numeric",
           })}
         </p>
-        <Link href={`/concerts/${event.eventID}`}>Go to event</Link>
+        <button onClick={(clickEvent) => redirectClicked(clickEvent, `/concerts/${event.eventID}`)}>Go to event</button>
       </div>
     </div>
   );

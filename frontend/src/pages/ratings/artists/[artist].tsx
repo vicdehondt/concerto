@@ -8,6 +8,7 @@ import Image from "next/image";
 import { Review, Artist } from "@/components/BackendTypes";
 import { environment } from "@/components/Environment";
 import Link from "next/link";
+import { handleFetchError } from "@/components/ErrorHandler";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -83,45 +84,53 @@ export default function Artist() {
   }, [getCreated]);
 
   useEffect(() => {
+
     const fetchData = async () => {
       try {
-        const [artistResponse, reviewsResponse] = await Promise.all([
-          fetch(environment.backendURL + `/artists/${router.query.artist}`, {
-            mode: "cors",
-            credentials: "include",
-          }),
-          fetch(environment.backendURL + `/artists/${router.query.artist}/reviews`, {
-            mode: "cors",
-            credentials: "include",
-          }),
-        ]);
+        const artistResponse = await fetch(environment.backendURL + `/artists/${router.query.artist}`, {
+          mode: "cors",
+          credentials: "include",
+        });
 
-        if (artistResponse.status === 200) {
+        if (artistResponse.ok) {
           const artistData = await artistResponse.json();
           setArtist(artistData);
         }
+      } catch (error) {
+        handleFetchError(error, router);
+      }
 
-        if (reviewsResponse.status === 200) {
+      try {
+        const reviewsResponse = await fetch(environment.backendURL + `/artists/${router.query.artist}/reviews`, {
+          mode: "cors",
+          credentials: "include",
+        });
+
+        if (reviewsResponse.ok) {
           const reviewsData = await reviewsResponse.json();
           const reviewsWithUsernames = await Promise.all(
             reviewsData.map(async (review: Review) => {
-              const userResponse = await fetch(environment.backendURL + `/users/${review.userID}`, {
-                mode: "cors",
-                credentials: "include",
-              });
+              try {
+                const userResponse = await fetch(environment.backendURL + `/users/${review.userID}`, {
+                  mode: "cors",
+                  credentials: "include",
+                });
 
-              if (userResponse.status === 200) {
-                const userData = await userResponse.json();
-                return { ...review, username: userData?.username, image: userData?.image ?? null };
+                if (userResponse.ok) {
+                  const userData = await userResponse.json();
+                  return { ...review, username: userData?.username, image: userData?.image ?? null };
+                }
+                return { ...review, username: 'Unknown User', image: null };
+              } catch (error) {
+                handleFetchError(error, router);
               }
-              return { ...review, username: 'Unknown User', image: null };
             })
           );
           setReviews(reviewsWithUsernames);
           setReviewsHTML(convertReviews(reviewsWithUsernames))
         }
       } catch (error) {
-        console.error('Error fetching data:', error);
+        handleFetchError(error, router);
       }
     };
 

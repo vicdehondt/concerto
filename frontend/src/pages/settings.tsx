@@ -7,6 +7,8 @@ import Image from "next/image";
 import { User } from 'lucide-react';
 import ProfilePictureUpload from "@/components/ProfilePictureUpload";
 import { environment } from "@/components/Environment";
+import { handleFetchError } from "@/components/ErrorHandler";
+import { useRouter } from "next/router";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -18,6 +20,7 @@ function showPicture(source: string) {
 }
 
 export default function Settings() {
+  const router = useRouter();
   const [user, setUser] = useState({
     username: "",
     userID: 0,
@@ -58,16 +61,22 @@ export default function Settings() {
   }
 
   useEffect(() => {
-      fetch(environment.backendURL + `/profile`, {
-        mode: "cors",
-        credentials: "include",
-      })
-        .then((response) => {
-          return response.json();
-        })
-        .then((responseJSON) => {
-          setUser(responseJSON);
+    const fetchProfile = async () => {
+      try {
+        const response = await fetch(environment.backendURL + "/profile", {
+          mode: "cors",
+          credentials: "include",
         });
+
+        if (response.ok) {
+          const data = await response.json();
+          setUser(data);
+        }
+      } catch (error) {
+        handleFetchError(error, router);
+      }
+    };
+    fetchProfile();
   }, []);
 
   return (

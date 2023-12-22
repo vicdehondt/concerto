@@ -23,3 +23,17 @@
 .infoContainer p {
   all: unset !important;
 }
+
+.infoContainer button {
+  all: unset;
+  cursor: pointer;
+  color: white;
+  background-color: #0B2027;
+  width: fit-content;
+  padding: 0 5px;
+  border-radius: 5px;
+}
+
+.infoContainer button:hover {
+  background-color: #7180B9;
+}

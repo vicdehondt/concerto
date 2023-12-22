@@ -5,6 +5,7 @@ import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
 import { Star } from "lucide-react";
 import { environment } from "@/components/Environment";
+import { handleFetchError } from "@/components/ErrorHandler";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -47,33 +48,44 @@ export default function AddRating() {
   useEffect(() => {
     const venueID = router.query.venue;
     const artistID = router.query.artist;
-    if (venueID) {
-      fetch(environment.backendURL + `/venues/${venueID}`, {
-        mode: "cors",
-        credentials: "include",
-      })
-        .then((response) => {
-          if (response.status === 200) {
-            return response.json();
-          }
-        })
-        .then((responseJSON) => {
-          setVenueName(responseJSON?.venueName);
+
+    const fetchVenue = async () => {
+      try {
+        const response = await fetch(environment.backendURL + `/venues/${venueID}`, {
+          mode: "cors",
+          credentials: "include",
         });
+
+        if (response.ok) {
+          const data = await response.json();
+          setVenueName(data.venueName);
+        }
+      } catch (error) {
+        handleFetchError(error, router);
+      }
+    };
+
+    const fetchArtist = async () => {
+      try {
+        const response = await fetch(environment.backendURL + `/artists/${artistID}`, {
+          mode: "cors",
+          credentials: "include",
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setArtistName(data.name);
+        }
+      } catch (error) {
+        handleFetchError(error, router);
+      }
+    };
+
+    if (venueID) {
+      fetchVenue();
     }
     if (artistID) {
-      fetch(environment.backendURL + `/artists/${artistID}`, {
-        mode: "cors",
-        credentials: "include",
-      })
-        .then((response) => {
-          if (response.status === 200) {
-            return response.json();
-          }
-        })
-        .then((responseJSON) => {
-          setArtistName(responseJSON?.name);
-        });
+      fetchArtist();
     }
   }, [router.query.venue, router.query.artist]);
 
@@ -114,7 +126,7 @@ export default function AddRating() {
     }
   }
 
-  function submitReviews() {
+  async function submitReviews() {
     const venueID = router.query.venue;
     const artistID = router.query.artist;
     const eventID = router.query.event;
@@ -130,37 +142,46 @@ export default function AddRating() {
     if (artistComment.current != null && artistComment.current.value != "") {
       artistForm.append("message", artistComment.current.value);
     }
-    fetch(environment.backendURL + `/venues/${venueID}/reviews`, {
-      method: "POST",
-      body: venueForm,
-      mode: "cors",
-      credentials: "include",
-    })
-    .then((response) => {
-      if (response.status == 200) {
-        fetch(environment.backendURL + `/artists/${artistID}/reviews`, {
-          method: "POST",
-          body: artistForm,
-          mode: "cors",
-          credentials: "include",
-        })
-        .then((response) => {
-          if (response.status == 200) {
-            fetch(environment.backendURL + `/notifications/${router.query.notificationID}`, {
-              method: "DELETE",
-              mode: "cors",
-              credentials: "include",
-            })
-            .then((response) => {
-              if (response.status == 200) {
+    try {
+      const venueResponse = await fetch(environment.backendURL + `/venues/${venueID}/reviews`, {
+        method: "POST",
+        body: venueForm,
+        mode: "cors",
+        credentials: "include",
+      });
+
+      if (venueResponse.ok) {
+        try {
+          const artistResponse = await fetch(environment.backendURL + `/artists/${artistID}/reviews`, {
+            method: "POST",
+            body: artistForm,
+            mode: "cors",
+            credentials: "include",
+          });
+
+          if (artistResponse.ok) {
+            try {
+              const deleteResponse = await fetch(environment.backendURL + `/notifications/${router.query.notificationID}`, {
+                method: "DELETE",
+                mode: "cors",
+                credentials: "include",
+              });
+
+              if (deleteResponse.ok) {
                 const from = Array.isArray(router.query.from) ? router.query.from[0] : router.query.from || '/';
                 router.push(from);
               }
-            });
+            } catch (error) {
+              handleFetchError(error, router);
+            }
           }
-        });
+        } catch (error) {
+          handleFetchError(error, router);
+        }
       }
-    });
+    } catch (error) {
+      handleFetchError(error, router);
+    }
   }
 
   return (

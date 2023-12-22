@@ -7,10 +7,13 @@ import { useEffect, useState } from "react";
 import { Filter, Event, Profile } from "@/components/BackendTypes";
 import { environment } from "@/components/Environment";
 import isEqual from "lodash/isEqual";
+import { handleFetchError } from "@/components/ErrorHandler";
+import { useRouter } from "next/router";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export default function Map() {
+  const router = useRouter();
   const [events, setEvents] = useState<Event[]>([]);
   const [[longitude, latitude], setLocation] = useState([50.845, 4.35]);
   const [sidebarSearching, setSidebarSearching] = useState(false);
@@ -39,7 +42,7 @@ export default function Map() {
       if (filters.venueID != null) {
         url += `&venueID=${filters.venueID}`;
       }
-      if ((filters.date != null) && (filters.date as unknown as string != "Invalid Date")) {
+      if (filters.date != null && (filters.date as unknown as string) != "Invalid Date") {
         url += `&date=${filters.date}`;
       }
       if (filters.genre != null) {
@@ -50,71 +53,96 @@ export default function Map() {
       if (filters.minPrice != null && filters.maxPrice != null) {
         url += `&price=${filters.minPrice}/${filters.maxPrice}`;
       }
-      fetch(url, {
-        mode: "cors",
-        credentials: "include",
-      })
-        .then((response) => {
-          return response.json();
+      try {
+        fetch(url, {
+          mode: "cors",
+          credentials: "include",
         })
-        .then((responseJSON) => {
-          setEvents(responseJSON);
-        });
+          .then((response) => {
+            return response.json();
+          })
+          .then((responseJSON) => {
+            setEvents(responseJSON);
+          });
+      } catch (error) {
+        handleFetchError(error, router);
+      }
     }
     if (sidebarSearching) {
       let url = environment.backendURL + `/search/events?title=${encodeURIComponent(searchQuery)}`;
       filterFetch(url);
     } else {
-      fetch(environment.backendURL + "/auth/status", {
-        mode: "cors",
-        credentials: "include",
-      }).then((response) => {
-        if (response.status == 200) {
-          const noFilters = {
-            venueID: null,
-            date: null,
-            genre: null,
-            minPrice: null,
-            maxPrice: null
-          };
-          if (isEqual(filters, noFilters)) {
-            fetch(environment.backendURL + "/profile", {
-              mode: "cors",
-              credentials: "include",
-            })
-            .then((response) => {
-              if (response.status == 200) {
-                return response.json();
-              }
-            })
-            .then((responseJSON: Profile) => {
-              let url = environment.backendURL + `/events?genre=${responseJSON.firstGenre}&genre=${responseJSON.secondGenre}`;
-              filterFetch(url);
-            });
-          } else {
-            let url = environment.backendURL + `/events?`;
+      const fetchProfile = async () => {
+        try {
+          const response = await fetch(environment.backendURL + "/profile", {
+            mode: "cors",
+            credentials: "include",
+          });
+          if (response.ok) {
+            const data = await response.json();
+            let url =
+              environment.backendURL + `/events?genre=${data.firstGenre}&genre=${data.secondGenre}`;
             filterFetch(url);
           }
-        } else {
-          let url = environment.backendURL + `/search/events?`;
-          filterFetch(url);
+        } catch (error) {
+          handleFetchError(error, router);
         }
-      });
+      };
+
+      const loggedIn = async () => {
+        try {
+          const response = await fetch(environment.backendURL + "/auth/status", {
+            mode: "cors",
+            credentials: "include",
+          });
+
+          if (response.ok) {
+            const noFilters = {
+              venueID: null,
+              date: null,
+              genre: null,
+              minPrice: null,
+              maxPrice: null,
+            };
+            if (isEqual(filters, noFilters)) {
+              fetchProfile();
+            } else {
+              let url = environment.backendURL + `/events?`;
+              filterFetch(url);
+            }
+          } else {
+            let url = environment.backendURL + `/search/events?`;
+            filterFetch(url);
+          }
+
+          return response.ok;
+        } catch (error) {
+          handleFetchError(error, router);
+        }
+      };
+      loggedIn();
     }
   }, [filters, searchQuery, sidebarSearching]);
 
   useEffect(() => {
-    fetch(environment.backendURL + "/events?limit=15&offset=0", {
-      mode: "cors",
-      credentials: "include",
-    })
-      .then((response) => {
-        return response.json();
-      })
-      .then((responseJSON) => {
-        setEvents(responseJSON);
-        navigator.geolocation.getCurrentPosition(successFunction);
-      });
+    const fetchEvents = async () => {
+      try {
+        const response = await fetch(environment.backendURL + "/events?limit=15&offset=0", {
+          mode: "cors",
+          credentials: "include",
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setEvents(data);
+          navigator.geolocation.getCurrentPosition(successFunction);
+        }
+      } catch (error) {
+        handleFetchError(error, router);
+      }
+    };
+    
+    fetchEvents();
   }, []);
 
   return (

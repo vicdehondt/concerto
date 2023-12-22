@@ -8,6 +8,7 @@ import Image from "next/image";
 import { Review, Venue } from "@/components/BackendTypes";
 import { environment } from "@/components/Environment";
 import Link from "next/link";
+import { handleFetchError } from "@/components/ErrorHandler";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -72,45 +73,54 @@ export default function Venue() {
   );
 
   useEffect(() => {
+
+
     const fetchData = async () => {
       try {
-        const [artistResponse, reviewsResponse] = await Promise.all([
-          fetch(environment.backendURL + `/venues/${router.query.venue}`, {
-            mode: "cors",
-            credentials: "include",
-          }),
-          fetch(environment.backendURL + `/venues/${router.query.venue}/reviews`, {
-            mode: "cors",
-            credentials: "include",
-          }),
-        ]);
+        const venueResponse = await fetch(environment.backendURL + `/venues/${router.query.venue}`, {
+          mode: "cors",
+          credentials: "include",
+        });
 
-        if (artistResponse.status === 200) {
-          const artistData = await artistResponse.json();
-          setVenue(artistData);
+        if (venueResponse.ok) {
+          const venueData = await venueResponse.json();
+          setVenue(venueData);
         }
+      } catch (error) {
+        handleFetchError(error, router);
+      }
 
-        if (reviewsResponse.status === 200) {
+      try {
+        const reviewsResponse = await fetch(environment.backendURL + `/venues/${router.query.venue}/reviews`, {
+          mode: "cors",
+          credentials: "include",
+        });
+
+        if (reviewsResponse.ok) {
           const reviewsData = await reviewsResponse.json();
           const reviewsWithUsernames = await Promise.all(
             reviewsData.map(async (review: Review) => {
-              const userResponse = await fetch(environment.backendURL + `/users/${review.userID}`, {
-                mode: "cors",
-                credentials: "include",
-              });
+              try {
+                const userResponse = await fetch(environment.backendURL + `/users/${review.userID}`, {
+                  mode: "cors",
+                  credentials: "include",
+                });
 
-              if (userResponse.status === 200) {
-                const userData = await userResponse.json();
-                return { ...review, username: userData?.username, image: userData?.image ?? null };
+                if (userResponse.ok) {
+                  const userData = await userResponse.json();
+                  return { ...review, username: userData?.username, image: userData?.image ?? null };
+                }
+                return { ...review, username: 'Unknown User', image: null };
+              } catch (error) {
+                handleFetchError(error, router);
               }
-              return { ...review, username: "Unknown User", image: null };
             })
           );
           setReviews(reviewsWithUsernames);
-          setReviewsHTML(convertReviews(reviewsWithUsernames));
+          setReviewsHTML(convertReviews(reviewsWithUsernames))
         }
       } catch (error) {
-        console.error("Error fetching data:", error);
+        handleFetchError(error, router);
       }
     };
 

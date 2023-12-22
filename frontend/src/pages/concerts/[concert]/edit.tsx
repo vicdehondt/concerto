@@ -10,6 +10,7 @@ import ArtistAndLocationUpload from "@/components/ArtistAndLocationUpload";
 import EventCardUpload from "@/components/EventCardUpload";
 import { Event, Venue, Artist } from "@/components/BackendTypes";
 import { environment } from "@/components/Environment";
+import { handleFetchError } from "@/components/ErrorHandler";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -35,37 +36,55 @@ export default function EditEvent() {
 
   useEffect(() => {
     const id = router.query.concert;
+
+    const canEdit = async () => {
+      try {
+        const response = await fetch(environment.backendURL + `/events/${id}/auth`, {
+          mode: "cors",
+          credentials: "include",
+        });
+
+        return response.ok;
+      } catch (error) {
+        handleFetchError(error, router);
+      }
+    };
+
+    const fetchConcert = async () => {
+      try {
+        const response = await fetch(environment.backendURL + `/events/${id}`, {
+          mode: "cors",
+          credentials: "include",
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setConcert(data);
+          setSelectedArtist(data.Artist);
+          setTitle(data.title);
+          setPrice(data.price);
+          setDate(data.dateAndTime.split("T")[0]);
+          const time = new Date(data.dateAndTime);
+          const currentTimezoneTime = time.toLocaleString();
+          const convertedTime =
+            currentTimezoneTime.split(" ")[1].split(":")[0] +
+            ":" +
+            currentTimezoneTime.split(" ")[1].split(":")[1];
+          setTime(convertedTime);
+        }
+      } catch (error) {
+        handleFetchError(error, router);
+      }
+    };
+
     if (id) {
-      fetch(environment.backendURL + `/events/${id}/auth`, {
-        mode: "cors",
-        credentials: "include",
-      }).then((response) => {
-        if (response.status == 200) {
-          fetch(environment.backendURL + `/events/${id}`, {
-            mode: "cors",
-            credentials: "include",
-          })
-            .then((response) => {
-              return response.json();
-            })
-            .then((responseJSON) => {
-              setConcert(responseJSON);
-              setSelectedArtist(responseJSON.Artist);
-              setTitle(responseJSON.title);
-              setPrice(responseJSON.price);
-              setDate(responseJSON.dateAndTime.split("T")[0]);
-              const time = new Date(responseJSON.dateAndTime);
-              const currentTimezoneTime = time.toLocaleString();
-              const convertedTime =
-                currentTimezoneTime.split(" ")[1].split(":")[0] +
-                ":" +
-                currentTimezoneTime.split(" ")[1].split(":")[1];
-              setTime(convertedTime);
-            });
+      canEdit().then((canEdit) => {
+        if (canEdit) {
+          fetchConcert();
         } else {
           router.push("/404");
         }
-      });
+      })
     }
   }, [router, router.query.concert]);
 

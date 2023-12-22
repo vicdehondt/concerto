@@ -3,12 +3,16 @@ import styles from "@/styles/ProfilePictureUpload.module.css";
 import { useState, ChangeEvent, useEffect } from "react";
 import { User } from 'lucide-react';
 import { environment } from "@/components/Environment";
+import { handleFetchError } from "./ErrorHandler";
+import { useRouter } from "next/router";
 
 type ProfilePictureUploadProps = {
   picture?: string;
 };
 
 function ProfilePictureUpload({ picture }: ProfilePictureUploadProps) {
+
+  const router = useRouter();
   const [pictureSource, setPictureSource] = useState("");
 
   useEffect(() => {
@@ -24,12 +28,16 @@ function ProfilePictureUpload({ picture }: ProfilePictureUploadProps) {
     if (file) {
         formData.append("picture", file);
     }
-    const response = await fetch(environment.backendURL + "/profile/profilepicture", {
+    try {
+      fetch(environment.backendURL + "/profile/profilepicture", {
         method: "POST",
         body: formData,
         mode: "cors",
         credentials: "include",
       });
+    } catch (error) {
+      handleFetchError(error, router);
+    }
 
     if (file) {
       const source = URL.createObjectURL(file);

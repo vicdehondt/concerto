@@ -3,6 +3,7 @@ import styles from "@/styles/UserEvent.module.css";
 import { useRouter } from "next/router";
 import { Event } from "./BackendTypes";
 import { environment } from "./Environment";
+import { handleFetchError } from "./ErrorHandler";
 
 function UserEvent({ event }: { event: Event}) {
 
@@ -14,9 +15,9 @@ function UserEvent({ event }: { event: Event}) {
         mode: "cors",
         credentials: "include",
       });
-      return response.status === 200;
+      return response.ok;
     } catch (error) {
-      return false;
+      handleFetchError(error, router);
     }
   }
 

@@ -11,6 +11,7 @@ import ArtistAndLocationUpload from "@/components/ArtistAndLocationUpload";
 import EventCardUpload from "@/components/EventCardUpload";
 import { Artist, Venue } from "@/components/BackendTypes";
 import { environment } from "@/components/Environment";
+import { handleFetchError } from "@/components/ErrorHandler";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -76,19 +77,22 @@ export default function AddEvent() {
       if (selectedArtist) {
         formData.append("artistID", selectedArtist.id);
       }
-      const response = await fetch(environment.backendURL + "/events", {
-        method: "POST",
-        body: formData,
-        mode: "cors",
-        credentials: "include",
-      });
+      try {
+        const response = await fetch(environment.backendURL + "/events", {
+          method: "POST",
+          body: formData,
+          mode: "cors",
+          credentials: "include",
+        });
 
-      // Handle response if necessary
-      const data = await response.json();
-      if (response.status == 200) {
-        router.push("/");
-      } else if (response.status == 400 && data.message == "This event already exists so a new one could not be created.") {
-        setAddError("This event already exists, so a new one could not be created.");
+        const data = await response.json();
+        if (!response.ok && data.message == "This event already exists so a new one could not be created.") {
+          setAddError("This event already exists, so a new one could not be created.");
+        } else {
+          router.push("/");
+        }
+      } catch (error) {
+        handleFetchError(error, router);
       }
     }
   }

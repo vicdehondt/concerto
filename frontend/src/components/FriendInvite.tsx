@@ -4,6 +4,8 @@ import { useEffect } from "react";
 import { environment } from "./Environment";
 import { useState } from "react";
 import { Friend } from "./BackendTypes";
+import { handleFetchError } from "./ErrorHandler";
+import { useRouter } from "next/router";
 
 type FriendInvitesProps = {
 	eventID: number | undefined;
@@ -11,6 +13,7 @@ type FriendInvitesProps = {
 
 function FriendInvites({ eventID }: FriendInvitesProps) {
 
+  const router = useRouter();
 	const [friends, setFriends] = useState<Friend[]>([]);
 
 	function showFriends(friends: Array<Friend>) {
@@ -24,19 +27,23 @@ function FriendInvites({ eventID }: FriendInvitesProps) {
 
   useEffect(() => {
     if (eventID) {
-      fetch(environment.backendURL + "/events" + `/${eventID}` + "/invitable", {
-        mode: "cors",
-        credentials: "include",
-      })
-        .then((response) => {
-          if (response.status == 200) {
-            return response.json();
+      const fetchEvents = async () => {
+        try {
+          const response = await fetch(environment.backendURL + "/events" + `/${eventID}` + "/invitable", {
+            mode: "cors",
+            credentials: "include",
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            setFriends(data);
+          } else {
+            setFriends([]);
           }
-          return [];
-        })
-        .then((responseJSON) => {
-          setFriends(responseJSON);
-        });
+        } catch (error) {
+          handleFetchError(error, router);
+        }
+      };
     }
   }, [eventID]);
 

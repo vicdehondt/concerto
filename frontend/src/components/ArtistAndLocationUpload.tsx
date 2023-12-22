@@ -40,14 +40,16 @@ function ArtistAndLocationUpload({
     }
   }
 
-  function fetchArtist(query: string) {
-    fetch(apiURL + query + queryFormat + queryLimit)
-      .then((response) => {
-        return response.json();
-      })
-      .then((responseJSON) => {
-        setAPIResponse(responseJSON);
-      });
+  async function fetchArtist(query: string) {
+    try {
+      const response = await fetch(apiURL + query + queryFormat + queryLimit);
+      if (response.ok) {
+        const data = await response.json();
+        setAPIResponse(data);
+      }
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   function showArtists(artists: Array<Artist>) {
