@@ -11,11 +11,11 @@ import { useRouter } from "next/router";
 const inter = Inter({ subsets: ["latin"] });
 
 export default function Wishlist() {
-
   const router = useRouter();
   const [events, setEvents] = useState<Event[]>([]);
   const [eventsHTML, setEventsHTML] = useState<ReactNode[]>([]);
 
+  // Fetch the wishlist of the user.
   useEffect(() => {
     const fetchWishlist = async () => {
       try {
@@ -41,6 +41,7 @@ export default function Wishlist() {
     return wishes.map((wish) => wish.Event);
   }
 
+  // When the events change, update the HTML.
   useEffect(() => {
     const eventsArray = events.map((event: Event) => {
       return (
@@ -57,7 +58,7 @@ export default function Wishlist() {
           genre2={event.secondGenre}
         />
       );
-    })
+    });
     setEventsHTML(eventsArray);
   }, [events]);
 
@@ -71,12 +72,8 @@ export default function Wishlist() {
       </Head>
       <main className={`${styles.main} ${inter.className}`}>
         <div className={[styles.page, styles.wishlistPage].join(" ")}>
-          <div className={styles.header}>
-            Wishlist
-          </div>
-          <div className={styles.wishContainer}>
-            {eventsHTML}
-          </div>
+          <div className={styles.header}>Wishlist</div>
+          <div className={styles.wishContainer}>{eventsHTML}</div>
         </div>
       </main>
     </>

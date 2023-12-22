@@ -11,6 +11,7 @@ type ArtistAndLocationUploadProps = {
   artistCallback: (artist: Artist) => void;
   artist: Artist | null;
   venueID?: string;
+  error?: string | null;
 };
 
 function ArtistAndLocationUpload({
@@ -18,6 +19,7 @@ function ArtistAndLocationUpload({
   artistCallback,
   artist,
   venueID,
+  error
 }: ArtistAndLocationUploadProps) {
   const [apiResponse, setAPIResponse] = useState<APIResponse | null>(null);
 
@@ -92,6 +94,7 @@ function ArtistAndLocationUpload({
       </div>
       <div className={styles.box}>
         <div className={styles.text}>Artist:</div>
+        {error && <div className={styles.error}>{error}</div>}
         {artist && <div className={styles.name}>{artist.name}</div>}
       </div>
       <div className={styles.searchArtists}>

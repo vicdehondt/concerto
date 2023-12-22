@@ -3,53 +3,22 @@ import { Inter } from "next/font/google";
 import styles from "@/styles/Home.module.css";
 import { useEffect, useState } from "react";
 import PrivacySettings from "@/components/PrivacySettings"
-import Image from "next/image";
-import { User } from 'lucide-react';
 import ProfilePictureUpload from "@/components/ProfilePictureUpload";
 import { environment } from "@/components/Environment";
 import { handleFetchError } from "@/components/ErrorHandler";
 import { useRouter } from "next/router";
-import { ChangeEvent, FormEvent } from "react";
+import { FormEvent } from "react";
+import { User } from "@/components/BackendTypes";
 
 const inter = Inter({ subsets: ["latin"] });
 
-function showPicture(source: string) {
-  if (source != null) {
-    return <Image src={source} width={170} height={170} alt="Profile picture of user." />;
-  }
-  return <User fill={'black'} className={styles.userPicture} width={170} height={170} />;
-}
-
 export default function Settings() {
   const router = useRouter();
-  const [isLengthValid, setIsLengthValid] = useState(false);
-  const [isPasswordValid, setIsPasswordValid] = useState(false);
-  const [arePasswordsEqual, setArePasswordsEqual] = useState(false);
-
-  const [user, setUser] = useState({
-    username: "",
-    userID: 0,
-    mail: "",
-    image: "",
-    privacyAttendedEvents: "",
-    privacyCheckedInEvents: "",
-    privacyFriends: "",
-    description: "",
-  });
-
-  const handleMailChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setUser((prevUser) => ({ ...prevUser, mail: e.target.value }));
-  };
-
-  const handleDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setUser((prevUser) => ({ ...prevUser, description: e.target.value }));
-  };
+  const [user, setUser] = useState<User | null>(null);
 
   async function onSaveMail(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     var formData = new FormData(event.currentTarget);
-    console.log(formData);
-    const form_values = Object.fromEntries(formData);
     const response = await fetch(environment.backendURL + "/profile/settings/personal/mail", {
       method: "POST",
       body: formData,
@@ -98,18 +67,6 @@ export default function Settings() {
     }
   }
 
-  async function onSaveProfilePicture(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    var formData = new FormData(event.currentTarget);
-    const form_values = Object.fromEntries(formData);
-    const response = await fetch(environment.backendURL + "/profile/settings/personal/profilepicture", {
-      method: "PATCH",
-      body: formData,
-      mode: "cors",
-      credentials: "include",
-    });
-  }
-
   function PersonalSettings() {
     return (
       <>
@@ -123,7 +80,7 @@ export default function Settings() {
                 Your e-mail:
               </div>
               <div className={styles.settingValue}>
-                {user.mail}
+                {user && user.mail}
               </div>
               <div className={styles.changeText}>
                 <input className={styles.settingsInput}
@@ -170,7 +127,7 @@ export default function Settings() {
                 Your biography:
               </div>
               <div className={styles.settingValue}>
-                {user.description}
+                {user && user.description}
               </div>
               <div className={styles.changeText}>
                 <textarea className={styles.changeBiographyContainer}
@@ -218,11 +175,11 @@ export default function Settings() {
       <main className={`${styles.main} ${inter.className}`}>
         <div className={[styles.page, styles.settingsPage].join(" ")}>
             <div className={styles.profilePicture}>
-              <ProfilePictureUpload picture={user.image} />
+              {user && <ProfilePictureUpload picture={user.image} />}
             </div>
             <div className={styles.settingContainer}>
               <PersonalSettings />
-              <PrivacySettings userid={user.userID} />
+              {user && <PrivacySettings userid={user.userID} />}
             </div>
         </div>
       </main>

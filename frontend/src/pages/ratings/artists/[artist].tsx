@@ -18,7 +18,6 @@ export default function Artist() {
   const router = useRouter();
 
   const [artist, setArtist] = useState<Artist | null>(null);
-  const [reviews, setReviews] = useState<ReviewWithUserInfo[]>([]);
   const [reviewsHTML, setReviewsHTML] = useState<ReactNode[]>([]);
 
   const getCreated = useCallback((dateAndTime: string) => {
@@ -83,8 +82,8 @@ export default function Artist() {
     });
   }, [getCreated]);
 
+  // Fetch the artist and its reviews on page load.
   useEffect(() => {
-
     const fetchData = async () => {
       try {
         const artistResponse = await fetch(environment.backendURL + `/artists/${router.query.artist}`, {
@@ -126,7 +125,6 @@ export default function Artist() {
               }
             })
           );
-          setReviews(reviewsWithUsernames);
           setReviewsHTML(convertReviews(reviewsWithUsernames))
         }
       } catch (error) {
@@ -152,6 +150,7 @@ export default function Artist() {
     }
   }
 
+  // I could not find a way to get the month name from a Date object, so I made this function.
   function getMonth(month: number) {
     switch (month) {
       case 0:
@@ -181,6 +180,8 @@ export default function Artist() {
     }
   }
 
+  // When the user has no profile picture, show the default user icon.
+  // Otherwise, show the profile picture.
   function showImage(imageSource: string, size: number) {
     if (imageSource == null) {
       return (<User width={size} height={size} />);

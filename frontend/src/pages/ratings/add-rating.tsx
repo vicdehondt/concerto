@@ -45,6 +45,7 @@ export default function AddRating() {
     ))
   );
 
+  // Fetch the venue and artist names on page load.
   useEffect(() => {
     const venueID = router.query.venue;
     const artistID = router.query.artist;
@@ -89,6 +90,7 @@ export default function AddRating() {
     }
   }, [router.query.venue, router.query.artist]);
 
+  // Update the star-rating when clicked.
   function locationStarClicked(index: number) {
     const newArray = Array.from({ length: 5 }).map((_, i) => (
       <Star
@@ -103,6 +105,7 @@ export default function AddRating() {
     setVenueScore(index + 1);
   }
 
+  // Update the star-rating when clicked.
   function artistStarClicked(index: number) {
     const newArray = Array.from({ length: 5 }).map((_, i) => (
       <Star
@@ -117,15 +120,14 @@ export default function AddRating() {
     setArtistScore(index + 1);
   }
 
+  // Update the submit button when both scores are above 0.
   useEffect(() => {
     setScores((venueScore > 0) && (artistScore > 0));
   }, [venueScore, artistScore]);
 
-  function updateEdit() {
-    if (venueComment.current != null && artistComment.current != null) {
-    }
-  }
-
+  // Submit the reviews to the backend.
+  // Delete the notification when successful.
+  // Redirect to the page where the user came from.
   async function submitReviews() {
     const venueID = router.query.venue;
     const artistID = router.query.artist;
@@ -207,7 +209,6 @@ export default function AddRating() {
               <div className={styles.comment}>
                 <textarea
                   placeholder="Add a comment"
-                  onChange={(event) => updateEdit()}
                   ref={venueComment}
                 />
               </div>
@@ -220,7 +221,6 @@ export default function AddRating() {
               <div className={styles.comment}>
                 <textarea
                   placeholder="Add a comment"
-                  onChange={(event) => updateEdit()}
                   ref={artistComment}
                 />
               </div>

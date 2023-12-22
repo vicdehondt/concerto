@@ -52,8 +52,8 @@ export default function PrivacySettings(userid: { userid: number }) {
       } catch (error) {
         handleFetchError(error, router);
       }
-      fetchProfile();
     };
+    fetchProfile();
   }, []);
 
   return (

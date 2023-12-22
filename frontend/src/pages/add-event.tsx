@@ -136,6 +136,7 @@ export default function AddEvent() {
               </div>
             </div>
             <div className={styles.cardPreview}>
+            {eventPictureError && <div className={styles.error}>{eventPictureError}</div>}
               <EventCardUpload
                 title={title}
                 location={location.venueName}
@@ -146,10 +147,12 @@ export default function AddEvent() {
             </div>
           </div>
           <div className={styles.artistAndLocationContainer}>
+            {venueError && <div className={styles.error}>{venueError}</div>}
             <ArtistAndLocationUpload
               locationCallback={(venue: Venue) => setLocation(venue)}
               artist={selectedArtist}
               artistCallback={(artist: Artist) => setSelectedArtist(artist)}
+              error={artistError}
             />
           </div>
           <div className={styles.priceContainer}>

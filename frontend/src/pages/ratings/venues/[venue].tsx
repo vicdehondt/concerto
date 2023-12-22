@@ -18,7 +18,6 @@ export default function Venue() {
   const router = useRouter();
 
   const [venue, setVenue] = useState<Venue | null>(null);
-  const [reviews, setReviews] = useState<ReviewWithUserInfo[]>([]);
   const [reviewsHTML, setReviewsHTML] = useState<ReactNode[]>([]);
 
   const getCreated = useCallback((dateAndTime: string) => {
@@ -72,9 +71,8 @@ export default function Venue() {
     [getCreated]
   );
 
+  // Fetch the venue and its reviews on page load.
   useEffect(() => {
-
-
     const fetchData = async () => {
       try {
         const venueResponse = await fetch(environment.backendURL + `/venues/${router.query.venue}`, {
@@ -116,7 +114,6 @@ export default function Venue() {
               }
             })
           );
-          setReviews(reviewsWithUsernames);
           setReviewsHTML(convertReviews(reviewsWithUsernames))
         }
       } catch (error) {
@@ -147,6 +144,7 @@ export default function Venue() {
     }
   }
 
+  // I could not find a way to get the month name from a Date object, so I made this function.
   function getMonth(month: number) {
     switch (month) {
       case 0:

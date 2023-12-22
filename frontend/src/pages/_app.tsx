@@ -43,12 +43,13 @@ export default function App({ Component, pageProps }: AppProps) {
         const notMapPage = !router.asPath.includes("/map");
         const notOnAllowedPages = notHomePage && notRegisterPage && notLoginPage && notMapPage;
         if (!response.ok && notOnAllowedPages) {
-          router.push(`/map`);
+          router.push(`/`);
         }
       } catch (error) {
         handleFetchError(error, router);
       }
     };
+    loggedIn();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
