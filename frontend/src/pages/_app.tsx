@@ -1,9 +1,9 @@
 import "@/styles/globals.css";
 import type { AppProps } from "next/app";
 import Navbar from "@/components/Navbar";
-import HamburgerMenu from '@/components/HamburgerMenu';
+import HamburgerMenu from "@/components/HamburgerMenu";
 import { useRouter } from "next/router";
-import { useEffect, useState} from 'react';
+import { useEffect, useState } from "react";
 import { environment } from "@/components/Environment";
 import { handleFetchError } from "@/components/ErrorHandler";
 
@@ -23,10 +23,10 @@ export default function App({ Component, pageProps }: AppProps) {
     handleResize();
 
     // Add event listener for window resize
-    window.addEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
 
     return () => {
-      window.removeEventListener('resize', handleResize);
+      window.removeEventListener("resize", handleResize);
     };
   }, []);
 
@@ -56,10 +56,10 @@ export default function App({ Component, pageProps }: AppProps) {
   function NavbarOrHamburgerIfNeeded() {
     const path = router.asPath;
     if (!path.includes("/login") && !path.includes("/register")) {
-      if(isMobile){
-        return <HamburgerMenu />
-      } else{
-        return <Navbar />
+      if (isMobile) {
+        return <HamburgerMenu />;
+      } else {
+        return <Navbar />;
       }
     }
   }

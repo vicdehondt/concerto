@@ -50,7 +50,6 @@ export default function Account() {
       } else {
         setCheckedInPrivacy(false);
       }
-
     } catch (error) {
       handleFetchError(error, router);
     }
@@ -121,19 +120,22 @@ export default function Account() {
       <main className={`${styles.main} ${inter.className}`}>
         <div className={[styles.page, styles.accountPage].join(" ")}>
           <div className={styles.biographyContainer}>
-            {user && <Biography user={user} source={user.image} username={user.username} description={user.description} />}
+            {user && (
+              <Biography
+                user={user}
+                source={user.image}
+                username={user.username}
+                description={user.description}
+              />
+            )}
           </div>
           <div className={styles.attendingEvents}>
             Attending Events:
-            <div className={styles.attendedEventsContainer}>
-              {showCheckins(checkedevents)}
-            </div>
+            <div className={styles.attendedEventsContainer}>{showCheckins(checkedevents)}</div>
           </div>
           <div className={styles.pastEvents}>
             Past Events:
-            <div className={styles.pastEventsContainer}>
-              {showCheckins(attendedevents)}
-            </div>
+            <div className={styles.pastEventsContainer}>{showCheckins(attendedevents)}</div>
           </div>
         </div>
       </main>

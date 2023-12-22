@@ -12,7 +12,7 @@ import { handleFetchError } from "@/components/ErrorHandler";
 
 const inter = Inter({ subsets: ["latin"] });
 
-type ReviewWithUserInfo = Review & { username: string, image: string };
+type ReviewWithUserInfo = Review & { username: string; image: string };
 
 export default function Artist() {
   const router = useRouter();
@@ -32,64 +32,56 @@ export default function Artist() {
     return result;
   }, []);
 
-  const convertReviews = useCallback((reviews: ReviewWithUserInfo[]) => {
-    return reviews.map((review) => {
-      if (review.message != null) {
-        return (
-          <div key={review.reviewID} className={styles.reviewContainer}>
-            <div className={styles.reviewHeader}>
-              <div className={styles.imageBox}>
-                {showImage(review.image, 40)}
-              </div>
-              <div className={styles.infoBox}>
-                <Link href={`/accounts/${review.userID}`} className={styles.user}>
-                  {review.username}
-                </Link>
-                <div className={styles.created}>
-                  {getCreated(review.createdAt)}
+  const convertReviews = useCallback(
+    (reviews: ReviewWithUserInfo[]) => {
+      return reviews.map((review) => {
+        if (review.message != null) {
+          return (
+            <div key={review.reviewID} className={styles.reviewContainer}>
+              <div className={styles.reviewHeader}>
+                <div className={styles.imageBox}>{showImage(review.image, 40)}</div>
+                <div className={styles.infoBox}>
+                  <Link href={`/accounts/${review.userID}`} className={styles.user}>
+                    {review.username}
+                  </Link>
+                  <div className={styles.created}>{getCreated(review.createdAt)}</div>
                 </div>
               </div>
+              <div className={styles.score}>{showScore(review.score, 25, styles.userStars)}</div>
+              <div className={styles.review}>{review.message}</div>
             </div>
-            <div className={styles.score}>
-                {showScore(review.score, 25, styles.userStars)}
+          );
+        }
+        return (
+          <div key={review.reviewID} className={styles.reviewContainer}>
+            <div className={styles.reviewHeaderNoBorder}>
+              <div className={styles.imageBox}>{showImage(review.image, 40)}</div>
+              <div className={styles.infoBox}>
+                <div className={styles.user}>{review.username}</div>
+                <div className={styles.created}>{getCreated(review.createdAt)}</div>
               </div>
-            <div className={styles.review}>
-              {review.message}
+            </div>
+            <div className={styles.scoreNoBorder}>
+              {showScore(review.score, 25, styles.userStars)}
             </div>
           </div>
         );
-      }
-      return (
-        <div key={review.reviewID} className={styles.reviewContainer}>
-          <div className={styles.reviewHeaderNoBorder}>
-            <div className={styles.imageBox}>
-              {showImage(review.image, 40)}
-            </div>
-            <div className={styles.infoBox}>
-              <div className={styles.user}>
-              {review.username}
-              </div>
-              <div className={styles.created}>
-                {getCreated(review.createdAt)}
-              </div>
-            </div>
-          </div>
-          <div className={styles.scoreNoBorder}>
-              {showScore(review.score, 25, styles.userStars)}
-            </div>
-        </div>
-      );
-    });
-  }, [getCreated]);
+      });
+    },
+    [getCreated]
+  );
 
   // Fetch the artist and its reviews on page load.
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const artistResponse = await fetch(environment.backendURL + `/artists/${router.query.artist}`, {
-          mode: "cors",
-          credentials: "include",
-        });
+        const artistResponse = await fetch(
+          environment.backendURL + `/artists/${router.query.artist}`,
+          {
+            mode: "cors",
+            credentials: "include",
+          }
+        );
 
         if (artistResponse.ok) {
           const artistData = await artistResponse.json();
@@ -100,32 +92,42 @@ export default function Artist() {
       }
 
       try {
-        const reviewsResponse = await fetch(environment.backendURL + `/artists/${router.query.artist}/reviews`, {
-          mode: "cors",
-          credentials: "include",
-        });
+        const reviewsResponse = await fetch(
+          environment.backendURL + `/artists/${router.query.artist}/reviews`,
+          {
+            mode: "cors",
+            credentials: "include",
+          }
+        );
 
         if (reviewsResponse.ok) {
           const reviewsData = await reviewsResponse.json();
           const reviewsWithUsernames = await Promise.all(
             reviewsData.map(async (review: Review) => {
               try {
-                const userResponse = await fetch(environment.backendURL + `/users/${review.userID}`, {
-                  mode: "cors",
-                  credentials: "include",
-                });
+                const userResponse = await fetch(
+                  environment.backendURL + `/users/${review.userID}`,
+                  {
+                    mode: "cors",
+                    credentials: "include",
+                  }
+                );
 
                 if (userResponse.ok) {
                   const userData = await userResponse.json();
-                  return { ...review, username: userData?.username, image: userData?.image ?? null };
+                  return {
+                    ...review,
+                    username: userData?.username,
+                    image: userData?.image ?? null,
+                  };
                 }
-                return { ...review, username: 'Unknown User', image: null };
+                return { ...review, username: "Unknown User", image: null };
               } catch (error) {
                 handleFetchError(error, router);
               }
             })
           );
-          setReviewsHTML(convertReviews(reviewsWithUsernames))
+          setReviewsHTML(convertReviews(reviewsWithUsernames));
         }
       } catch (error) {
         handleFetchError(error, router);
@@ -137,16 +139,21 @@ export default function Artist() {
     }
   }, [router.isReady, router.query.artist, convertReviews]);
 
-  function showScore(score: number, size: number, styleClass: string ) {
-    if ((score != null) && (score > 0.5)) {
+  function showScore(score: number, size: number, styleClass: string) {
+    if (score != null && score > 0.5) {
       const roundedScore = Math.round(score);
-      return (Array.from({ length: 5 }).map((_, i) => (
-        <Star className={styleClass} key={i} size={size} fill={i <= (roundedScore - 1) ? "yellow" : "none"} />
-      )));
+      return Array.from({ length: 5 }).map((_, i) => (
+        <Star
+          className={styleClass}
+          key={i}
+          size={size}
+          fill={i <= roundedScore - 1 ? "yellow" : "none"}
+        />
+      ));
     } else {
-      return (Array.from({ length: 5 }).map((_, i) => (
+      return Array.from({ length: 5 }).map((_, i) => (
         <Star className={styleClass} key={i} size={size} fill={"none"} />
-      )));
+      ));
     }
   }
 
@@ -184,10 +191,16 @@ export default function Artist() {
   // Otherwise, show the profile picture.
   function showImage(imageSource: string, size: number) {
     if (imageSource == null) {
-      return (<User width={size} height={size} />);
+      return <User width={size} height={size} />;
     }
     return (
-      <Image src={imageSource} style={{objectFit:"cover"}} width={size} height={size} alt="User profile picture" />
+      <Image
+        src={imageSource}
+        style={{ objectFit: "cover" }}
+        width={size}
+        height={size}
+        alt="User profile picture"
+      />
     );
   }
 
@@ -202,14 +215,12 @@ export default function Artist() {
       <main className={`${styles.main} ${inter.className}`}>
         <div className={[styles.page, styles.artistPage].join(" ")}>
           <div className={styles.pageHeader}>
-            {artist && (<div className={styles.artistName}>{artist.name}</div>)}
+            {artist && <div className={styles.artistName}>{artist.name}</div>}
             <div className={styles.starsBox}>
               {artist && showScore(artist.Rating.score, 70, styles.artistStar)}
             </div>
           </div>
-          <div className={styles.reviewBox}>
-            {reviewsHTML}
-          </div>
+          <div className={styles.reviewBox}>{reviewsHTML}</div>
         </div>
       </main>
     </>

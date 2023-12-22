@@ -122,7 +122,7 @@ export default function AddRating() {
 
   // Update the submit button when both scores are above 0.
   useEffect(() => {
-    setScores((venueScore > 0) && (artistScore > 0));
+    setScores(venueScore > 0 && artistScore > 0);
   }, [venueScore, artistScore]);
 
   // Submit the reviews to the backend.
@@ -154,23 +154,31 @@ export default function AddRating() {
 
       if (venueResponse.ok) {
         try {
-          const artistResponse = await fetch(environment.backendURL + `/artists/${artistID}/reviews`, {
-            method: "POST",
-            body: artistForm,
-            mode: "cors",
-            credentials: "include",
-          });
+          const artistResponse = await fetch(
+            environment.backendURL + `/artists/${artistID}/reviews`,
+            {
+              method: "POST",
+              body: artistForm,
+              mode: "cors",
+              credentials: "include",
+            }
+          );
 
           if (artistResponse.ok) {
             try {
-              const deleteResponse = await fetch(environment.backendURL + `/notifications/${router.query.notificationID}`, {
-                method: "DELETE",
-                mode: "cors",
-                credentials: "include",
-              });
+              const deleteResponse = await fetch(
+                environment.backendURL + `/notifications/${router.query.notificationID}`,
+                {
+                  method: "DELETE",
+                  mode: "cors",
+                  credentials: "include",
+                }
+              );
 
               if (deleteResponse.ok) {
-                const from = Array.isArray(router.query.from) ? router.query.from[0] : router.query.from || '/';
+                const from = Array.isArray(router.query.from)
+                  ? router.query.from[0]
+                  : router.query.from || "/";
                 router.push(from);
               }
             } catch (error) {
@@ -190,7 +198,10 @@ export default function AddRating() {
     <>
       <Head>
         <title>{`Concerto | Rate ${venueName} and ${artistName}!`}</title>
-        <meta name="description" content={`Rate the venue and artist! Rate ${venueName} and ${artistName}!`} />
+        <meta
+          name="description"
+          content={`Rate the venue and artist! Rate ${venueName} and ${artistName}!`}
+        />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
@@ -199,30 +210,22 @@ export default function AddRating() {
           <div className={styles.pageHeader}>
             Rate {venueName} and {artistName}
           </div>
-          <div className={styles.info}>Submit available when both are rated. Comments are optional.</div>
+          <div className={styles.info}>
+            Submit available when both are rated. Comments are optional.
+          </div>
           <div className={styles.ratingBox}>
             <div className={styles.venueRatingBox}>
-              <div className={styles.header}>
-                Add rating for {venueName}
-              </div>
+              <div className={styles.header}>Add rating for {venueName}</div>
               <div className={styles.starRating}>{locationStars}</div>
               <div className={styles.comment}>
-                <textarea
-                  placeholder="Add a comment"
-                  ref={venueComment}
-                />
+                <textarea placeholder="Add a comment" ref={venueComment} />
               </div>
             </div>
             <div className={styles.artistRatingBox}>
-              <div className={styles.header}>
-                Add rating for {artistName}
-              </div>
+              <div className={styles.header}>Add rating for {artistName}</div>
               <div className={styles.starRating}>{artistStars}</div>
               <div className={styles.comment}>
-                <textarea
-                  placeholder="Add a comment"
-                  ref={artistComment}
-                />
+                <textarea placeholder="Add a comment" ref={artistComment} />
               </div>
             </div>
             {scores && <button onClick={(event) => submitReviews()}>Submit</button>}

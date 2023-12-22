@@ -75,10 +75,13 @@ export default function Venue() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const venueResponse = await fetch(environment.backendURL + `/venues/${router.query.venue}`, {
-          mode: "cors",
-          credentials: "include",
-        });
+        const venueResponse = await fetch(
+          environment.backendURL + `/venues/${router.query.venue}`,
+          {
+            mode: "cors",
+            credentials: "include",
+          }
+        );
 
         if (venueResponse.ok) {
           const venueData = await venueResponse.json();
@@ -89,32 +92,42 @@ export default function Venue() {
       }
 
       try {
-        const reviewsResponse = await fetch(environment.backendURL + `/venues/${router.query.venue}/reviews`, {
-          mode: "cors",
-          credentials: "include",
-        });
+        const reviewsResponse = await fetch(
+          environment.backendURL + `/venues/${router.query.venue}/reviews`,
+          {
+            mode: "cors",
+            credentials: "include",
+          }
+        );
 
         if (reviewsResponse.ok) {
           const reviewsData = await reviewsResponse.json();
           const reviewsWithUsernames = await Promise.all(
             reviewsData.map(async (review: Review) => {
               try {
-                const userResponse = await fetch(environment.backendURL + `/users/${review.userID}`, {
-                  mode: "cors",
-                  credentials: "include",
-                });
+                const userResponse = await fetch(
+                  environment.backendURL + `/users/${review.userID}`,
+                  {
+                    mode: "cors",
+                    credentials: "include",
+                  }
+                );
 
                 if (userResponse.ok) {
                   const userData = await userResponse.json();
-                  return { ...review, username: userData?.username, image: userData?.image ?? null };
+                  return {
+                    ...review,
+                    username: userData?.username,
+                    image: userData?.image ?? null,
+                  };
                 }
-                return { ...review, username: 'Unknown User', image: null };
+                return { ...review, username: "Unknown User", image: null };
               } catch (error) {
                 handleFetchError(error, router);
               }
             })
           );
-          setReviewsHTML(convertReviews(reviewsWithUsernames))
+          setReviewsHTML(convertReviews(reviewsWithUsernames));
         }
       } catch (error) {
         handleFetchError(error, router);

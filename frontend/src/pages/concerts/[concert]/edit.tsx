@@ -85,7 +85,7 @@ export default function EditEvent() {
         } else {
           router.push("/");
         }
-      })
+      });
     }
   }, [router, router.query.concert]);
 

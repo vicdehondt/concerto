@@ -43,7 +43,7 @@ export default function Concert() {
         const response = await fetch(environment.backendURL + `/events/${id}`, {
           mode: "cors",
           credentials: "include",
-        })
+        });
 
         if (response.ok) {
           const data = await response.json();
