@@ -928,6 +928,7 @@
   
   .biographyContainer {
     margin-top: 1%;
+    margin-bottom: -200px;;
     border-radius: 10px;
     grid-area: biography;
   }
@@ -950,7 +951,6 @@
     padding: 0;
     row-gap: 20px;
     margin-bottom: 20px;
-    margin-top: -150px;
     width: 100%;
     min-height: 50%;
     height: fit-content;
@@ -976,6 +976,7 @@
     font-weight: bold;
     row-gap: 20px;
     margin-bottom: 20px;
+    min-height: 50%;
     grid-area: pastevents;
     border: 4px solid black;
     width: 100%;
