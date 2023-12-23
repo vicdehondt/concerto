@@ -5,26 +5,16 @@ import { User } from "./BackendTypes";
 import Link from "next/link";
 import { environment } from "./Environment";
 import { useEffect, useState } from "react";
+import { handleFetchError } from "./ErrorHandler";
+import { useRouter } from "next/router";
 
 type UserSearchCardProps = {
   user: User;
+  loggedIn: boolean;
 }
 
 
-function UserSearchCard({ user }: UserSearchCardProps) {
-
-  const [loggedIn, setLoggedIn] = useState(false);
-
-  useEffect(() => {
-    fetch(environment.backendURL + "/auth/status", {
-      mode: "cors",
-      credentials: "include",
-    })
-    .then((response) => {
-      setLoggedIn(response.status === 200);
-    });
-  }, []);
-
+function UserSearchCard({ user, loggedIn }: UserSearchCardProps) {
 
 	function redirectURL(normalURL: string) {
     if (loggedIn) {

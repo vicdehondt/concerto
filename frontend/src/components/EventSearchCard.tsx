@@ -1,25 +1,14 @@
 import Image from "next/image";
 import styles from "@/styles/EventSearchCard.module.css";
 import { Event } from "./BackendTypes";
-import { useEffect, useState } from "react";
-import { environment } from "./Environment";
 import Link from "next/link";
 
 type EventSearchCardProps = {
   event: Event;
+  loggedIn: boolean;
 };
 
-function EventSearchCard({ event }: EventSearchCardProps) {
-  const [loggedIn, setLoggedIn] = useState(false);
-
-  useEffect(() => {
-    fetch(environment.backendURL + "/auth/status", {
-      mode: "cors",
-      credentials: "include",
-    }).then((response) => {
-      setLoggedIn(response.status === 200);
-    });
-  }, []);
+function EventSearchCard({ event, loggedIn }: EventSearchCardProps) {
 
   function redirectURL(normalURL: string) {
     if (loggedIn) {

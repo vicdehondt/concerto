@@ -4,6 +4,9 @@ import { Friend } from "./BackendTypes";
 import { User } from "lucide-react";
 import { environment } from "./Environment";
 import { useState } from "react";
+import { set } from "lodash";
+import { handleFetchError } from "./ErrorHandler";
+import { useRouter } from "next/router";
 
 type InviteCardProps = {
   friend: Friend;
@@ -11,6 +14,7 @@ type InviteCardProps = {
 };
 
 function InviteCard({ eventID, friend }: InviteCardProps) {
+  const router = useRouter();
   const [invited, setInvited] = useState(false);
 
   function showPicture() {
@@ -20,19 +24,21 @@ function InviteCard({ eventID, friend }: InviteCardProps) {
     return <User className={styles.userPicture} width={100} height={100} />;
   }
 
-  function inviteFriend() {
+  async function inviteFriend() {
     const formData = new FormData();
     formData.append("userID", String(friend.userID));
-    fetch(environment.backendURL + `/events/${eventID}/invite`, {
-      method: "POST",
-      mode: "cors",
-      credentials: "include",
-      body: formData,
-    }).then((response) => {
-      if (response.status == 200) {
-        setInvited(true);
-      }
-    });
+    try {
+      const response = await fetch(environment.backendURL + `/events/${eventID}/invite`, {
+        method: "POST",
+        mode: "cors",
+        credentials: "include",
+        body: formData,
+      });
+
+      setInvited(response.ok);
+    } catch (error) {
+      handleFetchError(error, router);
+    }
   }
 
   return (

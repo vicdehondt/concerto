@@ -6,6 +6,7 @@ import { useRouter } from "next/router";
 import { Error } from "@/components/BackendTypes";
 import { environment } from "@/components/Environment";
 import { genreOptions } from "@/components/GenreOptions";
+import { handleFetchError } from "@/components/ErrorHandler";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -24,19 +25,24 @@ export default function Register() {
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     var formData = new FormData(event.currentTarget);
-    const form_values = Object.fromEntries(formData);
-    const response = await fetch(environment.backendURL + "/register", {
-      method: "POST",
-      body: formData,
-      mode: "cors",
-      credentials: "include",
-    });
+    try {
+      const response = await fetch(environment.backendURL + "/register", {
+        method: "POST",
+        body: formData,
+        mode: "cors",
+        credentials: "include",
+      });
 
-    const data = await response.json();
-    if (response.status == 200) {
-      goToLogin();
-    } else if (response.status == 400) {
-      setError(data.errors);
+      const data = await response.json();
+      if (response.ok) {
+        goToLogin();
+      } else {
+        if (data.errors) {
+          setError(data.errors);
+        }
+      }
+    } catch (error) {
+      handleFetchError(error, router);
     }
   }
 

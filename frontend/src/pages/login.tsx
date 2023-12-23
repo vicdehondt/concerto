@@ -6,6 +6,7 @@ import { useRouter } from "next/router";
 import Link from "next/link";
 import { Error } from '@/components/BackendTypes';
 import { environment } from "@/components/Environment";
+import { handleFetchError } from '@/components/ErrorHandler';
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -18,24 +19,27 @@ export default function Login() {
 
     event.preventDefault();
     var formData = new FormData(event.currentTarget);
-    const response = await fetch(environment.backendURL + "/login", {
-      method: 'POST',
-      body: formData,
-      mode: 'cors',
-      credentials: 'include',
-    })
+    try {
+      const response = await fetch(environment.backendURL + "/login", {
+        method: 'POST',
+        body: formData,
+        mode: 'cors',
+        credentials: 'include',
+      })
 
-    // Handle response if necessary
-    const data = await response.json()
-    if (response.status == 200) {
-      const from = Array.isArray(router.query.from) ? router.query.from[0] : router.query.from || '/';
-      router.push(from);
-    } else if (response.status == 400) {
-      if (data.errors) {
-        setError(data.errors);
-      } else {
-        setError(data);
+      const data = await response.json()
+      if (response.ok) {
+        const from = Array.isArray(router.query.from) ? router.query.from[0] : router.query.from || '/';
+        router.push(from);
+      } else if (response.status == 400) {
+        if (data.errors) {
+          setError(data.errors);
+        } else {
+          setError(data);
+        }
       }
+    } catch (error) {
+      handleFetchError(error, router);
     }
   }
 

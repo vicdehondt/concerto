@@ -13,6 +13,7 @@ import Link from "next/link";
 import { Event } from "@/components/BackendTypes";
 import { environment } from "@/components/Environment";
 import dynamic from "next/dynamic";
+import { handleFetchError } from "@/components/ErrorHandler";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -35,55 +36,81 @@ export default function Concert() {
 
   useEffect(() => {
     const id = router.query.concert;
-    if (id) {
-      fetch(environment.backendURL + `/events/${id}`, {
-        mode: "cors",
-        credentials: "include",
-      })
-        .then((response) => {
-          return response.json();
+
+    const fetchEvent = async () => {
+      try {
+        const response = await fetch(environment.backendURL + `/events/${id}`, {
+          mode: "cors",
+          credentials: "include",
         })
-        .then((responseJSON) => {
-          if (responseJSON.errors) {
-            if (responseJSON.errors[0].msg == "Event with that ID does not exist.") {
-              router.push("/404");
-            }
-          } else {
-            setConcert(responseJSON);
-            setCheckedIn(responseJSON.checkedIn);
-            setInWishlist(responseJSON.wishlisted);
-            if (responseJSON.Artist.artistID) {
-              fetch(environment.backendURL + `/artists/${responseJSON.Artist.artistID}`, {
-                mode: "cors",
-                credentials: "include",
-              })
-                .then((response) => {
-                  return response.json();
-                })
-                .then((responseJSON) => {
-                  setArtistScore(responseJSON.Rating.score);
-                });
-            }
-            if (responseJSON.Venue.venueID) {
-              fetch(environment.backendURL + `/venues/${responseJSON.Venue.venueID}`, {
-                mode: "cors",
-                credentials: "include",
-              })
-                .then((response) => {
-                  return response.json();
-                })
-                .then((responseJSON) => {
-                  setVenueScore(responseJSON.Rating.score);
-                });
-            }
+
+        if (response.ok) {
+          const data = await response.json();
+          setConcert(data);
+          setCheckedIn(data.checkedIn);
+          setInWishlist(data.wishlisted);
+          if (data.Artist.artistID) {
+            fetchArtist(data.Artist.artistID);
           }
+          if (data.Venue.venueID) {
+            fetchVenue(data.Venue.venueID);
+          }
+        } else {
+          router.push("/404");
+        }
+      } catch (error) {
+        handleFetchError(error, router);
+      }
+    };
+
+    const fetchArtist = async (artistID: string) => {
+      try {
+        const response = await fetch(environment.backendURL + `/artists/${artistID}`, {
+          mode: "cors",
+          credentials: "include",
         });
-      fetch(environment.backendURL + `/events/${id}/auth`, {
-        mode: "cors",
-        credentials: "include",
-      }).then((response) => {
-        setCanEdit(response.status == 200);
-      });
+
+        if (response.ok) {
+          const data = await response.json();
+          setArtistScore(data.Rating.score);
+        }
+      } catch (error) {
+        handleFetchError(error, router);
+      }
+    };
+
+    const fetchVenue = async (venueID: string) => {
+      try {
+        const response = await fetch(environment.backendURL + `/venues/${venueID}`, {
+          mode: "cors",
+          credentials: "include",
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setVenueScore(data.Rating.score);
+        }
+      } catch (error) {
+        handleFetchError(error, router);
+      }
+    };
+
+    const canEdit = async () => {
+      try {
+        const response = await fetch(environment.backendURL + `/events/${id}/auth`, {
+          mode: "cors",
+          credentials: "include",
+        });
+
+        setCanEdit(response.ok);
+      } catch (error) {
+        handleFetchError(error, router);
+      }
+    };
+
+    if (id) {
+      fetchEvent();
+      canEdit();
     }
   }, [router, router.query.concert]);
 
@@ -114,28 +141,36 @@ export default function Concert() {
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (checkedIn) {
-      const response = await fetch(
-        environment.backendURL + `/events/${router.query.concert}/checkins`,
-        {
-          method: "DELETE",
-          mode: "cors",
-          credentials: "include",
+      try {
+        const response = await fetch(
+          environment.backendURL + `/events/${router.query.concert}/checkins`,
+          {
+            method: "DELETE",
+            mode: "cors",
+            credentials: "include",
+          }
+        );
+        if (response.ok) {
+          setCheckedIn(false);
         }
-      );
-      if (response.status == 200) {
-        setCheckedIn(false);
+      } catch (error) {
+        handleFetchError(error, router);
       }
     } else {
-      const response = await fetch(
-        environment.backendURL + `/events/${router.query.concert}/checkins`,
-        {
-          method: "POST",
-          mode: "cors",
-          credentials: "include",
+      try {
+        const response = await fetch(
+          environment.backendURL + `/events/${router.query.concert}/checkins`,
+          {
+            method: "POST",
+            mode: "cors",
+            credentials: "include",
+          }
+        );
+        if (response.ok) {
+          setCheckedIn(true);
         }
-      );
-      if (response.status == 200) {
-        setCheckedIn(true);
+      } catch (error) {
+        handleFetchError(error, router);
       }
     }
   }
@@ -147,36 +182,44 @@ export default function Concert() {
     return <Heart width={50} height={50} />;
   }
 
-  function addToWishlist() {
+  async function addToWishlist() {
     const formData = new FormData();
     const concertID = String(concert?.eventID);
     formData.append("eventID", concertID);
-    fetch(environment.backendURL + "/wishlist", {
-      method: "POST",
-      body: formData,
-      mode: "cors",
-      credentials: "include",
-    }).then((response) => {
-      if (response.status == 200) {
+    try {
+      const response = await fetch(environment.backendURL + "/wishlist", {
+        method: "POST",
+        body: formData,
+        mode: "cors",
+        credentials: "include",
+      });
+
+      if (response.ok) {
         setInWishlist(true);
       }
-    });
+    } catch (error) {
+      handleFetchError(error, router);
+    }
   }
 
-  function removeFromWishlist() {
+  async function removeFromWishlist() {
     const formData = new FormData();
     const concertID = String(concert?.eventID);
     formData.append("eventID", concertID);
-    fetch(environment.backendURL + "/wishlist", {
-      method: "DELETE",
-      body: formData,
-      mode: "cors",
-      credentials: "include",
-    }).then((response) => {
-      if (response.status == 200) {
+    try {
+      const response = await fetch(environment.backendURL + "/wishlist", {
+        method: "DELETE",
+        body: formData,
+        mode: "cors",
+        credentials: "include",
+      });
+
+      if (response.ok) {
         setInWishlist(false);
       }
-    });
+    } catch (error) {
+      handleFetchError(error, router);
+    }
   }
 
   function showMap() {

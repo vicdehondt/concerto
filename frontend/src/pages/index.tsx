@@ -8,10 +8,13 @@ import Link from "next/link";
 import { Event, Filter, Profile } from "@/components/BackendTypes";
 import { environment } from "@/components/Environment";
 import isEqual from "lodash/isEqual";
+import { handleFetchError } from "@/components/ErrorHandler";
+import { useRouter } from "next/router";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export default function Home() {
+  const router = useRouter();
   const [events, setEvents] = useState([]);
   const [eventsHTML, setEventsHTML] = useState<ReactNode[]>([]);
   const [filters, setFilters] = useState<Filter>({
@@ -41,56 +44,68 @@ export default function Home() {
       if (filters.minPrice != null && filters.maxPrice != null) {
         url += `&price=${filters.minPrice}/${filters.maxPrice}`;
       }
-      fetch(url, {
-        mode: "cors",
-        credentials: "include",
-      })
-        .then((response) => {
-          return response.json();
+      try {
+        fetch(url, {
+          mode: "cors",
+          credentials: "include",
         })
-        .then((responseJSON) => {
-          setEvents(responseJSON);
-        });
+          .then((response) => {
+            return response.json();
+          })
+          .then((responseJSON) => {
+            setEvents(responseJSON);
+          });
+      } catch (error) {
+        handleFetchError(error, router);
+      }
     }
     if (sidebarSearching) {
       let url = environment.backendURL + `/search/events?title=${encodeURIComponent(searchQuery)}`;
       filterFetch(url);
     } else {
-      fetch(environment.backendURL + "/auth/status", {
-        mode: "cors",
-        credentials: "include",
-      }).then((response) => {
-        if (response.status == 200) {
-          const noFilters = {
-            venueID: null,
-            date: null,
-            genre: null,
-            minPrice: null,
-            maxPrice: null
-          };
-          if (isEqual(filters, noFilters)) {
-            fetch(environment.backendURL + "/profile", {
-              mode: "cors",
-              credentials: "include",
-            })
-            .then((response) => {
-              if (response.status == 200) {
-                return response.json();
+      try {
+        fetch(environment.backendURL + "/auth/status", {
+          mode: "cors",
+          credentials: "include",
+        }).then((response) => {
+          if (response.status == 200) {
+            const noFilters = {
+              venueID: null,
+              date: null,
+              genre: null,
+              minPrice: null,
+              maxPrice: null
+            };
+            if (isEqual(filters, noFilters)) {
+              try {
+                fetch(environment.backendURL + "/profile", {
+                  mode: "cors",
+                  credentials: "include",
+                })
+                .then((response) => {
+                  if (response.status == 200) {
+                    return response.json();
+                  }
+                })
+                .then((responseJSON: Profile) => {
+                  let url = environment.backendURL + `/events?genre=${responseJSON.firstGenre}&genre=${responseJSON.secondGenre}`;
+                  filterFetch(url);
+                });
+              } catch (error) {
+                handleFetchError(error, router);
               }
-            })
-            .then((responseJSON: Profile) => {
-              let url = environment.backendURL + `/events?genre=${responseJSON.firstGenre}&genre=${responseJSON.secondGenre}`;
+            } else {
+              let url = environment.backendURL + `/events?`;
               filterFetch(url);
-            });
+            }
           } else {
-            let url = environment.backendURL + `/events?`;
+            let url = environment.backendURL + `/search/events?`;
             filterFetch(url);
           }
-        } else {
-          let url = environment.backendURL + `/search/events?`;
-          filterFetch(url);
-        }
-      });
+        });
+      } catch (error) {
+        handleFetchError(error, router);
+      }
     }
   }, [filters, searchQuery, sidebarSearching]);
 
@@ -111,19 +126,6 @@ export default function Home() {
   useEffect(() => {
     convertEventsToHTML(events);
   }, [events]);
-
-  // useEffect(() => {
-  //   fetch(environment.backendURL + `/events?genre`, {
-  //     mode: "cors",
-  //     credentials: "include",
-  //   })
-  //     .then((response) => {
-  //       return response.json();
-  //     })
-  //     .then((responseJSON) => {
-  //       setEvents(responseJSON);
-  //     });
-  // }, []);
 
   function convertEventsToHTML(events: Array<Event>) {
     const eventsArray = events.map((event: Event) => {
