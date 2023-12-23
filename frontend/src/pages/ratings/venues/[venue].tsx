@@ -18,7 +18,6 @@ export default function Venue() {
   const router = useRouter();
 
   const [venue, setVenue] = useState<Venue | null>(null);
-  const [reviews, setReviews] = useState<ReviewWithUserInfo[]>([]);
   const [reviewsHTML, setReviewsHTML] = useState<ReactNode[]>([]);
 
   const getCreated = useCallback((dateAndTime: string) => {
@@ -72,15 +71,17 @@ export default function Venue() {
     [getCreated]
   );
 
+  // Fetch the venue and its reviews on page load.
   useEffect(() => {
-
-
     const fetchData = async () => {
       try {
-        const venueResponse = await fetch(environment.backendURL + `/venues/${router.query.venue}`, {
-          mode: "cors",
-          credentials: "include",
-        });
+        const venueResponse = await fetch(
+          environment.backendURL + `/venues/${router.query.venue}`,
+          {
+            mode: "cors",
+            credentials: "include",
+          }
+        );
 
         if (venueResponse.ok) {
           const venueData = await venueResponse.json();
@@ -91,33 +92,42 @@ export default function Venue() {
       }
 
       try {
-        const reviewsResponse = await fetch(environment.backendURL + `/venues/${router.query.venue}/reviews`, {
-          mode: "cors",
-          credentials: "include",
-        });
+        const reviewsResponse = await fetch(
+          environment.backendURL + `/venues/${router.query.venue}/reviews`,
+          {
+            mode: "cors",
+            credentials: "include",
+          }
+        );
 
         if (reviewsResponse.ok) {
           const reviewsData = await reviewsResponse.json();
           const reviewsWithUsernames = await Promise.all(
             reviewsData.map(async (review: Review) => {
               try {
-                const userResponse = await fetch(environment.backendURL + `/users/${review.userID}`, {
-                  mode: "cors",
-                  credentials: "include",
-                });
+                const userResponse = await fetch(
+                  environment.backendURL + `/users/${review.userID}`,
+                  {
+                    mode: "cors",
+                    credentials: "include",
+                  }
+                );
 
                 if (userResponse.ok) {
                   const userData = await userResponse.json();
-                  return { ...review, username: userData?.username, image: userData?.image ?? null };
+                  return {
+                    ...review,
+                    username: userData?.username,
+                    image: userData?.image ?? null,
+                  };
                 }
-                return { ...review, username: 'Unknown User', image: null };
+                return { ...review, username: "Unknown User", image: null };
               } catch (error) {
                 handleFetchError(error, router);
               }
             })
           );
-          setReviews(reviewsWithUsernames);
-          setReviewsHTML(convertReviews(reviewsWithUsernames))
+          setReviewsHTML(convertReviews(reviewsWithUsernames));
         }
       } catch (error) {
         handleFetchError(error, router);
@@ -147,6 +157,7 @@ export default function Venue() {
     }
   }
 
+  // I could not find a way to get the month name from a Date object, so I made this function.
   function getMonth(month: number) {
     switch (month) {
       case 0:

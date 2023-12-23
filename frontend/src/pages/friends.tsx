@@ -12,7 +12,6 @@ import { useRouter } from "next/router";
 const inter = Inter({ subsets: ["latin"] });
 
 export default function Friends() {
-
   const router = useRouter();
   const [friends, setFriends] = useState([]);
   const [search, setSearch] = useState("");
@@ -36,6 +35,7 @@ export default function Friends() {
     })
   }
 
+  // Fetch the friends of the user on page load.
   useEffect(() => {
     const fetchFriends = async () => {
       try {

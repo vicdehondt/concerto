@@ -1,12 +1,12 @@
 import styles from "@/styles/SideBar.module.css";
 import Searchbar from "./Searchbar";
-import { FUNCTIONS_CONFIG_MANIFEST } from "next/dist/shared/lib/constants";
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from "react";
 import LocationPicker from "@/components/LocationPicker";
 import { Filter, Venue } from "./BackendTypes";
-import { useRef} from "react";
+import { useRef } from "react";
 import { genreOptions } from "./GenreOptions";
 
+// A lot of these parameters are optional because the sidebar can be used for different purposes.
 type SideBarProps = {
   type: "event" | "friends";
   filters?: Filter;
@@ -14,16 +14,6 @@ type SideBarProps = {
   searchCallback?: (string: boolean) => void;
   queryCallback?: (query: string) => void;
 };
-
-const currentDate = getFormattedDate(new Date());
-
-function getFormattedDate(date: Date) {
-  return [
-    date.getFullYear(),
-    date.getMonth() + 1, // getMonth starts at 0, so January is 00
-    date.getDate(),
-  ].join("-");
-}
 
 function SideBarContent({ type, filters, filterCallback }: SideBarProps) {
   const datePickerRef = useRef<HTMLInputElement>(null);
@@ -110,6 +100,8 @@ function SideBarContent({ type, filters, filterCallback }: SideBarProps) {
     setSelectors((selectors) => [...selectors, ""]);
   }
 
+  // Genre filters can be infinitely added. The user can remove a genre filter by clicking the minus button.
+  // If it is clicked, the right <select> need to be removed.
   function removeSelector(index: number) {
     var amount = 0;
     selectors.forEach((value) => {
@@ -235,11 +227,9 @@ function SideBarContent({ type, filters, filterCallback }: SideBarProps) {
   );
 }
 
+// This is the default exported function.
 function SideBar({ type, filters, filterCallback, searchCallback, queryCallback }: SideBarProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [dropdownVisible, setDropdownVisible] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
-  const [isFriendType, setFriendType] = useState(false);
 
   function search(query: string) {
     searchCallback && searchCallback(query.length > 0);
@@ -258,36 +248,38 @@ function SideBar({ type, filters, filterCallback, searchCallback, queryCallback 
     handleResize();
 
     // Add event listener for window resize
-    window.addEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
 
     return () => {
-      window.removeEventListener('resize', handleResize);
+      window.removeEventListener("resize", handleResize);
     };
   }, []);
 
   return (
-    
     <div className={styles.sidebar}>
       <div className={styles.searchbar}>
-      <Searchbar
-        type="thick"
-        onClick={(string) => null}
-        onChange={(query) => search(query)}
-      />
+        <Searchbar type="thick" onClick={(string) => null} onChange={(query) => search(query)} />
       </div>
       <div className={styles.sidebareMenu}>
         {type !== "friends" && (
-          <button className={`${styles.filterButton} ${isOpen ? styles.open : ''}`} onClick={() => setIsOpen(!isOpen)}>
+          <button
+            className={`${styles.filterButton} ${isOpen ? styles.open : ""}`}
+            onClick={() => setIsOpen(!isOpen)}
+          >
             Filters
           </button>
         )}
-      <div className={styles.sidebarDropdown}>
-      {isOpen && (
-        <div className={styles.dropdownContent} onMouseEnter={() => {setDropdownVisible(true);}} onMouseLeave={() => {setDropdownVisible(false);}}>
-           <SideBarContent type={type} filters={filters} filterCallback={(filter: Filter) => filterCallback && filterCallback(filter)} />
+        <div className={styles.sidebarDropdown}>
+          {isOpen && (
+            <div className={styles.dropdownContent}>
+              <SideBarContent
+                type={type}
+                filters={filters}
+                filterCallback={(filter: Filter) => filterCallback && filterCallback(filter)}
+              />
+            </div>
+          )}
         </div>
-      )}
-      </div>
       </div>
     </div>
   );

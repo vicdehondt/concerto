@@ -22,6 +22,8 @@ export default function Register() {
     router.push(`/login?from=${from}`);
   }
 
+  // Check server-side validation and show errors if there are any.
+  // Go to login when the registration is successful.
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     var formData = new FormData(event.currentTarget);
@@ -46,6 +48,7 @@ export default function Register() {
     }
   }
 
+  // Client-side validation
   function checkPasswordValidation(event: ChangeEvent<HTMLInputElement>) {
     const inputValue = event.target.value;
     const isLengthValid = inputValue.length >= 6;
@@ -54,6 +57,7 @@ export default function Register() {
     setIsPasswordValid(isPasswordValid);
   }
 
+  // Client-side validation
   function checkPasswordEquality(event: ChangeEvent<HTMLInputElement>) {
     const form = event.target.form;
     if (form != null) {

@@ -8,44 +8,45 @@ const friendFilePath = './public/friends';
 
 const upload = createMulter(friendFilePath);
 
+// This controller is used to handle all requests to the /friends endpoint.
 export class FriendController extends BaseController {
 
     constructor() {
         super("/friends");
     }
 
-    initializeRoutes(): void {
-        this.router.get("/",
+    initializeRoutes(): void {  // :userID is the userID of the user that is being requested.
+        this.router.get("/", // Route to get all friends of the logged in user.
             upload.none(), this.requireAuth,
             (req: express.Request, res: express.Response) => {
                 res.set('Access-Control-Allow-Credentials', 'true');
                 this.getAllFriends(req, res);
             });
-        this.router.post('/', this.requireAuth,
+        this.router.post('/', this.requireAuth, // Route to send a friend request.
             upload.none(),
             (req: express.Request, res: express.Response) => {
                 res.set('Access-Control-Allow-Credentials', 'true');
                 this.sendFriendRequest(req, res);
             });
-        this.router.delete('/:userID/request', this.requireAuth, this.checkUserExists,
+        this.router.delete('/:userID/request', this.requireAuth, this.checkUserExists, // Route to undo a friend request.
             upload.none(),
             (req: express.Request, res: express.Response) => {
                 res.set('Access-Control-Allow-Credentials', 'true');
                 this.undoRequest(req, res);
             });
-        this.router.post('/:userID/accept', this.requireAuth, this.checkUserExists,
+        this.router.post('/:userID/accept', this.requireAuth, this.checkUserExists, // Route to accept a friend request.
             upload.none(),
             (req: express.Request, res: express.Response) => {
                 res.set('Access-Control-Allow-Credentials', 'true');
                 this.responseFriendRequest(req, res, true);
             });
-        this.router.delete('/:userID', this.requireAuth, this.checkUserExists,
+        this.router.delete('/:userID', this.requireAuth, this.checkUserExists, // Route to unfriend a user.
             upload.none(),
             (req: express.Request, res: express.Response) => {
                 res.set('Access-Control-Allow-Credentials', 'true');
                 this.unfriend(req, res);
             });
-        this.router.post('/:userID/deny', this.requireAuth, this.checkUserExists,
+        this.router.post('/:userID/deny', this.requireAuth, this.checkUserExists, // Route to deny a friend request.
             upload.none(),
             (req: express.Request, res: express.Response) => {
                 res.set('Access-Control-Allow-Credentials', 'true');

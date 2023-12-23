@@ -5,6 +5,7 @@ import { useRouter } from "next/router";
 import { environment } from "./Environment";
 import { handleFetchError } from "./ErrorHandler";
 
+// I could not find a way to get the month name from a Date object, so I made this function.
 function getMonth(month: number) {
   switch (month) {
     case 0:
@@ -55,20 +56,23 @@ function EventCard({
   genre1: string;
   genre2: string;
 }) {
-
   const router = useRouter();
 
   const convertedDateAndTime: Array<string> = convertDateAndTime(dateAndTime);
   const date = convertedDateAndTime[0];
   const time = convertedDateAndTime[1];
 
+  // Convert the date and time to a readable format to display on the event card.
   function convertDateAndTime(dateAndTime: string) {
     const convertedDateAndTime = new Date(dateAndTime);
     const year = convertedDateAndTime.getFullYear();
     const month = getMonth(convertedDateAndTime.getMonth());
     const day = convertedDateAndTime.getDate();
     const date = [[month, day].join(" "), year].join(", ");
-    const time = convertedDateAndTime.toLocaleTimeString('default', { hour: '2-digit', minute: '2-digit' });
+    const time = convertedDateAndTime.toLocaleTimeString("default", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
     return [date, time];
   }
 
@@ -85,6 +89,7 @@ function EventCard({
     }
   }
 
+  // When logged in, go to the normalURL that is given. Otherwise, go to the login page.
   async function redirectURL(normalURL: string) {
     const userLoggedIn = await loggedIn();
     if (userLoggedIn) {
@@ -93,6 +98,7 @@ function EventCard({
     return `/login?from=${encodeURIComponent(normalURL)}`;
   }
 
+  // When a button to go to a different page is clicked, get the URL it is allowed to go to.
   const redirectClicked = async (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     event.preventDefault();
     const newUrl = await redirectURL(`/concerts/${eventId}`);
@@ -132,7 +138,6 @@ function EventCard({
           </div>
           <div className={styles.dateAndTime}>
             <div className={styles.date}>{date}</div>
-            {/* <div className={styles.time}>18:00 &ndash; 22:00</div> */}
             <div className={styles.time}>{time}</div>
           </div>
         </div>
@@ -140,7 +145,6 @@ function EventCard({
           <div className={styles.photo}>
             <Image src="/icons/price.png" width={20} height={18} alt="Price" />
           </div>
-          {/* <div>100 &ndash; 200 EUR</div> */}
           <div>{price} EUR</div>
         </div>
       </div>

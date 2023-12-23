@@ -16,10 +16,12 @@ export default function Account() {
   const [checkedevents, setcheckedEvents] = useState([]);
   const [attendedevents, setAttendedEvents] = useState([]);
   const [checkedInPrivacy, setCheckedInPrivacy] = useState(true);
+  const [pastEventPrivacy, setPastPrivacy] = useState(true);
   const [profile, setProfile] = useState(false);
 
   const router = useRouter();
 
+  //get all event a user is checked in for
   async function requestCheckins(user: User) {
     try {
       const response = await fetch(environment.backendURL + "/users" + `/${user.userID}/checkins`, {
@@ -37,6 +39,7 @@ export default function Account() {
     }
   }
 
+  //get all events a user attended
   async function requestAttended(user: User) {
     try {
       const response = await fetch(environment.backendURL + "/users" + `/${user.userID}/attended`, {
@@ -48,16 +51,15 @@ export default function Account() {
         const data = await response.json();
         setAttendedEvents(data);
       } else {
-        setCheckedInPrivacy(false);
+        setPastPrivacy(false);
       }
-
     } catch (error) {
       handleFetchError(error, router);
     }
   }
 
-  function showCheckins(response: Array<Event>) {
-    if (!checkedInPrivacy) {
+  function showCheckins(response: Array<Event>, privacySetting: Boolean) {
+    if (!privacySetting) {
       return <div>Not allowed to see this information.</div>;
     } else if (response.length > 0) {
       return response.map((event: Event) => (
@@ -121,22 +123,23 @@ export default function Account() {
       <main className={`${styles.main} ${inter.className}`}>
         <div className={[styles.page, styles.accountPage].join(" ")}>
           <div className={styles.biographyContainer}>
-            {user && <Biography user={user} source={user.image} username={user.username} description={user.description} />}
+            {user && (
+              <Biography
+                user={user}
+                source={user.image}
+                username={user.username}
+                description={user.description}
+              />
+            )}
           </div>
           <div className={styles.attendingEvents}>
             Attending Events:
-            <div className={styles.attendedEventsContainer}>
-              {showCheckins(checkedevents)}
-            </div>
+            <div className={styles.attendedEventsContainer}>{showCheckins(checkedevents, checkedInPrivacy)}</div>
           </div>
           <div className={styles.pastEvents}>
             Past Events:
-            <div className={styles.pastEventsContainer}>
-              {showCheckins(attendedevents)}
-            </div>
+            <div className={styles.pastEventsContainer}>{showCheckins(attendedevents, pastEventPrivacy)}</div>
           </div>
-          <div className={styles.attendedEventsContainer}>{showCheckins(checkedevents)}</div>
-          <div className={styles.pastEventsContainer}>{showCheckins(attendedevents)}</div>
         </div>
       </main>
     </>

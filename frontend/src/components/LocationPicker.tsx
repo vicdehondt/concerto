@@ -3,6 +3,8 @@ import { ForwardedRef, useEffect, useState } from "react";
 import { Venue } from "./BackendTypes";
 import { environment } from "./Environment";
 
+// This component can have no selection on initialisation or a default venue.
+// The default venue is set by passing the venueID prop. That is why it conditional.
 type LocationPickerProps = {
   venueID?: string;
   locationCallback: (venue: Venue) => void;
@@ -11,17 +13,21 @@ type LocationPickerProps = {
   clearCallback?: (clear: boolean) => void;
 };
 
+// This component is used to select a venue for an event.
+// The venue is selected from a list of venues that are fetched from the backend.
+// The venue is passed to the surrounding component/page with a callback.
 export default function LocationPicker({
   venueID,
   locationCallback,
   forwardedRef,
   clear,
-  clearCallback
+  clearCallback,
 }: LocationPickerProps) {
   const [venueOptions, setVenueOptions] = useState([]);
   const [defaultVenue, setDefaultVenue] = useState<string | null>(null);
   const [selectedVenue, setSelectedVenue] = useState<Venue | null>(null);
 
+  // Fetch the venues from the backend and save them in a useState variable.
   useEffect(() => {
     fetch(environment.backendURL + "/venues", {
       mode: "cors",
@@ -32,7 +38,9 @@ export default function LocationPicker({
       })
       .then((responseJSON) => {
         setVenueOptions(responseJSON);
-        const selectedVenue = responseJSON.find((venue: Venue) => venueID && venue.venueID === venueID);
+        const selectedVenue = responseJSON.find(
+          (venue: Venue) => venueID && venue.venueID === venueID
+        );
         if (selectedVenue) {
           setDefaultVenue(selectedVenue.venueName);
           setSelectedVenue(selectedVenue);
@@ -40,18 +48,23 @@ export default function LocationPicker({
       });
   }, [venueID]);
 
+  // If a venue is selected, pass it to the surrounding component/page with a callback.
+  // This gives a warning on build because the callback is not in the dependency array, but if it would be,
+  // there would be an infinite loop.
   useEffect(() => {
     if (selectedVenue) {
       locationCallback(selectedVenue);
     }
   }, [selectedVenue]);
 
+  // If the clear prop is true, clear the selected venue.
+  // This gives a warning on build because the callback is not in the dependency array, but if it would be,
+  // there would be an infinite loop.
   useEffect(() => {
     if (clear && clearCallback) {
       setSelectedVenue(null);
       clearCallback(false);
     }
-
   }, [clear]);
 
   function showVenueOptions() {

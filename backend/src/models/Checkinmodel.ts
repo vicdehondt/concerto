@@ -89,9 +89,9 @@ export async function userCheckOut(userID, event): Promise<boolean> {
     }
 }
 
+// procedure which returns all unfinished events the user has checked in for
 export async function allCheckedInEvents(userID) {
     return await checkinsFinder(userID, false);
-
 }
 async function checkinsFinder(userID, finished) {
     const checkins = await CheckedInUsers.findAll({
@@ -128,6 +128,7 @@ async function checkinsFinder(userID, finished) {
     return events;
 }
 
+// procedure which returns all finished events the user has checked in for
 export async function allAttendedEvents(userID) {
     return await checkinsFinder(userID, true);
 }

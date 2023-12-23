@@ -34,9 +34,10 @@ export default function EditEvent() {
 
   const [concert, setConcert] = useState<Event | null>(null);
 
+  // Check if the user can edit the event.
+  // Fetch the concert to be edited. If the user has no access, go to the home page
   useEffect(() => {
     const id = router.query.concert;
-
     const canEdit = async () => {
       try {
         const response = await fetch(environment.backendURL + `/events/${id}/auth`, {
@@ -82,9 +83,9 @@ export default function EditEvent() {
         if (canEdit) {
           fetchConcert();
         } else {
-          router.push("/404");
+          router.push("/");
         }
-      })
+      });
     }
   }, [router, router.query.concert]);
 
@@ -93,6 +94,7 @@ export default function EditEvent() {
     return dateAndTime;
   }
 
+  // Filter out all the fields that are not changed.
   function clearSameFields(form: FormData) {
     if (concert) {
       Array.from(form.keys()).forEach((key) => {
@@ -124,6 +126,7 @@ export default function EditEvent() {
     }
   }
 
+  // Only upload the values that are changed. Values that are not given are not changed.
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     var formData = new FormData(event.currentTarget);

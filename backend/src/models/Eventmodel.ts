@@ -23,6 +23,7 @@ export const Artist = sequelize.define('Artist', {
   },
 });
 
+// Each artist has a rating object: one-to-one relationship.
 Artist.hasOne(Rating, {
   foreignKey: 'artistID',
   allowNull: true
@@ -102,6 +103,7 @@ export const EventModel = sequelize.define('Event', {
     tableName: 'Events'
 });
 
+// Each user can create multiple events.
 UserModel.hasMany(EventModel, {
   foreignKey: 'userID',
   allowNull: false,
@@ -112,25 +114,27 @@ EventModel.belongsTo(UserModel, {
   allowNull: false,
 });
 
+// Each artist can perform at multiple events.
 Artist.hasMany(EventModel, {
   foreignKey: {
     name: 'artistID',
     allowNull: false
   }
 });
-
+// Each event has one artist.
 EventModel.belongsTo(Artist, {
   foreignKey: 'artistID'
 });
 
-VenueModel.hasMany(EventModel, { //multiple events can take place at one venue
+// A venue can host multiple events.
+VenueModel.hasMany(EventModel, {
   foreignKey: {
     name: 'venueID',
     allowNull: false
   }
 });
-
-EventModel.belongsTo(VenueModel, {//one event has one venue
+// Each event has one venue.
+EventModel.belongsTo(VenueModel, {
   foreignKey: {
     name: 'venueID'
   }
@@ -146,7 +150,7 @@ export async function createArtist(id) {
     return false;
   } else {
     lastRequest = new Date();
-    const musicBrainzApiUrl = `http://musicbrainz.org/ws/2/artist/${id}?fmt=json`;
+    const musicBrainzApiUrl = `http://musicbrainz.org/ws/2/artist/${id}?fmt=json`; // Fetch the artist information from the musicbrainz API.
     try {
       const response = await axios.get(musicBrainzApiUrl);
       const data = await response.data
@@ -155,7 +159,7 @@ export async function createArtist(id) {
         artistID: data.id,
         type: data.type
       });
-      const rating = await Rating.create({
+      const rating = await Rating.create({ // Create a rating object for the artist.
         entityType: 'artist',
         artistID: result.artistID,
       });
@@ -207,13 +211,14 @@ export async function CreateEvent(userID, artistID, venueID, title, description,
   }
 };
 
+// Returns a date object that is 24 hours in the past. All events which are older than this date are considered finished.
 export function expiredEventTreshold() {
   const yesterday = new Date();
   yesterday.setHours(yesterday.getHours() - 24);
   return yesterday;
 }
 
-
+// Returns all events which are not finished.
 export async function retrieveUnfinishedEvents(limit, offset): Promise<typeof EventModel>  {
   const events = await EventModel.findAll({
     limit: limit,
@@ -238,7 +243,8 @@ export async function retrieveUnfinishedEvents(limit, offset): Promise<typeof Ev
   return events;
 }
 
-export async function retrieveNewUnfinishedEvents(limit, offset, checkedInEvents): Promise<typeof EventModel>  {
+// Returns all events which are not finished and not in the given list of ID's.
+export async function retrieveNewUnfinishedEvents(limit, offset, blacklist): Promise<typeof EventModel>  {
   const events = await EventModel.findAll({
     limit: limit,
     offset: offset,
@@ -257,7 +263,7 @@ export async function retrieveNewUnfinishedEvents(limit, offset, checkedInEvents
         [Op.gte]: expiredEventTreshold(),
       },
       eventID: {
-        [Op.notIn]: checkedInEvents
+        [Op.notIn]: blacklist
       }
     }, order: [
       ['dateAndTime', 'ASC'] // Sort by 'dateAndTime' in ascending order
@@ -287,6 +293,8 @@ export async function RetrieveEvent(ID): Promise<typeof EventModel> {
   }
 }
 
+// Given two arrays: one with the features to filter on and one with the specific values.
+// Create a where clause which can be used in a sequelize query.
 export function createWhereClause(filterfields,filtervalues) {
   const whereClause = {};
   const orConditions = [];
@@ -304,17 +312,17 @@ export function createWhereClause(filterfields,filtervalues) {
       const nextDay = new Date(lowerDate);
       nextDay.setDate(lowerDate.getDate() + 1);
       whereClause['dateAndTime'] = {
-        [Op.between]: [lowerDate, nextDay]
+        [Op.between]: [lowerDate, nextDay] // Events have to take place between 00:00 and 23:59 of the given date.
       }
     } else if (field == 'title') {
       whereClause['title'] = {
         [Op.like]: '%' + value + '%',
       }
     } else if (field == 'genre') {
-      if (Array.isArray(value)) {
+      if (Array.isArray(value)) { // When filtering on multiple genres
         orConditions.push({
           baseGenre: {
-            [Op.in]: value,
+            [Op.in]: value, // Check if the genre of an event is in the list of genres to filter on.
           },
         });
         orConditions.push({
@@ -322,7 +330,7 @@ export function createWhereClause(filterfields,filtervalues) {
             [Op.in]: value,
           },
         });
-      } else {
+      } else { // Otherwise just compare it to the one genre
         orConditions.push({
           baseGenre: value,
         });
@@ -339,7 +347,7 @@ export function createWhereClause(filterfields,filtervalues) {
   } return whereClause;
 }
 
-//to limit the return if no filters are selected use the limit function from sqlite
+// Returns all events which satisfy the given filters.
 export async function FilterEvents(filterfields, filtervalues, limit, offset){
   try {
     const whereClause = createWhereClause(filterfields, filtervalues);
@@ -369,12 +377,14 @@ export async function FilterEvents(filterfields, filtervalues, limit, offset){
   }
 }
 
+// Check if an event has finished.
 export function isFinished(event): boolean {
   const yesterday = new Date();
   yesterday.setHours(yesterday.getHours() - 24);
   return event.dateAndTime < yesterday;
 }
 
+// Extract the filters from a request.
 export function extractFilters(req: express.Request) {
   let filterfields: any[] = [];
   let filtervalues: any[] = [];

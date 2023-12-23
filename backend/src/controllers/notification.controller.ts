@@ -12,7 +12,7 @@ const userImagePath = './public/users';
 
 const upload = createMulter(userImagePath);
 
-cron.schedule('* * * * *', async () => {
+cron.schedule('* * * * *', async () => { // Check every minute if there are events that are finished that still need to send notifications to users.
     console.log("Checking all events if they are finished");
     const events = await EventModel.findAll({
         attributes: ['eventID', 'title', 'dateAndTime'],
@@ -23,17 +23,17 @@ cron.schedule('* * * * *', async () => {
             }
         }
     });
-    events.forEach(async event => {
+    events.forEach(async event => { // For each finished event, create a notification object and send it to all users that checked in to that event.
         console.log("Handling finished event with id: ", event.eventID);
         const checkedIns = await CheckedInUsers.findAll({
             where: {
                 eventID: event.eventID,
             }
-        });
+        }); // Only one notification object is created for all users.
         const object = await NotificationObject.create({
             notificationType: 'reviewEvent',
             typeID: event.eventID,
-        });
+        }); // All notifications are individually created for each user.
         checkedIns.forEach(async checkin => {
             const userID = checkin.userID;
             await createNewNotification(object.ID, userID);
@@ -43,6 +43,7 @@ cron.schedule('* * * * *', async () => {
     });
   });
 
+// This controller is used to handle all requests to the /notifications endpoint.
 export class NotificationController extends BaseController {
 
     constructor() {
@@ -50,17 +51,17 @@ export class NotificationController extends BaseController {
     }
 
     initializeRoutes(): void {
-		this.router.get('/', this.requireAuth,
+		this.router.get('/', this.requireAuth, // Route to get all notifications of the logged in user.
 			upload.none(),
 			(req: express.Request, res: express.Response) => {
 				this.getNotifications(req, res);
 			});
-        this.router.post('/:notificationID/read', this.requireAuth, [this.notificationCheck], this.verifyErrors,
+        this.router.post('/:notificationID/read', this.requireAuth, [this.notificationCheck], this.verifyErrors, // Route to mark a notification as read.
 			upload.none(),
 			(req: express.Request, res: express.Response) => {
 				this.markNotificationAsRead(req, res);
 			});
-        this.router.delete('/:notificationID', this.requireAuth, [this.notificationCheck], this.verifyErrors,
+        this.router.delete('/:notificationID', this.requireAuth, [this.notificationCheck], this.verifyErrors, // Route to delete a notification.
 			upload.none(),
 			(req: express.Request, res: express.Response) => {
 				this.deleteNotification(req, res);

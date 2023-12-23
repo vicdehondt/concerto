@@ -1,3 +1,4 @@
+// All the types used in components or pages.
 
 export type APIResponse = {
   created: string;
@@ -13,7 +14,7 @@ export type Venue = {
     score: number;
     amountOfReviews: number;
     ratingID: number;
-  }
+  };
 };
 
 export type Notification = {
@@ -25,7 +26,7 @@ export type Notification = {
     notificationType: string;
     actor: number;
     typeID: number;
-  }
+  };
 };
 
 export type Filter = {
@@ -39,7 +40,7 @@ export type Filter = {
 export type Rating = {
   score: number;
   amountOfReviews: number;
-}
+};
 
 export type Artist = {
   id: string;
@@ -50,7 +51,7 @@ export type Artist = {
   Rating: {
     score: number;
     amountOfReviews: number;
-  }
+  };
 };
 
 export type Event = {
@@ -95,7 +96,7 @@ export type User = {
   privacyFriends: string;
   description: string;
   friendship?: string;
-}
+};
 
 export type Review = {
   reviewID: number;
@@ -106,7 +107,7 @@ export type Review = {
   updatedAt: string;
   ratingID: number;
   userID: number;
-}
+};
 
 export type Friend = {
   userID: number;
@@ -119,7 +120,7 @@ export type Error = {
   value: string;
   msg: string;
   message: string;
-}
+};
 
 export type Wish = {
   wishlistID: number;
@@ -127,4 +128,4 @@ export type Wish = {
   createdAt: string;
   updatedAt: string;
   Event: Event;
-}
+};
