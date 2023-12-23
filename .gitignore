@@ -27,4 +27,5 @@ Icon
 Network Trash Folder
 Temporary Items
 .apdisk
+backend/src/configs/mailConfig.ts
 frontend/src/secrets/secrets.tsx
