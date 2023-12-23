@@ -2,6 +2,9 @@ import Image from "next/image";
 import styles from "@/styles/BannerUpload.module.css";
 import { useState, ChangeEvent, useEffect } from "react";
 
+// Banner and title are conditional.
+// On the edit page, the user wants to see what the current fields are.
+// When title and banner are given, the banner is initialised with both.
 type BannerUploadProps = {
   banner?: string;
   title?: string;
@@ -11,6 +14,7 @@ type BannerUploadProps = {
 function BannerUpload({ title, banner, titleCallback }: BannerUploadProps) {
   const [bannerSource, setBannerSource] = useState("");
 
+  // Check if banner is given and set the useState if it is.
   useEffect(() => {
     if (banner) {
       setBannerSource(banner);
@@ -27,6 +31,7 @@ function BannerUpload({ title, banner, titleCallback }: BannerUploadProps) {
     }
   }
 
+  // Show the banner image based on the useState.
   function showBanner() {
     if (bannerSource.length != 0) {
       return (
@@ -41,6 +46,7 @@ function BannerUpload({ title, banner, titleCallback }: BannerUploadProps) {
     }
   }
 
+  // The file upload only allows PNG and JPG.
   return (
     <>
       <div className={styles.bannerContainer}>

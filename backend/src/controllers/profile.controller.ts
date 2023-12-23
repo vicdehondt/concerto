@@ -9,6 +9,8 @@ const userImagePath = './public/users';
 
 const upload = createMulter(userImagePath);
 
+// This controller is used to handle all requests to the /profile endpoint.
+// It allows to retrieve and change information about the logged in user.
 export class ProfileController extends BaseController {
 
     constructor() {
@@ -16,17 +18,17 @@ export class ProfileController extends BaseController {
     }
 
     initializeRoutes(): void {
-        this.router.get('/', this.requireAuth,
+        this.router.get('/', this.requireAuth, // Route to get the information of the logged in user.
 			upload.none(), this.verifyErrors,
 			(req: express.Request, res: express.Response) => {
                 this.getProfile(req, res);
 			});
-        this.router.patch('/settings/personal/profilepicture', this.requireAuth,
+        this.router.patch('/settings/personal/profilepicture', this.requireAuth, // Route to change the profile picture of the logged in user.
 			upload.single("picture"), this.verifyErrors,
 			(req: express.Request, res: express.Response) => {
                 this.changeProfilePicture(req, res);
 			});
-        this.router.patch('/settings/personal/description', this.requireAuth,
+        this.router.patch('/settings/personal/description', this.requireAuth, // Route to change the description of the logged in user.
 			upload.none(),
             [
                 body("description").trim().notEmpty().isLength({ max: 400 }).withMessage('Biography must be no more than 400 characters long.'),
@@ -34,16 +36,16 @@ export class ProfileController extends BaseController {
 			(req: express.Request, res: express.Response) => {
                 this.changeDescription(req, res);
 			});
-        this.router.patch('/settings/personal/password', this.requireAuth,
+        this.router.patch('/settings/personal/password', this.requireAuth, // Route to change the password of the logged in user.
 			upload.none(),
             [
-               // body("oldPassword").trim().notEmpty(),
-                //body("password").trim().isLength({ min: 6}).withMessage('New password must be at least 6 characters long.').matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/).withMessage('Password must include at least one lowercase letter, one uppercase letter, and one number.')
+                body("oldPassword").trim().notEmpty(),
+                body("newPassword").trim().isLength({ min: 6}).withMessage('New password must be at least 6 characters long.').matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/).withMessage('Password must include at least one lowercase letter, one uppercase letter, and one number.')
             ], this.verifyErrors,
 			(req: express.Request, res: express.Response) => {
                 this.changePassword(req, res);
 			});
-        this.router.post('/genres', this.requireAuth,
+        this.router.post('/genres', this.requireAuth, // route to change the genres of the logged in user.
 			upload.none(),
             [
                 body("firstGenre").trim().notEmpty(),
@@ -52,17 +54,17 @@ export class ProfileController extends BaseController {
 			(req: express.Request, res: express.Response) => {
                 this.changeGenres(req, res);
 			});
-        this.router.get('/settings/privacy', this.requireAuth,
+        this.router.get('/settings/privacy', this.requireAuth, // Route to get the privacy settings of the logged in user.
 			upload.none(),
 			(req: express.Request, res: express.Response) => {
                 this.getPrivacySettings(req, res);
 			});
-        this.router.post('/settings/privacy', this.requireAuth,
+        this.router.post('/settings/privacy', this.requireAuth, // Route to change the privacy settings of the logged in user.
 			upload.none(),
 			(req: express.Request, res: express.Response) => {
                 this.changePrivacySetting(req, res);
 			});
-        this.router.post('/settings/personal/mail', this.requireAuth,
+        this.router.post('/settings/personal/mail', this.requireAuth, // Route to change the mail of the logged in user.
 			upload.none(),
 			(req: express.Request, res: express.Response) => {
                 this.changeMail(req, res);
@@ -73,8 +75,6 @@ export class ProfileController extends BaseController {
         const saltingRounds = 12;
         try {
             const { oldPassword, newPassword } = req.body;
-            console.log(oldPassword);
-            console.log(newPassword);
             const user = await database.RetrieveUser('userID', req.session.userID);
             bcrypt.compare(oldPassword, user.password, function (err, result) {
                 if (result == true) {

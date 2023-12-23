@@ -30,23 +30,20 @@ export class VenueController extends BaseController {
     const limit = 100;
     for (let offset = 0; true; offset += limit) {
       try {
-        const musicBrainzApiUrl = `https://musicbrainz.org/ws/2/place?query='Brussels'&offset=${offset}&limit=${limit}`;
+        const musicBrainzApiUrl = `https://musicbrainz.org/ws/2/place?query='Brussels'&offset=${offset}&limit=${limit}`; // Load all the venues in Brussels
         this.lastRequest = new Date();
         const response = await axios.get(musicBrainzApiUrl);
         const data = response.data;
         const places = data.places;
-        if (places.length == 0) {
+        if (places.length == 0) { // All venues area loaded.
           break;
         }
-        const venuesInBrussels = places.filter(
+        const venuesInBrussels = places.filter( // We only want these venues.
           (place) =>
             place.type === "Venue" || place.type == "Indoor arena" || place.type == "Stadium"
         );
-        //console.log(venuesInBrussels);
         for (let i = 0; i < venuesInBrussels.length; i++) {
           if (venuesInBrussels[i].coordinates !== undefined) {
-            //console.log(venuesInBrussels[i].name);
-            //console.log(venuesInBrussels[i].id);
             const venue = await retrieveVenue(venuesInBrussels[i].id);
             if (venue == null) {
               await CreateVenue(

@@ -34,15 +34,16 @@ export default function Concert() {
     }
   }
 
+  // Fetch the event, the artist and its score, the venue and its score and if the user has made the event on page load.
+  // We need to know if the user has made the event to know if we can show the edit button.
   useEffect(() => {
     const id = router.query.concert;
-
     const fetchEvent = async () => {
       try {
         const response = await fetch(environment.backendURL + `/events/${id}`, {
           mode: "cors",
           credentials: "include",
-        })
+        });
 
         if (response.ok) {
           const data = await response.json();

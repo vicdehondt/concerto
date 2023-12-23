@@ -5,8 +5,7 @@ import { Event } from "./BackendTypes";
 import { environment } from "./Environment";
 import { handleFetchError } from "./ErrorHandler";
 
-function UserEvent({ event }: { event: Event}) {
-
+function UserEvent({ event }: { event: Event }) {
   function getMonth(month: number) {
     switch (month) {
       case 0:
@@ -48,7 +47,10 @@ function UserEvent({ event }: { event: Event}) {
     const month = getMonth(convertedDateAndTime.getMonth());
     const day = convertedDateAndTime.getDate();
     const date = [[month, day].join(" "), year].join(", ");
-    const time = convertedDateAndTime.toLocaleTimeString('default', { hour: '2-digit', minute: '2-digit' });
+    const time = convertedDateAndTime.toLocaleTimeString("default", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
     return [date, time];
   }
 
@@ -63,8 +65,8 @@ function UserEvent({ event }: { event: Event}) {
       handleFetchError(error, router);
     }
   }
-  
-	async function redirectURL(normalURL: string) {
+
+  async function redirectURL(normalURL: string) {
     const userLoggedIn = await loggedIn();
     if (userLoggedIn) {
       return normalURL;
@@ -76,33 +78,36 @@ function UserEvent({ event }: { event: Event}) {
     event.preventDefault();
     const newUrl = await redirectURL(url);
     router.push(newUrl);
-  };
+  }
 
   return (
     <div className={styles.eventCard}>
       <div className={styles.eventPicture}>
-        <Image style={{ objectFit: "cover" }} src={event.eventPicture} width={75} height={75} alt="Picture of the event"/>
+        <Image
+          style={{ objectFit: "cover" }}
+          src={event.eventPicture}
+          width={75}
+          height={75}
+          alt="Picture of the event"
+        />
       </div>
       <div className={styles.information}>
         <div className={styles.title}>
-        <div onClick={(clickEvent) => redirectClicked(clickEvent, `/concerts/${event.eventID}`)}> {event.title} </div>
+          <div onClick={(clickEvent) => redirectClicked(clickEvent, `/concerts/${event.eventID}`)}>
+            {" "}
+            {event.title}{" "}
+          </div>
         </div>
         <div className={styles.location}>
-        <Image src="/icons/location.png" width={18} height={21} alt=""/>
-          <div> 
-            {event.Venue.venueName}
-          </div>
+          <Image src="/icons/location.png" width={18} height={21} alt="" />
+          <div>{event.Venue.venueName}</div>
         </div>
       </div>
       <div className={styles.dateContainer}>
         <Image src="/icons/date.png" width={35} height={35} alt="Date" />
         <div className={styles.dateAndTimeContainer}>
-          <div className={styles.date}>
-            {date}
-          </div>
-          <div className={styles.time}>
-            {time}
-          </div>
+          <div className={styles.date}>{date}</div>
+          <div className={styles.time}>{time}</div>
         </div>
       </div>
     </div>

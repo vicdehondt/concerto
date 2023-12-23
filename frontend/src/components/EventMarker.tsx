@@ -2,10 +2,10 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 import { Event } from "./BackendTypes";
 import { environment } from "./Environment";
-import Link from "next/link";
 import styles from "@/styles/EventMarker.module.css";
 import { handleFetchError } from "./ErrorHandler";
 
+// Shows a card of an event to be placed in a popupo of a marker on the map.
 export default function EventMarker({ event }: { event: Event }) {
   const router = useRouter();
 
@@ -22,6 +22,8 @@ export default function EventMarker({ event }: { event: Event }) {
     }
   }
 
+  // Redirects the user to the login page if they are not logged in.
+  // Otherwise, the user is redirected to the normalURL.
   async function redirectURL(normalURL: string) {
     const userLoggedIn = await loggedIn();
     if (userLoggedIn) {
@@ -30,7 +32,10 @@ export default function EventMarker({ event }: { event: Event }) {
     return `/login?from=${encodeURIComponent(normalURL)}`;
   }
 
-  async function redirectClicked(event: React.MouseEvent<HTMLButtonElement, MouseEvent>, url: string) {
+  async function redirectClicked(
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    url: string
+  ) {
     event.preventDefault();
     const newUrl = await redirectURL(url);
     router.push(newUrl);
@@ -54,7 +59,9 @@ export default function EventMarker({ event }: { event: Event }) {
             year: "numeric",
           })}
         </p>
-        <button onClick={(clickEvent) => redirectClicked(clickEvent, `/concerts/${event.eventID}`)}>Go to event</button>
+        <button onClick={(clickEvent) => redirectClicked(clickEvent, `/concerts/${event.eventID}`)}>
+          Go to event
+        </button>
       </div>
     </div>
   );

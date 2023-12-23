@@ -36,6 +36,9 @@ export abstract class BaseController {
         }
     }
 
+    // This function is used to check if a user is logged in.
+    // When the user is not logged in, the request is denied.
+    // Used for routes that require authentication.
     requireAuth(req, res, next) {
 		if (req.session && (req.session.userID != null)){
 			next()
@@ -59,6 +62,7 @@ export abstract class BaseController {
         }
 	}
 
+    // Function to check if no errors were thrown when validating the request.
     verifyErrors(req: express.Request, res: express.Response, next) {
         const errors = validationResult(req);
         if (errors.isEmpty()) {

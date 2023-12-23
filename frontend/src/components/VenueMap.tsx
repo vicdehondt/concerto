@@ -20,6 +20,7 @@ type VenueEventArray = {
 export default function VenueMap({ events }: VenueMapProps) {
   const [sortedEvents, setSortedEvents] = useState<Array<VenueEventArray>>([]);
 
+  // Make an array of VenueEventArrays that hold a venue and all the events that take place there.
   useEffect(() => {
     const sortedEvents: Array<VenueEventArray> = [];
     events.forEach((event) => {
@@ -64,6 +65,7 @@ export default function VenueMap({ events }: VenueMapProps) {
     });
   }
 
+  // Use Stadia Maps to show the map with all the venues.
   return (
     <MapContainer
       style={{ height: "100%", zIndex: 5 }}

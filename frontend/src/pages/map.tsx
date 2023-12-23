@@ -37,6 +37,7 @@ export default function Map() {
     setLocation([position.coords.latitude, position.coords.longitude]);
   }
 
+  // Fetch the events while filtering or searching.
   useEffect(() => {
     function filterFetch(url: string) {
       if (filters.venueID != null) {
@@ -124,6 +125,7 @@ export default function Map() {
     }
   }, [filters, searchQuery, sidebarSearching]);
 
+  // Fetch the events on page load.
   useEffect(() => {
     const fetchEvents = async () => {
       try {
@@ -141,7 +143,7 @@ export default function Map() {
         handleFetchError(error, router);
       }
     };
-    
+
     fetchEvents();
   }, []);
 

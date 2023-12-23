@@ -2,7 +2,6 @@ import Head from "next/head";
 import { Inter } from "next/font/google";
 import styles from "@/styles/Home.module.css";
 import { useRouter } from "next/router";
-import FriendInvites from "@/components/FriendInvite";
 import BannerUpload from "@/components/BannerUpload";
 import { useState } from "react";
 import { FormEvent } from "react";
@@ -42,7 +41,7 @@ export default function AddEvent() {
     const eventPicture: File = form.get("eventPicture") as File;
     if (eventPicture.name == "") {
       setEventPictureError("Event picture is required.");
-      return false
+      return false;
     }
     setEventPictureError(null);
     return true;
@@ -86,7 +85,10 @@ export default function AddEvent() {
         });
 
         const data = await response.json();
-        if (!response.ok && data.message == "This event already exists so a new one could not be created.") {
+        if (
+          !response.ok &&
+          data.message == "This event already exists so a new one could not be created."
+        ) {
           setAddError("This event already exists, so a new one could not be created.");
         } else {
           router.push("/");
@@ -136,6 +138,7 @@ export default function AddEvent() {
               </div>
             </div>
             <div className={styles.cardPreview}>
+              {eventPictureError && <div className={styles.error}>{eventPictureError}</div>}
               <EventCardUpload
                 title={title}
                 location={location.venueName}
@@ -146,10 +149,12 @@ export default function AddEvent() {
             </div>
           </div>
           <div className={styles.artistAndLocationContainer}>
+            {venueError && <div className={styles.error}>{venueError}</div>}
             <ArtistAndLocationUpload
               locationCallback={(venue: Venue) => setLocation(venue)}
               artist={selectedArtist}
               artistCallback={(artist: Artist) => setSelectedArtist(artist)}
+              error={artistError}
             />
           </div>
           <div className={styles.priceContainer}>

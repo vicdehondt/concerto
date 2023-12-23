@@ -1,7 +1,9 @@
-import { ARRAY, DataTypes, Op } from 'sequelize';
+import { DataTypes } from 'sequelize';
 import {sequelize} from '../configs/sequelizeConfig'
 import { UserModel } from './Usermodel';
 
+// Each rating object contains the total score and belongs to one artist or to one venue. Not both.
+// Ratings then consist of multiple reviews.
 export const Rating = sequelize.define('Rating', {
     ratingID: {
         type: DataTypes.INTEGER,
@@ -14,7 +16,7 @@ export const Rating = sequelize.define('Rating', {
         defaultValue: 0,
         type: DataTypes.INTEGER
     },
-    entityType: {
+    entityType: { // A rating either belongs to an artist or to a venue
         type: DataTypes.ENUM('artist', 'venue'),
         allowNull: false,
     },
@@ -64,25 +66,27 @@ export const Review = sequelize.define('Review', {
           }
     }
 });
-
+// Each rating can have multiple reviews.
 Rating.hasMany(Review, {
     foreignKey: {
         name: 'ratingID',
         allowNull: false
     }
 });
+// A review can only belong to one rating object.
 Review.belongsTo(Rating, {
     foreignKey: {
         name: 'ratingID'
     }
 });
-
+// Each user can have multiple reviews.
 UserModel.hasMany(Review, {
     foreignKey: {
         name: 'userID',
         allowNull: false
     }
 });
+// And each review can only belong to one user.
 Review.belongsTo(UserModel, {
     foreignKey: {
         name: 'userID'
@@ -113,12 +117,13 @@ export async function createReview(userID, rating, eventID, score, message) {
         } else {
             rating.score = newScore;
         } await rating.save();
-        return true;
+        return true; // Successfully created a review.
     } else {
-        return false;
+        return false; // Already reviewed this event.
     }
 }
 
+// Calculate the new total score based on the previous total score and the new given  score.
 function calculateNewScore(currentScore, amountOfVotes, newValue) {
     const previousSum = currentScore * amountOfVotes;
     console.log("Previoussum: ", previousSum);

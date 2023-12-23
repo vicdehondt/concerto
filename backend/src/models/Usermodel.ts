@@ -76,7 +76,7 @@ export const Friend = sequelize.define('Friend',{
         primaryKey: true,
     },
     status: {
-        type: DataTypes.ENUM('accepted', 'pending'),
+        type: DataTypes.ENUM('accepted', 'pending'), // A friendhip can be pending or accepted. It is pending when the friend request has not been answered yet.
         allowNull: false,
     },
 })
@@ -224,6 +224,7 @@ export async function RetrieveUser(field: string, value): Promise<typeof UserMod
       }
 }
 
+
 // Source: https://nodemailer.com
 const transporter = nodemailer.createTransport({
     port: 465,               // true for 465, false for other ports
@@ -235,6 +236,7 @@ const transporter = nodemailer.createTransport({
     secure: true,
     });
 
+// Send a mail to the user to thank him for using our application.
 export async function sendMailVerification(username, mail) {
     const mailData = {
         from: mailAccount,  // sender address

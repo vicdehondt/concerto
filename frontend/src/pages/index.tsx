@@ -28,12 +28,13 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
   const [inThisWeek, setInThisWeek] = useState(true);
 
+  // Fetch the events while filtering or searching.
   useEffect(() => {
     function filterFetch(url: string) {
       if (filters.venueID != null) {
         url += `&venueID=${filters.venueID}`;
       }
-      if ((filters.date != null) && (filters.date as unknown as string != "Invalid Date")) {
+      if (filters.date != null && (filters.date as unknown as string) != "Invalid Date") {
         url += `&date=${filters.date}`;
       }
       if (filters.genre != null) {
@@ -74,7 +75,7 @@ export default function Home() {
               date: null,
               genre: null,
               minPrice: null,
-              maxPrice: null
+              maxPrice: null,
             };
             if (isEqual(filters, noFilters)) {
               try {
@@ -82,15 +83,17 @@ export default function Home() {
                   mode: "cors",
                   credentials: "include",
                 })
-                .then((response) => {
-                  if (response.status == 200) {
-                    return response.json();
-                  }
-                })
-                .then((responseJSON: Profile) => {
-                  let url = environment.backendURL + `/events?genre=${responseJSON.firstGenre}&genre=${responseJSON.secondGenre}`;
-                  filterFetch(url);
-                });
+                  .then((response) => {
+                    if (response.status == 200) {
+                      return response.json();
+                    }
+                  })
+                  .then((responseJSON: Profile) => {
+                    let url =
+                      environment.backendURL +
+                      `/events?genre=${responseJSON.firstGenre}&genre=${responseJSON.secondGenre}`;
+                    filterFetch(url);
+                  });
               } catch (error) {
                 handleFetchError(error, router);
               }
@@ -109,6 +112,7 @@ export default function Home() {
     }
   }, [filters, searchQuery, sidebarSearching]);
 
+  // Check if the date is in this week.
   useEffect(() => {
     if (filters.date) {
       const currentWeekday = (new Date().getDay() + 6) % 7;
